@@ -23,9 +23,8 @@ def reflect(file, func):
         f = __import__(file.replace('.py', ''))
         function = getattr(f, func)
         function()
-        print("\t|||\t\t\t...")
     except AttributeError:
-        print("\t|||\t\t\t...")
+        pass
 
 
 def file_list_func():
@@ -41,9 +40,13 @@ def file_list_func():
     return file_list
 
 
-def scan(file_path, func):
+def scan(file_path):
     for x in file_path:
-        reflect(x, func)
+        reflect(x, 'get_api')
+        reflect(x, 'post_api')
+        reflect(x, 'put_api')
+        reflect(x, 'delete_api')
+        reflect(x, 'patch_api')
 
 
 def run():
@@ -61,11 +64,8 @@ def run():
         static_path=os.path.join(os.getcwd(), 'statics')
     )
     print("\t|||\t\t└---scanning controller...")
-    scan(file_list_func(), "get_api")
-    scan(file_list_func(), "post_api")
-    scan(file_list_func(), "put_api")
-    scan(file_list_func(), "delete_api")
-    scan(file_list_func(), "patch_api")
+    print("\t|||\t\t\t...")
+    scan(file_list_func())
     mapping = tornado.web.Application(
         handlers=url_list,
         **settings
