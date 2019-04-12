@@ -22,8 +22,8 @@ class Conn(object):
     @classmethod
     def set_db_url(cls, db_url):
         cls.db_url = db_url
-        cls.engine = create_engine(db_url)
-        cls.Base = declarative_base(engine)
+        cls.engine = create_engine(cls.db_url)
+        cls.Base = declarative_base(cls.engine)
 
     @classmethod
     def save(cls):
