@@ -29,6 +29,12 @@ class Conn(object):
         return session
 
     @classmethod
+    def set_db_url(cls, db_url):
+        cls.db_url = db_url
+        cls.engine = create_engine(db_url)
+        cls.Base = declarative_base(engine)
+
+    @classmethod
     def save(cls):
         Conn.Base.metadata.create_all(Conn.engine)
 
