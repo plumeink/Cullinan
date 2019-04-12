@@ -1,6 +1,6 @@
 # Cullinan
 
-Cullinan基于Tornado编写，用于帮助项目实现MVC结构
+Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速实现MVC结构与ORM
 
 ## 使用方法
     
@@ -12,7 +12,7 @@ Cullinan基于Tornado编写，用于帮助项目实现MVC结构
 
 ## Wiki
 
-Wiki and links to additional resources are available at https://repo.fnep-tech.com/Diamond/Cullinan/wiki/
+Wiki 和其他相关资料参考 https://repo.fnep-tech.com/Diamond/Cullinan/wiki/
 
 ## 维护人员
 
