@@ -15,6 +15,7 @@ import tornado.options
 import tornado.web
 import tornado.httpserver
 from tornado.options import define, options
+from cullinan.dao import Conn
 import sys
 
 
@@ -72,6 +73,15 @@ def run():
     )
     print("\t|||\t\t└---loading controller finish\n\t|||\t")
     define("port", default=os.getenv("SERVER_PORT"), help="run on the given port", type=int)
+    db_url = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(
+        os.getenv("DB_USERNAME"),
+        os.getenv("DB_PASSWORD"),
+        os.getenv("DB_HOST"),
+        os.getenv("DB_PORT"),
+        os.getenv("DB_NAME"),
+        os.getenv("DB_CODING")
+    )
+    Conn.set_db_url(db_url)
     print("\t|||\tloading env finish\n\t|||\t")
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(mapping)
