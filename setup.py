@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name='cullinan',
-    version='0.1.7',
+    version='0.1.8',
     packages=['cullinan'],
     description='cullinan',
     author='fnep_tech',
