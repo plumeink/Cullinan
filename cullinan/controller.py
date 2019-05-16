@@ -74,6 +74,8 @@ def get_api(**kwargs):
             print("\t|||request_header", end="")
             print(request)
             response = func(self, request)
+            if response.get_is_static is True:
+                self.render(response.get_body())
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])

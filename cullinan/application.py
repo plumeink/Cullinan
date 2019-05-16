@@ -61,7 +61,7 @@ def run():
     load_dotenv(dotenv_path=env_path)
     settings = dict(
         template_path=os.path.join(os.getcwd(), 'templates'),
-        static_path=os.path.join(os.getcwd(), 'statics')
+        static_path=os.path.join(os.getcwd(), 'static')
     )
     print("\t|||\t\t└---scanning controller...")
     print("\t|||\t\t\t...")

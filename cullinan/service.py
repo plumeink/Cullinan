@@ -11,6 +11,7 @@ class Response(object):
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
     __body__ = ''
     __headers__ = []
+    __is_static__ = False
     # __type__ = 'JSON'
 
     def set_body(self, data):
@@ -19,6 +20,11 @@ class Response(object):
     def add_header(self, name, value):
         self.__headers__.append([name, value])
 
+    def set_is_static(self, boolean):
+        self.__is_static__ = boolean
+
+    def get_is_static(self):
+        return self.__is_static__
     # def set_type(self, response_type):
     #     if response_type == self.TYPE_LIST["JSON"]:
     #         self.__type__ = response_type
