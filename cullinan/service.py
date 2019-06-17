@@ -46,10 +46,10 @@ class Response(object):
 class Service(object):
     response = Response()
 
-    @abstractmethod
-    def service(self):
-        pass
-
-    @abstractmethod
-    def set_info(self):
-        pass
+    # @abstractmethod
+    # def service(self):
+    #     pass
+    #
+    # @abstractmethod
+    # def set_info(self):
+    #     pass

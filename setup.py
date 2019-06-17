@@ -9,11 +9,11 @@ from setuptools import setup
 
 setup(
     name='cullinan',
-    version='0.1.9',
+    version='0.2.0',
     packages=['cullinan'],
     description='cullinan',
     author='fnep_tech',
-    author_email='hansion.fnep@gmail.com',
+    author_email='hansion@fnep-tech.com',
     url='https://www.fnep-tech.com/',
     install_requires=['tornado', 'python-dotenv', 'sqlalchemy', 'pymysql'],
 )
