@@ -40,13 +40,18 @@ def file_list_func():
     return file_list
 
 
-def scan(file_path):
+def scan_controller(file_path):
     for x in file_path:
         reflect(x, 'get_api')
         reflect(x, 'post_api')
         reflect(x, 'put_api')
         reflect(x, 'delete_api')
         reflect(x, 'patch_api')
+
+
+def scan_service(file_path):
+    for x in file_path:
+        reflect(x, 'service')
 
 
 def run():
@@ -65,7 +70,8 @@ def run():
     )
     print("\t|||\t\t└---scanning controller...")
     print("\t|||\t\t\t...")
-    scan(file_list_func())
+    scan_service(file_list_func())
+    scan_controller(file_list_func())
     mapping = tornado.web.Application(
         handlers=url_list,
         **settings
@@ -73,7 +79,6 @@ def run():
     print("\t|||\t\t└---loading controller finish\n\t|||\t")
     define("port", default=os.getenv("SERVER_PORT"), help="run on the given port", type=int)
     print("\t|||\tloading env finish\n\t|||\t")
-    tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(mapping)
     http_server.listen(options.port)
     print("\t|||\t\033[0;36;0mserver is starting \033[0m")

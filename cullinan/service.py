@@ -4,8 +4,8 @@
 # @Author : hansion
 # @Date   : 2019-02-22
 # @Desc   : service
-from abc import abstractmethod
 
+service_list = {}
 
 class Response(object):
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
@@ -53,3 +53,8 @@ class Service(object):
     # @abstractmethod
     # def set_info(self):
     #     pass
+
+def service():
+    def inner(cls):
+        service_list[cls.__name__] = cls()
+    return inner
