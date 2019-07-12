@@ -7,6 +7,7 @@
 import tornado.web
 import types
 import functools
+from cullinan.service import service_list
 
 url_list = []
 
@@ -71,9 +72,10 @@ def get_api(**kwargs):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def get(self):
             request = self.request
+            service = service_list[kwargs['service']]
             print("\t|||request_header", end="")
             print(request)
-            response = func(self, request)
+            response = func(self, request, service)
             if response.get_is_static is True:
                 self.render(response.get_body())
             if response.get_headers().__len__() > 0:
@@ -91,9 +93,10 @@ def post_api(**kwargs):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def post(self):
             request = self.request
+            service = service_list[kwargs['service']]
             print("\t|||request_header", end="")
             print(request)
-            response = func(self, request)
+            response = func(self, request, service)
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -109,9 +112,10 @@ def patch_api(**kwargs):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def patch(self):
             request = self.request
+            service = service_list[kwargs['service']]
             print("\t|||request_header", end="")
             print(request)
-            response = func(self, request)
+            response = func(self, request, service)
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -127,9 +131,10 @@ def delete_api(**kwargs):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def delete(self):
             request = self.request
+            service = service_list[kwargs['service']]
             print("\t|||request_header", end="")
             print(request)
-            response = func(self, request)
+            response = func(self, request, service)
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -145,9 +150,10 @@ def put_api(**kwargs):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def put(self):
             request = self.request
+            service = service_list[kwargs['service']]
             print("\t|||request_header", end="")
             print(request)
-            response = func(self, data=request)
+            response = func(self, request, service)
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
