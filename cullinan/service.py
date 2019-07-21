@@ -7,6 +7,7 @@
 
 service_list = {}
 
+
 class Response(object):
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
     __body__ = ''
@@ -54,7 +55,9 @@ class Service(object):
     # def set_info(self):
     #     pass
 
+
 def service():
     def inner(cls):
-        service_list[cls.__name__] = cls()
+        if service_list[cls.__name__] is None:
+            service_list[cls.__name__] = cls()
     return inner
