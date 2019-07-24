@@ -15,5 +15,6 @@ setup(
     author='fnep_tech',
     author_email='hansion@fnep-tech.com',
     url='https://www.fnep-tech.com/',
+    license='http://www.apache.org/licenses/LICENSE-2.0',
     install_requires=['tornado', 'python-dotenv', 'sqlalchemy', 'pymysql'],
 )

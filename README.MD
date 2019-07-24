@@ -12,7 +12,7 @@ Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速实现MVC结�
 
 ## Wiki
 
-Wiki 和其他相关资料参考 https://repo.fnep-tech.com/Diamond/Cullinan/wiki/
+Wiki 和其他相关资料参考 -=施工中=-
 
 ## 维护人员
 
