@@ -16,5 +16,5 @@ Wiki 和其他相关资料参考 https://repo.fnep-tech.com/Diamond/Cullinan/wik
 
 ## 维护人员
 
-[<img src="https://repo.fnep-tech.com/avatars/1?s=290" width = "40" height = "40"/>](https://repo.fnep-tech.com/hansion) &nbsp;
-[<img src="https://repo.fnep-tech.com/avatars/5?s=290" width = "40" height = "40"/>](https://repo.fnep-tech.com/xuezhe1997)
+[<img src="https://avatars0.githubusercontent.com/u/48331167?s=460&v=4" width = "40" height = "40"/>](https://github.com/hansiondesu) &nbsp;
+[<img src="https://avatars0.githubusercontent.com/u/39507461?s=460&v=4" width = "40" height = "40"/>](https://github.com/FakeFox)
