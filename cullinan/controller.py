@@ -67,15 +67,44 @@ class Handler(tornado.web.RequestHandler):
         pass
 
 
+def request_resolver(self, request_names):
+    need_request = dict()
+    for name in request_names:
+        need_request[name] = self.get_argument(name)
+    print("\t|||\t request_params", end="")
+    print(need_request)
+    return need_request
+
+
+def header_resolver(self, header_names):
+    need_header = dict()
+    for name in header_names:
+        need_header[name] = self.request.headers[name]
+    print("\t|||\t request_headers", end="")
+    print(need_header)
+    return need_header
+
+
 def get_api(**kwargs):
     def inner(func):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def get(self):
-            request = self.request
+            global response
+            print("\t||| request:")
+            # request = self.request
             service = service_list[kwargs['service']]
-            print("\t|||request_header", end="")
-            print(request)
-            response = func(self, request, service)
+            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers, params)
+            elif kwargs.get('params', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                response = func(self, service, params)
+            elif kwargs.get('headers', None) is not None:
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers)
+            # else:
+            #     response = func(self, request, service)
             if response.get_is_static is True:
                 self.render(response.get_body())
             if response.get_headers().__len__() > 0:
@@ -92,11 +121,28 @@ def post_api(**kwargs):
     def inner(func):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def post(self):
-            request = self.request
+            global params
+            global response
+            request_body = self.request.body
             service = service_list[kwargs['service']]
-            print("\t|||request_header", end="")
-            print(request)
-            response = func(self, request, service)
+            print(self)
+            if kwargs['request_body'] is True:
+                response = func(self, service, request_body)
+            elif kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers, params)
+            elif kwargs.get('params', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                response = func(self, service, params)
+            elif kwargs.get('headers', None) is not None:
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers)
+
+            # else:
+            #     response = func(self, request, service)
+            if response.get_is_static is True:
+                self.render(response.get_body())
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -111,11 +157,28 @@ def patch_api(**kwargs):
     def inner(func):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def patch(self):
-            request = self.request
+            global params
+            global response
+            request_body = self.request.body
             service = service_list[kwargs['service']]
-            print("\t|||request_header", end="")
-            print(request)
-            response = func(self, request, service)
+            print(self)
+            if kwargs['request_body'] is True:
+                response = func(self, service, request_body)
+            elif kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers, params)
+            elif kwargs.get('params', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                response = func(self, service, params)
+            elif kwargs.get('headers', None) is not None:
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers)
+
+            # else:
+            #     response = func(self, request, service)
+            if response.get_is_static is True:
+                self.render(response.get_body())
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -130,11 +193,24 @@ def delete_api(**kwargs):
     def inner(func):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def delete(self):
-            request = self.request
+            global response
+            print("\t||| request:")
+            # request = self.request
             service = service_list[kwargs['service']]
-            print("\t|||request_header", end="")
-            print(request)
-            response = func(self, request, service)
+            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers, params)
+            elif kwargs.get('params', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                response = func(self, service, params)
+            elif kwargs.get('headers', None) is not None:
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers)
+            # else:
+            #     response = func(self, request, service)
+            if response.get_is_static is True:
+                self.render(response.get_body())
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])
@@ -149,11 +225,24 @@ def put_api(**kwargs):
     def inner(func):
         @Encapsulation_Handler_func.add_url(url=kwargs['url'])
         def put(self):
-            request = self.request
+            global response
+            print("\t||| request:")
+            # request = self.request
             service = service_list[kwargs['service']]
-            print("\t|||request_header", end="")
-            print(request)
-            response = func(self, request, service)
+            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers, params)
+            elif kwargs.get('params', None) is not None:
+                params = request_resolver(self, kwargs['params'])
+                response = func(self, service, params)
+            elif kwargs.get('headers', None) is not None:
+                headers = header_resolver(self, kwargs['headers'])
+                response = func(self, service, headers)
+            # else:
+            #     response = func(self, request, service)
+            if response.get_is_static is True:
+                self.render(response.get_body())
             if response.get_headers().__len__() > 0:
                 for header in response.get_headers():
                     self.set_header(header[0], header[1])

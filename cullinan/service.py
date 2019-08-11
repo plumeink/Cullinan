@@ -58,6 +58,6 @@ class Service(object):
 
 def service():
     def inner(cls):
-        if service_list[cls.__name__] is None:
+        if service_list.get(cls.__name__, None) is None:
             service_list[cls.__name__] = cls()
     return inner
