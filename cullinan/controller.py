@@ -63,32 +63,71 @@ class Handler(tornado.web.RequestHandler):
         pass
 
 
-def request_resolver(self, request_param_names, url_param_key_list, url_param_value_list):
-    if url_param_key_list is not None and request_param_names is not None:
-        param_dict = {}
+def request_resolver(self, url_param_key_list, url_param_value_list, query_param_names, body_param_names):
+    if url_param_key_list is not None and query_param_names is not None and body_param_names is not None:
+        url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
-            param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        for name in request_param_names:
-            param_dict[name] = self.get_argument(name)
-        print("\t|||\t request_params", end="")
-        print(param_dict)
-        return param_dict
-    elif request_param_names is not None:
-        param_dict = dict()
-        for name in request_param_names:
-            param_dict[name] = self.get_argument(name)
-        print("\t|||\t request_params", end="")
-        print(param_dict)
-        return param_dict
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        query_param_dict = {}
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        body_param_dict = {}
+        for name in body_param_names:
+            body_param_dict[name] = self.get_body_argument(name)
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        return url_param_dict, query_param_dict, body_param_dict
+    elif query_param_names is not None and url_param_key_list is not None:
+        url_param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        query_param_dict = dict()
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        return url_param_dict, query_param_dict, None
+    elif url_param_key_list is not None and body_param_names is not None:
+        url_param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        body_param_dict = {}
+        for name in body_param_names:
+            body_param_dict[name] = self.get_body_argument(name)
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        return url_param_dict, None, body_param_dict
     elif url_param_key_list is not None:
-        param_dict = {}
+        url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
-            param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t request_params", end="")
-        print(param_dict)
-        return param_dict
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        return url_param_dict, None, None
+    elif query_param_names is not None:
+        query_param_dict = dict()
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        return None, query_param_dict, None
+    elif body_param_names is not None:
+        body_param_dict = {}
+        for name in body_param_names:
+            body_param_dict[name] = self.get_body_argument(name)
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        return None, None, body_param_dict
     else:
-        return None
+        return None, None, None
 
 
 def header_resolver(self, header_names):
@@ -118,12 +157,37 @@ def url_resolver(url):
 
 def request_handler(self, func, service, params, headers):
     global response
-    if params is not None and headers is not None:
-        response = func(self, service, headers, params)
-    elif params is not None:
-        response = func(self, service, params)
-    elif headers is not None:
-        response = func(self, service, headers)
+    if headers is not None:
+        if params[0] is not None and params[1] is not None and params[2] is not None:
+            response = func(self, service, headers, params[0], params[1], params[2])
+        elif params[0] is not None and params[1] is not None:
+            response = func(self, service, headers, params[0], params[1])
+        elif params[0] is not None and params[2] is not None:
+            response = func(self, service, headers, params[0], params[2])
+        elif params[1] is not None and params[2] is not None:
+            response = func(self, service, headers, params[1], params[2])
+        elif params[0] is not None:
+            response = func(self, service, headers, params[0])
+        elif params[1] is not None:
+            response = func(self, service, headers, params[1])
+        elif params[2] is not None:
+            response = func(self, service, headers, params[2])
+        else:
+            response = func(self, service, headers)
+    elif params[0] is not None and params[1] is not None and params[2] is not None:
+        response = func(self, service, params[0], params[1], params[2])
+    elif params[0] is not None and params[1] is not None:
+        response = func(self, service, params[0], params[1])
+    elif params[0] is not None and params[2] is not None:
+        response = func(self, service, params[0], params[2])
+    elif params[1] is not None and params[2] is not None:
+        response = func(self, service, params[1], params[2])
+    elif params[0] is not None:
+        response = func(self, service, params[0])
+    elif params[1] is not None:
+        response = func(self, service, params[1])
+    elif params[2] is not None:
+        response = func(self, service, params[2])
     else:
         response = func(self, service)
     if response.get_is_static is True:
@@ -144,7 +208,7 @@ def get_api(**kwargs):
         def get(self, *args):
             print("\t||| request:")
             request_handler(self, func, service_list[kwargs['service']],
-                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
@@ -163,7 +227,8 @@ def post_api(**kwargs):
         def post(self, *args):
             print("\t||| request:")
             request_handler(self, func, service_list[kwargs['service']],
-                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
+                                             kwargs.get('body_params', None)),
                             header_resolver(self, kwargs.get('headers', None)))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
@@ -182,7 +247,8 @@ def patch_api(**kwargs):
         def patch(self, *args):
             print("\t||| request:")
             request_handler(self, func, service_list[kwargs['service']],
-                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
+                                             kwargs.get('body_params', None)),
                             header_resolver(self, kwargs.get('headers', None)))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
@@ -201,7 +267,7 @@ def delete_api(**kwargs):
         def delete(self, *args):
             print("\t||| request:")
             request_handler(self, func, service_list[kwargs['service']],
-                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
@@ -220,7 +286,7 @@ def put_api(**kwargs):
         def put(self, *args):
             print("\t||| request:")
             request_handler(self, func, service_list[kwargs['service']],
-                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
