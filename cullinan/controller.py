@@ -12,7 +12,7 @@ from cullinan.service import service_list
 url_list = []
 
 
-class Encapsulation_Handler_func(object):
+class EncapsulationHandler(object):
     @classmethod
     def set_fragment_method(cls, cls_name, func):
         @functools.wraps(func)
@@ -27,7 +27,7 @@ class Encapsulation_Handler_func(object):
         def inner(f):
             url = kwargs['url']
             servlet = type('Servlet' + url.replace('/', ''), (Handler,),
-                           {"set_instance_method": Encapsulation_Handler_func.set_fragment_method})
+                           {"set_instance_method": EncapsulationHandler.set_fragment_method})
             if url_list.__len__() == 0:
                 servlet.set_instance_method(servlet, f)
                 servlet.f = types.MethodType(f, servlet)
@@ -50,10 +50,6 @@ class Encapsulation_Handler_func(object):
 
 class Handler(tornado.web.RequestHandler):
 
-    # def initialize(self):
-    #     # 这里将子类对象传入session中, 则以后生成的session对象中就包含处理器的实例对象
-    #     self.session = Session(self)
-
     def data_received(self, chunk):
         pass
 
@@ -67,50 +63,90 @@ class Handler(tornado.web.RequestHandler):
         pass
 
 
-def request_resolver(self, request_names):
-    need_request = dict()
-    for name in request_names:
-        need_request[name] = self.get_argument(name)
-    print("\t|||\t request_params", end="")
-    print(need_request)
-    return need_request
+def request_resolver(self, request_param_names, url_param_key_list, url_param_value_list):
+    if url_param_key_list is not None and request_param_names is not None:
+        param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        for name in request_param_names:
+            param_dict[name] = self.get_argument(name)
+        print("\t|||\t request_params", end="")
+        print(param_dict)
+        return param_dict
+    elif request_param_names is not None:
+        param_dict = dict()
+        for name in request_param_names:
+            param_dict[name] = self.get_argument(name)
+        print("\t|||\t request_params", end="")
+        print(param_dict)
+        return param_dict
+    elif url_param_key_list is not None:
+        param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t request_params", end="")
+        print(param_dict)
+        return param_dict
+    else:
+        return None
 
 
 def header_resolver(self, header_names):
-    need_header = dict()
-    for name in header_names:
-        need_header[name] = self.request.headers[name]
-    print("\t|||\t request_headers", end="")
-    print(need_header)
-    return need_header
+    if header_names is not None:
+        need_header = dict()
+        for name in header_names:
+            need_header[name] = self.request.headers[name]
+        print("\t|||\t request_headers", end="")
+        print(need_header)
+        return need_header
+    else:
+        return None
+
+
+def url_resolver(url):
+    find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] is target]
+    before_list = find_all(url, "{")
+    after_list = find_all(url, "}")
+    url_param_list = []
+    for index in range(0, before_list.__len__()):
+        url_param_list.append(url[int(before_list[index]) + 1:int(after_list[index])])
+    for url_param in url_param_list:
+        url = url.replace(url_param, ".*")
+    url = url.replace("{", "(").replace("}", ")")
+    return url, url_param_list
+
+
+def request_handler(self, func, service, params, headers):
+    global response
+    if params is not None and headers is not None:
+        response = func(self, service, headers, params)
+    elif params is not None:
+        response = func(self, service, params)
+    elif headers is not None:
+        response = func(self, service, headers)
+    else:
+        response = func(self, service)
+    if response.get_is_static is True:
+        self.render(response.get_body())
+    if response.get_headers().__len__() > 0:
+        for header in response.get_headers():
+            self.set_header(header[0], header[1])
+    self.write(response.get_body())
 
 
 def get_api(**kwargs):
     def inner(func):
-        @Encapsulation_Handler_func.add_url(url=kwargs['url'])
-        def get(self):
-            global response
+        url_param_key_list = None
+        if kwargs['url'].find("{") is not -1:
+            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+
+        @EncapsulationHandler.add_url(url=kwargs['url'])
+        def get(self, *args):
             print("\t||| request:")
-            # request = self.request
-            service = service_list[kwargs['service']]
-            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers, params)
-            elif kwargs.get('params', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                response = func(self, service, params)
-            elif kwargs.get('headers', None) is not None:
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers)
-            # else:
-            #     response = func(self, request, service)
-            if response.get_is_static is True:
-                self.render(response.get_body())
-            if response.get_headers().__len__() > 0:
-                for header in response.get_headers():
-                    self.set_header(header[0], header[1])
-            self.write(response.get_body())
+            request_handler(self, func, service_list[kwargs['service']],
+                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            header_resolver(self, kwargs.get('headers', None)))
+            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return get
 
@@ -119,34 +155,17 @@ def get_api(**kwargs):
 
 def post_api(**kwargs):
     def inner(func):
-        @Encapsulation_Handler_func.add_url(url=kwargs['url'])
-        def post(self):
-            global params
-            global response
-            request_body = self.request.body
-            service = service_list[kwargs['service']]
-            print(self)
-            if kwargs['request_body'] is True:
-                response = func(self, service, request_body)
-            elif kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers, params)
-            elif kwargs.get('params', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                response = func(self, service, params)
-            elif kwargs.get('headers', None) is not None:
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers)
+        url_param_key_list = None
+        if kwargs['url'].find("{") is not -1:
+            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
-            # else:
-            #     response = func(self, request, service)
-            if response.get_is_static is True:
-                self.render(response.get_body())
-            if response.get_headers().__len__() > 0:
-                for header in response.get_headers():
-                    self.set_header(header[0], header[1])
-            self.write(response.get_body())
+        @EncapsulationHandler.add_url(url=kwargs['url'])
+        def post(self, *args):
+            print("\t||| request:")
+            request_handler(self, func, service_list[kwargs['service']],
+                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            header_resolver(self, kwargs.get('headers', None)))
+            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return post
 
@@ -155,34 +174,17 @@ def post_api(**kwargs):
 
 def patch_api(**kwargs):
     def inner(func):
-        @Encapsulation_Handler_func.add_url(url=kwargs['url'])
-        def patch(self):
-            global params
-            global response
-            request_body = self.request.body
-            service = service_list[kwargs['service']]
-            print(self)
-            if kwargs['request_body'] is True:
-                response = func(self, service, request_body)
-            elif kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers, params)
-            elif kwargs.get('params', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                response = func(self, service, params)
-            elif kwargs.get('headers', None) is not None:
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers)
+        url_param_key_list = None
+        if kwargs['url'].find("{") is not -1:
+            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
-            # else:
-            #     response = func(self, request, service)
-            if response.get_is_static is True:
-                self.render(response.get_body())
-            if response.get_headers().__len__() > 0:
-                for header in response.get_headers():
-                    self.set_header(header[0], header[1])
-            self.write(response.get_body())
+        @EncapsulationHandler.add_url(url=kwargs['url'])
+        def patch(self, *args):
+            print("\t||| request:")
+            request_handler(self, func, service_list[kwargs['service']],
+                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            header_resolver(self, kwargs.get('headers', None)))
+            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return patch
 
@@ -191,30 +193,17 @@ def patch_api(**kwargs):
 
 def delete_api(**kwargs):
     def inner(func):
-        @Encapsulation_Handler_func.add_url(url=kwargs['url'])
-        def delete(self):
-            global response
+        url_param_key_list = None
+        if kwargs['url'].find("{") is not -1:
+            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+
+        @EncapsulationHandler.add_url(url=kwargs['url'])
+        def delete(self, *args):
             print("\t||| request:")
-            # request = self.request
-            service = service_list[kwargs['service']]
-            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers, params)
-            elif kwargs.get('params', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                response = func(self, service, params)
-            elif kwargs.get('headers', None) is not None:
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers)
-            # else:
-            #     response = func(self, request, service)
-            if response.get_is_static is True:
-                self.render(response.get_body())
-            if response.get_headers().__len__() > 0:
-                for header in response.get_headers():
-                    self.set_header(header[0], header[1])
-            self.write(response.get_body())
+            request_handler(self, func, service_list[kwargs['service']],
+                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            header_resolver(self, kwargs.get('headers', None)))
+            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return delete
 
@@ -223,30 +212,17 @@ def delete_api(**kwargs):
 
 def put_api(**kwargs):
     def inner(func):
-        @Encapsulation_Handler_func.add_url(url=kwargs['url'])
-        def put(self):
-            global response
+        url_param_key_list = None
+        if kwargs['url'].find("{") is not -1:
+            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+
+        @EncapsulationHandler.add_url(url=kwargs['url'])
+        def put(self, *args):
             print("\t||| request:")
-            # request = self.request
-            service = service_list[kwargs['service']]
-            if kwargs.get('params', None) is not None and kwargs.get('headers', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers, params)
-            elif kwargs.get('params', None) is not None:
-                params = request_resolver(self, kwargs['params'])
-                response = func(self, service, params)
-            elif kwargs.get('headers', None) is not None:
-                headers = header_resolver(self, kwargs['headers'])
-                response = func(self, service, headers)
-            # else:
-            #     response = func(self, request, service)
-            if response.get_is_static is True:
-                self.render(response.get_body())
-            if response.get_headers().__len__() > 0:
-                for header in response.get_headers():
-                    self.set_header(header[0], header[1])
-            self.write(response.get_body())
+            request_handler(self, func, service_list[kwargs['service']],
+                            request_resolver(self, kwargs.get('params', None), url_param_key_list, args),
+                            header_resolver(self, kwargs.get('headers', None)))
+            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return put
 
