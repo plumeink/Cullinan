@@ -1,6 +1,6 @@
 # Cullinan
 
-Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速实现MVC结构与ORM
+Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速搭建WEB服务
 
 ## 使用方法
     
@@ -8,7 +8,7 @@ Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速实现MVC结�
 
 将dist下whl文件放入项目目录下，并在项目目录下使用下方命令安装
         
-    pip install 文件名
+    pip install cullinan
 
 ## Wiki
 
