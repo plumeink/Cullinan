@@ -105,6 +105,18 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return url_param_dict, None, body_param_dict
+    elif query_param_names is not None and body_param_names is not None:
+        query_param_dict = {}
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        body_param_dict = {}
+        for name in body_param_names:
+            body_param_dict[name] = self.get_body_argument(name)
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        return None, query_param_dict, body_param_dict
     elif url_param_key_list is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
