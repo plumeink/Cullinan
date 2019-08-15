@@ -4,6 +4,8 @@
 # @Author : hansion, fox
 # @Date   : 2019-02-15
 # @Desc   : controller
+
+import json
 import tornado.web
 import types
 import functools
@@ -54,7 +56,6 @@ class Handler(tornado.web.RequestHandler):
         pass
 
     def set_default_headers(self):
-        # 用来解决跨域问题
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "x-requested-with, Content-type, contenttype")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH, PUT, OPTIONS')
@@ -76,8 +77,14 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         print("\t|||\t query_params", end="")
         print(query_param_dict)
         body_param_dict = {}
-        for name in body_param_names:
-            body_param_dict[name] = self.get_body_argument(name)
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return url_param_dict, query_param_dict, body_param_dict
@@ -100,8 +107,14 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         print("\t|||\t url_params", end="")
         print(url_param_dict)
         body_param_dict = {}
-        for name in body_param_names:
-            body_param_dict[name] = self.get_body_argument(name)
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return url_param_dict, None, body_param_dict
@@ -112,8 +125,14 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         print("\t|||\t query_params", end="")
         print(query_param_dict)
         body_param_dict = {}
-        for name in body_param_names:
-            body_param_dict[name] = self.get_body_argument(name)
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return None, query_param_dict, body_param_dict
@@ -133,8 +152,14 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         return None, query_param_dict, None
     elif body_param_names is not None:
         body_param_dict = {}
-        for name in body_param_names:
-            body_param_dict[name] = self.get_body_argument(name)
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return None, None, body_param_dict
