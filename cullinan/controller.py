@@ -187,46 +187,90 @@ def url_resolver(url):
     for index in range(0, before_list.__len__()):
         url_param_list.append(url[int(before_list[index]) + 1:int(after_list[index])])
     for url_param in url_param_list:
-        url = url.replace(url_param, ".*")
+        url = url.replace(url_param, "[a-zA-Z0-9-]+")
     url = url.replace("{", "(").replace("}", ")")
     return url, url_param_list
 
 
-def request_handler(self, func, service, params, headers):
+def request_handler(self, func, service, params, headers, get_request_body = False):
+    for item in url_list:
+        print(item)
     global response
     if headers is not None:
-        if params[0] is not None and params[1] is not None and params[2] is not None:
-            response = func(self, service, headers, params[0], params[1], params[2])
-        elif params[0] is not None and params[1] is not None:
-            response = func(self, service, headers, params[0], params[1])
-        elif params[0] is not None and params[2] is not None:
-            response = func(self, service, headers, params[0], params[2])
-        elif params[1] is not None and params[2] is not None:
-            response = func(self, service, headers, params[1], params[2])
-        elif params[0] is not None:
-            response = func(self, service, headers, params[0])
-        elif params[1] is not None:
-            response = func(self, service, headers, params[1])
-        elif params[2] is not None:
-            response = func(self, service, headers, params[2])
+        if get_request_body:
+            if params[0] is not None and params[1] is not None and params[2] is not None:
+                response = func(self, service, self.request.body, headers, params[0], params[1], params[2])
+            elif params[0] is not None and params[1] is not None:
+                response = func(self, service, self.request.body, headers, params[0], params[1])
+            elif params[0] is not None and params[2] is not None:
+                response = func(self, service, self.request.body, headers, params[0], params[2])
+            elif params[1] is not None and params[2] is not None:
+                response = func(self, service, self.request.body, headers, params[1], params[2])
+            elif params[0] is not None:
+                response = func(self, service, self.request.body, headers, params[0])
+            elif params[1] is not None:
+                response = func(self, service, self.request.body, headers, params[1])
+            elif params[2] is not None:
+                response = func(self, service, self.request.body, headers, params[2])
+            else:
+                response = func(self, service, self.request.body, headers)
         else:
-            response = func(self, service, headers)
+            if params[0] is not None and params[1] is not None and params[2] is not None:
+                response = func(self, service, headers, params[0], params[1], params[2])
+            elif params[0] is not None and params[1] is not None:
+                response = func(self, service, headers, params[0], params[1])
+            elif params[0] is not None and params[2] is not None:
+                response = func(self, service, headers, params[0], params[2])
+            elif params[1] is not None and params[2] is not None:
+                response = func(self, service, headers, params[1], params[2])
+            elif params[0] is not None:
+                response = func(self, service, headers, params[0])
+            elif params[1] is not None:
+                response = func(self, service, headers, params[1])
+            elif params[2] is not None:
+                response = func(self, service, headers, params[2])
+            else:
+                response = func(self, service, headers)
     elif params[0] is not None and params[1] is not None and params[2] is not None:
-        response = func(self, service, params[0], params[1], params[2])
+        if get_request_body:
+            response = func(self, service,self.request.body, params[0], params[1], params[2])
+        else:
+            response = func(self, service, params[0], params[1], params[2])
     elif params[0] is not None and params[1] is not None:
-        response = func(self, service, params[0], params[1])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[0], params[1])
+        else:
+            response = func(self, service, params[0], params[1])
     elif params[0] is not None and params[2] is not None:
-        response = func(self, service, params[0], params[2])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[0], params[2])
+        else:
+            response = func(self, service, params[0], params[2])
     elif params[1] is not None and params[2] is not None:
-        response = func(self, service, params[1], params[2])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[1], params[2])
+        else:
+            response = func(self, service, params[1], params[2])
     elif params[0] is not None:
-        response = func(self, service, params[0])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[0])
+        else:
+            response = func(self, service, params[0])
     elif params[1] is not None:
-        response = func(self, service, params[1])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[1])
+        else:
+            response = func(self, service, params[1])
     elif params[2] is not None:
-        response = func(self, service, params[2])
+        if get_request_body:
+            response = func(self, service, self.request.body, params[2])
+        else:
+            response = func(self, service, params[2])
     else:
-        response = func(self, service)
+        if get_request_body:
+            response = func(self, service, self.request.body)
+        else:
+            response = func(self, service)
     if response.get_is_static is True:
         self.render(response.get_body())
     if response.get_headers().__len__() > 0:
@@ -266,7 +310,7 @@ def post_api(**kwargs):
             request_handler(self, func, service_list[kwargs['service']],
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
                                              kwargs.get('body_params', None)),
-                            header_resolver(self, kwargs.get('headers', None)))
+                            header_resolver(self, kwargs.get('headers', None)), kwargs.get('get_request_body', False))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return post
@@ -286,7 +330,7 @@ def patch_api(**kwargs):
             request_handler(self, func, service_list[kwargs['service']],
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
                                              kwargs.get('body_params', None)),
-                            header_resolver(self, kwargs.get('headers', None)))
+                            header_resolver(self, kwargs.get('headers', None)), kwargs.get('get_request_body', False))
             # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return patch
