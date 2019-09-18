@@ -12,6 +12,11 @@ import functools
 from cullinan.service import service_list
 
 url_list = []
+KEY_NAME_INDEX = {
+            "url_params": 0,
+            "query_params": 1,
+            "body_params": 2,
+        }
 
 
 class EncapsulationHandler(object):
@@ -188,91 +193,46 @@ def url_resolver(url):
         url_param_list.append(url[int(before_list[index]) + 1:int(after_list[index])])
     for url_param in url_param_list:
         url = url.replace(url_param, "[a-zA-Z0-9-]+")
-    url = url.replace("{", "(").replace("}", ")")
+    url = url.replace("{", "(").replace("}", ")/*")
     return url, url_param_list
 
 
 def request_handler(self, func, service, params, headers, get_request_body = False):
-    for item in url_list:
-        print(item)
     global response
-    if headers is not None:
-        if get_request_body:
-            if params[0] is not None and params[1] is not None and params[2] is not None:
-                response = func(self, service, self.request.body, headers, params[0], params[1], params[2])
-            elif params[0] is not None and params[1] is not None:
-                response = func(self, service, self.request.body, headers, params[0], params[1])
-            elif params[0] is not None and params[2] is not None:
-                response = func(self, service, self.request.body, headers, params[0], params[2])
-            elif params[1] is not None and params[2] is not None:
-                response = func(self, service, self.request.body, headers, params[1], params[2])
-            elif params[0] is not None:
-                response = func(self, service, self.request.body, headers, params[0])
-            elif params[1] is not None:
-                response = func(self, service, self.request.body, headers, params[1])
-            elif params[2] is not None:
-                response = func(self, service, self.request.body, headers, params[2])
-            else:
-                response = func(self, service, self.request.body, headers)
-        else:
-            if params[0] is not None and params[1] is not None and params[2] is not None:
-                response = func(self, service, headers, params[0], params[1], params[2])
-            elif params[0] is not None and params[1] is not None:
-                response = func(self, service, headers, params[0], params[1])
-            elif params[0] is not None and params[2] is not None:
-                response = func(self, service, headers, params[0], params[2])
-            elif params[1] is not None and params[2] is not None:
-                response = func(self, service, headers, params[1], params[2])
-            elif params[0] is not None:
-                response = func(self, service, headers, params[0])
-            elif params[1] is not None:
-                response = func(self, service, headers, params[1])
-            elif params[2] is not None:
-                response = func(self, service, headers, params[2])
-            else:
-                response = func(self, service, headers)
-    elif params[0] is not None and params[1] is not None and params[2] is not None:
-        if get_request_body:
-            response = func(self, service,self.request.body, params[0], params[1], params[2])
-        else:
-            response = func(self, service, params[0], params[1], params[2])
-    elif params[0] is not None and params[1] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[0], params[1])
-        else:
-            response = func(self, service, params[0], params[1])
-    elif params[0] is not None and params[2] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[0], params[2])
-        else:
-            response = func(self, service, params[0], params[2])
-    elif params[1] is not None and params[2] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[1], params[2])
-        else:
-            response = func(self, service, params[1], params[2])
-    elif params[0] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[0])
-        else:
-            response = func(self, service, params[0])
-    elif params[1] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[1])
-        else:
-            response = func(self, service, params[1])
-    elif params[2] is not None:
-        if get_request_body:
-            response = func(self, service, self.request.body, params[2])
-        else:
-            response = func(self, service, params[2])
+    param_names = func.__code__.co_varnames
+    param_names = list(param_names)
+    if "self" in param_names:
+        param_names.remove("self")
     else:
-        if get_request_body:
-            response = func(self, service, self.request.body)
-        else:
-            response = func(self, service)
-    if response.get_is_static is True:
-        self.render(response.get_body())
+        raise Exception("controller参数必须含有self")
+    if "service" in param_names:
+        param_names.remove("service")
+    else:
+        raise Exception("controller参数必须含有service")
+    if len(param_names) == 0:
+        response = func(None, service)
+    else:
+        param_list = []
+        for item in param_names:
+            if item in KEY_NAME_INDEX.keys():
+                if KEY_NAME_INDEX[item] is not None:
+                    param_list.append(params[KEY_NAME_INDEX[item]])
+            elif item == 'request_body' and get_request_body is True:
+                param_list.append(self.request.body)
+            elif item == 'headers' and headers is not None:
+                param_list.append(headers)
+        if len(param_list) == 0:
+            response = func(None, service)
+        elif len(param_list) == 1:
+            response = func(None, service, param_list[0])
+        elif len(param_list) == 2:
+            response = func(None, service, param_list[0], param_list[1])
+        elif len(param_list) == 3:
+            response = func(None, service, param_list[0], param_list[1], param_list[2])
+        elif len(param_list) == 4:
+            response = func(None, service, param_list[0], param_list[1], param_list[2], param_list[3])
+        elif len(param_list) == 5:
+            response = func(None, service, param_list[0], param_list[1], param_list[2], param_list[3], param_list[4])
     if response.get_headers().__len__() > 0:
         for header in response.get_headers():
             self.set_header(header[0], header[1])
@@ -291,7 +251,6 @@ def get_api(**kwargs):
             request_handler(self, func, service_list[kwargs['service']],
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
-            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return get
 
@@ -311,7 +270,6 @@ def post_api(**kwargs):
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
                                              kwargs.get('body_params', None)),
                             header_resolver(self, kwargs.get('headers', None)), kwargs.get('get_request_body', False))
-            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return post
 
@@ -331,7 +289,6 @@ def patch_api(**kwargs):
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None),
                                              kwargs.get('body_params', None)),
                             header_resolver(self, kwargs.get('headers', None)), kwargs.get('get_request_body', False))
-            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return patch
 
@@ -350,7 +307,6 @@ def delete_api(**kwargs):
             request_handler(self, func, service_list[kwargs['service']],
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
-            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return delete
 
@@ -369,7 +325,6 @@ def put_api(**kwargs):
             request_handler(self, func, service_list[kwargs['service']],
                             request_resolver(self, url_param_key_list, args, kwargs.get('query_params', None), None),
                             header_resolver(self, kwargs.get('headers', None)))
-            # TODO(hansion@fnep-tech.com): Above need to add a judgment to identify whether there is this service
 
         return put
 

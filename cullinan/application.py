@@ -20,9 +20,12 @@ import sys
 
 def reflect(file, func):
     try:
-        f = __import__(file.replace('.py', ''))
-        function = getattr(f, func)
-        function()
+        if func is None:
+            __import__(file.replace('.py', ''))
+        else:
+            f = __import__(file.replace('.py', ''))
+            function = getattr(f, func)
+            function()
     except AttributeError:
         pass
 
@@ -51,7 +54,7 @@ def scan_controller(file_path):
 
 def scan_service(file_path):
     for x in file_path:
-        reflect(x, 'service')
+        reflect(x, None)
 
 
 def run():
