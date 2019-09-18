@@ -12,7 +12,7 @@ Cullinan基于Tornado、SQLAlchemy编写，用于帮助项目快速搭建WEB服�
 
 ## Wiki
 
-Wiki 和其他相关资料参考 -=施工中=-
+Wiki 和其他相关资料参考 https://github.com/fnep/Cullinan/wiki
 
 ## 维护人员
 
