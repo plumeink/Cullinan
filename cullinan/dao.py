@@ -12,7 +12,7 @@ import os
 
 
 class Conn(object):
-    db_url = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(
+    db_url = 'mysql+pymysql://{}:{}@{}:{}/{}?charset={}'.format(
         os.getenv("DB_USERNAME"),
         os.getenv("DB_PASSWORD"),
         os.getenv("DB_HOST"),
