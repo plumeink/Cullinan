@@ -11,7 +11,7 @@ import types
 import functools
 from cullinan.service import service_list
 
-url_list = []
+handler_list = []
 KEY_NAME_INDEX = {
             "url_params": 0,
             "query_params": 1,
@@ -35,13 +35,13 @@ class EncapsulationHandler(object):
             url = kwargs['url']
             servlet = type('Servlet' + url.replace('/', ''), (Handler,),
                            {"set_instance_method": EncapsulationHandler.set_fragment_method})
-            if url_list.__len__() == 0:
+            if handler_list.__len__() == 0:
                 servlet.set_instance_method(servlet, f)
                 servlet.f = types.MethodType(f, servlet)
-                url_list.append((url, servlet))
+                handler_list.append((url, servlet))
                 return servlet
             else:
-                for item in url_list:
+                for item in handler_list:
                     if url == item[0]:
                         item[1].set_instance_method(item[1], f)
                         item[1].f = types.MethodType(f, item[1])
@@ -49,7 +49,7 @@ class EncapsulationHandler(object):
                 else:
                     servlet.set_instance_method(servlet, f)
                     servlet.f = types.MethodType(f, servlet)
-                    url_list.append((url, servlet))
+                    handler_list.append((url, servlet))
                     return servlet
 
         return inner

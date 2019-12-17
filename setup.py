@@ -12,7 +12,7 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.2.11',
+    version='0.2.12',
     packages=['cullinan'],
     description='cullinan',
     author='fnep_tech',

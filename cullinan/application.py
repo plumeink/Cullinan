@@ -7,7 +7,7 @@
 
 import os
 import tornado.ioloop
-from cullinan.controller import url_list
+from cullinan.controller import handler_list
 from dotenv import load_dotenv
 from pathlib import Path
 import tornado.ioloop
@@ -57,11 +57,51 @@ def scan_service(file_path):
         reflect(x, None)
 
 
+def get_index_list(url_list):
+    index_list = []
+    for index in range(0, url_list.__len__()):
+        if url_list[index] == '([a-zA-Z0-9-]+)':
+            index_list.append(index)
+    index_list.append('*')
+    return index_list
+
+
+def sort_url():
+    handler_list_length = []
+    for index in range(0, handler_list.__len__()):
+        handler_list[index] = list(handler_list[index])
+        handler_list[index][0] = handler_list[index][0].split('/')
+        index_list = get_index_list(handler_list[index][0])
+        handler_list_length.append(index_list.__len__())
+        handler_list[index].append(index_list)
+    for index in range(0, max(handler_list_length)):
+        for i in range(0, handler_list.__len__()):
+            for j in range(i + 1, handler_list.__len__()):
+                if handler_list[i][2].__len__() >= index + 1 and handler_list[j][2].__len__() >= index + 1:
+                    if handler_list[i][2][index] is not '*' and handler_list[j][2][index] is not '*':
+                        if handler_list[i][2][index] < handler_list[j][2][index]:
+                            handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
+                    elif handler_list[i][2][index] is not '*' and handler_list[j][2][index] is '*':
+                        handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
+                    elif handler_list[i][2][index] is '*':
+                        continue
+    for item in handler_list:
+        url = ""
+        for index in range(1, len(item[0])):
+            url = url + "/" + item[0][index]
+        item[0] = url
+        del item[2]
+
+
 def run():
-    print("\n|||||||||||||||||||||||||||||||||||||||||||||||||\n|||                                           |||\n|||     _____      _ _ _       "
-          "               |||\n|||    / ____|    | | (_)                     |||\n|||   | |    _   _| | |_ _ __   __ "
-          "_ _ __     |||\n|||   | |   | | | | | | | '_ \ / _` | '_ \    |||\n|||   | |___| |_| | | | | | | | (_| | | | |   |||\n|||    \_____\__,"
-          "_|_|_|_|_| |_|\__,_|_| |_|   |||\n|||                                           |||\n|||||||||||||||||||||||||||||||||||||||||||||||||\n\t|||")
+    print(
+        "\n|||||||||||||||||||||||||||||||||||||||||||||||||\n|||                                           |||\n|||  "
+        "   _____      _ _ _ "
+        "               |||\n|||    / ____|    | | (_)                     |||\n|||   | |    _   _| | |_ _ __   __ "
+        "_ _ __     |||\n|||   | |   | | | | | | | '_ \ / _` | '_ \    |||\n|||   | |___| |_| | | | | | | | (_| | | | "
+        "|   |||\n|||    \_____\__, "
+        "_|_|_|_|_| |_|\__,_|_| |_|   |||\n|||                                           "
+        "|||\n|||||||||||||||||||||||||||||||||||||||||||||||||\n\t|||")
     print("\t|||\tloading env...")
     load_dotenv()
     load_dotenv(verbose=True)
@@ -75,8 +115,9 @@ def run():
     print("\t|||\t\t\t...")
     scan_service(file_list_func())
     scan_controller(file_list_func())
+    sort_url()
     mapping = tornado.web.Application(
-        handlers=url_list,
+        handlers=handler_list,
         **settings
     )
     print("\t|||\t\t└---loading controller finish\n\t|||\t")
