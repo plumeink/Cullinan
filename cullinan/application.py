@@ -22,6 +22,9 @@ def reflect(file, func):
     try:
         if func is None:
             __import__(file.replace('.py', ''))
+        elif func is 'controller':
+            f = __import__(file.replace('.py', ''))
+            function = getattr(f, func)
         else:
             f = __import__(file.replace('.py', ''))
             function = getattr(f, func)
@@ -45,11 +48,7 @@ def file_list_func():
 
 def scan_controller(file_path):
     for x in file_path:
-        reflect(x, 'get_api')
-        reflect(x, 'post_api')
-        reflect(x, 'put_api')
-        reflect(x, 'delete_api')
-        reflect(x, 'patch_api')
+        reflect(x, 'controller')
 
 
 def scan_service(file_path):

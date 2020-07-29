@@ -12,14 +12,14 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.2.12',
+    version='0.30a',
     packages=['cullinan'],
     description='cullinan',
-    author='fnep_tech',
+    author='ore_studio',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author_email='hansion@fnep-tech.com',
-    url='https://www.fnep-tech.com/',
+    author_email='python@orestu.com',
+    url='https://cullinan.orestu.com/',
     license='http://www.apache.org/licenses/LICENSE-2.0',
     install_requires=['tornado', 'python-dotenv', 'sqlalchemy', 'pymysql'],
 )
