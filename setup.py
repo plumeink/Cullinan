@@ -26,7 +26,8 @@ setup(
     url='https://github.com/orestu/Cullinan',
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache License 2.0",
+        "Programming Language :: Python :: 3.6",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
     license='http://www.apache.org/licenses/LICENSE-2.0',
