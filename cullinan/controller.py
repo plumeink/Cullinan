@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @File   : controller.py
-# @license: Copyright(C) 2019 FNEP-Tech
+# @license: Copyright(C) 2020 Ore Studio
 # @Author : hansion, fox
 # @Date   : 2019-02-15
 # @Desc   : controller

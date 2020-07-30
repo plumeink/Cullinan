@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @File   : application.py
-# @license: Copyright(C) 2019 FNEP-Tech
+# @license: Copyright(C) 2020 Ore Studio
 # @Author : hansion, fox
 # @Date   : 2019-02-15
 # @Desc   : start
@@ -123,7 +123,13 @@ def run():
     define("port", default=os.getenv("SERVER_PORT"), help="run on the given port", type=int)
     print("\t|||\tloading env finish\n\t|||\t")
     http_server = tornado.httpserver.HTTPServer(mapping)
-    http_server.listen(options.port)
-    print("\t|||\t\033[0;36;0mserver is starting \033[0m")
-    print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
-    tornado.ioloop.IOLoop.instance().start()
+    if os.getenv("SERVER_THREAD") is not None:
+        print("\t|||\t\033[0;36;0mserver is starting \033[0m")
+        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
+        http_server.bind(options.port)
+        http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
+    else:
+        http_server.listen(options.port)
+        print("\t|||\t\033[0;36;0mserver is starting \033[0m")
+        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
+    tornado.ioloop.IOLoop.current().start()
