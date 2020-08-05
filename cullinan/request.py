@@ -14,9 +14,10 @@ import ssl
 
 
 class Http(object):
-    def __init__(self, api_url, headers, json_load_switch=False):
+    def __init__(self, api_url, headers, json_load_switch=False, no_decode=False):
         self.api_url = api_url
         self.headers = headers
+        self.no_decode = no_decode
         self.json_load_switch = json_load_switch
 
     def add_header(self, name, value):
@@ -102,6 +103,8 @@ class Http(object):
                 data = bytes(data, encoding='utf8')
                 print('data=', data)
                 http_response = urllib.request.urlopen(request, data=data, context=context)
+            if self.no_decode is True:
+                return content
             content = http_response.read().decode('utf-8')
             if self.json_load_switch is True:
                 content = json.loads(content)
