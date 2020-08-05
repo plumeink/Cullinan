@@ -12,7 +12,7 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.31',
+    version='0.33',
     packages=['cullinan'],
     description='a simple web framework',
     author='ore_studio',
