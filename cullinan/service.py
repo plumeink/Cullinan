@@ -12,8 +12,17 @@ class Response(object):
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
     __body__ = ''
     __headers__ = []
+    __status__ = 200
+    __status_msg__ = ''
     __is_static__ = False
     # __type__ = 'JSON'
+
+    def set_status(self, status, msg):
+        self.__status__ = status
+        self.__status_msg__ = msg
+
+    def get_status(self):
+        return self.__status__
 
     def set_body(self, data):
         self.__body__ = data
