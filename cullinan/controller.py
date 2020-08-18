@@ -65,7 +65,7 @@ class Handler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "x-requested-with, Content-type, contenttype")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with, Content-type, contenttype, token")
         self.set_header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH, PUT, OPTIONS')
 
     def options(self):
@@ -179,9 +179,13 @@ def header_resolver(self, header_names):
     if header_names is not None:
         need_header = dict()
         for name in header_names:
-            need_header[name] = self.request.headers[name]
-        print("\t|||\t request_headers", end="")
-        print(need_header)
+            need_header[name] = self.request.headers.get(name, None)
+        if need_header[name] is not None:
+            print("\t|||\t request_headers", end="")
+            print(need_header)
+        else:
+            # TODO error
+            print("\t|||\t missing header")
         return need_header
     else:
         return None
@@ -200,7 +204,7 @@ def url_resolver(url):
     return url, url_param_list
 
 
-def request_handler(self, func, service, params, headers, type, get_request_body=False):
+def request_handler(self, func, params, headers, type, get_request_body=False):
     global response
     global controller_self
     if type is 'get':
@@ -213,18 +217,15 @@ def request_handler(self, func, service, params, headers, type, get_request_body
         controller_self = self.delete_controller_self
     elif type is 'put':
         controller_self = self.put_controller_self
+    setattr(controller_self, 'service', service_list)
     param_names = func.__code__.co_varnames
     param_names = list(param_names)
     if "self" in param_names:
         param_names.remove("self")
     else:
         raise Exception("controller参数必须含有self")
-    if "service" in param_names:
-        param_names.remove("service")
-    else:
-        raise Exception("controller参数必须含有service")
     if len(param_names) == 0:
-        response = func(controller_self, service)
+        response = func(controller_self)
     else:
         param_list = []
         for item in param_names:
@@ -236,23 +237,25 @@ def request_handler(self, func, service, params, headers, type, get_request_body
             elif item == 'headers' and headers is not None:
                 param_list.append(headers)
         if len(param_list) == 0:
-            response = func(controller_self, service)
+            response = func(controller_self)
         elif len(param_list) == 1:
-            response = func(controller_self, service, param_list[0])
+            response = func(controller_self, param_list[0])
         elif len(param_list) == 2:
-            response = func(controller_self, service, param_list[0], param_list[1])
+            response = func(controller_self, param_list[0], param_list[1])
         elif len(param_list) == 3:
-            response = func(controller_self, service, param_list[0], param_list[1], param_list[2])
+            response = func(controller_self, param_list[0], param_list[1], param_list[2])
         elif len(param_list) == 4:
-            response = func(controller_self, service, param_list[0], param_list[1], param_list[2],
+            response = func(controller_self, param_list[0], param_list[1], param_list[2],
                             param_list[3])
         elif len(param_list) == 5:
-            response = func(controller_self, service, param_list[0], param_list[1], param_list[2],
+            response = func(controller_self, param_list[0], param_list[1], param_list[2],
                             param_list[3], param_list[4])
     if response.get_headers().__len__() > 0:
         for header in response.get_headers():
             self.set_header(header[0], header[1])
+    self.set_status(response.get_status())
     self.write(response.get_body())
+    self.finish()
 
 
 def get_api(**kwargs):
@@ -264,15 +267,26 @@ def get_api(**kwargs):
         @EncapsulationHandler.add_func(url=kwargs['url'], type='get')
         def get(self, *args):
             print("\t||| request:")
-            request_handler(self,
-                            func,
-                            service_list[kwargs['service']],
-                            request_resolver(self, self.get_controller_url_param_key_list + url_param_key_list, args,
-                                             kwargs.get('query_params', None), None),
-                            header_resolver(self, kwargs.get('headers', None)),
-                            'get')
+            if self.get_controller_url_param_key_list is not None:
+                request_handler(self,
+                                func,
+                                request_resolver(self, self.get_controller_url_param_key_list + url_param_key_list,
+                                                 args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'get')
+            else:
+                request_handler(self,
+                                func,
+                                request_resolver(self, url_param_key_list,
+                                                 args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'get')
 
         return get
+
+    return inner
 
 
 def post_api(**kwargs):
@@ -284,15 +298,26 @@ def post_api(**kwargs):
         @EncapsulationHandler.add_func(url=kwargs['url'], type='post')
         def post(self, *args):
             print("\t||| request:")
-            request_handler(self,
-                            func,
-                            service_list[kwargs['service']],
-                            request_resolver(self, self.post_controller_url_param_key_list + url_param_key_list, args,
-                                             kwargs.get('query_params', None),
-                                             kwargs.get('body_params', None)),
-                            header_resolver(self, kwargs.get('headers', None)),
-                            'post',
-                            kwargs.get('get_request_body', False))
+            if self.post_controller_url_param_key_list is not None:
+                request_handler(self,
+                                func,
+                                request_resolver(self, self.post_controller_url_param_key_list + url_param_key_list,
+                                                 args,
+                                                 kwargs.get('query_params', None),
+                                                 kwargs.get('body_params', None)),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'post',
+                                kwargs.get('get_request_body', False))
+            else:
+                request_handler(self,
+                                func,
+                                request_resolver(self, url_param_key_list,
+                                                 args,
+                                                 kwargs.get('query_params', None),
+                                                 kwargs.get('body_params', None)),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'post',
+                                kwargs.get('get_request_body', False))
 
         return post
 
@@ -308,15 +333,26 @@ def patch_api(**kwargs):
         @EncapsulationHandler.add_func(url=kwargs['url'], type='patch')
         def patch(self, *args):
             print("\t||| request:")
-            request_handler(self,
-                            func,
-                            service_list[kwargs['service']],
-                            request_resolver(self, self.patch_controller_url_param_key_list + url_param_key_list, args,
-                                             kwargs.get('query_params', None),
-                                             kwargs.get('body_params', None)),
-                            header_resolver(self, kwargs.get('headers', None)),
-                            'patch',
-                            kwargs.get('get_request_body', False))
+            if self.patch_controller_url_param_key_list is not None:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 self.patch_controller_url_param_key_list + url_param_key_list, args,
+                                                 kwargs.get('query_params', None),
+                                                 kwargs.get('body_params', None)),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'patch',
+                                kwargs.get('get_request_body', False))
+            else:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 url_param_key_list, args,
+                                                 kwargs.get('query_params', None),
+                                                 kwargs.get('body_params', None)),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'patch',
+                                kwargs.get('get_request_body', False))
 
         return patch
 
@@ -332,13 +368,22 @@ def delete_api(**kwargs):
         @EncapsulationHandler.add_func(url=kwargs['url'], type='delete')
         def delete(self, *args):
             print("\t||| request:")
-            request_handler(self,
-                            func,
-                            service_list[kwargs['service']],
-                            request_resolver(self, self.delete_controller_url_param_key_list + url_param_key_list, args,
-                                             kwargs.get('query_params', None), None),
-                            header_resolver(self, kwargs.get('headers', None)),
-                            'delete')
+            if self.delete_controller_url_param_key_list is not None:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 self.delete_controller_url_param_key_list + url_param_key_list, args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'delete')
+            else:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 url_param_key_list, args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'delete')
 
         return delete
 
@@ -354,13 +399,22 @@ def put_api(**kwargs):
         @EncapsulationHandler.add_func(url=kwargs['url'], type='put')
         def put(self, *args):
             print("\t||| request:")
-            request_handler(self,
-                            func,
-                            service_list[kwargs['service']],
-                            request_resolver(self, self.put_controller_url_param_key_list + url_param_key_list, args,
-                                             kwargs.get('query_params', None), None),
-                            header_resolver(self, kwargs.get('headers', None)),
-                            'put')
+            if self.put_controller_url_param_key_list is not None:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 self.put_controller_url_param_key_list + url_param_key_list, args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'put')
+            else:
+                request_handler(self,
+                                func,
+                                request_resolver(self,
+                                                 url_param_key_list, args,
+                                                 kwargs.get('query_params', None), None),
+                                header_resolver(self, kwargs.get('headers', None)),
+                                'put')
 
         return put
 
@@ -370,6 +424,7 @@ def put_api(**kwargs):
 def controller(**kwargs):
     url = kwargs.get('url', '')
     global url_params
+    url_params = None
     if url is not '':
         url, url_params = url_resolver(url)
 
