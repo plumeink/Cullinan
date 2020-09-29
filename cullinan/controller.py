@@ -76,7 +76,7 @@ class Handler(tornado.web.RequestHandler):
 
 def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tuple,
                      query_param_names: tuple, body_param_names) -> tuple:
-    if url_param_key_list is not None and query_param_names is not None and body_param_names is not None:
+    if url_param_key_list.__len__() > 0 and query_param_names is not None and body_param_names is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
             url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
@@ -147,7 +147,7 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return None, query_param_dict, body_param_dict
-    elif url_param_key_list is not None:
+    elif url_param_key_list.__len__() > 0:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
             url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
@@ -266,7 +266,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
 
 def get_api(**kwargs):
     def inner(func):
-        url_param_key_list = None
+        url_param_key_list = []
         if kwargs['url'].find("{") is not -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
@@ -297,7 +297,7 @@ def get_api(**kwargs):
 
 def post_api(**kwargs):
     def inner(func):
-        url_param_key_list = None
+        url_param_key_list = []
         if kwargs['url'].find("{") is not -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
@@ -332,7 +332,7 @@ def post_api(**kwargs):
 
 def patch_api(**kwargs):
     def inner(func):
-        url_param_key_list = None
+        url_param_key_list = []
         if kwargs['url'].find("{") is not -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
@@ -367,7 +367,7 @@ def patch_api(**kwargs):
 
 def delete_api(**kwargs):
     def inner(func):
-        url_param_key_list = None
+        url_param_key_list = []
         if kwargs['url'].find("{") is not -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
@@ -398,7 +398,7 @@ def delete_api(**kwargs):
 
 def put_api(**kwargs):
     def inner(func):
-        url_param_key_list = None
+        url_param_key_list = []
         if kwargs['url'].find("{") is not -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
