@@ -7,7 +7,7 @@
 
 import os
 import tornado.ioloop
-from cullinan.controller import handler_list
+from cullinan.controller import handler_list, header_list
 from dotenv import load_dotenv
 from pathlib import Path
 import tornado.ioloop
@@ -18,13 +18,12 @@ from tornado.options import define, options
 import sys
 
 
-def reflect(file, func):
+def reflect(file: str, func: str):
     try:
-        if func is None:
+        if func is 'nobody':
             __import__(file.replace('.py', ''))
         elif func is 'controller':
-            f = __import__(file.replace('.py', ''))
-            function = getattr(f, func)
+            __import__(file.replace('.py', ''))
         else:
             f = __import__(file.replace('.py', ''))
             function = getattr(f, func)
@@ -46,17 +45,17 @@ def file_list_func():
     return file_list
 
 
-def scan_controller(file_path):
+def scan_controller(file_path: list):
     for x in file_path:
         reflect(x, 'controller')
 
 
-def scan_service(file_path):
+def scan_service(file_path: list):
     for x in file_path:
-        reflect(x, None)
+        reflect(x, 'nobody')
 
 
-def get_index_list(url_list):
+def get_index_list(url_list: list) -> list:
     index_list = []
     for index in range(0, url_list.__len__()):
         if url_list[index] == '([a-zA-Z0-9-]+)':
@@ -133,3 +132,7 @@ def run():
         print("\t|||\t\033[0;36;0mserver is starting \033[0m")
         print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
     tornado.ioloop.IOLoop.current().start()
+
+
+def add_global_header(name: str, value: str):
+    header_list.append([name, value])

@@ -10,8 +10,10 @@ import tornado.web
 import types
 import functools
 from cullinan.service import service_list
+from typing import Callable
 
 handler_list = []
+header_list = []
 controller_func_list = []
 KEY_NAME_INDEX = {
     "url_params": 0,
@@ -22,7 +24,7 @@ KEY_NAME_INDEX = {
 
 class EncapsulationHandler(object):
     @classmethod
-    def set_fragment_method(cls, cls_name, func):
+    def set_fragment_method(cls, cls_name: str, func: Callable[[object, tuple, dict], None]):
         @functools.wraps(func)
         def dummy(self, *args, **kwargs):
             func(self, *args, **kwargs)
@@ -30,14 +32,14 @@ class EncapsulationHandler(object):
         setattr(cls_name, func.__name__, dummy)
 
     @staticmethod
-    def add_func(**kwargs):
-        def inner(func):
+    def add_func(**kwargs: dict) -> Callable:
+        def inner(func: Callable):
             controller_func_list.append((kwargs['url'], func, kwargs['type']))
 
         return inner
 
     @staticmethod
-    def add_url(url, f):
+    def add_url(url: str, f: Callable) -> object:
         servlet = type('Servlet' + url.replace('/', ''), (Handler,),
                        {"set_instance_method": EncapsulationHandler.set_fragment_method})
         if handler_list.__len__() == 0:
@@ -64,15 +66,16 @@ class Handler(tornado.web.RequestHandler):
         pass
 
     def set_default_headers(self):
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "x-requested-with, Content-type, contenttype, token")
-        self.set_header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PATCH, PUT, OPTIONS')
+        if header_list.__len__() > 0:
+            for header in header_list:
+                self.set_header(header[0], header[1])
 
     def options(self):
         pass
 
 
-def request_resolver(self, url_param_key_list, url_param_value_list, query_param_names, body_param_names):
+def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tuple,
+                     query_param_names: tuple, body_param_names) -> tuple:
     if url_param_key_list is not None and query_param_names is not None and body_param_names is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
@@ -175,23 +178,23 @@ def request_resolver(self, url_param_key_list, url_param_value_list, query_param
         return None, None, None
 
 
-def header_resolver(self, header_names):
+def header_resolver(self, header_names: list):
     if header_names is not None:
         need_header = dict()
         for name in header_names:
             need_header[name] = self.request.headers.get(name, None)
-        if need_header[name] is not None:
-            print("\t|||\t request_headers", end="")
-            print(need_header)
-        else:
-            # TODO error
-            print("\t|||\t missing header")
+            if need_header[name] is not None:
+                print("\t|||\t request_headers", end="")
+                print(need_header)
+            else:
+                # TODO error
+                print("\t|||\t missing header")
         return need_header
     else:
         return None
 
 
-def url_resolver(url):
+def url_resolver(url: str) -> tuple:
     find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] is target]
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
@@ -250,6 +253,9 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
         elif len(param_list) == 5:
             response = func(controller_self, param_list[0], param_list[1], param_list[2],
                             param_list[3], param_list[4])
+    if header_list.__len__() > 0:
+        for header in header_list:
+            self.set_header(header[0], header[1])
     if response.get_headers().__len__() > 0:
         for header in response.get_headers():
             self.set_header(header[0], header[1])
@@ -421,7 +427,7 @@ def put_api(**kwargs):
     return inner
 
 
-def controller(**kwargs):
+def controller(**kwargs) -> Callable:
     url = kwargs.get('url', '')
     global url_params
     url_params = None
@@ -429,6 +435,7 @@ def controller(**kwargs):
         url, url_params = url_resolver(url)
 
     def inner(cls):
+        print(cls)
         for item in controller_func_list:
             if controller_func_list.__len__() is not 0:
                 handler = EncapsulationHandler.add_url(url + item[0], item[1])

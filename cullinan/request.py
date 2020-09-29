@@ -14,25 +14,25 @@ import ssl
 
 
 class Http(object):
-    def __init__(self, api_url, headers, json_load_switch=False, no_decode=False):
+    def __init__(self, api_url: str, headers, json_load_switch=False, no_decode=False):
         self.api_url = api_url
         self.headers = headers
         self.no_decode = no_decode
         self.json_load_switch = json_load_switch
 
-    def add_header(self, name, value):
+    def add_header(self, name: str, value: str):
         self.headers.append([name, value])
 
     def get_headers(self):
         return self.headers
 
-    def delete_header(self, name):
+    def delete_header(self, name: str):
         if self.get_headers().__len__() > 0:
             for header in self.get_headers():
                 if header[0] == name:
                     self.headers.remove(header)
 
-    def post(self, uri, data=None, headers=None):
+    def post(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="POST")
         if self.get_headers().__len__() > 0:
@@ -43,7 +43,7 @@ class Http(object):
                 request.add_header(header[0], header[1])
         return self.http_status(request, data)
 
-    def get(self, uri, data=None, headers=None):
+    def get(self, uri: str, data=None, headers=None):
         if data is not None:
             url = self.api_url + uri + '?' + data
         else:
@@ -57,7 +57,7 @@ class Http(object):
                 request.add_header(header[0], header[1])
         return self.http_status(request)
 
-    def delete(self, uri, data=None, headers=None):
+    def delete(self, uri: str, data=None, headers=None):
         if data is not None:
             url = self.api_url + uri + '?' + data
         else:
@@ -71,7 +71,7 @@ class Http(object):
                 request.add_header(header[0], header[1])
         return self.http_status(request)
 
-    def put(self, uri, data=None, headers=None):
+    def put(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="PUT")
         if self.get_headers().__len__() > 0:
@@ -82,7 +82,7 @@ class Http(object):
                 request.add_header(header[0], header[1])
         return self.http_status(request, data)
 
-    def patch(self, uri, data=None, headers=None):
+    def patch(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="PATCH")
         if self.get_headers().__len__() > 0:
