@@ -435,7 +435,6 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
-        print(cls)
         for item in controller_func_list:
             if controller_func_list.__len__() is not 0:
                 handler = EncapsulationHandler.add_url(url + item[0], item[1])
