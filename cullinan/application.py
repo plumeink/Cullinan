@@ -21,7 +21,6 @@ import sys
 def reflect(file: str, func: str):
     try:
         if func is 'nobody':
-            print(file)
             __import__(file.replace('.py', ''))
         elif func is 'controller':
             __import__(file.replace('.py', ''))
