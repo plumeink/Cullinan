@@ -12,9 +12,9 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.39',
+    version='0.40',
     packages=['cullinan'],
-    description='a simple web framework',
+    description='Cullinan is written based on tornado and Sqlalchemy to help the project quickly build web application',
     author='ore_studio',
     project_urls={
             'Source': 'https://github.com/orestu/Cullinan',

@@ -9,7 +9,7 @@ import json
 import tornado.web
 import types
 import functools
-from cullinan.service import service_list
+from cullinan.service import service_list, response_build
 from typing import Callable
 
 handler_list = []
@@ -221,6 +221,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
     elif type is 'put':
         controller_self = self.put_controller_self
     setattr(controller_self, 'service', service_list)
+    setattr(controller_self, 'response', response_build)
     param_names = func.__code__.co_varnames
     param_names = list(param_names)
     if "self" in param_names:

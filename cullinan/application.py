@@ -21,6 +21,7 @@ import sys
 def reflect(file: str, func: str):
     try:
         if func is 'nobody':
+            print(file)
             __import__(file.replace('.py', ''))
         elif func is 'controller':
             __import__(file.replace('.py', ''))
@@ -40,7 +41,8 @@ def file_list_func():
                 if os.path.split(top)[-1] == os.path.split(os.getcwd())[-1]:
                     file_list.append(files_item)
                 else:
-                    item = os.path.split(top)[-1] + '.' + files_item
+                    item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '/', '').replace('/', '.') \
+                           + '.' + files_item
                     file_list.append(item)
     return file_list
 
