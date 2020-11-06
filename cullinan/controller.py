@@ -188,7 +188,7 @@ def header_resolver(self, header_names: list):
                 print(need_header)
             else:
                 # TODO error
-                print("\t|||\t missing header")
+                raise Exception("missing header")
         return need_header
     else:
         return None
@@ -227,7 +227,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
     if "self" in param_names:
         param_names.remove("self")
     else:
-        raise Exception("controller参数必须含有self")
+        raise Exception("controller's params must have self")
     if len(param_names) == 0:
         response = func(controller_self)
     else:
@@ -262,6 +262,11 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
             self.set_header(header[0], header[1])
     self.set_status(response.get_status())
     self.write(response.get_body())
+    response.__body__ = ''
+    response.__headers__ = []
+    response.__status__ = 200
+    response.__status_msg__ = ''
+    response.__is_static__ = False
     self.finish()
 
 
