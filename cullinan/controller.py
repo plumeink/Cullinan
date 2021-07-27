@@ -19,6 +19,7 @@ KEY_NAME_INDEX = {
     "url_params": 0,
     "query_params": 1,
     "body_params": 2,
+    "file_params": 3,
 }
 
 
@@ -75,7 +76,36 @@ class Handler(tornado.web.RequestHandler):
 
 
 def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tuple,
-                     query_param_names: tuple, body_param_names) -> tuple:
+                     query_param_names: tuple, body_param_names, file_param_key_list) -> tuple:
+    if url_param_key_list.__len__() > 0 and query_param_names is not None and body_param_names is not None and\
+            file_param_key_list is not None:
+        url_param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        query_param_dict = {}
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        body_param_dict = {}
+        file_param_dict = {}
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
+            for name in file_param_key_list:
+                file_param_dict[name] = self.request.files[name]
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return url_param_dict, query_param_dict, body_param_dict, file_param_dict
     if url_param_key_list.__len__() > 0 and query_param_names is not None and body_param_names is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
@@ -99,6 +129,23 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
         print("\t|||\t body_params", end="")
         print(body_param_dict)
         return url_param_dict, query_param_dict, body_param_dict
+    if url_param_key_list.__len__() > 0 and query_param_names is not None and file_param_key_list is not None:
+        url_param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        query_param_dict = {}
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        file_param_dict = {}
+        for name in file_param_key_list:
+            file_param_dict[name] = self.request.files[name]
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return url_param_dict, query_param_dict, None, file_param_dict
     elif query_param_names is not None and url_param_key_list is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
@@ -110,7 +157,49 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
             query_param_dict[name] = self.get_query_argument(name)
         print("\t|||\t query_params", end="")
         print(query_param_dict)
-        return url_param_dict, query_param_dict, None
+        return url_param_dict, query_param_dict, None, None
+    elif url_param_key_list is not None and file_param_key_list is not None:
+        url_param_dict = {}
+        for index in range(0, url_param_key_list.__len__()):
+            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
+        print("\t|||\t url_params", end="")
+        print(url_param_dict)
+        file_param_dict = {}
+        for name in file_param_key_list:
+            file_param_dict[name] = self.request.files[name]
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return url_param_dict, None, None, file_param_dict
+    elif file_param_key_list is not None and body_param_names is not None:
+        file_param_dict = {}
+        body_param_dict = {}
+        if self.request.headers.get("Content-Type") == 'application/json':
+            json_data = self.request.body
+            data = json.loads(json_data)
+            for name in body_param_names:
+                body_param_dict[name] = data[name]
+        else:
+            for name in body_param_names:
+                body_param_dict[name] = self.get_body_argument(name)
+            for name in file_param_key_list:
+                body_param_dict[name] = self.request.files[name]
+        print("\t|||\t body_params", end="")
+        print(body_param_dict)
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return None, None, body_param_dict, file_param_dict
+    elif query_param_names is not None and file_param_key_list is not None:
+        query_param_dict = {}
+        for name in query_param_names:
+            query_param_dict[name] = self.get_query_argument(name)
+        print("\t|||\t query_params", end="")
+        print(query_param_dict)
+        file_param_dict = {}
+        for name in file_param_key_list:
+            file_param_dict[name] = self.request.files[name]
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return None, query_param_dict, None, file_param_dict
     elif url_param_key_list is not None and body_param_names is not None:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
@@ -128,7 +217,7 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                 body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
-        return url_param_dict, None, body_param_dict
+        return url_param_dict, None, body_param_dict, None
     elif query_param_names is not None and body_param_names is not None:
         query_param_dict = {}
         for name in query_param_names:
@@ -146,21 +235,28 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                 body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
-        return None, query_param_dict, body_param_dict
+        return None, query_param_dict, body_param_dict, None
     elif url_param_key_list.__len__() > 0:
         url_param_dict = {}
         for index in range(0, url_param_key_list.__len__()):
             url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
         print("\t|||\t url_params", end="")
         print(url_param_dict)
-        return url_param_dict, None, None
+        return url_param_dict, None, None, None
     elif query_param_names is not None:
         query_param_dict = dict()
         for name in query_param_names:
             query_param_dict[name] = self.get_query_argument(name)
         print("\t|||\t query_params", end="")
         print(query_param_dict)
-        return None, query_param_dict, None
+        return None, query_param_dict, None, None
+    elif file_param_key_list is not None:
+        file_param_dict = {}
+        for name in file_param_key_list:
+            file_param_dict[name] = self.request.files[name]
+        print("\t|||\t file_params", end="")
+        print(file_param_dict.keys())
+        return None, None, None, file_param_dict
     elif body_param_names is not None:
         body_param_dict = {}
         if self.request.headers.get("Content-Type") == 'application/json':
@@ -173,9 +269,9 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                 body_param_dict[name] = self.get_body_argument(name)
         print("\t|||\t body_params", end="")
         print(body_param_dict)
-        return None, None, body_param_dict
+        return None, None, body_param_dict, None
     else:
-        return None, None, None
+        return None, None, None, None
 
 
 def header_resolver(self, header_names: list):
@@ -254,6 +350,9 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
         elif len(param_list) == 5:
             response = func(controller_self, param_list[0], param_list[1], param_list[2],
                             param_list[3], param_list[4])
+        elif len(param_list) == 6:
+            response = func(controller_self, param_list[0], param_list[1], param_list[2],
+                            param_list[3], param_list[4], param_list[5])
     if header_list.__len__() > 0:
         for header in header_list:
             self.set_header(header[0], header[1])
@@ -284,7 +383,8 @@ def get_api(**kwargs):
                                 func,
                                 request_resolver(self, self.get_controller_url_param_key_list + url_param_key_list,
                                                  args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None,
+                                                 kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'get')
             else:
@@ -292,7 +392,8 @@ def get_api(**kwargs):
                                 func,
                                 request_resolver(self, url_param_key_list,
                                                  args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None,
+                                                 kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'get')
 
@@ -316,7 +417,8 @@ def post_api(**kwargs):
                                 request_resolver(self, self.post_controller_url_param_key_list + url_param_key_list,
                                                  args,
                                                  kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None)),
+                                                 kwargs.get('body_params', None),
+                                                 kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'post',
                                 kwargs.get('get_request_body', False))
@@ -326,7 +428,8 @@ def post_api(**kwargs):
                                 request_resolver(self, url_param_key_list,
                                                  args,
                                                  kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None)),
+                                                 kwargs.get('body_params', None),
+                                                 kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'post',
                                 kwargs.get('get_request_body', False))
