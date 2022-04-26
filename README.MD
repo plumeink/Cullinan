@@ -71,5 +71,4 @@ wiki and other related references: https://github.com/orestu/Cullinan/wiki
 
 ## Maintainer
 
-[<img src="https://avatars0.githubusercontent.com/u/48331167?s=460&v=4" width = "40" height = "40"/>](https://github.com/hansiondesu) &nbsp;
-[<img src="https://avatars0.githubusercontent.com/u/39507461?s=460&v=4" width = "40" height = "40"/>](https://github.com/FakeFox)
+[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
