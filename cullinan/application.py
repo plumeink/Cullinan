@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# @File   : application.py
-# @license: Copyright(C) 2020 Ore Studio
-# @Author : hansion, fox
-# @Date   : 2019-02-15
-# @Desc   : start
 
 import os
 import tornado.ioloop

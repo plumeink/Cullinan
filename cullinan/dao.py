@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-# @File   : dao.py
-# @license: Copyright(C) 2020 Ore Studio
-# @Author : hansion
-# @Date   : 2019-03-15
-# @Desc   :
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import *

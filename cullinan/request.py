@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# @File   : request.py
-# @license: Copyright(C) 2020 Ore Studio
-# @Author : hansion, fox
-# @Date   : 2019-04-12
-# @Desc   : 
 
 import urllib
 import json

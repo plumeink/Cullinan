@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# @File   : service.py
-# @license: Copyright(C) 2020 Ore Studio
-# @Author : hansion
-# @Date   : 2019-02-22
-# @Desc   : service
 
 service_list = {}
 

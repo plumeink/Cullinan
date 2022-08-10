@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# @File   : setup.py
-# @license: Copyright(C) 2020 Ore Studio
-# @Author : hansion
-# @Date   : 2019-02-16
-# @Desc   : 
 
 from setuptools import setup
 
@@ -12,18 +7,18 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.43',
+    version='0.44',
     packages=['cullinan'],
     description='Cullinan is written based on tornado and Sqlalchemy to help the project quickly build web application',
     author='ore_studio',
     project_urls={
-            'Source': 'https://github.com/orestu/Cullinan',
-            'Wiki': 'https://github.com/orestu/Cullinan/wiki',
+            'Source': 'https://github.com/plumeink/Cullinan',
+            'Wiki': 'https://github.com/plumeink/Cullinan/wiki',
       },
     long_description=long_description,
     long_description_content_type="text/markdown",
     author_email='python@orestu.com',
-    url='https://github.com/orestu/Cullinan',
+    url='https://github.com/plumeink/Cullinan',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
