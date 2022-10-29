@@ -9,11 +9,12 @@ import ssl
 
 
 class Http(object):
-    def __init__(self, api_url: str, headers, json_load_switch=False, no_decode=False):
+    def __init__(self, api_url: str, headers, json_load_switch=False, no_decode=False, json_parse=False):
         self.api_url = api_url
         self.headers = headers
         self.no_decode = no_decode
         self.json_load_switch = json_load_switch
+        self.json_parse = json_parse
 
     def add_header(self, name: str, value: str):
         self.headers.append([name, value])
@@ -94,10 +95,16 @@ class Http(object):
             if data is None:
                 http_response = urllib.request.urlopen(request, context=context)
             else:
-                data = urllib.parse.urlencode(data)
-                data = bytes(data, encoding='utf8')
-                print('data=', data)
-                http_response = urllib.request.urlopen(request, data=data, context=context)
+                if self.json_parse is True:
+                    data = json.dumps(data)
+                    data = bytes(data, encoding='utf8')
+                    print('data=', data)
+                    http_response = urllib.request.urlopen(request, data=data, context=context)
+                else:
+                    data = urllib.parse.urlencode(data)
+                    data = bytes(data, encoding='utf8')
+                    print('data=', data)
+                    http_response = urllib.request.urlopen(request, data=data, context=context)
             if self.no_decode is True:
                 return http_response.read()
             content = http_response.read().decode('utf-8')

@@ -11,13 +11,14 @@ import tornado.web
 import tornado.httpserver
 from tornado.options import define, options
 import sys
+import platform
 
 
 def reflect(file: str, func: str):
     try:
-        if func is 'nobody':
+        if func == 'nobody':
             __import__(file.replace('.py', ''))
-        elif func is 'controller':
+        elif func == 'controller':
             __import__(file.replace('.py', ''))
         else:
             f = __import__(file.replace('.py', ''))
@@ -35,9 +36,15 @@ def file_list_func():
                 if os.path.split(top)[-1] == os.path.split(os.getcwd())[-1]:
                     file_list.append(files_item)
                 else:
-                    item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '/', '').replace('/', '.') \
-                           + '.' + files_item
-                    file_list.append(item)
+                    system = platform.system()
+                    if system == "Windows":
+                        item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '\\', '')\
+                                   .replace('\\', '.') + '.' + files_item
+                        file_list.append(item)
+                    else:
+                        item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '/', '')\
+                                   .replace('/', '.') + '.' + files_item
+                        file_list.append(item)
     return file_list
 
 
@@ -72,12 +79,12 @@ def sort_url():
         for i in range(0, handler_list.__len__()):
             for j in range(i + 1, handler_list.__len__()):
                 if handler_list[i][2].__len__() >= index + 1 and handler_list[j][2].__len__() >= index + 1:
-                    if handler_list[i][2][index] is not '*' and handler_list[j][2][index] is not '*':
+                    if handler_list[i][2][index] != '*' and handler_list[j][2][index] != '*':
                         if handler_list[i][2][index] < handler_list[j][2][index]:
                             handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
-                    elif handler_list[i][2][index] is not '*' and handler_list[j][2][index] is '*':
+                    elif handler_list[i][2][index] != '*' and handler_list[j][2][index] == '*':
                         handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
-                    elif handler_list[i][2][index] is '*':
+                    elif handler_list[i][2][index] == '*':
                         continue
     for item in handler_list:
         url = ""

@@ -14,7 +14,10 @@ class Conn(object):
         os.getenv("DB_HOST"),
         os.getenv("DB_PORT"),
         os.getenv("DB_NAME"),
-        os.getenv("DB_CODING")
+        os.getenv("DB_CODING"),
+        os.getenv("DB_POOL_RECYCLE"),
+        os.getenv("DB_POOL_SIZE"),
+        os.getenv("DB_MAX_OVERFLOW")
     )
     engine = create_engine(db_url)
     Base = declarative_base(engine)

@@ -286,7 +286,7 @@ def header_resolver(self, header_names: list):
 
 
 def url_resolver(url: str) -> tuple:
-    find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] is target]
+    find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] == target]
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
     url_param_list = []
@@ -301,15 +301,15 @@ def url_resolver(url: str) -> tuple:
 def request_handler(self, func, params, headers, type, get_request_body=False):
     global response
     global controller_self
-    if type is 'get':
+    if type == 'get':
         controller_self = self.get_controller_self
-    elif type is 'post':
+    elif type == 'post':
         controller_self = self.post_controller_self
-    elif type is 'patch':
+    elif type == 'patch':
         controller_self = self.patch_controller_self
-    elif type is 'delete':
+    elif type == 'delete':
         controller_self = self.delete_controller_self
-    elif type is 'put':
+    elif type == 'put':
         controller_self = self.put_controller_self
     setattr(controller_self, 'service', service_list)
     setattr(controller_self, 'response', response_build)
@@ -367,7 +367,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
 def get_api(**kwargs):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") is not -1:
+        if kwargs['url'].find("{") != -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
         @EncapsulationHandler.add_func(url=kwargs['url'], type='get')
@@ -400,7 +400,7 @@ def get_api(**kwargs):
 def post_api(**kwargs):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") is not -1:
+        if kwargs['url'].find("{") != -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
         @EncapsulationHandler.add_func(url=kwargs['url'], type='post')
@@ -437,7 +437,7 @@ def post_api(**kwargs):
 def patch_api(**kwargs):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") is not -1:
+        if kwargs['url'].find("{") != -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
         @EncapsulationHandler.add_func(url=kwargs['url'], type='patch')
@@ -472,7 +472,7 @@ def patch_api(**kwargs):
 def delete_api(**kwargs):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") is not -1:
+        if kwargs['url'].find("{") != -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
         @EncapsulationHandler.add_func(url=kwargs['url'], type='delete')
@@ -503,7 +503,7 @@ def delete_api(**kwargs):
 def put_api(**kwargs):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") is not -1:
+        if kwargs['url'].find("{") != -1:
             kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
 
         @EncapsulationHandler.add_func(url=kwargs['url'], type='put')
@@ -535,12 +535,12 @@ def controller(**kwargs) -> Callable:
     url = kwargs.get('url', '')
     global url_params
     url_params = None
-    if url is not '':
+    if url != '':
         url, url_params = url_resolver(url)
 
     def inner(cls):
         for item in controller_func_list:
-            if controller_func_list.__len__() is not 0:
+            if controller_func_list.__len__() != 0:
                 handler = EncapsulationHandler.add_url(url + item[0], item[1])
                 setattr(handler, item[2] + '_controller_self', cls)
                 setattr(handler, item[2] + '_controller_url_param_key_list', url_params)
