@@ -67,7 +67,7 @@ project
 
 ## Wiki
 
-wiki and other related references: https://github.com/orestu/Cullinan/wiki
+wiki and other related references: https://github.com/plumeink/Cullinan/wiki
 
 ## Maintainer
 
