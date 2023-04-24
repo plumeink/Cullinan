@@ -34,8 +34,8 @@ jobs:
       run: python -m build --sdist --wheel --outdir dist/ --no-isolation
     - name: Publish package
       env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
       run: |
           twine check dist/*
           twine upload dist/*
