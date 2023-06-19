@@ -17,7 +17,7 @@ setup(
       },
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author_email='python@plumeink.com',
+    author_email='official@plumeink.com',
     url='https://github.com/plumeink/Cullinan',
     classifiers=[
         "Programming Language :: Python :: 3",
