@@ -60,13 +60,13 @@ class EncapsulationHandler(object):
     def add_url_ws(url: str, cls: Callable) -> object:
         servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,),
                        {"set_instance_method": EncapsulationHandler.set_fragment_method})
+        setattr(servlet, 'service', service_list)
         if handler_list.__len__() == 0:
             for item in dir(cls):
                 if not item.startswith('__') and not item.endswith('__'):
                     servlet.set_instance_method(servlet, cls.__dict__[item])
                     servlet.f = types.MethodType(cls.__dict__[item], servlet)
             handler_list.append((url, servlet))
-            print(servlet)
             return servlet
         else:
             for item in handler_list:
@@ -75,7 +75,6 @@ class EncapsulationHandler(object):
                         if not i.startswith('__') and not i.endswith('__'):
                             item[1].set_instance_method(item[1], cls.__dict__[i])
                             item[1].f = types.MethodType(cls.__dict__[i], item[1])
-                    print(servlet)
                     return item[1]
             else:
                 for item in dir(cls):
@@ -83,7 +82,6 @@ class EncapsulationHandler(object):
                         servlet.set_instance_method(servlet, cls.__dict__[item])
                         servlet.f = types.MethodType(cls.__dict__[item], servlet)
                 handler_list.append((url, servlet))
-                print(servlet)
                 return servlet
 
 
