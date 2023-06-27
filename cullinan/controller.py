@@ -64,8 +64,7 @@ class EncapsulationHandler(object):
         if handler_list.__len__() == 0:
             for item in dir(cls):
                 if not item.startswith('__') and not item.endswith('__'):
-                    servlet.set_instance_method(servlet, cls.__dict__[item])
-                    servlet.f = types.MethodType(cls.__dict__[item], servlet)
+                    setattr(servlet, item, cls.__dict__[item])
             handler_list.append((url, servlet))
             return servlet
         else:
@@ -73,14 +72,12 @@ class EncapsulationHandler(object):
                 if url == item[0]:
                     for i in dir(cls):
                         if not i.startswith('__') and not i.endswith('__'):
-                            item[1].set_instance_method(item[1], cls.__dict__[i])
-                            item[1].f = types.MethodType(cls.__dict__[i], item[1])
+                            setattr(servlet, item, cls.__dict__[item])
                     return item[1]
             else:
                 for item in dir(cls):
                     if not item.startswith('__') and not item.endswith('__'):
-                        servlet.set_instance_method(servlet, cls.__dict__[item])
-                        servlet.f = types.MethodType(cls.__dict__[item], servlet)
+                        setattr(servlet, item, cls.__dict__[item])
                 handler_list.append((url, servlet))
                 return servlet
 
