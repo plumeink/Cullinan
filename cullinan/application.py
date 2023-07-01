@@ -68,6 +68,8 @@ def get_index_list(url_list: list) -> list:
 
 
 def sort_url():
+    if handler_list.__len__() == 0:
+        return
     handler_list_length = []
     for index in range(0, handler_list.__len__()):
         handler_list[index] = list(handler_list[index])
