@@ -94,7 +94,9 @@ def sort_url():
         del item[2]
 
 
-def run():
+def run(handlers=None):
+    if handlers is None:
+        handlers = []
     print(
         "\n|||||||||||||||||||||||||||||||||||||||||||||||||\n|||                                           |||\n|||  "
         "   _____      _ _ _ "
@@ -118,7 +120,7 @@ def run():
     scan_controller(file_list_func())
     sort_url()
     mapping = tornado.web.Application(
-        handlers=handler_list,
+        handlers=handler_list + handlers,
         **settings
     )
     print("\t|||\t\t└---loading controller finish\n\t|||\t")
