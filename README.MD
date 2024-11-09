@@ -33,7 +33,7 @@ class TestController:
     
     @get_api(uri='/get', query_params=['id', 'name'])
     def get(self, query_params):
-        return self.TestService.test(query_params['id'], query_params['name'])
+        return self.service['TestService'].test(query_params['id'], query_params['name'])
 ```
 
 File service:

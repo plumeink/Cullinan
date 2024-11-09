@@ -157,18 +157,18 @@ def run(handlers=None):
         **settings
     )
     print("\t|||\t\t└---loading controller finish\n\t|||\t")
-    define("port", default=os.getenv("SERVER_PORT"), help="run on the given port", type=int)
+    define("port", default=os.getenv("SERVER_PORT", 4080), help="run on the given port", type=int)
     print("\t|||\tloading env finish\n\t|||\t")
     http_server = tornado.httpserver.HTTPServer(mapping)
     if os.getenv("SERVER_THREAD") is not None:
         print("\t|||\t\033[0;36;0mserver is starting \033[0m")
-        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
+        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT", 4080)) + " \033[0m")
         http_server.bind(options.port)
         http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
     else:
         http_server.listen(options.port)
         print("\t|||\t\033[0;36;0mserver is starting \033[0m")
-        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT")) + " \033[0m")
+        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT", 4080)) + " \033[0m")
     tornado.ioloop.IOLoop.current().start()
 
 
