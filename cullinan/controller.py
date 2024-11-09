@@ -475,7 +475,7 @@ def patch_api(**kwargs):
                                 request_resolver(self,
                                                  self.patch_controller_url_param_key_list + url_param_key_list, args,
                                                  kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None)),
+                                                 kwargs.get('body_params', None), kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'patch',
                                 kwargs.get('get_request_body', False))
@@ -485,7 +485,7 @@ def patch_api(**kwargs):
                                 request_resolver(self,
                                                  url_param_key_list, args,
                                                  kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None)),
+                                                 kwargs.get('body_params', None), kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'patch',
                                 kwargs.get('get_request_body', False))
@@ -509,7 +509,7 @@ def delete_api(**kwargs):
                                 func,
                                 request_resolver(self,
                                                  self.delete_controller_url_param_key_list + url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'delete')
             else:
@@ -517,7 +517,7 @@ def delete_api(**kwargs):
                                 func,
                                 request_resolver(self,
                                                  url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'delete')
 
@@ -540,7 +540,7 @@ def put_api(**kwargs):
                                 func,
                                 request_resolver(self,
                                                  self.put_controller_url_param_key_list + url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'put')
             else:
@@ -548,7 +548,7 @@ def put_api(**kwargs):
                                 func,
                                 request_resolver(self,
                                                  url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None),
+                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'put')
 

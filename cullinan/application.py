@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-
+import importlib
+import inspect
 import os
+import pkgutil
+
 import tornado.ioloop
 from cullinan.controller import handler_list, header_list
 from dotenv import load_dotenv
@@ -12,7 +15,32 @@ import tornado.httpserver
 from tornado.options import define, options
 import sys
 import platform
+from cullinan.exceptions import CallerPackageException
 
+
+def get_project_root_with_pyinstaller():
+    return os.path.dirname(os.path.abspath(__file__)) + '/../'
+
+def get_caller_package():
+    project_root = get_project_root_with_pyinstaller()
+    stack = inspect.stack()
+    for frame in stack:
+        module = inspect.getmodule(frame[0])
+        if module and module.__name__.startswith('cullinan'):
+            continue
+        caller_filename = os.path.relpath(frame.filename, project_root)
+        caller_package = os.path.dirname(caller_filename).replace(os.sep, '.')
+        return caller_package
+    raise CallerPackageException()
+
+def list_submodules(package_name):
+    package = importlib.import_module(package_name)
+    submodules = []
+    if hasattr(package, '__path__'):
+        for _, name, is_pkg in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
+            if not is_pkg:
+                submodules.append(name)
+    return submodules
 
 def reflect(file: str, func: str):
     try:
@@ -29,6 +57,9 @@ def reflect(file: str, func: str):
 
 
 def file_list_func():
+    if getattr(sys, 'frozen', False):
+        caller_package = get_caller_package()
+        return list_submodules(caller_package)
     file_list = []
     for top, dirs, files in os.walk(os.getcwd()):
         for files_item in files:

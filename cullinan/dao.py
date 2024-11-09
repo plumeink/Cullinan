@@ -20,7 +20,7 @@ class Conn(object):
         os.getenv("DB_MAX_OVERFLOW")
     )
     engine = create_engine(db_url)
-    Base = declarative_base(engine)
+    Base = declarative_base()
 
     @classmethod
     def conn(cls):
