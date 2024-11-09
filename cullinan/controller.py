@@ -5,6 +5,7 @@ import tornado.web
 import tornado.websocket
 import types
 import functools
+from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service import service_list, response_build
 from typing import Callable
 
@@ -304,8 +305,8 @@ def header_resolver(self, header_names: list):
                 print("\t|||\t request_headers", end="")
                 print(need_header)
             else:
-                # TODO error
-                raise Exception("missing header")
+                miss_header_handler = MissingHeaderHandlerHook.get_hook()
+                miss_header_handler(request=self, header_name=name)
         return need_header
     else:
         return None
