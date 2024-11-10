@@ -18,7 +18,7 @@ class Conn(object):
         os.getenv("DB_POOL_RECYCLE"),
         os.getenv("DB_POOL_SIZE"),
         os.getenv("DB_MAX_OVERFLOW")
-    )
+    ) if os.getenv("DB_TYPE", 'mysql') == 'mysql' else 'sqlite:///{}'.format(os.getenv("DB_NAME"))
     engine = create_engine(db_url)
     Base = declarative_base()
 
