@@ -18,6 +18,9 @@ import platform
 from cullinan.exceptions import CallerPackageException
 
 
+def is_nuitka_compiled():
+    return "__compiled__" in globals()
+
 def get_project_root_with_pyinstaller():
     return os.path.dirname(os.path.abspath(__file__)) + '/../'
 
@@ -57,6 +60,12 @@ def reflect(file: str, func: str):
 
 
 def file_list_func():
+    if is_nuitka_compiled():
+        module_list = []
+        for module in pkgutil.walk_packages(path=[__compiled__.containing_dir]):
+            if module.ispkg:
+                module_list = module_list + list_submodules(module.name)
+        return module_list
     if getattr(sys, 'frozen', False):
         caller_package = get_caller_package()
         return list_submodules(caller_package)
