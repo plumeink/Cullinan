@@ -74,10 +74,6 @@ project
 
 wiki and other related references: https://github.com/plumeink/Cullinan/wiki
 
-## Maintainer
-
-[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
-
 ## Logging
 
 Cullinan does not configure logging handlers by itself. The framework modules use standard Python loggers (module-level `logging.getLogger(__name__)`) and the package installs a `NullHandler` to avoid noisy "No handlers could be found" warnings when the package is imported.
@@ -221,3 +217,9 @@ Examples
 ```
 {"remote_addr":"127.0.0.1","method":"GET","path":"/path","status_code":200,"duration":0.123,"content_length":123,"referer":"-","user_agent":"curl/7.XX"}
 ```
+
+---
+
+## Maintainer
+
+[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
