@@ -8,9 +8,26 @@ import tornado.websocket
 import types
 import functools
 import contextvars
+import logging
+import time
+import os
+import json
 from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service import service_list, response_build
-from typing import Callable
+from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol
+
+class ResponseProtocol(Protocol):
+    def push(self, resp: Any) -> Any: ...
+    def pop(self, token: Any) -> None: ...
+    def get(self) -> Any: ...
+
+if TYPE_CHECKING:
+    # help static analyzers: at type-check time `response` behaves like ResponseProtocol
+    response: ResponseProtocol
+
+logger = logging.getLogger(__name__)
+# access logger (separate name so users can configure access logs separately)
+access_logger = logging.getLogger('cullinan.access')
 
 handler_list = []
 header_list = []
@@ -91,50 +108,64 @@ class LazyResponseMeta(type):
 # 模块级名为 `response` 的惰性代理类（*不是实例*，避免导入时的副作用）
 class response(metaclass=LazyResponseMeta):
     """惰性响应代理类（模块级名，行为等同于原先的 ResponseProxy 实例）"""
-    pass
+
+    # Stubs to help static analysis / IDEs detect available methods (runtime is handled by metaclass).
+    def push(self, resp):
+        """Stub: real implementation lives in the lazily created ResponseProxy instance."""
+        raise RuntimeError("response proxy not initialized")
+
+    def pop(self, token):
+        raise RuntimeError("response proxy not initialized")
+
+    def get(self):
+        raise RuntimeError("response proxy not initialized")
+
+    def __getattr__(self, name):
+        # stub fallback
+        raise AttributeError(name)
 
 
 class EncapsulationHandler(object):
     @classmethod
-    def set_fragment_method(cls, cls_name: str, func: Callable[[object, tuple, dict], None]):
+    def set_fragment_method(cls, cls_obj: Any, func: Callable[[object, tuple, dict], None]):
         @functools.wraps(func)
         def dummy(self, *args, **kwargs):
             func(self, *args, **kwargs)
 
-        setattr(cls_name, func.__name__, dummy)
+        setattr(cls_obj, func.__name__, dummy)
 
     @staticmethod
-    def add_func(**kwargs: dict) -> Callable:
+    def add_func(url: str, type: str) -> Callable:
         def inner(func: Callable):
-            controller_func_list.append((kwargs['url'], func, kwargs['type']))
+            controller_func_list.append((url, func, type))
 
         return inner
 
     @staticmethod
     def add_url(url: str, f: Callable) -> object:
-        servlet = type('Servlet' + url.replace('/', ''), (Handler,),
-                       {"set_instance_method": EncapsulationHandler.set_fragment_method})
+        # create servlet type plainly
+        servlet = type('Servlet' + url.replace('/', ''), (Handler,), {})
+        # attach the handler function as an instance method via set_fragment_method
         if len(handler_list) == 0:
-            servlet.set_instance_method(servlet, f)
+            EncapsulationHandler.set_fragment_method(servlet, f)
             servlet.f = types.MethodType(f, servlet)
             handler_list.append((url, servlet))
             return servlet
         else:
             for item in handler_list:
                 if url == item[0]:
-                    item[1].set_instance_method(item[1], f)
+                    EncapsulationHandler.set_fragment_method(item[1], f)
                     item[1].f = types.MethodType(f, item[1])
                     return item[1]
             else:
-                servlet.set_instance_method(servlet, f)
+                EncapsulationHandler.set_fragment_method(servlet, f)
                 servlet.f = types.MethodType(f, servlet)
                 handler_list.append((url, servlet))
                 return servlet
 
     @staticmethod
     def add_url_ws(url: str, cls: Callable) -> object:
-        servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,),
-                       {"set_instance_method": EncapsulationHandler.set_fragment_method})
+        servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,), {})
         setattr(servlet, 'service', service_list)
         if len(handler_list) == 0:
             for item in dir(cls):
@@ -159,6 +190,15 @@ class EncapsulationHandler(object):
 
 class Handler(tornado.web.RequestHandler):
 
+    @classmethod
+    def set_instance_method(cls, cls_name, func):
+        """Forwarder used by the dynamic servlet factory so static analysis can see the method.
+
+        The real registration uses EncapsulationHandler.set_fragment_method which sets an instance
+        method on the class; this forwarder simply calls that implementation.
+        """
+        EncapsulationHandler.set_fragment_method(cls_name, func)
+
     def data_received(self, chunk):
         pass
 
@@ -171,12 +211,23 @@ class Handler(tornado.web.RequestHandler):
         pass
 
 
-def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tuple,
-                     query_param_names: tuple, body_param_names, file_param_key_list) -> tuple:
+def request_resolver(self,
+                     url_param_key_list: Optional[Sequence] = None,
+                     url_param_value_list: Optional[Sequence] = None,
+                     query_param_names: Optional[Sequence] = None,
+                     body_param_names: Optional[Sequence] = None,
+                     file_param_key_list: Optional[Sequence] = None) -> Tuple[Optional[dict], Optional[dict], Optional[dict], Optional[dict]]:
     """
-    Unified resolver: fill any provided param lists and return (url_dict|None, query_dict|None, body_dict|None, file_dict|None).
-    Safer JSON parsing and tolerant to missing keys.
+    Unified resolver: accept optional sequences and normalize them to concrete tuples/lists.
+    Returns (url_dict|None, query_dict|None, body_dict|None, file_dict|None).
     """
+    # normalize inputs to concrete sequences
+    url_param_key_list = tuple(url_param_key_list or ())
+    url_param_value_list = tuple(url_param_value_list or ())
+    query_param_names = tuple(query_param_names or ())
+    body_param_names = tuple(body_param_names or ())
+    file_param_key_list = list(file_param_key_list or [])
+
     url_dict = None
     query_dict = None
     body_dict = None
@@ -190,7 +241,7 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                 url_dict[k] = url_param_value_list[i]
             except Exception:
                 url_dict[k] = None
-        print("\t||| url_params", url_dict)
+        logger.info("\t||| url_params %s", url_dict)
 
     # Query params
     if query_param_names:
@@ -200,7 +251,7 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                 query_dict[name] = self.get_query_argument(name)
             except Exception:
                 query_dict[name] = None
-        print("\t||| query_params", query_dict)
+        logger.info("\t||| query_params %s", query_dict)
 
     # Body params
     if body_param_names:
@@ -221,25 +272,26 @@ def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tupl
                     body_dict[name] = self.get_body_argument(name)
                 except Exception:
                     body_dict[name] = None
-        print("\t||| body_params", body_dict)
+        logger.info("\t||| body_params %s", body_dict)
 
     # File params
     if file_param_key_list:
         file_dict = {}
         for name in file_param_key_list:
             file_dict[name] = (self.request.files.get(name) if isinstance(self.request.files, dict) else None)
-        print("\t||| file_params", list((file_dict or {}).keys()))
+        logger.info("\t||| file_params %s", list((file_dict or {}).keys()))
 
     return url_dict, query_dict, body_dict, file_dict
 
 
-def header_resolver(self, header_names: list):
+def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[dict]:
+    header_names = list(header_names or [])
     if header_names:
         need_header = {}
         for name in header_names:
             need_header[name] = self.request.headers.get(name)
             if need_header[name] is not None:
-                print("\t||| request_headers", {name: need_header[name]})
+                logger.info("\t||| request_headers %s", {name: need_header[name]})
             else:
                 miss_header_handler = MissingHeaderHandlerHook.get_hook()
                 miss_header_handler(request=self, header_name=name)
@@ -277,8 +329,64 @@ class _SimpleResponse:
         return self._body
 
 
+def emit_access_log(request, resp_obj, status_code, duration):
+    """Emit an access log using the configured format.
+
+    Formats supported via env var CULLINAN_ACCESS_LOG_FORMAT:
+      - 'combined' (default): Apache combined-like format
+      - 'json': structured JSON object
+
+    This helper is public for testing or custom hooks; the framework calls it
+    automatically from request_handler.
+    """
+    try:
+        fmt = os.getenv('CULLINAN_ACCESS_LOG_FORMAT', 'combined').strip().lower()
+        method = getattr(request, 'method', '-')
+        uri = getattr(request, 'uri', getattr(request, 'path', '-'))
+        client = getattr(request, 'remote_ip', None) or getattr(request, 'remote_addr', None) or getattr(request, 'remote_ip', None) or '-'
+        # headers may be present on Tornado request
+        headers = getattr(request, 'headers', {}) or {}
+        referer = headers.get('Referer', headers.get('referer', '-'))
+        user_agent = headers.get('User-Agent', headers.get('user-agent', '-'))
+        # content length from response object if available
+        content_length = '-'
+        try:
+            if resp_obj is not None and hasattr(resp_obj, 'get_body'):
+                body = resp_obj.get_body()
+                if isinstance(body, (bytes, bytearray)):
+                    content_length = len(body)
+                elif isinstance(body, str):
+                    content_length = len(body.encode('utf-8'))
+                elif hasattr(body, '__len__'):
+                    content_length = len(body)
+        except Exception:
+            content_length = '-'
+
+        if fmt == 'json':
+            obj = {
+                'remote_addr': client,
+                'method': method,
+                'path': uri,
+                'status_code': status_code,
+                'duration': round(duration, 3),
+                'content_length': content_length,
+                'referer': referer or '-',
+                'user_agent': user_agent or '-',
+            }
+            access_logger.info(json.dumps(obj, ensure_ascii=False))
+        else:
+            # combined-like: remote - - [time] "METHOD URI HTTP/1.1" status length "referer" "user-agent" duration
+            now = time.strftime('%d/%b/%Y:%H:%M:%S')
+            line = '%s - - [%s] "%s %s HTTP/1.1" %s %s "%s" "%s" %.3f' % (
+                client, now, method, uri, status_code or '-', content_length, referer or '-', user_agent or '-', duration)
+            access_logger.info(line)
+    except Exception:
+        logger.exception('failed to emit access log')
+
+
 def request_handler(self, func, params, headers, type, get_request_body=False):
     global controller_self
+    start_time = time.time()
     # 选择 controller_self（保持原有分支逻辑）
     if type == 'get':
         controller_self = self.get_controller_self
@@ -306,7 +414,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
         else:
             resp_instance = response_build
     except Exception:
-        print('response_build failed, falling back to _SimpleResponse')
+        logger.error('response_build failed, falling back to _SimpleResponse', exc_info=True)
         resp_instance = _SimpleResponse()
 
     if resp_instance is None:
@@ -385,170 +493,167 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
 
         self.finish()
     finally:
+        # access log: method, uri, status, duration, client ip
+        try:
+            duration = time.time() - start_time
+            try:
+                status_code = self.get_status()
+            except Exception:
+                # fallback: if resp_obj is present, try to read status
+                status_code = getattr(resp_obj, 'get_status', lambda: None)()
+            client_ip = getattr(self.request, 'remote_ip', None) or getattr(self.request, 'remote_addr', None)
+            # delegate to emit_access_log which supports different formats
+            emit_access_log(self.request, resp_obj, status_code, duration)
+        except Exception:
+            # don't let logging failures break response cleanup
+            logger.exception('access log failed')
         # 一定要 pop，避免污染下一个请求/扫描
         response.pop(token)
 
 
-def get_api(**kwargs):
+def get_api(**kwargs: dict):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") != -1:
-            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+        local_url = kwargs.get('url', '')
+        if local_url.find("{") != -1:
+            local_url, url_param_key_list = url_resolver(local_url)
 
-        @EncapsulationHandler.add_func(url=kwargs['url'], type='get')
+        @EncapsulationHandler.add_func(url=local_url, type='get')
         def get(self, *args):
-            print("\t||| request:")
-            if self.get_controller_url_param_key_list is not None:
-                request_handler(self,
-                                func,
-                                request_resolver(self, self.get_controller_url_param_key_list + url_param_key_list,
-                                                 args,
-                                                 kwargs.get('query_params', None), None,
-                                                 kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'get')
-            else:
-                request_handler(self,
-                                func,
-                                request_resolver(self, url_param_key_list,
-                                                 args,
-                                                 kwargs.get('query_params', None), None,
-                                                 kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'get')
+            logger.info("\t||| request:")
+            # normalize potential None values into tuples/lists for static analysis
+            caller_keys = tuple(self.get_controller_url_param_key_list or ()) if getattr(self, 'get_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            url_values = tuple(args)
+            query_params = tuple(kwargs.get('query_params') or ())
+            file_params = list(kwargs.get('file_params') or [])
+
+            request_handler(self,
+                            func,
+                            request_resolver(self, caller_keys + tuple(url_param_key_list),
+                                             url_values,
+                                             query_params, None,
+                                             file_params),
+                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            'get')
 
         return get
 
     return inner
 
 
-def post_api(**kwargs):
+def post_api(**kwargs: dict):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") != -1:
-            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+        local_url = kwargs.get('url', '')
+        if local_url.find("{") != -1:
+            local_url, url_param_key_list = url_resolver(local_url)
 
-        @EncapsulationHandler.add_func(url=kwargs['url'], type='post')
+        @EncapsulationHandler.add_func(url=local_url, type='post')
         def post(self, *args):
-            print("\t||| request:")
-            if self.post_controller_url_param_key_list is not None:
-                request_handler(self,
-                                func,
-                                request_resolver(self, self.post_controller_url_param_key_list + url_param_key_list,
-                                                 args,
-                                                 kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None),
-                                                 kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'post',
-                                kwargs.get('get_request_body', False))
-            else:
-                request_handler(self,
-                                func,
-                                request_resolver(self, url_param_key_list,
-                                                 args,
-                                                 kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None),
-                                                 kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'post',
-                                kwargs.get('get_request_body', False))
+            logger.info("\t||| request:")
+            caller_keys = tuple(self.post_controller_url_param_key_list or ()) if getattr(self, 'post_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            url_values = tuple(args)
+            query_params = tuple(kwargs.get('query_params') or ())
+            body_params = list(kwargs.get('body_params') or [])
+            file_params = list(kwargs.get('file_params') or [])
+
+            request_handler(self,
+                            func,
+                            request_resolver(self, caller_keys + tuple(url_param_key_list),
+                                             url_values,
+                                             query_params,
+                                             body_params,
+                                             file_params),
+                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            'post',
+                            kwargs.get('get_request_body', False))
 
         return post
 
     return inner
 
 
-def patch_api(**kwargs):
+def patch_api(**kwargs: dict):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") != -1:
-            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+        local_url = kwargs.get('url', '')
+        if local_url.find("{") != -1:
+            local_url, url_param_key_list = url_resolver(local_url)
 
-        @EncapsulationHandler.add_func(url=kwargs['url'], type='patch')
+        @EncapsulationHandler.add_func(url=local_url, type='patch')
         def patch(self, *args):
-            print("\t||| request:")
-            if self.patch_controller_url_param_key_list is not None:
-                request_handler(self,
-                                func,
-                                request_resolver(self,
-                                                 self.patch_controller_url_param_key_list + url_param_key_list, args,
-                                                 kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None), kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'patch',
-                                kwargs.get('get_request_body', False))
-            else:
-                request_handler(self,
-                                func,
-                                request_resolver(self,
-                                                 url_param_key_list, args,
-                                                 kwargs.get('query_params', None),
-                                                 kwargs.get('body_params', None), kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'patch',
-                                kwargs.get('get_request_body', False))
+            logger.info("\t||| request:")
+            caller_keys = tuple(self.patch_controller_url_param_key_list or ()) if getattr(self, 'patch_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            url_values = tuple(args)
+            query_params = tuple(kwargs.get('query_params') or ())
+            body_params = list(kwargs.get('body_params') or [])
+            file_params = list(kwargs.get('file_params') or [])
+
+            request_handler(self,
+                            func,
+                            request_resolver(self,
+                                             caller_keys + tuple(url_param_key_list), url_values,
+                                             query_params,
+                                             body_params, file_params),
+                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            'patch',
+                            kwargs.get('get_request_body', False))
 
         return patch
 
     return inner
 
 
-def delete_api(**kwargs):
+def delete_api(**kwargs: dict):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") != -1:
-            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+        local_url = kwargs.get('url', '')
+        if local_url.find("{") != -1:
+            local_url, url_param_key_list = url_resolver(local_url)
 
-        @EncapsulationHandler.add_func(url=kwargs['url'], type='delete')
+        @EncapsulationHandler.add_func(url=local_url, type='delete')
         def delete(self, *args):
-            print("\t||| request:")
-            if self.delete_controller_url_param_key_list is not None:
-                request_handler(self,
-                                func,
-                                request_resolver(self,
-                                                 self.delete_controller_url_param_key_list + url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'delete')
-            else:
-                request_handler(self,
-                                func,
-                                request_resolver(self, url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'delete')
+            logger.info("\t||| request:")
+            caller_keys = tuple(self.delete_controller_url_param_key_list or ()) if getattr(self, 'delete_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            url_values = tuple(args)
+            query_params = tuple(kwargs.get('query_params') or ())
+            file_params = list(kwargs.get('file_params') or [])
+
+            request_handler(self,
+                            func,
+                            request_resolver(self,
+                                             caller_keys + tuple(url_param_key_list), url_values,
+                                             query_params, None, file_params),
+                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            'delete')
 
         return delete
 
     return inner
 
 
-def put_api(**kwargs):
+def put_api(**kwargs: dict):
     def inner(func):
         url_param_key_list = []
-        if kwargs['url'].find("{") != -1:
-            kwargs['url'], url_param_key_list = url_resolver(kwargs['url'])
+        local_url = kwargs.get('url', '')
+        if local_url.find("{") != -1:
+            local_url, url_param_key_list = url_resolver(local_url)
 
-        @EncapsulationHandler.add_func(url=kwargs['url'], type='put')
+        @EncapsulationHandler.add_func(url=local_url, type='put')
         def put(self, *args):
-            print("\t||| request:")
-            if self.put_controller_url_param_key_list is not None:
-                request_handler(self,
-                                func,
-                                request_resolver(self,
-                                                 self.put_controller_url_param_key_list + url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'put')
-            else:
-                request_handler(self,
-                                func,
-                                request_resolver(self,
-                                                 url_param_key_list, args,
-                                                 kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
-                                header_resolver(self, kwargs.get('headers', None)),
-                                'put')
+            logger.info("\t||| request:")
+            caller_keys = tuple(self.put_controller_url_param_key_list or ()) if getattr(self, 'put_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            url_values = tuple(args)
+            query_params = tuple(kwargs.get('query_params') or ())
+            file_params = list(kwargs.get('file_params') or [])
+
+            request_handler(self,
+                            func,
+                            request_resolver(self,
+                                             caller_keys + tuple(url_param_key_list), url_values,
+                                             query_params, None, file_params),
+                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            'put')
 
         return put
 
@@ -564,7 +669,7 @@ def controller(**kwargs) -> Callable:
 
     def inner(cls):
         for item in controller_func_list:
-            if controller_func_list.__len__() != 0:
+            if controller_func_list:
                 handler = EncapsulationHandler.add_url(url + item[0], item[1])
                 setattr(handler, item[2] + '_controller_self', cls)
                 setattr(handler, item[2] + '_controller_url_param_key_list', url_params)

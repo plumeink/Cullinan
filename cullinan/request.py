@@ -6,6 +6,10 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import ssl
+import logging
+
+# Module-level logger (FastAPI-style) - application configures handlers
+logger = logging.getLogger(__name__)
 
 
 class Http(object):
@@ -23,7 +27,7 @@ class Http(object):
         return self.headers
 
     def delete_header(self, name: str):
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 if header[0] == name:
                     self.headers.remove(header)
@@ -31,7 +35,7 @@ class Http(object):
     def post(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="POST")
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 request.add_header(header[0], header[1])
         if headers is not None:
@@ -45,7 +49,7 @@ class Http(object):
         else:
             url = self.api_url + uri
         request = urllib.request.Request(url, method="GET")
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 request.add_header(header[0], header[1])
         if headers is not None:
@@ -59,7 +63,7 @@ class Http(object):
         else:
             url = self.api_url + uri
         request = urllib.request.Request(url, method="DELETE")
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 request.add_header(header[0], header[1])
         if headers is not None:
@@ -70,7 +74,7 @@ class Http(object):
     def put(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="PUT")
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 request.add_header(header[0], header[1])
         if headers is not None:
@@ -81,7 +85,7 @@ class Http(object):
     def patch(self, uri: str, data=None, headers=None):
         url = self.api_url + uri
         request = urllib.request.Request(url, method="PATCH")
-        if self.get_headers().__len__() > 0:
+        if len(self.get_headers()) > 0:
             for header in self.get_headers():
                 request.add_header(header[0], header[1])
         if headers is not None:
@@ -98,12 +102,12 @@ class Http(object):
                 if self.json_parse is True:
                     data = json.dumps(data)
                     data = bytes(data, encoding='utf8')
-                    print('data=', data)
+                    logger.debug('data=%s', data)
                     http_response = urllib.request.urlopen(request, data=data, context=context)
                 else:
                     data = urllib.parse.urlencode(data)
                     data = bytes(data, encoding='utf8')
-                    print('data=', data)
+                    logger.debug('data=%s', data)
                     http_response = urllib.request.urlopen(request, data=data, context=context)
             if self.no_decode is True:
                 return http_response.read()
@@ -112,6 +116,6 @@ class Http(object):
                 content = json.loads(content)
             return content
         except urllib.error.HTTPError as HTTPError:
-            print('code:', HTTPError.code)
-            print('reason:', HTTPError.reason)
+            logger.error('code: %s', getattr(HTTPError, 'code', None))
+            logger.error('reason: %s', getattr(HTTPError, 'reason', None))
             return HTTPError.code

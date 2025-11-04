@@ -29,5 +29,55 @@ To prepare you to actually start using Cullinan, we have:
 ## 5.More Cullinan features
 For more Cullinan features, we provide you with:
 * Core feature：[application / ENV](https://github.com/orestu/Cullinan/wiki/Cullinan-Wiki%EF%BC%9AApplication) | [Method injection](https://github.com/orestu/Cullinan/wiki/Cullinan-Wiki%EF%BC%9AMethod-injection)
-* DataBase：[SQL](https://github.com/orestu/Cullinan/wiki/Cullinan-Wiki%EF%BC%9Adatabase) 
+* DataBase：[SQL](https://github.com/orestu/Cullinan/wiki/Cullinan-Wiki%EF%BC%9Adatabase)
 
+## Logging
+
+Cullinan does not configure handlers; the framework modules use module-level loggers (`logging.getLogger(__name__)`) and the package installs a `NullHandler` so importing the library doesn't produce "No handlers" warnings.
+
+To direct logs to the console only, configure logging in your application entry point. Example:
+
+```python
+# app.py
+import logging
+from logging import config
+import sys
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "level": "INFO",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "loggers": {
+        "cullinan": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        }
+    },
+    "root": {"handlers": ["console"], "level": "WARNING"},
+}
+
+config.dictConfig(LOGGING)
+
+from cullinan import application
+application.run()
+```
+
+To enable debug only for controller module:
+
+```python
+LOGGING['loggers'].update({
+    'cullinan.controller': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
+})
+config.dictConfig(LOGGING)
+```

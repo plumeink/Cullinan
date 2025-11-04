@@ -3,6 +3,8 @@ import importlib
 import inspect
 import os
 import pkgutil
+import importlib.util
+import logging
 
 import tornado.ioloop
 from cullinan.controller import handler_list, header_list
@@ -14,88 +16,203 @@ import tornado.web
 import tornado.httpserver
 from tornado.options import define, options
 import sys
-import platform
 from cullinan.exceptions import CallerPackageException
+
+# Module-level logger (FastAPI-style)
+logger = logging.getLogger(__name__)
 
 
 def is_nuitka_compiled():
-    return "__compiled__" in globals()
+    # Nuitka sets a module-level name __compiled__ when compiled; avoid direct NameError by checking globals
+    return bool(globals().get('__compiled__', False))
+
 
 def get_project_root_with_pyinstaller():
     return os.path.dirname(os.path.abspath(__file__)) + '/../'
 
+
 def get_caller_package():
-    project_root = get_project_root_with_pyinstaller()
+    """Return a best-effort caller package name for the importing application.
+
+    We walk the stack and pick the first frame whose module is not part of the
+    `cullinan` package. Prefer module.__package__ if available, otherwise
+    derive a dotted package name from the filename relative to the current
+    working directory.
+    """
     stack = inspect.stack()
-    for frame in stack:
-        module = inspect.getmodule(frame[0])
-        if module and module.__name__.startswith('cullinan'):
+    cwd = os.getcwd()
+    for frame_info in stack:
+        module = inspect.getmodule(frame_info[0])
+        if not module:
             continue
-        caller_filename = os.path.relpath(frame.filename, project_root)
-        caller_package = os.path.dirname(caller_filename).replace(os.sep, '.')
-        return caller_package
+        mod_name = getattr(module, '__name__', '')
+        if mod_name and mod_name.startswith('cullinan'):
+            continue
+        pkg = getattr(module, '__package__', None)
+        if pkg:
+            # return top-level package
+            return pkg.split('.')[0]
+        # derive from filename
+        try:
+            rel = os.path.relpath(frame_info.filename, cwd)
+            pkg_from_path = os.path.dirname(rel).replace(os.sep, '.')
+            if pkg_from_path == '.':
+                pkg_from_path = ''
+            return pkg_from_path
+        except Exception:
+            continue
     raise CallerPackageException()
 
+
 def list_submodules(package_name):
-    package = importlib.import_module(package_name)
+    """List all submodule full names under a package (non-recursive and recursive via pkgutil.walk_packages).
+
+    Returns a list of dotted module names like 'mypkg.submod'. If the package cannot be
+    imported or has no __path__, returns an empty list.
+    """
+    try:
+        package = importlib.import_module(package_name)
+    except Exception:
+        return []
+
     submodules = []
     if hasattr(package, '__path__'):
-        for _, name, is_pkg in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
-            if not is_pkg:
-                submodules.append(name)
+        for finder, name, is_pkg in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
+            # include both packages and modules so decorators/register-time code runs on import
+            submodules.append(name)
     return submodules
 
-def reflect(file: str, func: str):
+
+def reflect_module(module_name: str, func: str):
+    """Import a module by dotted name and optionally call a function on it.
+
+    - If `func` is 'nobody' or 'controller' we only import the module (decorators will run at import).
+    - Otherwise, if the attribute named `func` exists and is callable, call it.
+
+    Errors during import or call are swallowed to keep scanning robust.
+    """
+    if not module_name:
+        return
+    # sanitize package-style paths that may come from file-system discovery
+    if module_name.endswith('.py'):
+        module_name = module_name[:-3]
+    module_name = module_name.strip('.')
     try:
-        if func == 'nobody':
-            __import__(file.replace('.py', ''))
-        elif func == 'controller':
-            __import__(file.replace('.py', ''))
-        else:
-            f = __import__(file.replace('.py', ''))
-            function = getattr(f, func)
-            function()
-    except AttributeError:
-        pass
+        mod = importlib.import_module(module_name)
+    except Exception:
+        # if dotted import fails, try importing by file path (fallback)
+        try:
+            # treat module_name as a path
+            if os.path.isabs(module_name) or os.path.exists(module_name):
+                spec = importlib.util.spec_from_file_location('cullinan.dynamic.' + os.path.basename(module_name), module_name)
+                if spec and spec.loader:
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                else:
+                    return
+            else:
+                return
+        except Exception:
+            return
+
+    if func in ('nobody', 'controller'):
+        return
+
+    try:
+        fn = getattr(mod, func, None)
+        if callable(fn):
+            fn()
+    except Exception:
+        # swallow errors to keep scanning tolerant
+        return
 
 
 def file_list_func():
-    if is_nuitka_compiled():
-        module_list = []
-        for module in pkgutil.walk_packages(path=[__compiled__.containing_dir]):
-            if module.ispkg:
-                module_list = module_list + list_submodules(module.name)
-        return module_list
+    """Discover candidate modules to import/reflect.
+
+    Strategy (best-effort, in order):
+      1. If the caller package can be determined, walk its package path via pkgutil.
+      2. If running frozen (PyInstaller/Nuitka), try scanning the frozen app directory (sys._MEIPASS or executable dir).
+      3. Fall back to walking the current working directory and returning dotted module names for any package modules found.
+
+    The function returns a list of dotted module names when possible; in some frozen cases
+    it may return filesystem paths to .py files which `reflect_module` can load as fallback.
+    """
+    # 1) try caller package discovery
+    try:
+        caller_pkg = get_caller_package()
+        if caller_pkg:
+            mods = list_submodules(caller_pkg)
+            if mods:
+                return mods
+    except CallerPackageException:
+        # ignore and continue to other strategies
+        pass
+
+    # 2) frozen applications (PyInstaller / Nuitka onefile)
     if getattr(sys, 'frozen', False):
-        caller_package = get_caller_package()
-        return list_submodules(caller_package)
-    file_list = []
-    for top, dirs, files in os.walk(os.getcwd()):
-        for files_item in files:
-            if os.path.splitext(files_item)[1] == '.py' and files_item != sys.argv[0][sys.argv[0].rfind(os.sep) + 1:]:
-                if os.path.split(top)[-1] == os.path.split(os.getcwd())[-1]:
-                    file_list.append(files_item)
+        # PyInstaller: sys._MEIPASS contains extraction path
+        base_dirs = []
+        meipass = getattr(sys, '_MEIPASS', None)
+        if meipass:
+            base_dirs.append(meipass)
+        # Nuitka compiled bundle may expose a __compiled__ object with containing_dir
+        compiled = globals().get('__compiled__')
+        if compiled is not None:
+            containing = getattr(compiled, 'containing_dir', None)
+            if containing:
+                base_dirs.append(containing)
+        # fallback to executable dir
+        base_dirs.append(os.path.dirname(sys.executable))
+
+        seen = set()
+        modules = []
+        for base in base_dirs:
+            if not base or not os.path.isdir(base):
+                continue
+            for root, dirs, files in os.walk(base):
+                if '__init__.py' not in files:
+                    continue
+                # compute dotted package prefix relative to base
+                rel = os.path.relpath(root, base)
+                if rel == '.':
+                    prefix = ''
                 else:
-                    system = platform.system()
-                    if system == "Windows":
-                        item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '\\', '')\
-                                   .replace('\\', '.') + '.' + files_item
-                        file_list.append(item)
-                    else:
-                        item = top.replace(os.path.split(os.path.realpath(sys.argv[0]))[0] + '/', '')\
-                                   .replace('/', '.') + '.' + files_item
-                        file_list.append(item)
-    return file_list
+                    prefix = rel.replace(os.sep, '.') + '.'
+                for f in files:
+                    if f.endswith('.py') and f != '__init__.py':
+                        modname = prefix + f[:-3]
+                        if modname not in seen:
+                            seen.add(modname)
+                            modules.append(modname)
+        if modules:
+            return modules
+
+    # 3) fallback: walk current working directory and convert package files to dotted names
+    modules = []
+    cwd = os.getcwd()
+    for root, dirs, files in os.walk(cwd):
+        if '__init__.py' not in files:
+            continue
+        rel = os.path.relpath(root, cwd)
+        if rel == '.':
+            prefix = ''
+        else:
+            prefix = rel.replace(os.sep, '.') + '.'
+        for f in files:
+            if f.endswith('.py') and f != '__init__.py':
+                modules.append(prefix + f[:-3])
+    return modules
 
 
-def scan_controller(file_path: list):
-    for x in file_path:
-        reflect(x, 'controller')
+def scan_controller(modules: list):
+    for mod in modules:
+        reflect_module(mod, 'controller')
 
 
-def scan_service(file_path: list):
-    for x in file_path:
-        reflect(x, 'nobody')
+def scan_service(modules: list):
+    for mod in modules:
+        reflect_module(mod, 'nobody')
 
 
 def get_index_list(url_list: list) -> list:
@@ -136,18 +253,117 @@ def sort_url():
         del item[2]
 
 
+def is_started_directly() -> bool:
+    """Return True if the process was started directly (a __main__ frame exists).
+
+    We inspect the stack and check whether any frame's module name is '__main__'.
+    This is a conservative heuristic: if the framework is imported by another
+    application (e.g. tests, embedding, REPL), we won't auto-install console handlers.
+    """
+    try:
+        for frame_info in inspect.stack():
+            module = inspect.getmodule(frame_info[0])
+            if module is None:
+                continue
+            if getattr(module, '__name__', '') == '__main__':
+                return True
+    except Exception:
+        pass
+    return False
+
+
+def _ensure_console_logging():
+    """Ensure framework logs appear on console when the application hasn't configured logging.
+
+    Behavior:
+    - If the root logger already has handlers, assume application configured logging and do nothing.
+    - If the 'cullinan' package logger already has handlers, do nothing.
+    - Otherwise add a StreamHandler to stdout on the 'cullinan' logger at INFO level.
+    - Honor env var CULLINAN_DISABLE_AUTO_CONSOLE=1 to disable this behavior.
+    """
+    try:
+        if os.getenv('CULLINAN_DISABLE_AUTO_CONSOLE', '0') == '1':
+            return None
+        # Allow forcing console handler via env var (useful in tests/IDE runs)
+        force = os.getenv('CULLINAN_FORCE_CONSOLE', '0').lower() in ('1', 'true', 'yes')
+        # only auto-enable console logging when the process was started directly
+        # unless forced via CULLINAN_FORCE_CONSOLE
+        if not force and not is_started_directly():
+            return None
+        root = logging.getLogger()
+        # consider only "real" handlers (not NullHandler)
+        root_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(root, 'handlers', []) if h is not None)
+        if root_has_real:
+            return None
+        pkg_logger = logging.getLogger('cullinan')
+        pkg_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(pkg_logger, 'handlers', []) if h is not None)
+        if pkg_has_real:
+            return None
+        # add a console handler to the package logger
+        console_handler = logging.StreamHandler(sys.stdout)
+        fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+        console_handler.setFormatter(fmt)
+        # allow customizing console level via env var (e.g. DEBUG/INFO)
+        lvl_name = os.getenv('CULLINAN_AUTO_CONSOLE_LEVEL', '').strip()
+        if lvl_name:
+            try:
+                level = int(lvl_name)
+            except Exception:
+                level = getattr(logging, lvl_name.upper(), None)
+            if isinstance(level, int):
+                console_handler.setLevel(level)
+            else:
+                console_handler.setLevel(logging.INFO)
+        else:
+            console_handler.setLevel(logging.INFO)
+        pkg_logger.addHandler(console_handler)
+        pkg_logger.setLevel(logging.INFO)
+        pkg_logger.propagate = False
+        return console_handler
+    except Exception:
+        # never raise from logging setup
+        return None
+
+
+# ASCII banner used when the framework starts; backslashes are escaped so this
+# compiles cleanly and prints exactly as intended.
+BANNER = (
+    "|||||||||||||||||||||||||||||||||||||||||||||||||\n"
+    "|||                                           |||\n"
+    "|||    _____      _ _ _                       |||\n"
+    "|||   / ____|    | | (_)                      |||\n"
+    "|||  | |    _   _| | |_ _ __   __ _ _ __      |||\n"
+    "|||  | |   | | | | | | | '_ \\ / _` | '_ \\     |||\n"
+    "|||  | |___| |_| | | | | | | | (_| | | | |    |||\n"
+    "|||   \\_____\\__,_|_|_|_|_| |_|\\__,_|_| |_|    |||\n"
+    "|||                                           |||\n"
+    "|||||||||||||||||||||||||||||||||||||||||||||||||\n"
+    "\t|||\n"
+)
+
+
 def run(handlers=None):
     if handlers is None:
         handlers = []
-    print(
-        "\n|||||||||||||||||||||||||||||||||||||||||||||||||\n|||                                           |||\n|||  "
-        "   _____      _ _ _ "
-        "               |||\n|||    / ____|    | | (_)                     |||\n|||   | |    _   _| | |_ _ __   __ "
-        "_ _ __     |||\n|||   | |   | | | | | | | '_ \ / _` | '_ \    |||\n|||   | |___| |_| | | | | | | | (_| | | | "
-        "|   |||\n|||    \_____\__, "
-        "_|_|_|_|_| |_|\__,_|_| |_|   |||\n|||                                           "
-        "|||\n|||||||||||||||||||||||||||||||||||||||||||||||||\n\t|||")
-    print("\t|||\tloading env...")
+    # ensure console logging is available by default when the app hasn't configured logging
+    # ensure logging handlers are present when appropriate (may install console handler)
+    installed_handler = _ensure_console_logging()
+    # If we installed a handler ourselves, temporarily set its formatter to '%(message)s'
+    # so the banner is emitted verbatim via logging (no print necessary). Restore afterwards.
+    if installed_handler is not None:
+        old_fmt = None
+        try:
+            old_fmt = getattr(installed_handler, 'formatter', None)
+            installed_handler.setFormatter(logging.Formatter('%(message)s'))
+            logger.info(BANNER)
+        finally:
+            try:
+                installed_handler.setFormatter(old_fmt)
+            except Exception:
+                pass
+    else:
+        logger.info(BANNER)
+    logger.info("\t|||\tloading env...")
     load_dotenv()
     load_dotenv(verbose=True)
     env_path = Path(os.getcwd()) / '.env'
@@ -156,8 +372,8 @@ def run(handlers=None):
         template_path=os.path.join(os.getcwd(), 'templates'),
         static_path=os.path.join(os.getcwd(), 'static')
     )
-    print("\t|||\t\t└---scanning controller...")
-    print("\t|||\t\t\t...")
+    logger.info("\t|||\t\t└---scanning controller...")
+    logger.info("\t|||\t\t\t...")
     scan_service(file_list_func())
     scan_controller(file_list_func())
     sort_url()
@@ -165,19 +381,19 @@ def run(handlers=None):
         handlers=handler_list + handlers,
         **settings
     )
-    print("\t|||\t\t└---loading controller finish\n\t|||\t")
+    logger.info("\t|||\t\t└---loading controller finish\n\t|||\t")
     define("port", default=os.getenv("SERVER_PORT", 4080), help="run on the given port", type=int)
-    print("\t|||\tloading env finish\n\t|||\t")
+    logger.info("\t|||\tloading env finish\n\t|||\t")
     http_server = tornado.httpserver.HTTPServer(mapping)
     if os.getenv("SERVER_THREAD") is not None:
-        print("\t|||\t\033[0;36;0mserver is starting \033[0m")
-        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT", 4080)) + " \033[0m")
+        logger.info("\t|||\tserver is starting")
+        logger.info("\t|||\tport is %s", str(os.getenv("SERVER_PORT", 4080)))
         http_server.bind(options.port)
         http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
     else:
         http_server.listen(options.port)
-        print("\t|||\t\033[0;36;0mserver is starting \033[0m")
-        print("\t|||\t\033[0;36;0mport is " + str(os.getenv("SERVER_PORT", 4080)) + " \033[0m")
+        logger.info("\t|||\tserver is starting")
+        logger.info("\t|||\tport is %s", str(os.getenv("SERVER_PORT", 4080)))
     tornado.ioloop.IOLoop.current().start()
 
 
