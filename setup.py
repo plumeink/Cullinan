@@ -7,7 +7,7 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.60a1',
+    version='0.6.0a1',
     packages=['cullinan'],
     description='Cullinan is written based on tornado and Sqlalchemy to help the project quickly build web application',
     author='plumeink',
@@ -32,5 +32,5 @@ setup(
     ],
     license='http://www.apache.org/licenses/LICENSE-2.0',
     install_requires=['tornado', 'python-dotenv', 'sqlalchemy', 'pymysql', 'contextvars'],
-    python_requires='>=3'
+    python_requires='>=3.7'
 )
