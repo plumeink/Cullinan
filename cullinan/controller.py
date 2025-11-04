@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import inspect
 import tornado.web
 import tornado.websocket
 import types
@@ -113,7 +114,7 @@ class EncapsulationHandler(object):
     def add_url(url: str, f: Callable) -> object:
         servlet = type('Servlet' + url.replace('/', ''), (Handler,),
                        {"set_instance_method": EncapsulationHandler.set_fragment_method})
-        if handler_list.__len__() == 0:
+        if len(handler_list) == 0:
             servlet.set_instance_method(servlet, f)
             servlet.f = types.MethodType(f, servlet)
             handler_list.append((url, servlet))
@@ -135,7 +136,7 @@ class EncapsulationHandler(object):
         servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,),
                        {"set_instance_method": EncapsulationHandler.set_fragment_method})
         setattr(servlet, 'service', service_list)
-        if handler_list.__len__() == 0:
+        if len(handler_list) == 0:
             for item in dir(cls):
                 if not item.startswith('__') and not item.endswith('__'):
                     setattr(servlet, item, cls.__dict__[item])
@@ -162,7 +163,7 @@ class Handler(tornado.web.RequestHandler):
         pass
 
     def set_default_headers(self):
-        if header_list.__len__() > 0:
+        if header_list:
             for header in header_list:
                 self.set_header(header[0], header[1])
 
@@ -172,217 +173,78 @@ class Handler(tornado.web.RequestHandler):
 
 def request_resolver(self, url_param_key_list: tuple, url_param_value_list: tuple,
                      query_param_names: tuple, body_param_names, file_param_key_list) -> tuple:
-    if url_param_key_list.__len__() > 0 and query_param_names is not None and body_param_names is not None and\
-            file_param_key_list is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        query_param_dict = {}
+    """
+    Unified resolver: fill any provided param lists and return (url_dict|None, query_dict|None, body_dict|None, file_dict|None).
+    Safer JSON parsing and tolerant to missing keys.
+    """
+    url_dict = None
+    query_dict = None
+    body_dict = None
+    file_dict = None
+
+    # URL params
+    if url_param_key_list:
+        url_dict = {}
+        for i, k in enumerate(url_param_key_list):
+            try:
+                url_dict[k] = url_param_value_list[i]
+            except Exception:
+                url_dict[k] = None
+        print("\t||| url_params", url_dict)
+
+    # Query params
+    if query_param_names:
+        query_dict = {}
         for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        body_param_dict = {}
-        file_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
+            try:
+                query_dict[name] = self.get_query_argument(name)
+            except Exception:
+                query_dict[name] = None
+        print("\t||| query_params", query_dict)
+
+    # Body params
+    if body_param_names:
+        body_dict = {}
+        ctype = (self.request.headers.get('Content-Type') or '').lower()
+        is_json = ctype.startswith('application/json')
+        if is_json:
+            try:
+                raw = self.request.body or b'{}'
+                data = json.loads(raw)
+            except Exception:
+                data = {}
             for name in body_param_names:
-                body_param_dict[name] = data[name]
+                body_dict[name] = data.get(name)
         else:
             for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-            for name in file_param_key_list:
-                file_param_dict[name] = self.request.files[name]
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return url_param_dict, query_param_dict, body_param_dict, file_param_dict
-    if url_param_key_list.__len__() > 0 and query_param_names is not None and body_param_names is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        query_param_dict = {}
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        body_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
-            for name in body_param_names:
-                body_param_dict[name] = data[name]
-        else:
-            for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        return url_param_dict, query_param_dict, body_param_dict
-    if url_param_key_list.__len__() > 0 and query_param_names is not None and file_param_key_list is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        query_param_dict = {}
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        file_param_dict = {}
+                try:
+                    body_dict[name] = self.get_body_argument(name)
+                except Exception:
+                    body_dict[name] = None
+        print("\t||| body_params", body_dict)
+
+    # File params
+    if file_param_key_list:
+        file_dict = {}
         for name in file_param_key_list:
-            file_param_dict[name] = self.request.files[name]
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return url_param_dict, query_param_dict, None, file_param_dict
-    elif query_param_names is not None and url_param_key_list is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        query_param_dict = dict()
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        return url_param_dict, query_param_dict, None, None
-    elif url_param_key_list is not None and file_param_key_list is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        file_param_dict = {}
-        for name in file_param_key_list:
-            file_param_dict[name] = self.request.files[name]
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return url_param_dict, None, None, file_param_dict
-    elif file_param_key_list is not None and body_param_names is not None:
-        file_param_dict = {}
-        body_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
-            for name in body_param_names:
-                body_param_dict[name] = data[name]
-        else:
-            for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-            for name in file_param_key_list:
-                body_param_dict[name] = self.request.files[name]
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return None, None, body_param_dict, file_param_dict
-    elif query_param_names is not None and file_param_key_list is not None:
-        query_param_dict = {}
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        file_param_dict = {}
-        for name in file_param_key_list:
-            file_param_dict[name] = self.request.files[name]
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return None, query_param_dict, None, file_param_dict
-    elif url_param_key_list is not None and body_param_names is not None:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        body_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
-            for name in body_param_names:
-                body_param_dict[name] = data[name]
-        else:
-            for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        return url_param_dict, None, body_param_dict, None
-    elif query_param_names is not None and body_param_names is not None:
-        query_param_dict = {}
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        body_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
-            for name in body_param_names:
-                body_param_dict[name] = data[name]
-        else:
-            for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        return None, query_param_dict, body_param_dict, None
-    elif url_param_key_list.__len__() > 0:
-        url_param_dict = {}
-        for index in range(0, url_param_key_list.__len__()):
-            url_param_dict[url_param_key_list[index]] = url_param_value_list[index]
-        print("\t|||\t url_params", end="")
-        print(url_param_dict)
-        return url_param_dict, None, None, None
-    elif query_param_names is not None:
-        query_param_dict = dict()
-        for name in query_param_names:
-            query_param_dict[name] = self.get_query_argument(name)
-        print("\t|||\t query_params", end="")
-        print(query_param_dict)
-        return None, query_param_dict, None, None
-    elif file_param_key_list is not None:
-        file_param_dict = {}
-        for name in file_param_key_list:
-            file_param_dict[name] = self.request.files[name]
-        print("\t|||\t file_params", end="")
-        print(file_param_dict.keys())
-        return None, None, None, file_param_dict
-    elif body_param_names is not None:
-        body_param_dict = {}
-        if self.request.headers.get("Content-Type") == 'application/json':
-            json_data = self.request.body
-            data = json.loads(json_data)
-            for name in body_param_names:
-                body_param_dict[name] = data[name]
-        else:
-            for name in body_param_names:
-                body_param_dict[name] = self.get_body_argument(name)
-        print("\t|||\t body_params", end="")
-        print(body_param_dict)
-        return None, None, body_param_dict, None
-    else:
-        return None, None, None, None
+            file_dict[name] = (self.request.files.get(name) if isinstance(self.request.files, dict) else None)
+        print("\t||| file_params", list((file_dict or {}).keys()))
+
+    return url_dict, query_dict, body_dict, file_dict
 
 
 def header_resolver(self, header_names: list):
-    if header_names is not None:
-        need_header = dict()
+    if header_names:
+        need_header = {}
         for name in header_names:
-            need_header[name] = self.request.headers.get(name, None)
+            need_header[name] = self.request.headers.get(name)
             if need_header[name] is not None:
-                print("\t|||\t request_headers", end="")
-                print(need_header)
+                print("\t||| request_headers", {name: need_header[name]})
             else:
                 miss_header_handler = MissingHeaderHandlerHook.get_hook()
                 miss_header_handler(request=self, header_name=name)
         return need_header
-    else:
-        return None
+    return None
 
 
 def url_resolver(url: str) -> tuple:
@@ -390,12 +252,29 @@ def url_resolver(url: str) -> tuple:
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
     url_param_list = []
-    for index in range(0, before_list.__len__()):
+    for index in range(0, len(before_list)):
         url_param_list.append(url[int(before_list[index]) + 1:int(after_list[index])])
     for url_param in url_param_list:
         url = url.replace(url_param, "[a-zA-Z0-9-]+")
     url = url.replace("{", "(").replace("}", ")/*")
     return url, url_param_list
+
+
+class _SimpleResponse:
+    """Fallback minimal response implementing the expected interface"""
+    def __init__(self):
+        self._headers = []
+        self._status = 200
+        self._body = ''
+
+    def get_headers(self):
+        return list(self._headers)
+
+    def get_status(self):
+        return self._status
+
+    def get_body(self):
+        return self._body
 
 
 def request_handler(self, func, params, headers, type, get_request_body=False):
@@ -419,57 +298,48 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
     setattr(controller_self, 'response', response)
     setattr(controller_self, 'response_factory', response_build)
 
-    # 构造真实 response 实例（若 response_build 可调用则调用）
-    if callable(response_build):
-        try:
+    # 构造真实 response 实例（若 response_build 可调用则调用），回退为 _SimpleResponse
+    resp_instance = None
+    try:
+        if callable(response_build):
             resp_instance = response_build()
-        except Exception:
+        else:
             resp_instance = response_build
-    else:
-        resp_instance = response_build
+    except Exception:
+        print('response_build failed, falling back to _SimpleResponse')
+        resp_instance = _SimpleResponse()
+
+    if resp_instance is None:
+        resp_instance = _SimpleResponse()
 
     # 绑定到 contextvars，返回 token
     token = response.push(resp_instance)
 
     try:
-        # 解析 func 参数名并调用
-        param_names = func.__code__.co_varnames
-        param_names = list(param_names)
-        if "self" in param_names:
-            param_names.remove("self")
-        else:
-            raise Exception("controller's params must have self")
+        # 使用 inspect.signature 获取参数名并构建参数列表
+        sig = inspect.signature(func)
+        param_names = [p.name for p in sig.parameters.values()
+                       if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)]
+        if param_names and param_names[0] == 'self':
+            param_names = param_names[1:]
 
-        response_ret = None
-        if len(param_names) == 0:
-            response_ret = func(controller_self)
-        else:
-            param_list = []
-            for item in param_names:
-                if item in KEY_NAME_INDEX.keys():
-                    if KEY_NAME_INDEX[item] is not None:
-                        param_list.append(params[KEY_NAME_INDEX[item]])
-                elif item == 'request_body' and get_request_body is True:
-                    param_list.append(self.request.body)
-                elif item == 'headers' and headers is not None:
-                    param_list.append(headers)
-            if len(param_list) == 0:
-                response_ret = func(controller_self)
-            elif len(param_list) == 1:
-                response_ret = func(controller_self, param_list[0])
-            elif len(param_list) == 2:
-                response_ret = func(controller_self, param_list[0], param_list[1])
-            elif len(param_list) == 3:
-                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2])
-            elif len(param_list) == 4:
-                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
-                                    param_list[3])
-            elif len(param_list) == 5:
-                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
-                                    param_list[3], param_list[4])
-            elif len(param_list) == 6:
-                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
-                                    param_list[3], param_list[4], param_list[5])
+        param_list = []
+        for name in param_names:
+            if name in KEY_NAME_INDEX:
+                idx = KEY_NAME_INDEX[name]
+                try:
+                    param_list.append(params[idx])
+                except Exception:
+                    param_list.append(None)
+            elif name == 'request_body' and get_request_body:
+                param_list.append(self.request.body)
+            elif name == 'headers' and headers is not None:
+                param_list.append(headers)
+            else:
+                param_list.append(None)
+
+        # 调用目标函数
+        response_ret = func(controller_self, *param_list) if len(param_list) > 0 else func(controller_self)
 
         # 返回值优先，否则使用 context 中绑定的实例
         if response_ret is not None and hasattr(response_ret, "get_headers") and hasattr(response_ret, "get_status") and hasattr(response_ret, "get_body"):
@@ -478,28 +348,38 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
             resp_obj = response.get()
 
         # 写出 headers/status/body（保留全局 header_list 行为）
-        if header_list.__len__() > 0:
+        if len(header_list) > 0:
             for header in header_list:
                 self.set_header(header[0], header[1])
         if resp_obj and getattr(resp_obj, "get_headers", None):
-            if resp_obj.get_headers().__len__() > 0:
-                for header in resp_obj.get_headers():
-                    self.set_header(header[0], header[1])
+            for header in (resp_obj.get_headers() or []):
+                self.set_header(header[0], header[1])
         if resp_obj:
-            self.set_status(resp_obj.get_status())
-            self.write(resp_obj.get_body())
+            try:
+                self.set_status(resp_obj.get_status())
+            except Exception:
+                self.set_status(200)
+            try:
+                self.write(resp_obj.get_body())
+            except Exception:
+                self.write(str(getattr(resp_obj, 'get_body', lambda: '')()))
         else:
             self.set_status(204)
 
-        # 恢复/清理真实 response 实例内部状态（兼容原有逻辑）
+        # 恢复/清理真实 response 实例内部状态（兼容原有逻辑，但更健壮）
         try:
             real_resp = response.get()
             if real_resp is not None:
-                real_resp.__body__ = ''
-                real_resp.__headers__ = []
-                real_resp.__status__ = 200
-                real_resp.__status_msg__ = ''
-                real_resp.__is_static__ = False
+                if hasattr(real_resp, '__body__'):
+                    real_resp.__body__ = ''
+                if hasattr(real_resp, '__headers__'):
+                    real_resp.__headers__ = []
+                if hasattr(real_resp, '__status__'):
+                    real_resp.__status__ = 200
+                if hasattr(real_resp, '__status_msg__'):
+                    real_resp.__status_msg__ = ''
+                if hasattr(real_resp, '__is_static__'):
+                    real_resp.__is_static__ = False
         except Exception:
             pass
 
@@ -634,8 +514,7 @@ def delete_api(**kwargs):
             else:
                 request_handler(self,
                                 func,
-                                request_resolver(self,
-                                                 url_param_key_list, args,
+                                request_resolver(self, url_param_key_list, args,
                                                  kwargs.get('query_params', None), None, kwargs.get('file_params', None)),
                                 header_resolver(self, kwargs.get('headers', None)),
                                 'delete')
