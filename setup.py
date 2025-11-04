@@ -20,7 +20,7 @@ setup(
     author_email='official@plumeink.com',
     url='https://github.com/plumeink/Cullinan',
     classifiers=[
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
