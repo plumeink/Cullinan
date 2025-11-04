@@ -511,7 +511,7 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
         response.pop(token)
 
 
-def get_api(**kwargs: dict):
+def get_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
@@ -541,7 +541,7 @@ def get_api(**kwargs: dict):
     return inner
 
 
-def post_api(**kwargs: dict):
+def post_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
@@ -573,7 +573,7 @@ def post_api(**kwargs: dict):
     return inner
 
 
-def patch_api(**kwargs: dict):
+def patch_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
@@ -604,7 +604,7 @@ def patch_api(**kwargs: dict):
     return inner
 
 
-def delete_api(**kwargs: dict):
+def delete_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
@@ -632,7 +632,7 @@ def delete_api(**kwargs: dict):
     return inner
 
 
-def put_api(**kwargs: dict):
+def put_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
