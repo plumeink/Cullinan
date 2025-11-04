@@ -5,6 +5,7 @@ import os
 import pkgutil
 import importlib.util
 import logging
+import signal
 
 import tornado.ioloop
 from cullinan.controller import handler_list, header_list
@@ -394,8 +395,96 @@ def run(handlers=None):
         http_server.listen(options.port)
         logger.info("\t|||\tserver is starting")
         logger.info("\t|||\tport is %s", str(os.getenv("SERVER_PORT", 4080)))
-    tornado.ioloop.IOLoop.current().start()
+
+    # Register signal handlers to allow graceful shutdown (SIGINT/SIGTERM)
+    try:
+        def _handle_signal(signum, frame):
+            logger.info("Received signal %s, stopping...", signum)
+            try:
+                # request the IOLoop to stop from its own thread
+                tornado.ioloop.IOLoop.current().add_callback(tornado.ioloop.IOLoop.current().stop)
+            except Exception:
+                try:
+                    tornado.ioloop.IOLoop.current().stop()
+                except Exception:
+                    pass
+
+        signal.signal(signal.SIGINT, _handle_signal)
+        try:
+            # SIGTERM may not exist on some Windows setups; ignore failures
+            signal.signal(signal.SIGTERM, _handle_signal)
+        except Exception:
+            pass
+    except Exception:
+        # best-effort: do not fail startup if signals can't be registered
+        pass
+
+    # Start the IOLoop and handle KeyboardInterrupt gracefully so closing
+    # the app doesn't produce a long traceback in normal shutdown.
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        logger.info("KeyboardInterrupt received, shutting down server...")
+    except Exception:
+        logger.exception("Exception running IOLoop")
+    finally:
+        # Stop accepting new connections and stop the IOLoop.
+        try:
+            http_server.stop()
+        except Exception:
+            pass
+        try:
+            io_loop = tornado.ioloop.IOLoop.current()
+            # ensure the loop is stopped
+            try:
+                io_loop.add_callback(io_loop.stop)
+            except Exception:
+                try:
+                    io_loop.stop()
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
 
-def add_global_header(name: str, value: str):
-    header_list.append([name, value])
+async def _run_shutdown_sequence(server, loop, timeout_seconds: int):
+    """Wait for controller.active_request_count to drop to zero (or until timeout),
+    then stop the server and close any remaining connections.
+
+    This function is used by tests and by graceful shutdown logic to allow
+    inflight requests to finish before the server is stopped.
+    """
+    try:
+        import asyncio as _asyncio
+        import cullinan.controller as _ctrl
+
+        start = getattr(loop, 'time', _asyncio.get_event_loop().time)()
+        deadline = start + (timeout_seconds or 0)
+
+        # poll until active_request_count reaches 0 or timeout
+        while getattr(_ctrl, 'active_request_count', 0) > 0:
+            now = getattr(loop, 'time', _asyncio.get_event_loop().time)()
+            if timeout_seconds and now >= deadline:
+                break
+            await _asyncio.sleep(0.1)
+
+        # attempt to stop server and close connections
+        try:
+            if hasattr(server, 'stop') and callable(server.stop):
+                server.stop()
+        except Exception:
+            pass
+        try:
+            if hasattr(server, 'close_all_connections') and callable(server.close_all_connections):
+                server.close_all_connections()
+        except Exception:
+            pass
+    except Exception:
+        # be robust in tests or exotic environments
+        try:
+            if hasattr(server, 'stop') and callable(server.stop):
+                server.stop()
+        except Exception:
+            pass
+    return None
+
