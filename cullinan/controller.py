@@ -1,3 +1,4 @@
+# python
 # -*- coding: utf-8 -*-
 
 import json
@@ -5,6 +6,7 @@ import tornado.web
 import tornado.websocket
 import types
 import functools
+import contextvars
 from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service import service_list, response_build
 from typing import Callable
@@ -18,6 +20,77 @@ KEY_NAME_INDEX = {
     "body_params": 2,
     "file_params": 3,
 }
+
+
+class ResponseProxy:
+    """
+    contextvars `ContextVar` 代理，用作模块级的 response。
+    - push(resp) 绑定实例，返回 token（用于 reset）
+    - pop(token) 恢复上下文
+    - get() 获取当前实例（可能为 None）
+    - __getattr__ 委托到当前实例，便于原有代码直接调用 response.xxx
+    """
+    def __init__(self):
+        self._ctx = contextvars.ContextVar("cullinan_response", default=None)
+
+    def push(self, resp):
+        return self._ctx.set(resp)
+
+    def pop(self, token):
+        try:
+            self._ctx.reset(token)
+        except Exception:
+            pass
+
+    def get(self):
+        return self._ctx.get()
+
+    def _ensure(self):
+        resp = self.get()
+        if resp is None:
+            raise RuntimeError("no Response bound in this context")
+        return resp
+
+    def __getattr__(self, name):
+        return getattr(self._ensure(), name)
+
+
+class LazyResponseMeta(type):
+    """
+    元类：把模块名 `response` 当作惰性代理类对象。
+    - 不在导入时实例化真实代理
+    - 第一次读取或写入非私有成员时创建并缓存 ResponseProxy 实例
+    """
+    def __getattribute__(cls, name):
+        # 私有或元属性仍使用类自身
+        if name.startswith('_'):
+            return super().__getattribute__(name)
+        inst = cls.__dict__.get('_instance', None)
+        if inst is None:
+            inst = ResponseProxy()
+            super().__setattr__('_instance', inst)
+        return getattr(inst, name)
+
+    def __setattr__(cls, name, value):
+        if name.startswith('_'):
+            return super().__setattr__(name, value)
+        inst = cls.__dict__.get('_instance', None)
+        if inst is None:
+            inst = ResponseProxy()
+            super().__setattr__('_instance', inst)
+        setattr(inst, name, value)
+
+    def __repr__(cls):
+        inst = cls.__dict__.get('_instance', None)
+        if inst is None:
+            return "<lazy response (not initialized)>"
+        return repr(inst)
+
+
+# 模块级名为 `response` 的惰性代理类（*不是实例*，避免导入时的副作用）
+class response(metaclass=LazyResponseMeta):
+    """惰性响应代理类（模块级名，行为等同于原先的 ResponseProxy 实例）"""
+    pass
 
 
 class EncapsulationHandler(object):
@@ -326,8 +399,8 @@ def url_resolver(url: str) -> tuple:
 
 
 def request_handler(self, func, params, headers, type, get_request_body=False):
-    global response
     global controller_self
+    # 选择 controller_self（保持原有分支逻辑）
     if type == 'get':
         controller_self = self.get_controller_self
     elif type == 'post':
@@ -338,57 +411,102 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
         controller_self = self.delete_controller_self
     elif type == 'put':
         controller_self = self.put_controller_self
+    else:
+        raise Exception("unsupported request type")
+
+    # 注入 service 与 module-level proxy（controller 方法仍可通过 self.response 访问）
     setattr(controller_self, 'service', service_list)
-    setattr(controller_self, 'response', response_build)
-    param_names = func.__code__.co_varnames
-    param_names = list(param_names)
-    if "self" in param_names:
-        param_names.remove("self")
+    setattr(controller_self, 'response', response)
+    setattr(controller_self, 'response_factory', response_build)
+
+    # 构造真实 response 实例（若 response_build 可调用则调用）
+    if callable(response_build):
+        try:
+            resp_instance = response_build()
+        except Exception:
+            resp_instance = response_build
     else:
-        raise Exception("controller's params must have self")
-    if len(param_names) == 0:
-        response = func(controller_self)
-    else:
-        param_list = []
-        for item in param_names:
-            if item in KEY_NAME_INDEX.keys():
-                if KEY_NAME_INDEX[item] is not None:
-                    param_list.append(params[KEY_NAME_INDEX[item]])
-            elif item == 'request_body' and get_request_body is True:
-                param_list.append(self.request.body)
-            elif item == 'headers' and headers is not None:
-                param_list.append(headers)
-        if len(param_list) == 0:
-            response = func(controller_self)
-        elif len(param_list) == 1:
-            response = func(controller_self, param_list[0])
-        elif len(param_list) == 2:
-            response = func(controller_self, param_list[0], param_list[1])
-        elif len(param_list) == 3:
-            response = func(controller_self, param_list[0], param_list[1], param_list[2])
-        elif len(param_list) == 4:
-            response = func(controller_self, param_list[0], param_list[1], param_list[2],
-                            param_list[3])
-        elif len(param_list) == 5:
-            response = func(controller_self, param_list[0], param_list[1], param_list[2],
-                            param_list[3], param_list[4])
-        elif len(param_list) == 6:
-            response = func(controller_self, param_list[0], param_list[1], param_list[2],
-                            param_list[3], param_list[4], param_list[5])
-    if header_list.__len__() > 0:
-        for header in header_list:
-            self.set_header(header[0], header[1])
-    if response.get_headers().__len__() > 0:
-        for header in response.get_headers():
-            self.set_header(header[0], header[1])
-    self.set_status(response.get_status())
-    self.write(response.get_body())
-    response.__body__ = ''
-    response.__headers__ = []
-    response.__status__ = 200
-    response.__status_msg__ = ''
-    response.__is_static__ = False
-    self.finish()
+        resp_instance = response_build
+
+    # 绑定到 contextvars，返回 token
+    token = response.push(resp_instance)
+
+    try:
+        # 解析 func 参数名并调用
+        param_names = func.__code__.co_varnames
+        param_names = list(param_names)
+        if "self" in param_names:
+            param_names.remove("self")
+        else:
+            raise Exception("controller's params must have self")
+
+        response_ret = None
+        if len(param_names) == 0:
+            response_ret = func(controller_self)
+        else:
+            param_list = []
+            for item in param_names:
+                if item in KEY_NAME_INDEX.keys():
+                    if KEY_NAME_INDEX[item] is not None:
+                        param_list.append(params[KEY_NAME_INDEX[item]])
+                elif item == 'request_body' and get_request_body is True:
+                    param_list.append(self.request.body)
+                elif item == 'headers' and headers is not None:
+                    param_list.append(headers)
+            if len(param_list) == 0:
+                response_ret = func(controller_self)
+            elif len(param_list) == 1:
+                response_ret = func(controller_self, param_list[0])
+            elif len(param_list) == 2:
+                response_ret = func(controller_self, param_list[0], param_list[1])
+            elif len(param_list) == 3:
+                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2])
+            elif len(param_list) == 4:
+                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
+                                    param_list[3])
+            elif len(param_list) == 5:
+                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
+                                    param_list[3], param_list[4])
+            elif len(param_list) == 6:
+                response_ret = func(controller_self, param_list[0], param_list[1], param_list[2],
+                                    param_list[3], param_list[4], param_list[5])
+
+        # 返回值优先，否则使用 context 中绑定的实例
+        if response_ret is not None and hasattr(response_ret, "get_headers") and hasattr(response_ret, "get_status") and hasattr(response_ret, "get_body"):
+            resp_obj = response_ret
+        else:
+            resp_obj = response.get()
+
+        # 写出 headers/status/body（保留全局 header_list 行为）
+        if header_list.__len__() > 0:
+            for header in header_list:
+                self.set_header(header[0], header[1])
+        if resp_obj and getattr(resp_obj, "get_headers", None):
+            if resp_obj.get_headers().__len__() > 0:
+                for header in resp_obj.get_headers():
+                    self.set_header(header[0], header[1])
+        if resp_obj:
+            self.set_status(resp_obj.get_status())
+            self.write(resp_obj.get_body())
+        else:
+            self.set_status(204)
+
+        # 恢复/清理真实 response 实例内部状态（兼容原有逻辑）
+        try:
+            real_resp = response.get()
+            if real_resp is not None:
+                real_resp.__body__ = ''
+                real_resp.__headers__ = []
+                real_resp.__status__ = 200
+                real_resp.__status_msg__ = ''
+                real_resp.__is_static__ = False
+        except Exception:
+            pass
+
+        self.finish()
+    finally:
+        # 一定要 pop，避免污染下一个请求/扫描
+        response.pop(token)
 
 
 def get_api(**kwargs):

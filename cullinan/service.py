@@ -13,7 +13,7 @@ class Response(object):
 
     # __type__ = 'JSON'
 
-    def set_status(self, status, msg):
+    def set_status(self, status, msg = ''):
         self.__status__ = status
         self.__status_msg__ = msg
 
