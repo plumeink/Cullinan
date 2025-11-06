@@ -289,19 +289,6 @@ Cullinan provides three powerful build scripts:
 
 ---
 
-## 🎯 Why Cullinan?
-
-| Feature | Cullinan | Flask | FastAPI | Django |
-|---------|----------|-------|---------|--------|
-| **Easy Packaging** | ✅ Built-in | ⚠️ Manual | ⚠️ Manual | ⚠️ Manual |
-| **Async Support** | ✅ Tornado | ❌ | ✅ | ⚠️ Limited |
-| **Learning Curve** | 🟢 Low | 🟢 Low | 🟡 Medium | 🔴 High |
-| **ORM Integration** | ✅ SQLAlchemy | ⚠️ Extensions | ⚠️ External | ✅ Built-in |
-| **Decorator Routing** | ✅ | ✅ | ✅ | ⚠️ Class-based |
-| **Build Scripts** | ✅ Included | ❌ | ❌ | ❌ |
-
----
-
 ## 📖 Documentation Structure
 
 ```
