@@ -1,0 +1,149 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+Scripts/
+Lib/
+Include/
+pyvenv.cfg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.code-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+*.swp
+*_LOCAL.md
+NOTES.md
+TODO.md
+.scratch/
+
+# Build artifacts (user's build outputs, not our scripts)
+*.spec
+dist_nuitka/
+dist_pyinstaller/
+build_nuitka/
+build_pyinstaller/
+*.dist/
+*.build/
+*.onefile-build/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+coverage.xml
+*.cover
+.cache/
+nosetests.xml
+
+# Documentation build
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+.readthedocs.yml
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Package manager
+poetry.lock
+Pipfile.lock
+pdm.lock
+
+# Development notes and internal reports (not for repo)
+*_COMPLETE.md
+*_CHECKLIST.md
+*_REPORT.md
+*_FIX_*.md
+COMPLETION_STATUS.md
+GIT_COMMIT_MESSAGE.md
+IMPLEMENTATION_SUMMARY.md
+PACKAGING_FIX_SUMMARY.md
+FILE_ORGANIZATION_GUIDE.md
+SANITIZATION_COMPLETE.md
+SYSPATH_FIX_COMPLETE.md
+COMPLETE_DOCS_CHECK_REPORT.md
+DOCS_FIX_REPORT.md
+FINAL_*.md
+TASK_COMPLETE.md
+cleanup.bat
+verify_sanitization.py
+
+# Windows specific
+$RECYCLE.BIN/
+*.lnk
+
+# macOS specific
+.AppleDouble
+.LSOverride
+Icon
+
+# Linux specific
+*~
+.directory
+.Trash-*
+
