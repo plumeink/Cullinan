@@ -4,5 +4,8 @@ import logging
 # Applications should configure logging (console/file) at their entry point.
 logging.getLogger('cullinan').addHandler(logging.NullHandler())
 
-__all__ = []
+# 导出配置接口
+from cullinan.config import configure, get_config, CullinanConfig
+
+__all__ = ['configure', 'get_config', 'CullinanConfig']
 
