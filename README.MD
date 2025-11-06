@@ -52,16 +52,6 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 pip install cullinan
 ```
 
-### From Source (Latest Features)
-
-```bash
-git clone https://github.com/plumeink/Cullinan.git
-cd Cullinan
-pip install -e .
-```
-
-> **💡 Tip**: For the latest features and bug fixes, install from source.
-
 ### Basic Application
 
 ```python
