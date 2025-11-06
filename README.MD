@@ -342,14 +342,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-## 📊 Statistics
-
-![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan?style=social)
-![GitHub forks](https://img.shields.io/github/forks/plumeink/cullinan?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/plumeink/cullinan?style=social)
-
----
-
 ## 💻 Maintainer
 
 [<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
