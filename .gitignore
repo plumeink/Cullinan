@@ -29,7 +29,6 @@ venv/
 ENV/
 env/
 .virtualenv/
-Scripts/
 Lib/
 Include/
 pyvenv.cfg
