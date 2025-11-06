@@ -132,6 +132,7 @@ FINAL_*.md
 TASK_COMPLETE.md
 cleanup.bat
 verify_sanitization.py
+QUICK_START.md
 
 # Windows specific
 $RECYCLE.BIN/
