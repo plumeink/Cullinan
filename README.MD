@@ -1,8 +1,9 @@
-![Python version](https://img.shields.io/badge/%203.7%20|%203.8%20|%203.9%20|%203.10|%203.11|%203.12|%203.13-blue)
+![Python version](https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue)
 ![PyPI version](https://img.shields.io/pypi/v/cullinan.svg?style=flat&logo=pypi&color=green)
 ![PyPI downloads](https://img.shields.io/pypi/dm/cullinan.svg?style=flat&logo=pypi&color=blue)
 ![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan.svg?style=flat&logo=github&color=white)
 ![License](https://img.shields.io/github/license/plumeink/cullinan.svg?style=flat&color=white)
+
 ```                                              
    _____      _ _ _                      
   / ____|    | | (_)                     
@@ -11,45 +12,212 @@
  | |___| |_| | | | | | | | (_| | | | |   
  \_____\__, _|_|_|_|_| |_|\__,_|_| |_|  
 ```
+
 # Cullinan
 
-Cullinan is written based on tornado and Sqlalchemy to help the project quickly build web application
+**A lightweight, production-ready Python web framework with full packaging support.**
 
-## How to use
-    
-#### install
-     
-    pip install cullinan
-    
+Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build web applications with easy packaging for deployment.
+
 ---
-#### demo
 
-File controller:
-```python
-from cullinan.controller import controller, get_api
+## ✨ Features
 
-@controller()
-class TestController:
-    
-    @get_api(uri='/get', query_params=['id', 'name'])
-    def get(self, query_params):
-        return self.service['TestService'].test(query_params['id'], query_params['name'])
+- 🚀 **Easy to Use** - Simple decorator-based routing
+- 📦 **Packaging Ready** - Full Nuitka & PyInstaller support
+- ⚙️ **Flexible Configuration** - Multiple configuration options
+- 🌍 **Cross-Platform** - Windows, Linux, macOS
+- 🏭 **Production Ready** - Built on battle-tested Tornado
+- 🗄️ **SQLAlchemy Integration** - Built-in ORM support
+- 🔧 **Smart Module Loading** - Auto-discovery for development, configurable for packaging
+
+---
+
+## 📚 Documentation
+
+**[📖 Complete Documentation](docs/README.md)** | **[📖 完整文档](docs/zh/README_zh.md)**
+
+### Language / 语言
+
+- **[English Documentation](docs/README.md)** - Complete English documentation
+- **[中文文档](docs/zh/README_zh.md)** - 完整中文文档
+
+### Quick Links
+
+| Guide | Description |
+|-------|-------------|
+| [Complete Guide](docs/00-complete-guide.md) / [完整指南](docs/zh/00-complete-guide_zh.md) | Full framework tutorial |
+| [Configuration](docs/01-configuration.md) / [配置](docs/zh/01-configuration_zh.md) | Configure your application |
+| [Packaging](docs/02-packaging.md) / [打包](docs/zh/02-packaging_zh.md) | Package for deployment |
+| [Troubleshooting](docs/03-troubleshooting.md) / [故障排查](docs/zh/03-troubleshooting_zh.md) | Common issues |
+| [Build Scripts](docs/05-build-scripts.md) / [构建脚本](docs/zh/05-build-scripts_zh.md) | Advanced packaging |
+
+---
+
+## 🚀 Quick Start
+
+## 📦 Installation
+
+### From PyPI (Stable Release)
+
+```bash
+pip install cullinan
 ```
 
-File service:
+### From Source (Latest Features)
+
+```bash
+git clone https://github.com/plumeink/Cullinan.git
+cd Cullinan
+pip install -e .
+```
+
+> **💡 Tip**: For the latest features and bug fixes, install from source.
+
+### Basic Application
+
+```python
+# app.py
+from cullinan import configure, application
+from cullinan.controller import controller, get_api
+
+# Configure for packaging (optional in development)
+configure(user_packages=['your_app'])
+
+@controller(url='/api')
+class HelloController:
+    @get_api(url='/hello')
+    def hello(self, query_params):
+        return {'message': 'Hello, Cullinan!'}
+
+if __name__ == '__main__':
+    application.run()
+```
+
+### Run
+
+```bash
+python app.py
+# Visit: http://localhost:8080/api/hello
+```
+
+---
+
+## 📦 Packaging Support
+
+### New Configuration System
+
+Cullinan 2.0+ introduces a **configuration-driven** packaging system:
+
+```python
+from cullinan import configure
+
+# Tell Cullinan which packages to scan
+configure(user_packages=['your_app'])
+```
+
+### Package Your Application
+
+**Option 1: Universal Builder (Recommended)**
+
+```bash
+# Interactive mode
+python scripts/build_app.py
+
+# Quick builds
+python scripts/build_app.py --tool nuitka --mode onefile
+python scripts/build_app.py --tool pyinstaller
+```
+
+**Option 2: Direct Commands**
+
+```bash
+# Nuitka
+nuitka --standalone --include-package=your_app --include-package=cullinan app.py
+
+# PyInstaller
+pyinstaller --onedir --hidden-import=your_app --collect-all=cullinan app.py
+```
+
+📖 **[Full Packaging Guide](docs/zh/02-packaging.md)** | **[Build Scripts Guide](docs/zh/05-build-scripts.md)**
+
+---
+
+## 💡 Full Example
+
+### Project Structure
+
+```
+my_app/
+├── main.py              # Entry point
+├── controllers/         # Controllers
+│   ├── __init__.py
+│   └── api.py
+├── services/            # Services
+│   ├── __init__.py
+│   └── data.py
+└── models/              # Models
+    ├── __init__.py
+    └── user.py
+```
+
+### Controller (`controllers/api.py`)
+
+```python
+from cullinan.controller import controller, get_api, post_api
+
+@controller(url='/api')
+class UserController:
+    
+    @get_api(url='/users', query_params=['id'])
+    def get_user(self, query_params):
+        user_id = query_params.get('id')
+        return self.service['UserService'].get_user(user_id)
+    
+    @post_api(url='/users', body_params=['name', 'email'])
+    def create_user(self, body_params):
+        return self.service['UserService'].create_user(
+            body_params['name'],
+            body_params['email']
+        )
+```
+
+### Service (`services/data.py`)
+
 ```python
 from cullinan.service import Service, service
+from cullinan.dao import Conn
 
 @service
-class TestService(Service):
-    def test(self, id, name):
-        self.response.set_body({ 'id': id, 'name': name })
+class UserService(Service):
+    
+    def __init__(self):
+        super().__init__()
+        self.db = Conn.conn()
+    
+    def get_user(self, user_id):
+        # Your business logic here
+        user = {'id': user_id, 'name': 'John Doe'}
+        self.response.set_body(user)
+        return self.response
+    
+    def create_user(self, name, email):
+        # Your business logic here
+        user = {'name': name, 'email': email}
+        self.response.set_body(user)
         return self.response
 ```
 
-File application:
+### Application (`main.py`)
+
 ```python
-from cullinan import application
+from cullinan import configure, application
+
+# Configure for packaging
+configure(
+    user_packages=['my_app'],
+    verbose=True  # Enable logging
+)
 
 def main():
     application.run()
@@ -57,169 +225,143 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-Now, A web application demo is completed!
 
----
-#### File structure:
-```
-project
-   |----application.py                               # Web Application main entrance
-   |----controller                                   # Controller package
-   |  |----TestController.py                            
-   |----service                                      # Service package
-   |  |----TestService.py                               
-```
+### Build for Production
 
-## Wiki
+```bash
+# Development
+python main.py
 
-wiki and other related references: https://github.com/plumeink/Cullinan/wiki
+# Production (Nuitka)
+python scripts/build_nuitka_advanced.py --entry main.py --onefile --optimize
 
-## Logging
-
-Cullinan does not configure logging handlers by itself. The framework modules use standard Python loggers (module-level `logging.getLogger(__name__)`) and the package installs a `NullHandler` to avoid noisy "No handlers could be found" warnings when the package is imported.
-
-As an application developer you should configure logging at your program entry point. Below are two common patterns you can copy into your `app.py` (or equivalent) to direct framework logs to the console only.
-
-### Console-only (recommended)
-
-This example configures a single console handler for the framework and the application. It will not write any files; file handlers can be added by you if desired.
-
-```python
-# app.py - application entry
-import logging
-from logging import config
-import sys
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-            "level": "INFO",
-            "stream": "ext://sys.stdout",
-        },
-    },
-    "loggers": {
-        # control all framework logging from the package root
-        "cullinan": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
-    },
-}
-
-config.dictConfig(LOGGING)
-
-# then start the framework
-from cullinan import application
-application.run()
-```
-
-### Per-module / fine-grained control
-
-Because modules use module-level loggers (`logging.getLogger(__name__)`), you can control logging per-module. Example: only enable debug for controller code while keeping other parts at INFO.
-
-```python
-LOGGING['loggers'].update({
-    'cullinan.controller': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
-    'cullinan.request': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
-})
-
-config.dictConfig(LOGGING)
-```
-
-Notes
-- The library will not create files or configure handlers for you. This keeps the library side-effect free and lets each application decide how to handle logs (console, files, remote logging, etc.).
-- If you want the simplest possible behavior (prints to console), the `Console-only` example is all you need.
-
-## Access logs
-
-Cullinan emits access logs for each HTTP request. The framework provides a configurable access log emitter and a dedicated logger name `cullinan.access` so applications can route or filter access logs separately from other framework logs.
-
-Configuration
-- Format: control the access log format with the environment variable `CULLINAN_ACCESS_LOG_FORMAT`:
-  - `combined` (default): Apache combined-like single-line log
-  - `json`: structured JSON object (useful for log aggregation)
-
-- Example env usage:
-  - `CULLINAN_ACCESS_LOG_FORMAT=combined`
-  - `CULLINAN_ACCESS_LOG_FORMAT=json`
-
-- Handler: access logs are emitted via logger `cullinan.access`. Configure logging in your application entry point to route access logs to console or files. Example (console-only):
-
-```python
-# app.py
-import logging
-from logging import config
-import sys
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-            "level": "INFO",
-            "stream": "ext://sys.stdout",
-        },
-    },
-    "loggers": {
-        # route framework logs
-        "cullinan": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        # route access logs separately if desired
-        "cullinan.access": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
-    },
-}
-
-config.dictConfig(LOGGING)
-
-from cullinan import application
-application.run()
-```
-
-Debug / development convenience
-- If you start the process in an environment where the framework can't detect a direct `__main__` (for example some IDE run configurations), the framework won't auto-install a console handler by default. For quick development you can force console logging with:
-
-- `CULLINAN_FORCE_CONSOLE=1` and optionally set `CULLINAN_AUTO_CONSOLE_LEVEL=INFO` (or DEBUG) to control the temporary console handler level.
-
-Examples
-- Combined format (default):
-```
-127.0.0.1 - - [05/Nov/2025:01:10:23] "GET /path HTTP/1.1" 200 123 "-" "curl/7.XX" 0.123
-```
-- JSON format (set `CULLINAN_ACCESS_LOG_FORMAT=json`):
-```
-{"remote_addr":"127.0.0.1","method":"GET","path":"/path","status_code":200,"duration":0.123,"content_length":123,"referer":"-","user_agent":"curl/7.XX"}
+# Distribution (PyInstaller)
+python scripts/build_pyinstaller_advanced.py --entry main.py --onefile --upx
 ```
 
 ---
 
-## Maintainer
+## 🔧 Advanced Features
 
-[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
+### Multiple Configuration Methods
+
+**1. Code Configuration (Recommended)**
+
+```python
+from cullinan import configure
+
+configure(user_packages=['your_app'])
+```
+
+**2. JSON Configuration**
+
+```json
+{
+  "user_packages": ["your_app"],
+  "verbose": true,
+  "auto_scan": false
+}
+```
+
+```python
+import json
+from cullinan import get_config
+
+with open('cullinan.json') as f:
+    get_config().from_dict(json.load(f))
+```
+
+**3. Environment Variables**
+
+```bash
+export CULLINAN_USER_PACKAGES=your_app
+```
+
+### Build Scripts
+
+Cullinan provides three powerful build scripts:
+
+1. **`build_app.py`** - Universal builder (auto-detect, interactive)
+2. **`build_nuitka_advanced.py`** - Advanced Nuitka features (GCC, LTO, optimization)
+3. **`build_pyinstaller_advanced.py`** - Advanced PyInstaller features (UPX, icons)
+
+📖 **[Build Scripts Guide](docs/zh/05-build-scripts.md)**
+
+---
+
+## 🎯 Why Cullinan?
+
+| Feature | Cullinan | Flask | FastAPI | Django |
+|---------|----------|-------|---------|--------|
+| **Easy Packaging** | ✅ Built-in | ⚠️ Manual | ⚠️ Manual | ⚠️ Manual |
+| **Async Support** | ✅ Tornado | ❌ | ✅ | ⚠️ Limited |
+| **Learning Curve** | 🟢 Low | 🟢 Low | 🟡 Medium | 🔴 High |
+| **ORM Integration** | ✅ SQLAlchemy | ⚠️ Extensions | ⚠️ External | ✅ Built-in |
+| **Decorator Routing** | ✅ | ✅ | ✅ | ⚠️ Class-based |
+| **Build Scripts** | ✅ Included | ❌ | ❌ | ❌ |
+
+---
+
+## 📖 Documentation Structure
+
+```
+docs/
+├── README.md                    # Documentation index
+├── index.md                     # Framework overview
+├── 01-configuration.md          # Configuration guide
+├── 02-packaging.md              # Packaging guide
+├── 03-troubleshooting.md        # Troubleshooting
+├── 04-quick-reference.md        # Quick reference
+└── 05-build-scripts.md          # Build scripts guide
+```
+
+---
+
+## 🔗 Links
+
+- **Documentation**: [docs/README.md](docs/README.md)
+- **GitHub**: https://github.com/plumeink/Cullinan
+- **PyPI**: https://pypi.org/project/cullinan/
+- **Issues**: https://github.com/plumeink/Cullinan/issues
+- **Discussions**: https://github.com/plumeink/Cullinan/discussions
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See [Contributing Guidelines](docs/README.md#contributing-to-documentation) for details.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built on [Tornado](https://www.tornadoweb.org/)
+- ORM powered by [SQLAlchemy](https://www.sqlalchemy.org/)
+- Packaging powered by [Nuitka](https://nuitka.net/) and [PyInstaller](https://pyinstaller.org/)
+
+---
+
+## 📊 Statistics
+
+![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan?style=social)
+![GitHub forks](https://img.shields.io/github/forks/plumeink/cullinan?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/plumeink/cullinan?style=social)
+
+---
+
+**Made with ❤️ by the Cullinan Team**
+
