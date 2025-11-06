@@ -350,5 +350,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-**Made with ❤️ by the Cullinan Team**
+## 💻 Maintainer
 
+[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
