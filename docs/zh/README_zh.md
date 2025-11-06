@@ -9,12 +9,12 @@
 ## 📖 文档索引
 
 ### 快速开始
-- **[完整指南](00-complete-guide_zh.md)** ⭐ **从这里开始！**  
+- **[完整指南](00-complete-guide.md)** ⭐ **从这里开始！**  
   包含所有特性的完整教程和示例
 
 ### 核心文档
 
-0. [**完整指南**](00-complete-guide_zh.md) 🌟  
+0. [**完整指南**](00-complete-guide.md) 🌟  
    从基础到高级的完整框架指南
    - 安装与设置
    - 快速开始教程 → [示例](../../examples/basic/hello_world.py)
@@ -36,14 +36,14 @@
    - 不同打包模式
    - 平台特定说明
 
-3. [**故障排查**](03-troubleshooting_zh.md)  
+3. [**故障排查**](03-troubleshooting.md)  
    常见问题和解决方案
    - 模块未找到错误
    - Controller/Service 注册
    - 打包问题
    - 调试技巧 → [诊断工具](../../examples/packaging/diagnose_app.py)
 
-4. [**快速参考**](04-quick-reference_zh.md)  
+4. [**快速参考**](04-quick-reference.md)  
    快速参考卡片
    - 配置语法
    - 打包命令
@@ -129,13 +129,13 @@ python app.py
 ### 我想要...
 
 **快速开始**  
-→ [完整指南](00-complete-guide_zh.md) → [Hello World](../../examples/basic/hello_world.py)
+→ [完整指南](00-complete-guide.md) → [Hello World](../../examples/basic/hello_world.py)
 
 **配置应用**  
 → [配置指南](01-configuration_zh.md) → [配置示例](../../examples/config/config_example.py)
 
 **构建 REST API**  
-→ [完整指南：控制器](00-complete-guide_zh.md#控制器与路由) → [CRUD 示例](../../examples/basic/crud_example.py)
+→ [完整指南：控制器](00-complete-guide.md#控制器与路由) → [CRUD 示例](../../examples/basic/crud_example.py)
 
 **打包部署**  
 → [打包指南](02-packaging_zh.md) → [构建脚本](05-build-scripts_zh.md)
@@ -209,7 +209,7 @@ scripts/
 
 - **GitHub Issues**: [报告错误](https://github.com/plumeink/Cullinan/issues)
 - **Discussions**: [提问交流](https://github.com/plumeink/Cullinan/discussions)
-- **文档**: [阅读文档](00-complete-guide_zh.md)
+- **文档**: [阅读文档](00-complete-guide.md)
 - **示例**: [浏览示例](../../examples/)
 
 ---

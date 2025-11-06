@@ -1,22 +1,22 @@
-# Cullinan 打包指南
+# Cullinan Packaging Guide
 
-本指南介绍如何使用 Nuitka 和 PyInstaller 打包 Cullinan Web 应用程序。
+This guide explains how to package a Cullinan web application using Nuitka and PyInstaller.
 
-## 概述
+## Overview
 
-Cullinan 框架现已完全支持 Nuitka 和 PyInstaller 打包，包括 onefile 和 onedir/standalone 模式。框架会自动检测运行环境并使用相应的模块扫描策略。
+The Cullinan framework now fully supports packaging with Nuitka and PyInstaller, including `onefile` and `onedir`/`standalone` modes. The framework automatically detects the runtime environment and uses the appropriate module scanning strategy.
 
-## 打包环境检测
+## Packaging Environment Detection
 
-框架内置了智能环境检测机制：
+The framework has a built-in intelligent environment detection mechanism:
 
-- **Nuitka 检测**：检测 `__compiled__` 属性和 `sys.frozen`
-- **PyInstaller 检测**：检测 `sys.frozen` 和 `sys._MEIPASS`
-- **模式识别**：自动识别 onefile 和 standalone/onedir 模式
+-   **Nuitka Detection**: Detects the `__compiled__` attribute and `sys.frozen`.
+-   **PyInstaller Detection**: Detects `sys.frozen` and `sys._MEIPASS`.
+-   **Mode Recognition**: Automatically identifies `onefile` and `standalone`/`onedir` modes.
 
-## Nuitka 打包
+## Nuitka Packaging
 
-### Standalone 模式（推荐）
+### Standalone Mode (Recommended)
 
 ```bash
 nuitka --standalone \
@@ -27,7 +27,7 @@ nuitka --standalone \
        your_app/main.py
 ```
 
-### Onefile 模式
+### Onefile Mode
 
 ```bash
 nuitka --onefile \
@@ -38,25 +38,25 @@ nuitka --onefile \
        your_app/main.py
 ```
 
-### 关键参数说明
+### Key Parameter Explanations
 
-- `--standalone` / `--onefile`：打包模式
-- `--enable-plugin=tornado`：启用 Tornado 插件（如果使用）
-- `--include-package=your_app`：包含你的应用程序包
-- `--include-package-data=your_app`：包含包数据文件
+-   `--standalone` / `--onefile`: Packaging mode.
+-   `--enable-plugin=tornado`: Enables the Tornado plugin (if used).
+-   `--include-package=your_app`: Includes your application package.
+-   `--include-package-data=your_app`: Includes package data files.
 
-### Nuitka 模块扫描策略
+### Nuitka Module Scanning Strategy
 
-Cullinan 在 Nuitka 环境下使用以下扫描策略：
+Cullinan uses the following scanning strategies in a Nuitka environment:
 
-1. **sys.modules 扫描**：扫描已加载的模块（Nuitka 会预加载包含的模块）
-2. **目录扫描**（Standalone 模式）：扫描可执行文件目录的 .pyd/.so 文件
-3. **包推断**（Onefile 模式）：从调用栈推断包名并扫描
-4. **__main__ 扫描**：从主模块路径扫描
+1.  **`sys.modules` Scanning**: Scans already loaded modules (Nuitka preloads included modules).
+2.  **Directory Scanning** (Standalone mode): Scans `.pyd`/`.so` files in the executable's directory.
+3.  **Package Inference** (Onefile mode): Infers the package name from the call stack and scans it.
+4.  **`__main__` Scanning**: Scans from the main module's path.
 
-## PyInstaller 打包
+## PyInstaller Packaging
 
-### Onedir 模式（推荐）
+### Onedir Mode (Recommended)
 
 ```bash
 pyinstaller --onedir \
@@ -66,7 +66,7 @@ pyinstaller --onedir \
             your_app/main.py
 ```
 
-### Onefile 模式
+### Onefile Mode
 
 ```bash
 pyinstaller --onefile \
@@ -76,31 +76,31 @@ pyinstaller --onefile \
             your_app/main.py
 ```
 
-### 关键参数说明
+### Key Parameter Explanations
 
-- `--onefile` / `--onedir`：打包模式
-- `--hidden-import=your_app`：声明隐藏导入
-- `--collect-all=your_app`：收集所有包数据
+-   `--onefile` / `--onedir`: Packaging mode.
+-   `--hidden-import=your_app`: Declares hidden imports.
+-   `--collect-all=your_app`: Collects all package data.
 
-### PyInstaller 模块扫描策略
+### PyInstaller Module Scanning Strategy
 
-Cullinan 在 PyInstaller 环境下使用以下扫描策略：
+Cullinan uses the following scanning strategies in a PyInstaller environment:
 
-1. **_MEIPASS 扫描**：扫描 PyInstaller 临时解压目录
-2. **可执行文件目录扫描**（Onedir 模式）
-3. **sys.modules 补充扫描**：扫描已导入的模块
+1.  **`_MEIPASS` Scanning**: Scans the temporary directory where PyInstaller extracts files.
+2.  **Executable Directory Scanning** (Onedir mode).
+3.  **`sys.modules` Supplemental Scanning**: Scans already imported modules.
 
-## 最佳实践
+## Best Practices
 
-### 1. 显式导入关键模块
+### 1. Explicitly Import Key Modules
 
-虽然框架会自动扫描，但建议在主文件中显式导入关键模块：
+Although the framework scans automatically, it is recommended to explicitly import key modules in your main file:
 
 ```python
 # main.py
 from cullinan import Application
 
-# 显式导入 controller 和 service（可选，但推荐）
+# Explicitly import controllers and services (optional, but recommended)
 from your_app import controllers
 from your_app import services
 
@@ -108,9 +108,9 @@ app = Application()
 app.run()
 ```
 
-### 2. 使用包结构
+### 2. Use a Package Structure
 
-推荐的项目结构：
+Recommended project structure:
 
 ```
 your_app/
@@ -126,9 +126,9 @@ your_app/
     └── product_service.py
 ```
 
-### 3. 在 __init__.py 中导入
+### 3. Import in `__init__.py`
 
-在包的 `__init__.py` 中导入所有子模块：
+Import all sub-modules in the package's `__init__.py`:
 
 ```python
 # controllers/__init__.py
@@ -140,12 +140,12 @@ from . import user_service
 from . import product_service
 ```
 
-### 4. Nuitka 特殊注意事项
+### 4. Nuitka-Specific Considerations
 
-对于 Nuitka，确保所有需要的模块都被包含：
+For Nuitka, ensure all required modules are included:
 
 ```bash
-# 使用 --include-module 明确包含特定模块
+# Use --include-module to explicitly include specific modules
 nuitka --standalone \
        --include-package=your_app \
        --include-module=your_app.controllers.user_controller \
@@ -153,9 +153,9 @@ nuitka --standalone \
        your_app/main.py
 ```
 
-### 5. PyInstaller Spec 文件
+### 5. PyInstaller Spec File
 
-创建 `.spec` 文件以获得更精细的控制：
+Create a `.spec` file for finer control:
 
 ```python
 # your_app.spec
@@ -209,11 +209,11 @@ coll = COLLECT(
 )
 ```
 
-## 调试打包问题
+## Debugging Packaging Issues
 
-### 启用详细日志
+### Enable Verbose Logging
 
-框架使用 Python logging 模块。启用 DEBUG 级别查看详细的扫描信息：
+The framework uses Python's `logging` module. Enable `DEBUG` level to see detailed scanning information:
 
 ```python
 import logging
@@ -225,7 +225,7 @@ app = Application()
 app.run()
 ```
 
-### 日志输出示例
+### Example Log Output
 
 ```
 INFO:cullinan.application: ||| Starting module discovery...
@@ -237,38 +237,38 @@ INFO:cullinan.application: ||| Found 15 modules via Nuitka scanning
 INFO:cullinan.application: ||| Discovered 15 modules
 ```
 
-### 常见问题排查
+### Common Troubleshooting
 
-#### 问题：Controller 或 Service 未被扫描到
+#### Problem: Controller or Service Not Scanned
 
-**解决方案**：
-1. 确认模块已被打包（检查打包输出）
-2. 在主文件中显式导入模块
-3. 使用 `--include-module` 或 `--hidden-import` 明确包含
+**Solution**:
+1.  Confirm the module is packaged (check the packaging output).
+2.  Explicitly import the module in the main file.
+3.  Use `--include-module` or `--hidden-import` to explicitly include it.
 
-#### 问题：导入错误
+#### Problem: Import Error
 
-**解决方案**：
-1. 检查模块路径是否正确
-2. 确认 `__init__.py` 文件存在
-3. 检查是否有循环导入
+**Solution**:
+1.  Check if the module path is correct.
+2.  Ensure `__init__.py` files exist.
+3.  Check for circular imports.
 
-#### 问题：Onefile 模式下模块丢失
+#### Problem: Modules Missing in Onefile Mode
 
-**解决方案**：
-1. 优先使用 standalone/onedir 模式
-2. 使用显式导入
-3. 检查打包工具的数据收集选项
+**Solution**:
+1.  Prefer `standalone`/`onedir` mode.
+2.  Use explicit imports.
+3.  Check the data collection options of your packaging tool.
 
-## 测试打包结果
+## Testing the Packaged Result
 
-### 开发环境测试
+### Development Environment Testing
 
 ```bash
 python your_app/main.py
 ```
 
-### Nuitka 打包测试
+### Nuitka Packaging Test
 
 ```bash
 # Standalone
@@ -280,7 +280,7 @@ cd dist
 ./your_app
 ```
 
-### PyInstaller 打包测试
+### PyInstaller Packaging Test
 
 ```bash
 # Onedir
@@ -292,9 +292,9 @@ cd dist
 ./your_app
 ```
 
-## 性能优化
+## Performance Optimization
 
-### Nuitka 优化
+### Nuitka Optimization
 
 ```bash
 nuitka --standalone \
@@ -304,7 +304,7 @@ nuitka --standalone \
        your_app/main.py
 ```
 
-### PyInstaller 优化
+### PyInstaller Optimization
 
 ```bash
 pyinstaller --onefile \
@@ -314,9 +314,9 @@ pyinstaller --onefile \
             your_app/main.py
 ```
 
-## 总结
+## Summary
 
-Cullinan 框架现已完全支持主流打包工具，能够自动适应不同的打包环境。遵循本指南的最佳实践，可以确保应用程序在打包后正常运行。
+The Cullinan framework now fully supports major packaging tools and can automatically adapt to different packaging environments. Following the best practices in this guide will ensure your application runs correctly after being packaged.
 
-如有问题，请查看详细日志或提交 Issue。
+If you encounter any issues, please check the detailed logs or submit an Issue.
 

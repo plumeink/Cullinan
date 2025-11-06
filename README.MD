@@ -35,22 +35,10 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 
 ## 📚 Documentation
 
-**[📖 Complete Documentation](docs/README.md)** | **[📖 完整文档](docs/zh/README_zh.md)**
-
 ### Language / 语言
 
 - **[English Documentation](docs/README.md)** - Complete English documentation
 - **[中文文档](docs/zh/README_zh.md)** - 完整中文文档
-
-### Quick Links
-
-| Guide | Description |
-|-------|-------------|
-| [Complete Guide](docs/00-complete-guide.md) / [完整指南](docs/zh/00-complete-guide_zh.md) | Full framework tutorial |
-| [Configuration](docs/01-configuration.md) / [配置](docs/zh/01-configuration_zh.md) | Configure your application |
-| [Packaging](docs/02-packaging.md) / [打包](docs/zh/02-packaging_zh.md) | Package for deployment |
-| [Troubleshooting](docs/03-troubleshooting.md) / [故障排查](docs/zh/03-troubleshooting_zh.md) | Common issues |
-| [Build Scripts](docs/05-build-scripts.md) / [构建脚本](docs/zh/05-build-scripts_zh.md) | Advanced packaging |
 
 ---
 
@@ -88,7 +76,7 @@ configure(user_packages=['your_app'])
 class HelloController:
     @get_api(url='/hello')
     def hello(self, query_params):
-        return {'message': 'Hello, Cullinan!'}
+        return self.response_build(status=200, message="Hello, Cullinan!" + query_params)
 
 if __name__ == '__main__':
     application.run()
@@ -98,48 +86,8 @@ if __name__ == '__main__':
 
 ```bash
 python app.py
-# Visit: http://localhost:8080/api/hello
+# Visit: http://localhost:4080/api/hello
 ```
-
----
-
-## 📦 Packaging Support
-
-### New Configuration System
-
-Cullinan 2.0+ introduces a **configuration-driven** packaging system:
-
-```python
-from cullinan import configure
-
-# Tell Cullinan which packages to scan
-configure(user_packages=['your_app'])
-```
-
-### Package Your Application
-
-**Option 1: Universal Builder (Recommended)**
-
-```bash
-# Interactive mode
-python scripts/build_app.py
-
-# Quick builds
-python scripts/build_app.py --tool nuitka --mode onefile
-python scripts/build_app.py --tool pyinstaller
-```
-
-**Option 2: Direct Commands**
-
-```bash
-# Nuitka
-nuitka --standalone --include-package=your_app --include-package=cullinan app.py
-
-# PyInstaller
-pyinstaller --onedir --hidden-import=your_app --collect-all=cullinan app.py
-```
-
-📖 **[Full Packaging Guide](docs/zh/02-packaging.md)** | **[Build Scripts Guide](docs/zh/05-build-scripts.md)**
 
 ---
 
@@ -166,46 +114,22 @@ my_app/
 ```python
 from cullinan.controller import controller, get_api, post_api
 
+
 @controller(url='/api')
 class UserController:
     
     @get_api(url='/users', query_params=['id'])
     def get_user(self, query_params):
         user_id = query_params.get('id')
-        return self.service['UserService'].get_user(user_id)
+        return self.response_build(status=200, message="User fetched successfully", data={"user_id": user_id})
     
     @post_api(url='/users', body_params=['name', 'email'])
     def create_user(self, body_params):
-        return self.service['UserService'].create_user(
+        self.service['UserService'].create_user(
             body_params['name'],
             body_params['email']
         )
-```
-
-### Service (`services/data.py`)
-
-```python
-from cullinan.service import Service, service
-from cullinan.dao import Conn
-
-@service
-class UserService(Service):
-    
-    def __init__(self):
-        super().__init__()
-        self.db = Conn.conn()
-    
-    def get_user(self, user_id):
-        # Your business logic here
-        user = {'id': user_id, 'name': 'John Doe'}
-        self.response.set_body(user)
-        return self.response
-    
-    def create_user(self, name, email):
-        # Your business logic here
-        user = {'name': name, 'email': email}
-        self.response.set_body(user)
-        return self.response
+        return self.response_build(status=201, message="User created successfully")
 ```
 
 ### Application (`main.py`)
@@ -225,67 +149,6 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-
-### Build for Production
-
-```bash
-# Development
-python main.py
-
-# Production (Nuitka)
-python scripts/build_nuitka_advanced.py --entry main.py --onefile --optimize
-
-# Distribution (PyInstaller)
-python scripts/build_pyinstaller_advanced.py --entry main.py --onefile --upx
-```
-
----
-
-## 🔧 Advanced Features
-
-### Multiple Configuration Methods
-
-**1. Code Configuration (Recommended)**
-
-```python
-from cullinan import configure
-
-configure(user_packages=['your_app'])
-```
-
-**2. JSON Configuration**
-
-```json
-{
-  "user_packages": ["your_app"],
-  "verbose": true,
-  "auto_scan": false
-}
-```
-
-```python
-import json
-from cullinan import get_config
-
-with open('cullinan.json') as f:
-    get_config().from_dict(json.load(f))
-```
-
-**3. Environment Variables**
-
-```bash
-export CULLINAN_USER_PACKAGES=your_app
-```
-
-### Build Scripts
-
-Cullinan provides three powerful build scripts:
-
-1. **`build_app.py`** - Universal builder (auto-detect, interactive)
-2. **`build_nuitka_advanced.py`** - Advanced Nuitka features (GCC, LTO, optimization)
-3. **`build_pyinstaller_advanced.py`** - Advanced PyInstaller features (UPX, icons)
-
-📖 **[Build Scripts Guide](docs/zh/05-build-scripts.md)**
 
 ---
 

@@ -1,53 +1,53 @@
-# 打包后 Controller 未注册问题排查指南
+# Troubleshooting Guide for Unregistered Controllers After Packaging
 
-## 问题现象
+## Problem Description
 
-打包后运行应用，访问 API 时返回 404 错误，虽然日志显示扫描到了模块，但 Controller 没有被注册。
+After packaging and running the application, accessing an API returns a 404 error. Although the logs show that modules were scanned, the Controller is not registered.
 
-## 根本原因
+## Root Cause
 
-在 Nuitka 编译环境下，有以下几种可能：
+In a Nuitka-compiled environment, there are several possibilities:
 
-1. **模块被扫描但未导入**：模块在 sys.modules 中被发现，但 `reflect_module` 没有真正导入它
-2. **导入失败被忽略**：导入时出错，但错误被静默处理了
-3. **装饰器未执行**：模块虽然存在，但装饰器代码没有运行
-4. **Controller 定义位置**：Controller 定义在主文件 ` __main__` 中，而不是独立模块
+1.  **Module Scanned but Not Imported**: The module is found in `sys.modules`, but `reflect_module` did not actually import it.
+2.  **Import Failure Ignored**: An error occurred during import, but it was silently handled.
+3.  **Decorator Not Executed**: Although the module exists, the decorator code did not run.
+4.  **Controller Definition Location**: The Controller is defined in the main file (`__main__`) instead of a separate module.
 
-## 诊断步骤
+## Diagnostic Steps
 
-### 1. 运行诊断工具
+### 1. Run the Diagnostic Tool
 
 ```bash
-cd dist_nuitka\packaging_test.dist  # Standalone 模式
-packaging_test.exe  # 这会失败，但没关系
+cd dist_nuitka\packaging_test.dist  # Standalone mode
+packaging_test.exe  # This will fail, but that's okay
 
-# 然后运行诊断
+# Then run the diagnosis
 python ..\..\..\examples\diagnose.py
 ```
 
-诊断工具会显示：
-- 环境检测结果
-- sys.modules 中的模块列表
-- 已注册的 Handler 数量
-- 扫描到的用户模块
+The diagnostic tool will display:
+-   Environment detection results
+-   A list of modules in `sys.modules`
+-   The number of registered handlers
+-   Scanned user modules
 
-### 2. 启用详细日志
+### 2. Enable Verbose Logging
 
-修改 `packaging_test.py`，启用 DEBUG 日志：
+Modify `packaging_test.py` to enable `DEBUG` logging:
 
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-查看以下关键日志：
-- `✓ Successfully imported: xxx` - 模块成功导入
-- `✗ Import failed for xxx` - 模块导入失败
-- `✓ Found in sys.modules: xxx` - 从 sys.modules 找到模块
+Check for these key log entries:
+-   `✓ Successfully imported: xxx` - Module imported successfully.
+-   `✗ Import failed for xxx` - Module import failed.
+-   `✓ Found in sys.modules: xxx` - Module found in `sys.modules`.
 
-### 3. 检查 Handler 列表
+### 3. Check the Handler List
 
-在应用代码中添加：
+Add this to your application code:
 
 ```python
 from cullinan.controller import handler_list
@@ -57,14 +57,14 @@ for handler in handler_list:
     print(f"  - {handler}")
 ```
 
-## 解决方案
+## Solutions
 
-### 方案 1: 将 Controller 放在独立模块中（推荐）
+### Solution 1: Place the Controller in a Separate Module (Recommended)
 
-**不要** 在主文件中定义 Controller：
+**Do not** define the Controller in the main file:
 
 ```python
-# ❌ 错误：在 main.py 中定义
+# ❌ Incorrect: Defined in main.py
 @Controller('/api')
 class TestController:
     pass
@@ -74,7 +74,7 @@ def main():
     app.run()
 ```
 
-**应该** 创建独立的 controller 模块：
+**Instead**, create a separate controller module:
 
 ```python
 # examples/test_controller.py
@@ -87,13 +87,13 @@ class TestController:
         return {'message': 'Hello'}
 ```
 
-然后在主文件中**显式导入**：
+Then, **explicitly import** it in the main file:
 
 ```python
 # examples/packaging_test.py
 from cullinan import Application
 
-# 显式导入 controller（重要！）
+# Explicitly import the controller (important!)
 try:
     from examples import test_controller
 except ImportError:
@@ -104,9 +104,9 @@ def main():
     app.run()
 ```
 
-### 方案 2: 更新打包命令
+### Solution 2: Update the Packaging Command
 
-确保使用 `--include-module` 参数：
+Ensure you use the `--include-module` parameter:
 
 ```bash
 nuitka --standalone \
@@ -116,35 +116,35 @@ nuitka --standalone \
        examples/packaging_test.py
 ```
 
-### 方案 3: 使用包结构
+### Solution 3: Use a Package Structure
 
-创建完整的包结构：
+Create a complete package structure:
 
 ```
 your_app/
 ├── __init__.py
 ├── main.py
 ├── controllers/
-│   ├── __init__.py          # 重要：导入所有 controller
+│   ├── __init__.py          # Important: Import all controllers
 │   └── test_controller.py
 └── services/
-    ├── __init__.py          # 重要：导入所有 service
+    ├── __init__.py          # Important: Import all services
     └── test_service.py
 ```
 
-在 `controllers/__init__.py` 中：
+In `controllers/__init__.py`:
 
 ```python
-# 导入所有 controller 模块
+# Import all controller modules
 from . import test_controller
 ```
 
-在 `main.py` 中：
+In `main.py`:
 
 ```python
 from cullinan import Application
 
-# 显式导入
+# Explicitly import
 from your_app import controllers
 from your_app import services
 
@@ -153,19 +153,19 @@ def main():
     app.run()
 ```
 
-### 方案 4: 强制导入
+### Solution 4: Force Import
 
-如果上述方法都不行，可以在应用启动前强制导入：
+If none of the above methods work, you can force the import before the application starts:
 
 ```python
 # main.py
 import sys
 import importlib
 
-# 强制导入 controller 模块
+# Force import controller modules
 controller_modules = [
     'examples.test_controller',
-    # 添加其他 controller 模块
+    # Add other controller modules
 ]
 
 for mod_name in controller_modules:
@@ -180,11 +180,11 @@ app = Application()
 app.run()
 ```
 
-## 验证修复
+## Verifying the Fix
 
-### 1. 检查日志
+### 1. Check the Logs
 
-启动应用后，应该看到：
+After starting the application, you should see:
 
 ```
 INFO:cullinan.application: ||| Starting module discovery...
@@ -193,9 +193,9 @@ INFO:cullinan.application: ||| Found X user modules in sys.modules
 INFO:cullinan.application: ✓ Found in sys.modules: examples.test_controller
 ```
 
-### 2. 检查 Handler
+### 2. Check the Handlers
 
-应该看到：
+You should see:
 
 ```
 Registered handlers: 3
@@ -204,40 +204,40 @@ Registered handlers: 3
   - ('/api/test', <handler>, ['GET'])
 ```
 
-### 3. 测试 API
+### 3. Test the API
 
 ```bash
 curl http://localhost:8888/api/hello
-# 应该返回: {"message": "Hello from Cullinan!", "status": "ok"}
+# Should return: {"message": "Hello from Cullinan!", "status": "ok"}
 ```
 
-## 当前实现的改进
+## Improvements to the Current Implementation
 
-我已经对代码做了以下改进：
+I have made the following improvements to the code:
 
-1. **优先检查 sys.modules**：在 Nuitka 环境下，模块通常已经在 sys.modules 中
-2. **详细日志**：使用 INFO/WARNING 级别记录导入状态
-3. **__main__ 处理**：特别处理 __main__ 模块
-4. **更好的过滤**：排除标准库和第三方库，只扫描用户代码
+1.  **Prioritize `sys.modules` Check**: In a Nuitka environment, modules are usually already in `sys.modules`.
+2.  **Detailed Logging**: Use `INFO`/`WARNING` levels to log import status.
+3.  **`__main__` Handling**: Special handling for the `__main__` module.
+4.  **Better Filtering**: Exclude standard libraries and third-party libraries to scan only user code.
 
-## 调试检查清单
+## Debugging Checklist
 
-- [ ] Controller 是否在独立模块中？
-- [ ] 主文件是否显式导入了 controller 模块？
-- [ ] `__init__.py` 是否存在并导入了子模块？
-- [ ] 打包命令是否包含 `--include-module` 参数？
-- [ ] 日志是否显示模块被成功导入？
-- [ ] `handler_list` 是否包含注册的路由？
-- [ ] 是否启用了 DEBUG 日志查看详细信息？
+-   [ ] Is the Controller in a separate module?
+-   [ ] Does the main file explicitly import the controller module?
+-   [ ] Does `__init__.py` exist and import sub-modules?
+-   [ ] Does the packaging command include the `--include-module` parameter?
+-   [ ] Do the logs show that the module was successfully imported?
+-   [ ] Does `handler_list` contain the registered routes?
+-   [ ] Is `DEBUG` logging enabled for detailed information?
 
-## 推荐的项目结构
+## Recommended Project Structure
 
 ```
 your_project/
-├── setup.py 或 pyproject.toml
+├── setup.py or pyproject.toml
 ├── your_app/
 │   ├── __init__.py
-│   ├── main.py              # 应用入口
+│   ├── main.py              # Application entry point
 │   ├── controllers/
 │   │   ├── __init__.py      # from . import user_controller
 │   │   └── user_controller.py
@@ -249,15 +249,15 @@ your_project/
     └── build_pyinstaller.bat
 ```
 
-## 联系支持
+## Contact Support
 
-如果问题仍然存在，请提供：
+If the problem persists, please provide:
 
-1. 诊断工具的完整输出
-2. 应用启动时的完整日志（使用 DEBUG 级别）
-3. 项目结构截图
-4. 打包命令
-5. `handler_list` 的内容
+1.  The full output of the diagnostic tool.
+2.  The complete logs from application startup (with `DEBUG` level).
+3.  A screenshot of your project structure.
+4.  The packaging command.
+5.  The content of `handler_list`.
 
-这样我们可以更快地帮助你解决问题。
+This will help us resolve your issue more quickly.
 

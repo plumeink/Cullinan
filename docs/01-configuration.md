@@ -1,37 +1,37 @@
-# Cullinan 配置系统使用指南
+# Cullinan Configuration System Guide
 
-## 概述
+## Overview
 
-Cullinan 现在支持通过配置文件精确指定用户包，彻底解决打包环境下的模块扫描问题。这是一个更专业、更优雅的解决方案�?
+Cullinan now supports precise specification of user packages through a configuration file, completely solving the module scanning problem in a packaged environment. This is a more professional and elegant solution!
 
-## 为什么需要配置？
+## Why is Configuration Needed?
 
-### 传统方式的问�?
+### Problems with the Traditional Approach
 
-1. **EXCLUDE_PREFIXES 维护困难**：需要不断添加要排除的包
-2. **扫描不精�?*：可能扫描到不需要的模块
-3. **打包后失�?*：Nuitka/PyInstaller 改变了文件结�?
+1.  **Difficult to Maintain `EXCLUDE_PREFIXES`**: Requires constantly adding packages to exclude.
+2.  **Inaccurate Scanning**: May scan unnecessary modules.
+3.  **Fails After Packaging**: Nuitka/PyInstaller changes the file structure.
 
-### 配置方式的优�?
+### Advantages of the Configuration Approach
 
-1. �?**精确控制**：只扫描指定的包
-2. �?**打包友好**：适用于所有打包工�?
-3. �?**易于维护**：配置清晰明�?
-4. �?**零侵�?*：不需要修改业务代�?
+1.  **Precise Control**: Scans only the specified packages.
+2.  **Packaging-Friendly**: Works with all packaging tools.
+3.  **Easy to Maintain**: Clear and concise configuration.
+4.  **Zero Intrusion**: No need to modify business logic code.
 
-## 快速开�?
+## Quick Start
 
-### 方式 1: 代码配置（推荐）
+### Method 1: Code-based Configuration (Recommended)
 
 ```python
 # your_app/application.py
 
 from cullinan import configure, Application
 
-# 在创�?Application 之前配置
+# Configure before creating the Application instance
 configure(
-    user_packages=['your_app'],  # 你的包名
-    verbose=True                   # 可选：启用详细日志
+    user_packages=['your_app'],  # Your package name
+    verbose=True                 # Optional: Enable verbose logging
 )
 
 def main():
@@ -42,11 +42,11 @@ if __name__ == '__main__':
     main()
 ```
 
-**就这么简单！** 框架会自动扫�?`your_app` 包下的所有模块�?
+**It's that simple!** The framework will automatically scan all modules under the `your_app` package.
 
-### 方式 2: JSON 配置文件
+### Method 2: JSON Configuration File
 
-创建 `cullinan.json`�?
+Create a `cullinan.json` file:
 
 ```json
 {
@@ -58,28 +58,28 @@ if __name__ == '__main__':
 }
 ```
 
-在代码中加载�?
+Load it in your code:
 
 ```python
 import json
-from cullinan import get_config, Application
+from cullinan import get_config, application
 
-# 加载配置
+# Load configuration
 with open('cullinan.json', 'r') as f:
     config_data = json.load(f)
     get_config().from_dict(config_data)
 
-app = Application()
+app = application
 app.run()
 ```
 
-### 方式 3: 环境变量
+### Method 3: Environment Variables
 
 ```bash
-# 设置环境变量
+# Set environment variables (Linux / macOS)
 export CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 
-# �?Windows
+# Windows
 set CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 ```
 
@@ -87,7 +87,7 @@ set CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 import os
 from cullinan import configure, Application
 
-# 从环境变量加�?
+# Load from environment variables
 if os.getenv('CULLINAN_USER_PACKAGES'):
     packages = os.getenv('CULLINAN_USER_PACKAGES').split(',')
     configure(user_packages=packages)
@@ -96,60 +96,60 @@ app = Application()
 app.run()
 ```
 
-## 配置选项详解
+## Configuration Options Explained
 
-### user_packages (List[str])
+### `user_packages` (List[str])
 
-指定要扫描的用户包列表�?
+Specifies the list of user packages to scan:
 
 ```python
 configure(
     user_packages=[
-        'your_app',              # 扫描整个�?
-        'myapp.controllers',      # 只扫�?controllers
-        'myapp.services'          # 只扫�?services
+        'your_app',              # Scan the entire package
+        'myapp.controllers',     # Scan only controllers
+        'myapp.services'         # Scan only services
     ]
 )
 ```
 
-**工作原理**�?
-1. 导入指定的包
-2. 使用 `pkgutil.walk_packages` 递归扫描所有子模块
-3. 自动导入所有模块，触发装饰�?
+**How it works:**
+1.  Imports the specified packages.
+2.  Uses `pkgutil.walk_packages` to recursively scan all sub-modules.
+3.  Automatically imports all modules, triggering decorators.
 
-### verbose (bool)
+### `verbose` (bool)
 
-启用详细日志，查看扫描过程�?
+Enables detailed logging to see the scanning process:
 
 ```python
 configure(verbose=True)
 ```
 
-### auto_scan (bool)
+### `auto_scan` (bool)
 
-是否启用自动扫描（回退策略）�?
+Enables or disables automatic scanning (fallback strategy):
 
 ```python
 configure(
     user_packages=['your_app'],
-    auto_scan=False  # 禁用自动扫描，只使用配置的包
+    auto_scan=False  # Disable auto-scan, use only configured packages
 )
 ```
 
-- `True`（默认）：如果配置的包导入失败，尝试自动扫描
-- `False`：严格模式，只使用配置的�?
+-   `True` (default): If configured packages fail to import, attempts to auto-scan.
+-   `False`: Strict mode, uses only the configured packages.
 
-### project_root (str)
+### `project_root` (str)
 
-项目根目录（通常自动检测）�?
+The project root directory (usually auto-detected):
 
 ```python
 configure(project_root='/path/to/project')
 ```
 
-### exclude_packages (List[str])
+### `exclude_packages` (List[str])
 
-排除的包名列表（用于 auto_scan）�?
+A list of package names to exclude (used for `auto_scan`):
 
 ```python
 configure(
@@ -157,21 +157,21 @@ configure(
 )
 ```
 
-## 打包场景最佳实�?
+## Best Practices for Packaging
 
-### Nuitka 打包
+### Nuitka Packaging
 
-#### Standalone 模式
+#### Standalone Mode
 
 ```python
 # your_app/application.py
 
 from cullinan import configure, Application
 
-# 配置（在 Application 之前�?
+# Configure (before Application)
 configure(
     user_packages=['your_app'],
-    auto_scan=False  # 严格模式
+    auto_scan=False  # Strict mode
 )
 
 def main():
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     main()
 ```
 
-**打包命令**�?
+**Packaging Command:**
 
 ```bash
 nuitka --standalone \
@@ -191,11 +191,11 @@ nuitka --standalone \
        your_app/application.py
 ```
 
-**不再需�?* `--include-module` 逐个指定模块�?
+**No longer need** to specify modules one by one with `--include-module`.
 
-#### Onefile 模式
+#### Onefile Mode
 
-配置相同，打包命令：
+Configuration is the same. Packaging command:
 
 ```bash
 nuitka --onefile \
@@ -204,9 +204,9 @@ nuitka --onefile \
        your_app/application.py
 ```
 
-### PyInstaller 打包
+### PyInstaller Packaging
 
-#### Onedir 模式
+#### Onedir Mode
 
 ```python
 from cullinan import configure, Application
@@ -217,7 +217,7 @@ app = Application()
 app.run()
 ```
 
-**打包命令**�?
+**Packaging Command:**
 
 ```bash
 pyinstaller --onedir \
@@ -227,9 +227,9 @@ pyinstaller --onedir \
             application.py
 ```
 
-#### Onefile 模式
+#### Onefile Mode
 
-配置相同，打包命令：
+Configuration is the same. Packaging command:
 
 ```bash
 pyinstaller --onefile \
@@ -239,32 +239,32 @@ pyinstaller --onefile \
             application.py
 ```
 
-## 工作原理
+## How It Works
 
-### 开发环�?
+### Development Environment
 
-1. 读取配置�?`user_packages`
-2. 尝试导入每个�?
-3. 使用 `pkgutil.walk_packages` 扫描子模�?
-4. 导入所有子模块，触发装饰器
+1.  Reads the `user_packages` configuration.
+2.  Tries to import each package.
+3.  Uses `pkgutil.walk_packages` to scan sub-modules.
+4.  Imports all sub-modules, triggering decorators.
 
-### Nuitka 打包
+### Nuitka Packaging
 
-1. 读取配置�?`user_packages`
-2. **导入�?*（Nuitka 已经将模块编译进去）
-3. 扫描子模块（通过 `pkg.__path__`�?
-4. 回退：如果包无法导入，从 sys.modules 查找
+1.  Reads the `user_packages` configuration.
+2.  **Imports packages** (Nuitka has already compiled the modules).
+3.  Scans sub-modules (via `pkg.__path__`).
+4.  Fallback: If a package cannot be imported, searches `sys.modules`.
 
-### PyInstaller 打包
+### PyInstaller Packaging
 
-1. 读取配置�?`user_packages`
-2. **导入�?*（PyInstaller 已经打包�?
-3. 扫描子模�?
-4. 回退：目录扫描（如果启用 auto_scan�?
+1.  Reads the `user_packages` configuration.
+2.  **Imports packages** (PyInstaller has already included them).
+3.  Scans sub-modules.
+4.  Fallback: Directory scanning (if `auto_scan` is enabled).
 
-## 完整示例
+## Complete Example
 
-### your_app 项目配置
+### `your_app` Project Configuration
 
 ```python
 # your_app/application.py
@@ -272,39 +272,39 @@ pyinstaller --onefile \
 import logging
 from cullinan import configure, Application
 
-# 配置日志
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# 配置 Cullinan
+# Configure Cullinan
 configure(
-    user_packages=['your_app'],  # 指定�?
-    verbose=True,                  # 查看扫描过程
-    auto_scan=False                # 严格模式
+    user_packages=['your_app'],  # Specify the package
+    verbose=True,                # See the scanning process
+    auto_scan=False              # Strict mode
 )
 
 def main():
-    # 验证配置
+    # Verify configuration
     from cullinan import get_config
     config = get_config()
     print(f"Configured packages: {config.user_packages}")
     
-    # 创建应用
+    # Create the application
     app = Application()
     
-    # 验证 Controller
+    # Verify Controllers
     from cullinan.controller import handler_list
     print(f"Registered handlers: {len(handler_list)}")
     
-    # 启动
+    # Start
     app.run()
 
 if __name__ == '__main__':
     main()
 ```
 
-### 日志输出
+### Log Output
 
-配置正确后，你会看到�?
+With the correct configuration, you will see:
 
 ```
 Configured packages: ['your_app']
@@ -313,44 +313,44 @@ INFO:cullinan.application: Starting module discovery...
 INFO:cullinan.application: === Using Nuitka scanning strategy ===
 INFO:cullinan.application: Using configured user packages: ['your_app']
 INFO:cullinan.application: Found 11 modules from configured packages
-INFO:cullinan.application: �?Successfully imported: your_app.controller
-INFO:cullinan.application: �?Successfully imported: your_app.hooks
+INFO:cullinan.application: Successfully imported: your_app.controller
+INFO:cullinan.application: Successfully imported: your_app.hooks
 ...
 
 Registered handlers: 5
 ```
 
-## 对比：配置前 vs 配置�?
+## Comparison: Before vs. After Configuration
 
-### 配置前（问题�?
+### Before (The Problem)
 
 ```
-INFO: Found 0 user modules in sys.modules  �?问题�?
+INFO: Found 0 user modules in sys.modules  # The issue
 INFO: Only __main__ found
 ```
 
-**原因**：框架不知道要扫描哪些包
+**Reason**: The framework doesn't know which packages to scan.
 
-### 配置后（解决�?
+### After (The Solution)
 
 ```
 INFO: Using configured user packages: ['your_app']
-INFO: Found 11 modules from configured packages  �?成功�?
-INFO: �?your_app.controller
-INFO: �?your_app.hooks
+INFO: Found 11 modules from configured packages  # Success
+INFO: your_app.controller
+INFO: your_app.hooks
 ...
 ```
 
-**原因**：精确指定了要扫描的�?
+**Reason**: The packages to be scanned are precisely specified.
 
-## 迁移指南
+## Migration Guide
 
-### 从旧方式迁移
+### Migrating from the Old Way
 
-**之前**：需要显式导�?
+**Before**: Required explicit imports.
 
 ```python
-# 需要手动导入所有模�?
+# Needed to manually import all modules
 from your_app import controller
 from your_app import hooks
 from your_app.service import user_service
@@ -359,33 +359,33 @@ from cullinan import Application
 app = Application()
 ```
 
-**现在**：使用配�?
+**Now**: Use configuration.
 
 ```python
-# 只需配置一�?
+# Just configure once
 from cullinan import configure, Application
 
 configure(user_packages=['your_app'])
 
-# 不需要手动导入！框架会自动处�?
+# No need for manual imports! The framework handles it automatically.
 app = Application()
 ```
 
-## 高级用法
+## Advanced Usage
 
-### 多包配置
+### Multi-Package Configuration
 
 ```python
 configure(
     user_packages=[
-        'your_app',        # 主应�?
-        'plugins.auth',     # 认证插件
-        'plugins.payment'   # 支付插件
+        'your_app',        # Main application
+        'plugins.auth',    # Authentication plugin
+        'plugins.payment'  # Payment plugin
     ]
 )
 ```
 
-### 条件配置
+### Conditional Configuration
 
 ```python
 import os
@@ -393,14 +393,14 @@ from cullinan import configure
 
 packages = ['myapp']
 
-# 开发环境添加测试包
+# Add test package in development environment
 if os.getenv('ENV') == 'development':
     packages.append('myapp.tests')
 
 configure(user_packages=packages)
 ```
 
-### 动态配�?
+### Dynamic Configuration
 
 ```python
 from cullinan import get_config
@@ -411,11 +411,11 @@ config.add_user_package('myapp.services')
 config.set_verbose(True)
 ```
 
-## 故障排查
+## Troubleshooting
 
-### 问题：Still 404
+### Problem: Still 404
 
-**检�?*�?
+Check:
 
 ```python
 from cullinan import get_config
@@ -423,62 +423,62 @@ from cullinan import get_config
 config = get_config()
 print(f"Configured packages: {config.user_packages}")
 
-# 应该输出你配置的包，不应该是空列�?
+# Should output your configured packages, not an empty list
 ```
 
-**解决**：确保在 `Application()` 之前调用 `configure()`
+**Solution**: Make sure `configure()` is called before `Application()`.
 
-### 问题：导入失�?
+### Problem: Import Failed
 
-启用详细日志�?
+Enable verbose logging:
 
 ```python
 configure(
     user_packages=['your_app'],
-    verbose=True  # 查看详细的导入过�?
+    verbose=True  # See the detailed import process
 )
 ```
 
-查看日志中的错误信息�?
+Check the error messages in the logs.
 
-### 问题：某些模块没有被扫描
+### Problem: Some Modules Are Not Scanned
 
-**检查包结构**�?
+**Check your package structure:**
 
 ```
 your_project/
 └── app/
-    ├── __init__.py          �?必须�?
+    ├── __init__.py
     ├── controller.py
     └── service/
-        ├── __init__.py      �?必须�?
+        ├── __init__.py
         └── user_service.py
 ```
 
-**确保每个目录都有 `__init__.py`**�?
+**Ensure every directory has an `__init__.py` file.**
 
-## 总结
+## Summary
 
-### 核心要点
+### Core Points
 
-1. �?使用 `configure(user_packages=[...])` 指定�?
-2. �?在创�?`Application` **之前**配置
-3. �?不需要手动导入模�?
-4. �?适用于所有打包工�?
+1.  Specify your packages in `configure(user_packages=[...])`.
+2.  Configure **before** creating the `Application` instance.
+3.  No need to manually import modules.
+4.  Works with all packaging tools.
 
-### 推荐配置
+### Recommended Configuration
 
 ```python
 from cullinan import configure, Application
 
 configure(
-    user_packages=['your_app'],  # 你的�?
-    auto_scan=False               # 严格模式（可选）
+    user_packages=['your_app'],  # Your package
+    auto_scan=False               # Strict mode (optional)
 )
 
 app = Application()
 app.run()
 ```
 
-**这是最专业、最优雅的解决方案！** 🎉
+**This is the most professional and elegant solution!** 🎉
 

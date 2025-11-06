@@ -6,7 +6,7 @@ Cullinan provides powerful build scripts to package your web applications into s
 
 ### 1. `build_app.py` - Universal Builder (Recommended)
 
-**Auto-detecting, interactive build script that works with both Nuitka and PyInstaller.**
+**An auto-detecting, interactive build script that works with both Nuitka and PyInstaller.**
 
 ```bash
 # Interactive mode (recommended for beginners)
@@ -32,7 +32,7 @@ python scripts/build_app.py --entry your_app/main.py --tool nuitka
 
 ### 2. `build_nuitka_advanced.py` - Advanced Nuitka Builder
 
-**Full-featured Nuitka build script with compiler selection and optimization.**
+**A full-featured Nuitka build script with compiler selection and optimization.**
 
 ```bash
 # Basic builds
@@ -66,7 +66,7 @@ python scripts/build_nuitka_advanced.py --onefile --icon app.ico --no-console
 
 ### 3. `build_pyinstaller_advanced.py` - Advanced PyInstaller Builder
 
-**Full-featured PyInstaller build script with UPX compression.**
+**A full-featured PyInstaller build script with UPX compression.**
 
 ```bash
 # Basic builds
@@ -99,15 +99,15 @@ python scripts/build_pyinstaller_advanced.py --clean --onefile
 
 ## Build Modes Comparison
 
-| Feature | Nuitka Standalone | Nuitka Onefile | PyInstaller Onedir | PyInstaller Onefile |
-|---------|-------------------|----------------|-------------------|---------------------|
-| **Output** | Folder with .exe | Single .exe | Folder with .exe | Single .exe |
-| **Startup Time** | Fast | Slower | Fast | Slower |
-| **Size** | Larger | Medium | Large | Medium |
-| **Compilation Time** | Longest | Long | Fast | Fast |
-| **Performance** | Best | Best | Good | Good |
-| **Antivirus False Positives** | Rare | Rare | Common | More Common |
-| **Recommended For** | Production | Distribution | Development | Quick distribution |
+| Feature                  | Nuitka Standalone | Nuitka Onefile | PyInstaller Onedir | PyInstaller Onefile |
+|--------------------------|-------------------|----------------|--------------------|---------------------|
+| **Output**               | Folder with .exe  | Single .exe    | Folder with .exe   | Single .exe         |
+| **Startup Time**         | Fast              | Slower         | Fast               | Slower              |
+| **Size**                 | Larger            | Medium         | Large              | Medium              |
+| **Compilation Time**     | Longest           | Long           | Fast               | Fast                |
+| **Performance**          | Best              | Best           | Good               | Good                |
+| **Antivirus False Positives** | Rare              | Rare           | Common             | More Common         |
+| **Recommended For**      | Production        | Distribution   | Development        | Quick distribution  |
 
 ---
 
@@ -268,20 +268,20 @@ python scripts/build_app.py --package my_app.controllers --package my_app.servic
 
 **Solutions:**
 
-1. **Use Nuitka with optimization:**
-```bash
-python scripts/build_nuitka_advanced.py --optimize
-```
+1.  **Use Nuitka with optimization:**
+    ```bash
+    python scripts/build_nuitka_advanced.py --optimize
+    ```
 
-2. **Use PyInstaller with UPX:**
-```bash
-python scripts/build_pyinstaller_advanced.py --upx
-```
+2.  **Use PyInstaller with UPX:**
+    ```bash
+    python scripts/build_pyinstaller_advanced.py --upx
+    ```
 
-3. **Exclude unnecessary packages:**
-```bash
-python scripts/build_pyinstaller_advanced.py --exclude-module matplotlib
-```
+3.  **Exclude unnecessary packages:**
+    ```bash
+    python scripts/build_pyinstaller_advanced.py --exclude-module matplotlib
+    ```
 
 ### Issue: Slow startup (onefile mode)
 
@@ -294,10 +294,10 @@ python scripts/build_app.py --mode standalone
 
 **Solutions:**
 
-1. **Use Nuitka instead of PyInstaller** (fewer false positives)
-2. **Use standalone mode instead of onefile**
-3. **Sign your executable with a code signing certificate**
-4. **Add exception in antivirus software**
+1.  **Use Nuitka instead of PyInstaller** (fewer false positives)
+2.  **Use standalone mode instead of onefile**
+3.  **Sign your executable with a code signing certificate**
+4.  **Add an exception in your antivirus software**
 
 ---
 
@@ -378,22 +378,22 @@ jobs:
 
 ## Best Practices
 
-1. **✅ Always use `configure()`** in your application
-2. **✅ Test in both development and packaged modes**
-3. **✅ Use standalone mode for production**
-4. **✅ Use onefile mode for simple distribution**
-5. **✅ Include version info and icon**
-6. **✅ Test on clean machines**
-7. **✅ Use code signing for production releases**
-8. **⚠️ Avoid hardcoded paths** (use relative paths)
-9. **⚠️ Handle resources properly** (use proper resource loading)
+1.  **✅ Always use `configure()`** in your application
+2.  **✅ Test in both development and packaged modes**
+3.  **✅ Use standalone mode for production**
+4.  **✅ Use onefile mode for simple distribution**
+5.  **✅ Include version info and icon**
+6.  **✅ Test on clean machines**
+7.  **✅ Use code signing for production releases**
+8.  **⚠️ Avoid hardcoded paths** (use relative paths)
+9.  **⚠️ Handle resources properly** (use proper resource loading)
 10. **⚠️ Test antivirus compatibility**
 
 ---
 
 ## See Also
 
-- [Configuration Guide](01-configuration.md)
-- [Packaging Guide](02-packaging.md)
-- [Troubleshooting](03-troubleshooting.md)
+-   [Configuration Guide](01-configuration.md)
+-   [Packaging Guide](02-packaging.md)
+-   [Troubleshooting](03-troubleshooting.md)
 

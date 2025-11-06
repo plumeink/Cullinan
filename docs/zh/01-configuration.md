@@ -2,24 +2,24 @@
 
 ## 概述
 
-Cullinan 现在支持通过配置文件精确指定用户包，彻底解决打包环境下的模块扫描问题。这是一个更专业、更优雅的解决方案�?
+Cullinan 现在支持通过配置文件精确指定用户包，彻底解决打包环境下的模块扫描问题。这是一个更专业、更优雅的解决方案！
 
 ## 为什么需要配置？
 
-### 传统方式的问�?
+### 传统方式的问题
 
 1. **EXCLUDE_PREFIXES 维护困难**：需要不断添加要排除的包
-2. **扫描不精�?*：可能扫描到不需要的模块
-3. **打包后失�?*：Nuitka/PyInstaller 改变了文件结�?
+2. **扫描不精确**：可能扫描到不需要的模块
+3. **打包后失效**：Nuitka/PyInstaller 改变了文件结构
 
-### 配置方式的优�?
+### 配置方式的优点
 
-1. �?**精确控制**：只扫描指定的包
-2. �?**打包友好**：适用于所有打包工�?
-3. �?**易于维护**：配置清晰明�?
-4. �?**零侵�?*：不需要修改业务代�?
+1. **精确控制**：只扫描指定的包
+2. **打包友好**：适用于所有打包工具
+3. **易于维护**：配置清晰明了
+4. **零侵入**：不需要修改业务代码
 
-## 快速开�?
+## 快速开始
 
 ### 方式 1: 代码配置（推荐）
 
@@ -28,10 +28,10 @@ Cullinan 现在支持通过配置文件精确指定用户包，彻底解决打�
 
 from cullinan import configure, Application
 
-# 在创�?Application 之前配置
+# 在创建 Application 之前配置
 configure(
     user_packages=['your_app'],  # 你的包名
-    verbose=True                   # 可选：启用详细日志
+    verbose=True                 # 可选：启用详细日志
 )
 
 def main():
@@ -42,11 +42,11 @@ if __name__ == '__main__':
     main()
 ```
 
-**就这么简单！** 框架会自动扫�?`your_app` 包下的所有模块�?
+**就这么简单！** 框架会自动扫描 `your_app` 包下的所有模块。
 
 ### 方式 2: JSON 配置文件
 
-创建 `cullinan.json`�?
+创建 `cullinan.json` 文件：
 
 ```json
 {
@@ -58,28 +58,28 @@ if __name__ == '__main__':
 }
 ```
 
-在代码中加载�?
+在代码中加载：
 
 ```python
 import json
-from cullinan import get_config, Application
+from cullinan import get_config, application
 
 # 加载配置
 with open('cullinan.json', 'r') as f:
     config_data = json.load(f)
     get_config().from_dict(config_data)
 
-app = Application()
+app = application
 app.run()
 ```
 
 ### 方式 3: 环境变量
 
 ```bash
-# 设置环境变量
+# 设置环境变量（Linux / macOS）
 export CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 
-# �?Windows
+# Windows
 set CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 ```
 
@@ -87,7 +87,7 @@ set CULLINAN_USER_PACKAGES=your_app,myapp.controllers
 import os
 from cullinan import configure, Application
 
-# 从环境变量加�?
+# 从环境变量加载
 if os.getenv('CULLINAN_USER_PACKAGES'):
     packages = os.getenv('CULLINAN_USER_PACKAGES').split(',')
     configure(user_packages=packages)
@@ -100,26 +100,26 @@ app.run()
 
 ### user_packages (List[str])
 
-指定要扫描的用户包列表�?
+指定要扫描的用户包列表：
 
 ```python
 configure(
     user_packages=[
-        'your_app',              # 扫描整个�?
-        'myapp.controllers',      # 只扫�?controllers
-        'myapp.services'          # 只扫�?services
+        'your_app',              # 扫描整个包
+        'myapp.controllers',     # 只扫描 controllers
+        'myapp.services'         # 只扫描 services
     ]
 )
 ```
 
-**工作原理**�?
+**工作原理**
 1. 导入指定的包
 2. 使用 `pkgutil.walk_packages` 递归扫描所有子模块
-3. 自动导入所有模块，触发装饰�?
+3. 自动导入所有模块，触发装饰器
 
 ### verbose (bool)
 
-启用详细日志，查看扫描过程�?
+启用详细日志，查看扫描过程：
 
 ```python
 configure(verbose=True)
@@ -127,7 +127,7 @@ configure(verbose=True)
 
 ### auto_scan (bool)
 
-是否启用自动扫描（回退策略）�?
+是否启用自动扫描（回退策略）：
 
 ```python
 configure(
@@ -137,11 +137,11 @@ configure(
 ```
 
 - `True`（默认）：如果配置的包导入失败，尝试自动扫描
-- `False`：严格模式，只使用配置的�?
+- `False`：严格模式，只使用配置的包
 
 ### project_root (str)
 
-项目根目录（通常自动检测）�?
+项目根目录（通常自动检测）：
 
 ```python
 configure(project_root='/path/to/project')
@@ -149,7 +149,7 @@ configure(project_root='/path/to/project')
 
 ### exclude_packages (List[str])
 
-排除的包名列表（用于 auto_scan）�?
+排除的包名列表（用于 auto_scan）：
 
 ```python
 configure(
@@ -157,7 +157,7 @@ configure(
 )
 ```
 
-## 打包场景最佳实�?
+## 打包场景最佳实践
 
 ### Nuitka 打包
 
@@ -168,7 +168,7 @@ configure(
 
 from cullinan import configure, Application
 
-# 配置（在 Application 之前�?
+# 配置（在 Application 之前）
 configure(
     user_packages=['your_app'],
     auto_scan=False  # 严格模式
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     main()
 ```
 
-**打包命令**�?
+**打包命令**
 
 ```bash
 nuitka --standalone \
@@ -191,7 +191,7 @@ nuitka --standalone \
        your_app/application.py
 ```
 
-**不再需�?* `--include-module` 逐个指定模块�?
+**不再需要** `--include-module` 逐个指定模块。
 
 #### Onefile 模式
 
@@ -217,7 +217,7 @@ app = Application()
 app.run()
 ```
 
-**打包命令**�?
+**打包命令**
 
 ```bash
 pyinstaller --onedir \
@@ -241,26 +241,26 @@ pyinstaller --onefile \
 
 ## 工作原理
 
-### 开发环�?
+### 开发环境
 
-1. 读取配置�?`user_packages`
-2. 尝试导入每个�?
-3. 使用 `pkgutil.walk_packages` 扫描子模�?
+1. 读取配置 `user_packages`
+2. 尝试导入每个包
+3. 使用 `pkgutil.walk_packages` 扫描子模块
 4. 导入所有子模块，触发装饰器
 
 ### Nuitka 打包
 
-1. 读取配置�?`user_packages`
-2. **导入�?*（Nuitka 已经将模块编译进去）
-3. 扫描子模块（通过 `pkg.__path__`�?
-4. 回退：如果包无法导入，从 sys.modules 查找
+1. 读取配置 `user_packages`
+2. **导入包**（Nuitka 已经将模块编译进去）
+3. 扫描子模块（通过 `pkg.__path__`）
+4. 回退：如果包无法导入，从 `sys.modules` 查找
 
 ### PyInstaller 打包
 
-1. 读取配置�?`user_packages`
-2. **导入�?*（PyInstaller 已经打包�?
-3. 扫描子模�?
-4. 回退：目录扫描（如果启用 auto_scan�?
+1. 读取配置 `user_packages`
+2. **导入包**（PyInstaller 已经打包进去了）
+3. 扫描子模块
+4. 回退：目录扫描（如果启用 `auto_scan`）
 
 ## 完整示例
 
@@ -277,9 +277,9 @@ logging.basicConfig(level=logging.INFO)
 
 # 配置 Cullinan
 configure(
-    user_packages=['your_app'],  # 指定�?
-    verbose=True,                  # 查看扫描过程
-    auto_scan=False                # 严格模式
+    user_packages=['your_app'],  # 指定包
+    verbose=True,                # 查看扫描过程
+    auto_scan=False              # 严格模式
 )
 
 def main():
@@ -304,7 +304,7 @@ if __name__ == '__main__':
 
 ### 日志输出
 
-配置正确后，你会看到�?
+配置正确后，你会看到：
 
 ```
 Configured packages: ['your_app']
@@ -313,44 +313,44 @@ INFO:cullinan.application: Starting module discovery...
 INFO:cullinan.application: === Using Nuitka scanning strategy ===
 INFO:cullinan.application: Using configured user packages: ['your_app']
 INFO:cullinan.application: Found 11 modules from configured packages
-INFO:cullinan.application: �?Successfully imported: your_app.controller
-INFO:cullinan.application: �?Successfully imported: your_app.hooks
+INFO:cullinan.application: Successfully imported: your_app.controller
+INFO:cullinan.application: Successfully imported: your_app.hooks
 ...
 
 Registered handlers: 5
 ```
 
-## 对比：配置前 vs 配置�?
+## 对比：配置前 vs 配置后
 
-### 配置前（问题�?
+### 配置前（问题）
 
 ```
-INFO: Found 0 user modules in sys.modules  �?问题�?
+INFO: Found 0 user modules in sys.modules  # 问题
 INFO: Only __main__ found
 ```
 
 **原因**：框架不知道要扫描哪些包
 
-### 配置后（解决�?
+### 配置后（解决）
 
 ```
 INFO: Using configured user packages: ['your_app']
-INFO: Found 11 modules from configured packages  �?成功�?
-INFO: �?your_app.controller
-INFO: �?your_app.hooks
+INFO: Found 11 modules from configured packages  # 成功
+INFO: your_app.controller
+INFO: your_app.hooks
 ...
 ```
 
-**原因**：精确指定了要扫描的�?
+**原因**：精确指定了要扫描的包
 
 ## 迁移指南
 
 ### 从旧方式迁移
 
-**之前**：需要显式导�?
+**之前**：需要显式导入
 
 ```python
-# 需要手动导入所有模�?
+# 需要手动导入所有模块
 from your_app import controller
 from your_app import hooks
 from your_app.service import user_service
@@ -359,15 +359,15 @@ from cullinan import Application
 app = Application()
 ```
 
-**现在**：使用配�?
+**现在**：使用配置
 
 ```python
-# 只需配置一�?
+# 只需配置一次
 from cullinan import configure, Application
 
 configure(user_packages=['your_app'])
 
-# 不需要手动导入！框架会自动处�?
+# 不需要手动导入！框架会自动处理
 app = Application()
 ```
 
@@ -378,9 +378,9 @@ app = Application()
 ```python
 configure(
     user_packages=[
-        'your_app',        # 主应�?
-        'plugins.auth',     # 认证插件
-        'plugins.payment'   # 支付插件
+        'your_app',        # 主应用
+        'plugins.auth',    # 认证插件
+        'plugins.payment'  # 支付插件
     ]
 )
 ```
@@ -400,7 +400,7 @@ if os.getenv('ENV') == 'development':
 configure(user_packages=packages)
 ```
 
-### 动态配�?
+### 动态配置
 
 ```python
 from cullinan import get_config
@@ -415,7 +415,7 @@ config.set_verbose(True)
 
 ### 问题：Still 404
 
-**检�?*�?
+检查：
 
 ```python
 from cullinan import get_config
@@ -423,48 +423,48 @@ from cullinan import get_config
 config = get_config()
 print(f"Configured packages: {config.user_packages}")
 
-# 应该输出你配置的包，不应该是空列�?
+# 应该输出你配置的包，不应该是空列表
 ```
 
 **解决**：确保在 `Application()` 之前调用 `configure()`
 
-### 问题：导入失�?
+### 问题：导入失败
 
-启用详细日志�?
+启用详细日志：
 
 ```python
 configure(
     user_packages=['your_app'],
-    verbose=True  # 查看详细的导入过�?
+    verbose=True  # 查看详细的导入过程
 )
 ```
 
-查看日志中的错误信息�?
+查看日志中的错误信息。
 
 ### 问题：某些模块没有被扫描
 
-**检查包结构**�?
+**检查包结构**
 
 ```
 your_project/
 └── app/
-    ├── __init__.py          �?必须�?
+    ├── __init__.py
     ├── controller.py
     └── service/
-        ├── __init__.py      �?必须�?
+        ├── __init__.py
         └── user_service.py
 ```
 
-**确保每个目录都有 `__init__.py`**�?
+**确保每个目录都有 `__init__.py`**
 
 ## 总结
 
 ### 核心要点
 
-1. �?使用 `configure(user_packages=[...])` 指定�?
-2. �?在创�?`Application` **之前**配置
-3. �?不需要手动导入模�?
-4. �?适用于所有打包工�?
+1. 在 `configure(user_packages=[...])` 中指定包
+2. 在创建 `Application` **之前** 配置
+3. 不需要手动导入模块
+4. 适用于所有打包工具
 
 ### 推荐配置
 
@@ -472,7 +472,7 @@ your_project/
 from cullinan import configure, Application
 
 configure(
-    user_packages=['your_app'],  # 你的�?
+    user_packages=['your_app'],  # 你的包
     auto_scan=False               # 严格模式（可选）
 )
 
@@ -481,4 +481,3 @@ app.run()
 ```
 
 **这是最专业、最优雅的解决方案！** 🎉
-

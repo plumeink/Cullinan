@@ -1,48 +1,48 @@
-# Cullinan 配置快速参考
+# Cullinan Configuration Quick Reference
 
-## 一行解决打包问题
+## One-Line Solution for Packaging Problems
 
 ```python
 from cullinan import configure, Application
 
-configure(user_packages=['your_app'])  # 你的包名
+configure(user_packages=['your_app'])  # Your package name
 app = Application()
 app.run()
 ```
 
-## 配置选项
+## Configuration Options
 
 ```python
 configure(
-    user_packages=['your_app'],   # 必需：要扫描的包
-    verbose=True,                   # 可选：详细日志
-    auto_scan=False,                # 可选：禁用自动扫描
-    project_root='/path/to/app',    # 可选：项目根目录
-    exclude_packages=['test']       # 可选：排除的包
+    user_packages=['your_app'],   # Required: Packages to scan
+    verbose=True,                   # Optional: Verbose logging
+    auto_scan=False,                # Optional: Disable auto-scan
+    project_root='/path/to/app',    # Optional: Project root directory
+    exclude_packages=['test']       # Optional: Excluded packages
 )
 ```
 
-## 适用场景
+## Applicable Scenarios
 
 ✅ Nuitka Standalone  
 ✅ Nuitka Onefile  
 ✅ PyInstaller Onedir  
 ✅ PyInstaller Onefile  
-✅ 开发环境  
+✅ Development Environment  
 
-## 打包命令简化
+## Simplified Packaging Commands
 
-### 之前
+### Before
 
 ```bash
 nuitka --standalone \
        --include-module=your_app.application \
        --include-module=your_app.controllers \
        --include-module=your_app.services \
-       # ... 还有很多
+       # ... and many more
 ```
 
-### 现在
+### Now
 
 ```bash
 nuitka --standalone \
@@ -50,7 +50,7 @@ nuitka --standalone \
        application.py
 ```
 
-## 验证配置
+## Verifying Configuration
 
 ```python
 from cullinan import get_config
@@ -61,14 +61,14 @@ print(f"Packages: {config.user_packages}")
 print(f"Handlers: {len(handler_list)}")
 ```
 
-## 完整示例
+## Complete Example
 
 ```python
 # your_app/application.py
 
 from cullinan import configure, Application
 
-# 配置（必须在 Application 之前）
+# Configuration (must be before Application)
 configure(user_packages=['your_app'])
 
 def main():
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     main()
 ```
 
-## JSON 配置（可选）
+## JSON Configuration (Optional)
 
 ```json
 {
@@ -97,7 +97,7 @@ with open('cullinan.json') as f:
     get_config().from_dict(json.load(f))
 ```
 
-## 环境变量（可选）
+## Environment Variables (Optional)
 
 ```bash
 export CULLINAN_USER_PACKAGES=your_app
@@ -111,26 +111,26 @@ if pkg := os.getenv('CULLINAN_USER_PACKAGES'):
     configure(user_packages=pkg.split(','))
 ```
 
-## 对比效果
+## Comparison
 
-### 配置前
+### Before Configuration
 
 ```
-INFO: Found 0 user modules  ← 问题
+INFO: Found 0 user modules  ← Problem
 API 404
 ```
 
-### 配置后
+### After Configuration
 
 ```
 INFO: Using configured user packages: ['your_app']
-INFO: Found 11 modules  ← 解决
+INFO: Found 11 modules  ← Solved
 API 200 OK
 ```
 
-## 详细文档
+## Detailed Documentation
 
-- 完整指南：`docs/CONFIGURATION_GUIDE.md`
-- 示例代码：`examples/config_example.py`
-- JSON 示例：`examples/cullinan.json`
+-   Complete Guide: `docs/CONFIGURATION_GUIDE.md`
+-   Example Code: `examples/config_example.py`
+-   JSON Example: `examples/cullinan.json`
 

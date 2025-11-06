@@ -1,6 +1,6 @@
 # Cullinan 完整指南
 
-[English](../en/00-complete-guide.md) | [中文](00-complete-guide_zh.md)
+[English](../en/00-complete-guide.md) | [中文](00-complete-guide.md)
 
 ---
 
