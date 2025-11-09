@@ -47,6 +47,8 @@ KEY_NAME_INDEX = {
 _SIGNATURE_CACHE = {}
 # Performance optimization: cache parameter mappings to avoid repeated list comprehension
 _PARAM_MAPPING_CACHE = {}
+# Performance optimization: cache URL pattern resolution to avoid repeated parsing
+_URL_PATTERN_CACHE = {}
 
 
 def _get_cached_signature(func: Callable) -> inspect.Signature:
@@ -302,8 +304,10 @@ def request_resolver(self,
     # Body params
     if body_param_names:
         body_dict = {}
-        ctype = (self.request.headers.get('Content-Type') or '').lower()
-        is_json = ctype.startswith('application/json')
+        # Optimized content-type checking - avoid unnecessary string operations
+        ctype = self.request.headers.get('Content-Type', '')
+        # Check first 16 chars (length of 'application/json') case-insensitively
+        is_json = ctype[:16].lower() == 'application/json' if len(ctype) >= 16 else ctype.lower().startswith('application/json')
         if is_json:
             try:
                 raw = self.request.body or b'{}'
@@ -335,24 +339,43 @@ def request_resolver(self,
 
 
 def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[dict]:
-    header_names = list(header_names or [])
-    if header_names:
-        need_header = {}
-        for name in header_names:
-            need_header[name] = self.request.headers.get(name)
-            if need_header[name] is not None:
-                # Conditional logging: only format string if INFO level is enabled
-                if logger.isEnabledFor(logging.INFO):
-                    logger.info("\t||| request_headers %s", {name: need_header[name]})
-            else:
-                miss_header_handler = MissingHeaderHandlerHook.get_hook()
-                miss_header_handler(request=self, header_name=name)
-        return need_header
-    return None
+    """Resolve required headers from the request.
+    
+    Optimized to reduce loop overhead and unnecessary conversions.
+    """
+    if not header_names:
+        return None
+    
+    headers_dict = self.request.headers
+    need_header = {}
+    missing_headers = []
+    
+    # Single pass to collect headers and identify missing ones
+    for name in header_names:
+        value = headers_dict.get(name)
+        need_header[name] = value
+        if value is None:
+            missing_headers.append(name)
+    
+    # Batch logging for present headers (if enabled)
+    if logger.isEnabledFor(logging.INFO):
+        present = {k: v for k, v in need_header.items() if v is not None}
+        if present:
+            logger.info("\t||| request_headers %s", present)
+    
+    # Handle missing headers
+    if missing_headers:
+        miss_header_handler = MissingHeaderHandlerHook.get_hook()
+        for name in missing_headers:
+            miss_header_handler(request=self, header_name=name)
+    
+    return need_header
 
 
 def url_resolver(url: str) -> Tuple[str, list]:
     """Parse URL template with parameters and return regex pattern and parameter names.
+    
+    Uses caching to avoid repeated parsing of the same URL patterns.
     
     Args:
         url: URL template with parameters in {param_name} format
@@ -364,6 +387,11 @@ def url_resolver(url: str) -> Tuple[str, list]:
         url_resolver("/user/{id}/post/{post_id}") 
         -> ("/user/([a-zA-Z0-9-]+)/*/post/([a-zA-Z0-9-]+)/*", ["id", "post_id"])
     """
+    # Check cache first
+    if url in _URL_PATTERN_CACHE:
+        return _URL_PATTERN_CACHE[url]
+    
+    # Parse URL pattern
     find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] == target]
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
@@ -373,7 +401,11 @@ def url_resolver(url: str) -> Tuple[str, list]:
     for url_param in url_param_list:
         url = url.replace(url_param, "[a-zA-Z0-9-]+")
     url = url.replace("{", "(").replace("}", ")/*")
-    return url, url_param_list
+    
+    # Cache result
+    result = (url, url_param_list)
+    _URL_PATTERN_CACHE[url] = result
+    return result
 
 
 class _SimpleResponse:
