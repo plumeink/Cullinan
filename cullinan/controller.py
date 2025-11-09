@@ -41,9 +41,11 @@ KEY_NAME_INDEX = {
 
 # Performance optimization: cache function signatures to avoid repeated inspect.signature() calls
 _SIGNATURE_CACHE = {}
+# Performance optimization: cache parameter mappings to avoid repeated list comprehension
+_PARAM_MAPPING_CACHE = {}
 
 
-def _get_cached_signature(func):
+def _get_cached_signature(func: Callable) -> inspect.Signature:
     """Get cached function signature to avoid repeated inspect.signature() calls.
     
     This optimization significantly reduces overhead in request handling by caching
@@ -52,6 +54,28 @@ def _get_cached_signature(func):
     if func not in _SIGNATURE_CACHE:
         _SIGNATURE_CACHE[func] = inspect.signature(func)
     return _SIGNATURE_CACHE[func]
+
+
+def _get_cached_param_mapping(func: Callable) -> Tuple[list, bool, bool]:
+    """Get cached parameter mapping for a function.
+    
+    Returns a tuple of (param_names, needs_request_body, needs_headers) to avoid
+    repeated parameter name extraction and checking on every request.
+    """
+    if func not in _PARAM_MAPPING_CACHE:
+        sig = _get_cached_signature(func)
+        param_names = [p.name for p in sig.parameters.values()
+                       if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)]
+        if param_names and param_names[0] == 'self':
+            param_names = param_names[1:]
+        
+        # Pre-check if function needs special parameters
+        needs_request_body = 'request_body' in param_names
+        needs_headers = 'headers' in param_names
+        
+        _PARAM_MAPPING_CACHE[func] = (param_names, needs_request_body, needs_headers)
+    
+    return _PARAM_MAPPING_CACHE[func]
 
 
 class ResponseProxy:
@@ -327,7 +351,9 @@ def url_resolver(url: str) -> tuple:
 
 
 class _SimpleResponse:
-    """Fallback minimal response implementing the expected interface"""
+    """Fallback minimal response implementing the expected interface with memory optimization."""
+    __slots__ = ('_headers', '_status', '_body')
+    
     def __init__(self):
         self._headers = []
         self._status = 200
@@ -438,12 +464,8 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
     token = response.push(resp_instance)
 
     try:
-        # Performance optimization: use cached signature instead of inspect.signature(func)
-        sig = _get_cached_signature(func)
-        param_names = [p.name for p in sig.parameters.values()
-                       if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)]
-        if param_names and param_names[0] == 'self':
-            param_names = param_names[1:]
+        # Performance optimization: use pre-compiled parameter mapping
+        param_names, needs_request_body, needs_headers = _get_cached_param_mapping(func)
 
         param_list = []
         for name in param_names:
@@ -692,12 +714,21 @@ def controller(**kwargs) -> Callable:
     return inner
 
 class HttpResponse(object):
+    """HTTP response object with memory optimization using __slots__.
+    
+    __slots__ reduces memory overhead by preventing dynamic attribute creation
+    and avoiding the __dict__ for each instance.
+    """
+    __slots__ = ('__body__', '__headers__', '__status__', '__status_msg__', '__is_static__')
+    
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
-    __body__ = ''
-    __headers__ = []
-    __status__ = 200
-    __status_msg__ = ''
-    __is_static__ = False
+    
+    def __init__(self):
+        self.__body__ = ''
+        self.__headers__ = []
+        self.__status__ = 200
+        self.__status_msg__ = ''
+        self.__is_static__ = False
 
     # __type__ = 'JSON'
 
@@ -738,7 +769,9 @@ class HttpResponse(object):
     #     return self.__type__
 
 class StatusResponse(HttpResponse):
+    """Status response with initialization from kwargs."""
     def __init__(self, **kwargs):
+        super().__init__()
         if kwargs.get("status", None) is not None and kwargs.get("status_msg", None) is not None:
             self.set_status(kwargs["status"], kwargs["status_msg"])
         if kwargs.get("headers", None) is not None:
