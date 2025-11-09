@@ -1,0 +1,619 @@
+# -*- coding: utf-8 -*-
+"""Module scanning and discovery for different packaging environments.
+
+This module provides utilities to discover and import Python modules across
+different deployment scenarios:
+- Development environment (direct Python execution)
+- Nuitka compiled/packaged applications
+- PyInstaller frozen applications
+
+Extracted from application.py for better maintainability and separation of concerns.
+"""
+
+import importlib
+import inspect
+import os
+import pkgutil
+import sys
+import logging
+from typing import List, Optional
+from cullinan.exceptions import CallerPackageException
+
+logger = logging.getLogger(__name__)
+
+
+def is_pyinstaller_frozen() -> bool:
+    """Check if running in PyInstaller frozen/packaged environment.
+    
+    Returns:
+        bool: True if PyInstaller frozen, False otherwise
+    """
+    return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
+
+
+def is_nuitka_compiled() -> bool:
+    """Check if running in Nuitka compiled environment.
+    
+    Nuitka sets the __compiled__ attribute during compilation.
+    
+    Returns:
+        bool: True if Nuitka compiled, False otherwise
+    """
+    return '__compiled__' in globals() or hasattr(sys, '__compiled__')
+
+
+def get_nuitka_standalone_mode() -> Optional[str]:
+    """Detect Nuitka packaging mode.
+    
+    Returns:
+        str: 'onefile', 'standalone', or None if not Nuitka compiled
+    """
+    if not is_nuitka_compiled():
+        return None
+    
+    # Nuitka onefile mode characteristics:
+    # 1. sys.frozen is True
+    # 2. Executable extracts to temporary directory
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(sys.executable)
+        # onefile mode typically runs in temp directory with random characters
+        if 'onefile' in exe_dir.lower() or 'temp' in exe_dir.lower() or '_MEI' in exe_dir:
+            return 'onefile'
+        return 'standalone'
+    
+    return None
+
+
+def get_pyinstaller_mode() -> Optional[str]:
+    """Detect PyInstaller packaging mode.
+    
+    Returns:
+        str: 'onefile', 'onedir', or None if not PyInstaller frozen
+    """
+    if not is_pyinstaller_frozen():
+        return None
+    
+    # PyInstaller onefile mode sets sys._MEIPASS
+    if hasattr(sys, '_MEIPASS'):
+        meipass = sys._MEIPASS
+        # Check if _MEIPASS is in temporary directory (onefile characteristic)
+        if '_MEI' in meipass or 'Temp' in meipass or 'tmp' in meipass:
+            return 'onefile'
+        return 'onedir'
+    
+    return None
+
+
+def get_caller_package() -> str:
+    """Get the caller package name for the importing application.
+    
+    Walk the stack and find the first frame whose module is not part of
+    the `cullinan` package. Prefer module.__package__ if available, otherwise
+    derive a dotted package name from the filename relative to CWD.
+    
+    Returns:
+        str: The top-level package name of the caller
+        
+    Raises:
+        CallerPackageException: If caller package cannot be determined
+    """
+    stack = inspect.stack()
+    cwd = os.getcwd()
+    
+    for frame_info in stack:
+        module = inspect.getmodule(frame_info[0])
+        if not module:
+            continue
+        
+        mod_name = getattr(module, '__name__', '')
+        if mod_name and mod_name.startswith('cullinan'):
+            continue
+        
+        pkg = getattr(module, '__package__', None)
+        if pkg:
+            # Return top-level package
+            return pkg.split('.')[0]
+        
+        # Derive from filename
+        try:
+            rel = os.path.relpath(frame_info.filename, cwd)
+            pkg_from_path = os.path.dirname(rel).replace(os.sep, '.')
+            if pkg_from_path == '.':
+                pkg_from_path = ''
+            return pkg_from_path
+        except Exception:
+            continue
+    
+    raise CallerPackageException()
+
+
+def _is_user_module_by_path(mod_name: str, mod) -> bool:
+    """Check if a module is user code (not stdlib or third-party).
+    
+    Args:
+        mod_name: Module name
+        mod: Module object
+        
+    Returns:
+        bool: True if module is user code
+    """
+    # Exclude framework itself
+    if mod_name.startswith('cullinan'):
+        return False
+    
+    # Exclude built-in modules
+    if mod_name.startswith('_'):
+        return False
+    
+    # Check module file path
+    mod_file = getattr(mod, '__file__', None)
+    if not mod_file:
+        return False
+    
+    # Exclude site-packages (third-party libraries)
+    if 'site-packages' in mod_file:
+        return False
+    
+    # Exclude standard library (typically in lib/python3.x/)
+    if 'lib' + os.sep + 'python' in mod_file:
+        return False
+    
+    # Exclude packaging tools
+    if 'nuitka' in mod_file.lower() or 'pyinstaller' in mod_file.lower():
+        return False
+    
+    # Exclude system paths
+    system_paths = [
+        os.path.join(sys.prefix, 'lib'),
+        os.path.join(sys.prefix, 'Lib'),  # Windows
+    ]
+    for sys_path in system_paths:
+        if mod_file.startswith(sys_path):
+            return False
+    
+    return True
+
+
+def scan_modules_nuitka() -> List[str]:
+    """Scan for modules in Nuitka compiled environment.
+    
+    Uses multiple strategies to discover user modules:
+    1. Configured user_packages (recommended, from config)
+    2. Smart detection from sys.modules
+    3. Inference from __main__ module
+    4. Directory scanning of executable location
+    
+    Returns:
+        List[str]: List of discovered module names (dotted strings)
+    """
+    logger.info("\t|||\t\t\tDetected Nuitka compiled environment")
+    
+    mode = get_nuitka_standalone_mode()
+    logger.info("\t|||\t\t\tNuitka mode: %s", mode or "unknown")
+    
+    modules = []
+    
+    # Get configuration
+    from cullinan.config import get_config
+    config = get_config()
+    
+    # Strategy 1: Use configured user packages (recommended)
+    if config.user_packages:
+        logger.info("\t|||\t\t\tUsing configured user packages: %s", config.user_packages)
+        
+        for package_name in config.user_packages:
+            try:
+                # Import package
+                pkg = importlib.import_module(package_name)
+                logger.debug("\t|||\t\t\tImported package: %s", package_name)
+                
+                # Add package itself
+                if package_name not in modules:
+                    modules.append(package_name)
+                
+                # Scan all submodules in package
+                if hasattr(pkg, '__path__'):
+                    for finder, name, is_pkg in pkgutil.walk_packages(pkg.__path__, package_name + '.'):
+                        if name not in modules:
+                            modules.append(name)
+                            logger.debug("\t|||\t\t\tFound submodule: %s", name)
+            
+            except Exception as e:
+                logger.warning("\t|||\t\t\tFailed to import package %s: %s", package_name, str(e))
+                
+                # Fallback: search in sys.modules
+                for mod_name in sys.modules.keys():
+                    if mod_name.startswith(package_name):
+                        if mod_name not in modules:
+                            modules.append(mod_name)
+        
+        logger.info("\t|||\t\t\tFound %d modules from configured packages", len(modules))
+        
+        # If configured packages found modules, return early
+        if modules:
+            return modules
+    
+    # Strategy 2: Auto-scan if no configured packages or no modules found
+    if config.auto_scan:
+        logger.info("\t|||\t\t\tNo user packages configured or no modules found, using smart detection")
+        logger.debug("\t|||\t\t\tScanning sys.modules (total: %d)", len(sys.modules))
+        
+        for mod_name in list(sys.modules.keys()):
+            mod = sys.modules.get(mod_name)
+            if mod and _is_user_module_by_path(mod_name, mod):
+                logger.debug("\t|||\t\t\tFound potential user module: %s", mod_name)
+                modules.append(mod_name)
+        
+        logger.info("\t|||\t\t\tFound %d user modules in sys.modules", len(modules))
+    
+    # Strategy 3: Infer from __main__ module and scan its package
+    if '__main__' in sys.modules and len(modules) == 0:
+        main_mod = sys.modules['__main__']
+        main_file = getattr(main_mod, '__file__', None)
+        
+        if main_file:
+            main_file_abs = os.path.abspath(main_file)
+            logger.debug("\t|||\t\t\t__main__ file: %s", main_file_abs)
+            
+            # Find package root by looking for __init__.py
+            current_dir = os.path.dirname(main_file_abs)
+            package_parts = []
+            
+            # Walk up directory tree until no __init__.py found
+            while os.path.exists(os.path.join(current_dir, '__init__.py')):
+                package_parts.insert(0, os.path.basename(current_dir))
+                current_dir = os.path.dirname(current_dir)
+            
+            if package_parts:
+                package_name = '.'.join(package_parts)
+                logger.info("\t|||\t\t\tInferred package from __main__: %s", package_name)
+                
+                try:
+                    pkg = importlib.import_module(package_name)
+                    logger.debug("\t|||\t\t\tSuccessfully imported package: %s", package_name)
+                    
+                    # Scan all modules in package
+                    if hasattr(pkg, '__path__'):
+                        for finder, name, is_pkg in pkgutil.walk_packages(pkg.__path__, package_name + '.'):
+                            if name not in modules:
+                                modules.append(name)
+                                logger.debug("\t|||\t\t\tFound submodule: %s", name)
+                    
+                    # Add package itself
+                    if package_name not in modules:
+                        modules.append(package_name)
+                    
+                    logger.info("\t|||\t\t\tAdded %d modules from inferred package", len(modules))
+                except Exception as e:
+                    logger.warning("\t|||\t\t\tFailed to import inferred package %s: %s", package_name, str(e))
+    
+    # Ensure __main__ module is included if it has controllers
+    if '__main__' in sys.modules and '__main__' not in modules:
+        main_mod = sys.modules['__main__']
+        if hasattr(main_mod, '__file__'):
+            logger.info("\t|||\t\t\tAdding __main__ module for scanning")
+            modules.insert(0, '__main__')  # Process main module first
+    
+    # Strategy 4: Directory scanning from executable location
+    if len(modules) <= 1:  # Only __main__ or no modules
+        exe_dir = os.path.dirname(sys.executable)
+        logger.info("\t|||\t\t\tScanning Nuitka directory for Python modules: %s", exe_dir)
+        
+        scanned_modules = []
+        
+        for root, dirs, files in os.walk(exe_dir):
+            # Exclude system directories
+            dirs[:] = [d for d in dirs if not d.startswith('_') and d not in ['lib', 'bin', 'Lib']]
+            
+            # Check if directory is a Python package
+            is_package = any(f in files for f in ['__init__.py', '__init__.pyc', '__init__.pyi'])
+            
+            if is_package or any(f.endswith(('.py', '.pyc', '.pyd', '.so')) for f in files):
+                rel_path = os.path.relpath(root, exe_dir)
+                
+                if rel_path == '.':
+                    prefix = ''
+                else:
+                    prefix = rel_path.replace(os.sep, '.')
+                    
+                    # Skip system packages and framework packages
+                    if any(prefix.startswith(p) for p in ['cullinan', 'tornado', 'certifi', '_']):
+                        continue
+                
+                # Scan Python files in directory
+                for f in files:
+                    if f.endswith('.py') and f != '__init__.py':
+                        mod_name = f[:-3]
+                        full_mod = f"{prefix}.{mod_name}" if prefix else mod_name
+                        
+                        if full_mod not in scanned_modules and not full_mod.startswith('cullinan'):
+                            scanned_modules.append(full_mod)
+                            logger.debug("\t|||\t\t\tFound Python file: %s -> module: %s", f, full_mod)
+                    
+                    elif f.endswith('.pyc') and f != '__init__.pyc':
+                        mod_name = f[:-4]
+                        full_mod = f"{prefix}.{mod_name}" if prefix else mod_name
+                        
+                        if full_mod not in scanned_modules and not full_mod.startswith('cullinan'):
+                            scanned_modules.append(full_mod)
+                            logger.debug("\t|||\t\t\tFound compiled file: %s -> module: %s", f, full_mod)
+                    
+                    elif f.endswith(('.pyd', '.so')):
+                        mod_name = f.split('.')[0]
+                        full_mod = f"{prefix}.{mod_name}" if prefix else mod_name
+                        
+                        if full_mod not in scanned_modules and not full_mod.startswith('cullinan'):
+                            scanned_modules.append(full_mod)
+                            logger.debug("\t|||\t\t\tFound extension: %s -> module: %s", f, full_mod)
+                
+                # Add package itself if it's a package
+                if is_package and prefix and not prefix.startswith('cullinan'):
+                    if prefix not in scanned_modules:
+                        scanned_modules.append(prefix)
+                        logger.debug("\t|||\t\t\tFound package: %s", prefix)
+        
+        if scanned_modules:
+            logger.info("\t|||\t\t\tFound %d modules via directory scanning", len(scanned_modules))
+            for mod in scanned_modules:
+                if mod not in modules:
+                    modules.append(mod)
+    
+    # Strategy 5: Onefile mode - try to infer from call stack
+    if mode == 'onefile' and not modules:
+        try:
+            caller_pkg = get_caller_package()
+            if caller_pkg:
+                logger.info("\t|||\t\t\tInferred package: %s", caller_pkg)
+                try:
+                    pkg = importlib.import_module(caller_pkg)
+                    # Iterate through package attributes
+                    for attr_name in dir(pkg):
+                        if not attr_name.startswith('_'):
+                            attr = getattr(pkg, attr_name, None)
+                            if inspect.ismodule(attr):
+                                mod_name = getattr(attr, '__name__', None)
+                                if mod_name and mod_name not in modules:
+                                    modules.append(mod_name)
+                except Exception as e:
+                    logger.debug("\t|||\t\t\tFailed to import package %s: %s", caller_pkg, e)
+        except CallerPackageException:
+            pass
+    
+    logger.info("\t|||\t\t\tFound %d modules via Nuitka scanning", len(modules))
+    return modules
+
+
+def scan_modules_pyinstaller() -> List[str]:
+    """Scan for modules in PyInstaller frozen environment.
+    
+    Uses multiple strategies to discover user modules:
+    1. Configured user_packages (recommended, from config)
+    2. Directory scanning (_MEIPASS and executable location)
+    3. Smart detection from sys.modules
+    
+    Returns:
+        List[str]: List of discovered module names (dotted strings)
+    """
+    logger.info("\t|||\t\t\tDetected PyInstaller frozen environment")
+    
+    mode = get_pyinstaller_mode()
+    logger.info("\t|||\t\t\tPyInstaller mode: %s", mode or "unknown")
+    
+    modules = []
+    
+    # Get configuration
+    from cullinan.config import get_config
+    config = get_config()
+    
+    # Strategy 1: Use configured user packages (recommended)
+    if config.user_packages:
+        logger.info("\t|||\t\t\tUsing configured user packages: %s", config.user_packages)
+        
+        for package_name in config.user_packages:
+            try:
+                pkg = importlib.import_module(package_name)
+                logger.debug("\t|||\t\t\tImported package: %s", package_name)
+                
+                if package_name not in modules:
+                    modules.append(package_name)
+                
+                if hasattr(pkg, '__path__'):
+                    for finder, name, is_pkg in pkgutil.walk_packages(pkg.__path__, package_name + '.'):
+                        if name not in modules:
+                            modules.append(name)
+                            logger.debug("\t|||\t\t\tFound submodule: %s", name)
+            
+            except Exception as e:
+                logger.warning("\t|||\t\t\tFailed to import package %s: %s", package_name, str(e))
+                
+                # Fallback: search in sys.modules
+                for mod_name in sys.modules.keys():
+                    if mod_name.startswith(package_name):
+                        if mod_name not in modules:
+                            modules.append(mod_name)
+        
+        logger.info("\t|||\t\t\tFound %d modules from configured packages", len(modules))
+        
+        if modules:
+            return modules
+    
+    # Strategy 2: Auto-scan if no configured packages or no modules found
+    if config.auto_scan:
+        logger.info("\t|||\t\t\tNo user packages configured or no modules found, using directory scanning")
+        
+        base_dirs = []
+        
+        # Get PyInstaller temporary extraction directory
+        meipass = getattr(sys, '_MEIPASS', None)
+        if meipass:
+            base_dirs.append(meipass)
+            logger.info("\t|||\t\t\tPyInstaller _MEIPASS: %s", meipass)
+        
+        # Check executable directory (onedir mode)
+        if mode == 'onedir':
+            exe_dir = os.path.dirname(sys.executable)
+            if exe_dir not in base_dirs:
+                base_dirs.append(exe_dir)
+                logger.info("\t|||\t\t\tExecutable directory: %s", exe_dir)
+        
+        # Scan base directories for user modules
+        for base_dir in base_dirs:
+            for root, dirs, files in os.walk(base_dir):
+                # Exclude system directories
+                dirs[:] = [d for d in dirs if not d.startswith('_') and 
+                          d not in ['lib', 'bin', 'Lib', 'Library']]
+                
+                # Check if directory is a Python package
+                is_package = any(f in files for f in ['__init__.py', '__init__.pyc'])
+                
+                if is_package or any(f.endswith(('.py', '.pyc', '.pyd')) for f in files):
+                    rel_path = os.path.relpath(root, base_dir)
+                    
+                    if rel_path == '.':
+                        prefix = ''
+                    else:
+                        prefix = rel_path.replace(os.sep, '.')
+                        
+                        # Skip framework and system packages
+                        if any(prefix.startswith(p) for p in ['cullinan', 'tornado', 'certifi', '_']):
+                            continue
+                    
+                    # Scan Python files
+                    for f in files:
+                        if f.endswith('.py') and f != '__init__.py':
+                            mod_name = f[:-3]
+                            full_mod = f"{prefix}.{mod_name}" if prefix else mod_name
+                            
+                            if full_mod not in modules and not full_mod.startswith('cullinan'):
+                                modules.append(full_mod)
+                                logger.debug("\t|||\t\t\tFound module: %s", full_mod)
+                        
+                        elif f.endswith('.pyc') and f != '__init__.pyc':
+                            mod_name = f[:-4]
+                            full_mod = f"{prefix}.{mod_name}" if prefix else mod_name
+                            
+                            if full_mod not in modules and not full_mod.startswith('cullinan'):
+                                modules.append(full_mod)
+                                logger.debug("\t|||\t\t\tFound compiled module: %s", full_mod)
+                    
+                    # Add package itself
+                    if is_package and prefix and not prefix.startswith('cullinan'):
+                        if prefix not in modules:
+                            modules.append(prefix)
+                            logger.debug("\t|||\t\t\tFound package: %s", prefix)
+        
+        logger.info("\t|||\t\t\tFound %d modules via directory scanning", len(modules))
+        
+        # If directory scanning found modules, return
+        if modules:
+            return modules
+        
+        # Fallback: scan sys.modules
+        logger.info("\t|||\t\t\tNo modules from directory scan, checking sys.modules")
+        
+        for mod_name in list(sys.modules.keys()):
+            mod = sys.modules.get(mod_name)
+            if mod and _is_user_module_by_path(mod_name, mod):
+                logger.debug("\t|||\t\t\tFound user module in sys.modules: %s", mod_name)
+                modules.append(mod_name)
+        
+        logger.info("\t|||\t\t\tFound %d user modules in sys.modules", len(modules))
+    
+    return modules
+
+
+def list_submodules(package_name: str) -> List[str]:
+    """List all submodules within a package.
+    
+    Args:
+        package_name: Dotted package name to scan
+        
+    Returns:
+        List[str]: List of module names within the package
+    """
+    modules = []
+    try:
+        pkg = importlib.import_module(package_name)
+        if hasattr(pkg, '__path__'):
+            for importer, modname, ispkg in pkgutil.walk_packages(
+                path=pkg.__path__,
+                prefix=pkg.__name__ + '.',
+                onerror=lambda x: None
+            ):
+                modules.append(modname)
+    except ImportError as e:
+        logger.warning("\t|||\t\t\tCould not import package %s: %s", package_name, str(e))
+    
+    return modules
+
+
+def file_list_func() -> List[str]:
+    """Discover candidate modules to import/reflect.
+    
+    Uses multiple strategies in order of priority:
+    1. Detect packaging environment (Nuitka or PyInstaller)
+       - If Nuitka, use scan_modules_nuitka()
+       - If PyInstaller, use scan_modules_pyinstaller()
+    2. Try caller package scanning (development environment)
+    3. Fallback to current working directory scan
+    
+    Returns:
+        List[str]: List of dotted module names
+    """
+    logger.info("\t|||\t\t\tStarting module discovery...")
+    
+    # Strategy 1: Detect packaging environment and use specialized scanning
+    # Note: Nuitka detection first, as it may also set sys.frozen
+    if is_nuitka_compiled():
+        logger.info("\t|||\t\t\t=== Using Nuitka scanning strategy ===")
+        modules = scan_modules_nuitka()
+        if modules:
+            logger.info("\t|||\t\t\tDiscovered %d modules", len(modules))
+            return modules
+    elif is_pyinstaller_frozen():
+        logger.info("\t|||\t\t\t=== Using PyInstaller scanning strategy ===")
+        modules = scan_modules_pyinstaller()
+        if modules:
+            logger.info("\t|||\t\t\tDiscovered %d modules", len(modules))
+            return modules
+    
+    # Strategy 2: Development environment - scan via caller package
+    logger.info("\t|||\t\t\t=== Using development environment scanning ===")
+    try:
+        caller_pkg = get_caller_package()
+        if caller_pkg:
+            logger.info("\t|||\t\t\tCaller package: %s", caller_pkg)
+            mods = list_submodules(caller_pkg)
+            if mods:
+                logger.info("\t|||\t\t\tDiscovered %d modules via package scanning", len(mods))
+                return mods
+    except CallerPackageException:
+        logger.debug("\t|||\t\t\tCould not determine caller package")
+        pass
+    
+    # Strategy 3: Fallback - scan current working directory
+    logger.info("\t|||\t\t\t=== Fallback: scanning current working directory ===")
+    modules = []
+    cwd = os.getcwd()
+    logger.info("\t|||\t\t\tScanning directory: %s", cwd)
+    
+    for root, dirs, files in os.walk(cwd):
+        # Exclude hidden directories and virtual environments
+        dirs[:] = [d for d in dirs if not d.startswith('.') and 
+                  d not in ['venv', 'env', '__pycache__', 'build', 'dist']]
+        
+        if '__init__.py' not in files:
+            continue
+        
+        rel = os.path.relpath(root, cwd)
+        if rel == '.':
+            prefix = ''
+        else:
+            prefix = rel.replace(os.sep, '.') + '.'
+        
+        for f in files:
+            if f.endswith('.py') and f != '__init__.py':
+                modules.append(prefix + f[:-3])
+    
+    logger.info("\t|||\t\t\tDiscovered %d modules via directory scanning", len(modules))
+    return modules

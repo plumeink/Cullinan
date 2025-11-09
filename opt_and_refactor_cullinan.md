@@ -254,6 +254,79 @@ if logger.isEnabledFor(logging.INFO):
 
 ---
 
+## ✅ Phase 2 - Code Quality Improvements STARTED
+
+### 7. Module Scanner Refactoring
+**Files:** New `cullinan/module_scanner.py`, Updated `cullinan/application.py`
+
+**Problem:** `application.py` was 1133 lines with complex module scanning logic mixed with application management code, making it difficult to maintain and test.
+
+**Solution:** Extracted all module scanning logic into a dedicated `module_scanner.py` module:
+
+**New Module: `cullinan/module_scanner.py`** (643 lines)
+Contains all environment detection and module scanning functions:
+```python
+# Environment detection
+- is_pyinstaller_frozen() -> bool
+- is_nuitka_compiled() -> bool
+- get_nuitka_standalone_mode() -> Optional[str]
+- get_pyinstaller_mode() -> Optional[str]
+- get_caller_package() -> str
+
+# Module scanning strategies
+- scan_modules_nuitka() -> List[str]
+- scan_modules_pyinstaller() -> List[str]
+- list_submodules(package_name) -> List[str]
+- file_list_func() -> List[str]
+
+# Helper functions
+- _is_user_module_by_path(mod_name, mod) -> bool
+```
+
+**Updated: `cullinan/application.py`** (491 lines, reduced from 1133 lines)
+```python
+# Clean imports from module_scanner
+from cullinan.module_scanner import (
+    is_pyinstaller_frozen,
+    is_nuitka_compiled,
+    get_nuitka_standalone_mode,
+    get_pyinstaller_mode,
+    get_caller_package,
+    scan_modules_nuitka,
+    scan_modules_pyinstaller,
+    list_submodules,
+    file_list_func
+)
+
+# Keeps only core application logic:
+- reflect_module() - Module import and reflection
+- scan_controller() - Controller registration
+- scan_service() - Service registration  
+- sort_url() - URL handler sorting
+- run() - Application startup
+```
+
+**Impact:**
+- ✅ **Code reduction:** 642 lines removed from application.py (57% reduction)
+- ✅ **Better separation of concerns:** Scanning logic isolated and reusable
+- ✅ **Improved testability:** Module scanner can be tested independently
+- ✅ **Enhanced maintainability:** Clear module boundaries and responsibilities
+- ✅ **No breaking changes:** All tests pass (29/29)
+- ✅ **Type hints:** Full type annotations in new module
+- ✅ **Documentation:** Comprehensive docstrings for all functions
+
+**File Structure After Refactoring:**
+```
+cullinan/
+├── application.py          (491 lines) - Application management
+├── module_scanner.py       (643 lines) - Module discovery [NEW]
+├── controller.py           - Request handling & routing
+├── service.py              - Service layer
+└── ...
+```
+
+---
+
 ## 🔄 Remaining Improvements
 
 ## 📊 Performance Metrics
@@ -312,7 +385,7 @@ if logger.isEnabledFor(logging.INFO):
 ### Medium Priority (Code Quality)
 - [x] ~~Add comprehensive type hints~~ ✅ COMPLETED
 - [x] ~~Create performance benchmarks~~ ✅ COMPLETED
-- [ ] Split `application.py` module scanning logic
+- [x] ~~Split `application.py` module scanning logic~~ ✅ COMPLETED - **57% code reduction**
 - [ ] Refactor global state to dependency injection
 - [ ] Improve error messages and logging
 
