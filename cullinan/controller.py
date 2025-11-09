@@ -545,13 +545,16 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     setattr(controller_self, 'response', response)
     setattr(controller_self, 'response_factory', response_build)
 
-    # 构造真实 response 实例（若 response_build 可调用则调用），回退为 _SimpleResponse
+    # Construct real response instance (use pooling if enabled, otherwise response_build)
     resp_instance = None
     try:
-        if callable(response_build):
-            resp_instance = response_build()
-        else:
-            resp_instance = response_build
+        # Try to get pooled response first if pooling is enabled
+        resp_instance = get_pooled_response()
+        if resp_instance is None:
+            if callable(response_build):
+                resp_instance = response_build()
+            else:
+                resp_instance = response_build
     except Exception as e:
         logger.error(
             '[RESPONSE_BUILD_ERROR] response_build failed, falling back to _SimpleResponse: %s',
@@ -637,6 +640,11 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         except Exception as e:
             # don't let logging failures break response cleanup
             logger.error('[ACCESS_LOG_ERROR] Failed to emit access log: %s', str(e), exc_info=True)
+        # Return response to pool if pooling is enabled
+        try:
+            return_pooled_response(resp_instance)
+        except Exception:
+            pass
         # 一定要 pop，避免污染下一个请求/扫描
         response.pop(token)
 
@@ -972,3 +980,146 @@ def response_build(**kwargs) -> StatusResponse:
         A new StatusResponse instance
     """
     return StatusResponse(**kwargs)
+
+
+# ============================================================================
+# Response Object Pooling (Optional Performance Optimization)
+# ============================================================================
+
+from queue import Queue
+from threading import Lock
+
+class ResponsePool:
+    """Thread-safe pool of HttpResponse objects for object reuse.
+    
+    This optimization reduces GC pressure and memory allocation overhead
+    in high-concurrency scenarios by reusing response objects.
+    
+    Usage:
+        response_pool = ResponsePool(size=100)
+        resp = response_pool.acquire()
+        # ... use response ...
+        response_pool.release(resp)
+    
+    Note: This is an optional optimization that should be enabled via configuration.
+    """
+    
+    def __init__(self, size: int = 100):
+        """Initialize response pool with given size.
+        
+        Args:
+            size: Maximum number of pooled response objects
+        """
+        self._pool = Queue(maxsize=size)
+        self._lock = Lock()
+        self._size = size
+        
+        # Pre-populate pool with response objects
+        for _ in range(size):
+            self._pool.put(HttpResponse())
+    
+    def acquire(self) -> HttpResponse:
+        """Acquire a response object from the pool.
+        
+        Returns:
+            HttpResponse object (new if pool is empty)
+        """
+        try:
+            resp = self._pool.get_nowait()
+            # Ensure it's reset
+            if hasattr(resp, 'reset'):
+                resp.reset()
+            return resp
+        except:
+            # Pool empty, create new instance
+            return HttpResponse()
+    
+    def release(self, resp: HttpResponse) -> None:
+        """Release a response object back to the pool.
+        
+        Args:
+            resp: HttpResponse object to return to pool
+        """
+        try:
+            # Reset before returning to pool
+            if hasattr(resp, 'reset'):
+                resp.reset()
+            self._pool.put_nowait(resp)
+        except:
+            # Pool full, let GC handle it
+            pass
+    
+    def get_stats(self) -> dict:
+        """Get pool statistics for monitoring.
+        
+        Returns:
+            Dictionary with pool size and current availability
+        """
+        return {
+            'size': self._size,
+            'available': self._pool.qsize(),
+            'in_use': self._size - self._pool.qsize()
+        }
+
+
+# Module-level pool instance (disabled by default)
+_response_pool: Optional[ResponsePool] = None
+
+def enable_response_pooling(pool_size: int = 100) -> None:
+    """Enable response object pooling for performance optimization.
+    
+    This should be called during application initialization if object pooling
+    is desired. It's particularly beneficial in high-concurrency scenarios.
+    
+    Args:
+        pool_size: Size of the response pool (default: 100)
+        
+    Example:
+        from cullinan.controller import enable_response_pooling
+        enable_response_pooling(pool_size=200)
+    """
+    global _response_pool
+    _response_pool = ResponsePool(size=pool_size)
+    logger.info(f"Response object pooling enabled with size={pool_size}")
+
+
+def disable_response_pooling() -> None:
+    """Disable response object pooling.
+    
+    After calling this, new response objects will be created for each request.
+    """
+    global _response_pool
+    _response_pool = None
+    logger.info("Response object pooling disabled")
+
+
+def get_pooled_response() -> HttpResponse:
+    """Get a response from the pool if pooling is enabled.
+    
+    Returns:
+        HttpResponse object (from pool if available, otherwise new instance)
+    """
+    if _response_pool is not None:
+        return _response_pool.acquire()
+    return HttpResponse()
+
+
+def return_pooled_response(resp: HttpResponse) -> None:
+    """Return a response to the pool if pooling is enabled.
+    
+    Args:
+        resp: HttpResponse object to return to pool
+    """
+    if _response_pool is not None:
+        _response_pool.release(resp)
+
+
+def get_response_pool_stats() -> Optional[dict]:
+    """Get response pool statistics if pooling is enabled.
+    
+    Returns:
+        Dictionary with pool statistics, or None if pooling is disabled
+    """
+    if _response_pool is not None:
+        return _response_pool.get_stats()
+    return None

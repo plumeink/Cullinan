@@ -13,6 +13,12 @@ from cullinan.controller import (
     url_resolver,
     HttpResponse,
     StatusResponse,
+    ResponsePool,
+    enable_response_pooling,
+    disable_response_pooling,
+    get_pooled_response,
+    return_pooled_response,
+    get_response_pool_stats,
 )
 from cullinan.exceptions import HandlerError
 
@@ -358,6 +364,123 @@ class TestAccessLogging(unittest.TestCase):
         
         # Should not raise exception
         emit_access_log(mock_request, mock_response, 201, 0.456)
+
+
+class TestResponsePooling(unittest.TestCase):
+    """Test response object pooling functionality."""
+    
+    def setUp(self):
+        """Ensure pooling is disabled before each test."""
+        disable_response_pooling()
+    
+    def tearDown(self):
+        """Clean up after tests."""
+        disable_response_pooling()
+    
+    def test_response_pool_creation(self):
+        """Test creating a response pool."""
+        pool = ResponsePool(size=5)
+        stats = pool.get_stats()
+        
+        self.assertEqual(stats['size'], 5)
+        self.assertEqual(stats['available'], 5)
+        self.assertEqual(stats['in_use'], 0)
+    
+    def test_response_pool_acquire_release(self):
+        """Test acquiring and releasing responses from pool."""
+        pool = ResponsePool(size=3)
+        
+        # Acquire responses
+        resp1 = pool.acquire()
+        resp2 = pool.acquire()
+        
+        self.assertIsInstance(resp1, HttpResponse)
+        self.assertIsInstance(resp2, HttpResponse)
+        
+        stats = pool.get_stats()
+        self.assertEqual(stats['available'], 1)
+        self.assertEqual(stats['in_use'], 2)
+        
+        # Release one back
+        pool.release(resp1)
+        
+        stats = pool.get_stats()
+        self.assertEqual(stats['available'], 2)
+        self.assertEqual(stats['in_use'], 1)
+    
+    def test_response_pool_overflow(self):
+        """Test that pool creates new responses when empty."""
+        pool = ResponsePool(size=2)
+        
+        # Acquire more than pool size
+        resp1 = pool.acquire()
+        resp2 = pool.acquire()
+        resp3 = pool.acquire()  # Should create new instance
+        
+        self.assertIsInstance(resp1, HttpResponse)
+        self.assertIsInstance(resp2, HttpResponse)
+        self.assertIsInstance(resp3, HttpResponse)
+        
+        stats = pool.get_stats()
+        self.assertEqual(stats['available'], 0)
+    
+    def test_response_pool_reset_on_acquire(self):
+        """Test that acquired responses are reset."""
+        pool = ResponsePool(size=2)
+        
+        # Get a response, modify it, and return it
+        resp = pool.acquire()
+        resp.set_body("Test")
+        resp.set_status(404)
+        pool.release(resp)
+        
+        # Acquire again - should be reset
+        resp2 = pool.acquire()
+        self.assertEqual(resp2.get_body(), '')
+        self.assertEqual(resp2.get_status(), 200)
+    
+    def test_enable_disable_pooling(self):
+        """Test enabling and disabling pooling."""
+        # Initially disabled
+        self.assertIsNone(get_response_pool_stats())
+        
+        # Enable pooling
+        enable_response_pooling(pool_size=10)
+        stats = get_response_pool_stats()
+        self.assertIsNotNone(stats)
+        self.assertEqual(stats['size'], 10)
+        
+        # Disable pooling
+        disable_response_pooling()
+        self.assertIsNone(get_response_pool_stats())
+    
+    def test_get_pooled_response_when_disabled(self):
+        """Test that get_pooled_response creates new instances when pooling is disabled."""
+        disable_response_pooling()
+        
+        resp1 = get_pooled_response()
+        resp2 = get_pooled_response()
+        
+        self.assertIsInstance(resp1, HttpResponse)
+        self.assertIsInstance(resp2, HttpResponse)
+        # Should be different instances since pooling is disabled
+        self.assertIsNot(resp1, resp2)
+    
+    def test_get_pooled_response_when_enabled(self):
+        """Test that get_pooled_response uses pool when enabled."""
+        enable_response_pooling(pool_size=5)
+        
+        resp = get_pooled_response()
+        self.assertIsInstance(resp, HttpResponse)
+        
+        stats = get_response_pool_stats()
+        self.assertEqual(stats['in_use'], 1)
+        
+        # Return it
+        return_pooled_response(resp)
+        
+        stats = get_response_pool_stats()
+        self.assertEqual(stats['in_use'], 0)
 
 
 if __name__ == '__main__':
