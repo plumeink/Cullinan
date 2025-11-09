@@ -770,6 +770,8 @@ class HttpResponse(object):
 
 class StatusResponse(HttpResponse):
     """Status response with initialization from kwargs."""
+    __slots__ = ()  # No additional slots needed, inherits from HttpResponse
+    
     def __init__(self, **kwargs):
         super().__init__()
         if kwargs.get("status", None) is not None and kwargs.get("status_msg", None) is not None:
