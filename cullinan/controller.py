@@ -14,6 +14,10 @@ import os
 import json
 from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service import service_list
+from cullinan.exceptions import (
+    HandlerError, ParameterError, ResponseError, RequestError
+)
+from cullinan.logging_utils import should_log, log_if_enabled
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol
 
 class ResponseProtocol(Protocol):
@@ -455,8 +459,8 @@ def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional
             line = '%s - - [%s] "%s %s HTTP/1.1" %s %s "%s" "%s" %.3f' % (
                 client, now, method, uri, status_code or '-', content_length, referer or '-', user_agent or '-', duration)
             access_logger.info(line)
-    except Exception:
-        logger.exception('failed to emit access log')
+    except Exception as e:
+        logger.error('[ACCESS_LOG_FORMAT_ERROR] Failed to format access log: %s', str(e), exc_info=True)
 
 
 def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict], 
@@ -498,7 +502,11 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     elif type == 'put':
         controller_self = self.put_controller_self
     else:
-        raise Exception("unsupported request type")
+        raise HandlerError(
+            "Unsupported request type",
+            error_code="INVALID_REQUEST_TYPE",
+            details={"type": type, "allowed_types": ["get", "post", "patch", "delete", "put"]}
+        )
 
     # 注入 service 与 module-level proxy（controller 方法仍可通过 self.response 访问）
     setattr(controller_self, 'service', service_list)
@@ -512,8 +520,12 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
             resp_instance = response_build()
         else:
             resp_instance = response_build
-    except Exception:
-        logger.error('response_build failed, falling back to _SimpleResponse', exc_info=True)
+    except Exception as e:
+        logger.error(
+            '[RESPONSE_BUILD_ERROR] response_build failed, falling back to _SimpleResponse: %s',
+            str(e),
+            exc_info=True
+        )
         resp_instance = _SimpleResponse()
 
     if resp_instance is None:
@@ -599,9 +611,9 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
             client_ip = getattr(self.request, 'remote_ip', None) or getattr(self.request, 'remote_addr', None)
             # delegate to emit_access_log which supports different formats
             emit_access_log(self.request, resp_obj, status_code, duration)
-        except Exception:
+        except Exception as e:
             # don't let logging failures break response cleanup
-            logger.exception('access log failed')
+            logger.error('[ACCESS_LOG_ERROR] Failed to emit access log: %s', str(e), exc_info=True)
         # 一定要 pop，避免污染下一个请求/扫描
         response.pop(token)
 
