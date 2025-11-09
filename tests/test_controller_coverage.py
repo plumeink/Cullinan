@@ -91,6 +91,20 @@ class TestURLResolver(unittest.TestCase):
         self.assertEqual(len(param_list), 2)
         self.assertIn('version', param_list)
         self.assertIn('id', param_list)
+    
+    def test_url_caching(self):
+        """Test that URL patterns are cached."""
+        url = '/api/test/{id}/items/{item_id}'
+        
+        # First call should cache
+        result1 = url_resolver(url)
+        # Second call should return cached version
+        result2 = url_resolver(url)
+        
+        # Results should be identical (same tuple object due to caching)
+        self.assertEqual(result1, result2)
+        self.assertEqual(result1[0], result2[0])
+        self.assertEqual(result1[1], result2[1])
 
 
 class TestHttpResponse(unittest.TestCase):
@@ -156,6 +170,32 @@ class TestHttpResponse(unittest.TestCase):
         # Should not be able to set arbitrary attributes
         with self.assertRaises(AttributeError):
             response.arbitrary_attribute = "value"
+    
+    def test_response_reset(self):
+        """Test that reset() method properly resets response state."""
+        response = HttpResponse()
+        
+        # Modify the response
+        response.set_body("Test body")
+        response.add_header("Content-Type", "application/json")
+        response.add_header("X-Custom", "value")
+        response.set_status(404, "Not Found")
+        response.set_is_static(True)
+        
+        # Verify modifications
+        self.assertEqual(response.get_body(), "Test body")
+        self.assertEqual(len(response.get_headers()), 2)
+        self.assertEqual(response.get_status(), 404)
+        self.assertTrue(response.get_is_static())
+        
+        # Reset
+        response.reset()
+        
+        # Verify reset to defaults
+        self.assertEqual(response.get_body(), '')
+        self.assertEqual(response.get_headers(), [])
+        self.assertEqual(response.get_status(), 200)
+        self.assertFalse(response.get_is_static())
 
 
 class TestStatusResponse(unittest.TestCase):

@@ -613,20 +613,11 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         else:
             self.set_status(204)
 
-        # 恢复/清理真实 response 实例内部状态（兼容原有逻辑，但更健壮）
+        # Reset response instance for reuse (optimized with reset method)
         try:
             real_resp = response.get()
-            if real_resp is not None:
-                if hasattr(real_resp, '__body__'):
-                    real_resp.__body__ = ''
-                if hasattr(real_resp, '__headers__'):
-                    real_resp.__headers__ = []
-                if hasattr(real_resp, '__status__'):
-                    real_resp.__status__ = 200
-                if hasattr(real_resp, '__status_msg__'):
-                    real_resp.__status_msg__ = ''
-                if hasattr(real_resp, '__is_static__'):
-                    real_resp.__is_static__ = False
+            if real_resp is not None and hasattr(real_resp, 'reset'):
+                real_resp.reset()
         except Exception:
             pass
 
@@ -662,11 +653,11 @@ def get_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            # normalize potential None values into tuples/lists for static analysis
-            caller_keys = tuple(self.get_controller_url_param_key_list or ()) if getattr(self, 'get_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access - use getattr with default
+            caller_keys = tuple(getattr(self, 'get_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -674,7 +665,7 @@ def get_api(**kwargs: Any) -> Callable:
                                              url_values,
                                              query_params, None,
                                              file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'get')
 
         return get
@@ -694,11 +685,12 @@ def post_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.post_controller_url_param_key_list or ()) if getattr(self, 'post_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'post_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            body_params = list(kwargs.get('body_params') or [])
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            body_params = kwargs.get('body_params') or []
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -707,7 +699,7 @@ def post_api(**kwargs: Any) -> Callable:
                                              query_params,
                                              body_params,
                                              file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'post',
                             kwargs.get('get_request_body', False))
 
@@ -728,11 +720,12 @@ def patch_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.patch_controller_url_param_key_list or ()) if getattr(self, 'patch_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'patch_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            body_params = list(kwargs.get('body_params') or [])
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            body_params = kwargs.get('body_params') or []
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -740,7 +733,7 @@ def patch_api(**kwargs: Any) -> Callable:
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params,
                                              body_params, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'patch',
                             kwargs.get('get_request_body', False))
 
@@ -761,17 +754,18 @@ def delete_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.delete_controller_url_param_key_list or ()) if getattr(self, 'delete_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'delete_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
                             request_resolver(self,
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params, None, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'delete')
 
         return delete
@@ -791,17 +785,18 @@ def put_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.put_controller_url_param_key_list or ()) if getattr(self, 'put_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'put_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
                             request_resolver(self,
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params, None, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'put')
 
         return put
@@ -916,6 +911,18 @@ class HttpResponse(object):
     def get_headers(self) -> list:
         """Return the list of response headers."""
         return self.__headers__
+
+    def reset(self) -> None:
+        """Reset the response object to default state for reuse.
+        
+        This method is optimized for object pooling scenarios where
+        response objects are reused across multiple requests.
+        """
+        self.__body__ = ''
+        self.__headers__ = []
+        self.__status__ = 200
+        self.__status_msg__ = ''
+        self.__is_static__ = False
 
     # def get_type(self):
     #     return self.__type__
