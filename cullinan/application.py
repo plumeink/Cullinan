@@ -73,13 +73,19 @@ def get_pyinstaller_mode():
     return None
 
 
-def get_caller_package():
+def get_caller_package() -> str:
     """Return a best-effort caller package name for the importing application.
 
     We walk the stack and pick the first frame whose module is not part of the
     `cullinan` package. Prefer module.__package__ if available, otherwise
     derive a dotted package name from the filename relative to the current
     working directory.
+    
+    Returns:
+        str: The top-level package name of the caller
+        
+    Raises:
+        CallerPackageException: If caller package cannot be determined
     """
     stack = inspect.stack()
     cwd = os.getcwd()
@@ -106,10 +112,13 @@ def get_caller_package():
     raise CallerPackageException()
 
 
-def scan_modules_nuitka():
+def scan_modules_nuitka() -> list:
     """Nuitka 打包后的模块扫描逻辑
 
     优先使用配置的 user_packages，精确扫描用户代码
+    
+    Returns:
+        list: List of discovered module names (dotted strings)
     """
     logger.info("\t|||\t\t\tDetected Nuitka compiled environment")
 
@@ -419,10 +428,13 @@ def scan_modules_nuitka():
     return modules
 
 
-def scan_modules_pyinstaller():
+def scan_modules_pyinstaller() -> list:
     """PyInstaller 打包后的模块扫描逻辑
 
     优先使用配置的 user_packages，精确扫描用户代码
+    
+    Returns:
+        list: List of discovered module names (dotted strings)
     """
     logger.info("\t|||\t\t\tDetected PyInstaller frozen environment")
 
@@ -573,11 +585,17 @@ def scan_modules_pyinstaller():
 
 
 
-def list_submodules(package_name):
+def list_submodules(package_name: str) -> list:
     """List all submodule full names under a package (non-recursive and recursive via pkgutil.walk_packages).
 
     Returns a list of dotted module names like 'mypkg.submod'. If the package cannot be
     imported or has no __path__, returns an empty list.
+    
+    Args:
+        package_name: The dotted name of the package to scan
+        
+    Returns:
+        list: List of dotted module names (str)
     """
     try:
         package = importlib.import_module(package_name)
@@ -592,13 +610,17 @@ def list_submodules(package_name):
     return submodules
 
 
-def reflect_module(module_name: str, func: str):
+def reflect_module(module_name: str, func: str) -> None:
     """Import a module by dotted name and optionally call a function on it.
 
     - If `func` is 'nobody' or 'controller' we only import the module (decorators will run at import).
     - Otherwise, if the attribute named `func` exists and is callable, call it.
 
     Errors during import or call are logged but swallowed to keep scanning robust.
+    
+    Args:
+        module_name: Dotted module name to import (e.g., 'myapp.controllers.user')
+        func: Function name to call after import, or 'nobody'/'controller' to skip calling
     """
     if not module_name:
         return
@@ -744,7 +766,7 @@ def reflect_module(module_name: str, func: str):
         return
 
 
-def file_list_func():
+def file_list_func() -> list:
     """Discover candidate modules to import/reflect.
 
     Strategy (best-effort, in order):
@@ -754,7 +776,8 @@ def file_list_func():
       2. 尝试通过调用者包名扫描（开发环境）
       3. 回退到扫描当前工作目录
 
-    Returns a list of dotted module names.
+    Returns:
+        list: List of dotted module names (str)
     """
     logger.info("\t|||\t\t\tStarting module discovery...")
 
@@ -814,17 +837,27 @@ def file_list_func():
     return modules
 
 
-def scan_controller(modules: list):
+def scan_controller(modules: list) -> None:
+    """Scan and import controller modules to register their handlers.
+    
+    Args:
+        modules: List of dotted module names to scan
+    """
     for mod in modules:
         reflect_module(mod, 'controller')
 
 
-def scan_service(modules: list):
+def scan_service(modules: list) -> None:
+    """Scan and import service modules to register their services.
+    
+    Args:
+        modules: List of dotted module names to scan
+    """
     for mod in modules:
         reflect_module(mod, 'nobody')
 
 
-def sort_url():
+def sort_url() -> None:
     """Sort URL handlers with O(n log n) complexity instead of O(n³).
     
     Optimized version that uses Python's built-in sorting with a custom key function.

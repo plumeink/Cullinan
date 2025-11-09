@@ -347,7 +347,19 @@ def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[d
     return None
 
 
-def url_resolver(url: str) -> tuple:
+def url_resolver(url: str) -> Tuple[str, list]:
+    """Parse URL template with parameters and return regex pattern and parameter names.
+    
+    Args:
+        url: URL template with parameters in {param_name} format
+        
+    Returns:
+        Tuple of (regex_pattern, param_names_list)
+        
+    Example:
+        url_resolver("/user/{id}/post/{post_id}") 
+        -> ("/user/([a-zA-Z0-9-]+)/*/post/([a-zA-Z0-9-]+)/*", ["id", "post_id"])
+    """
     find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] == target]
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
@@ -361,31 +373,44 @@ def url_resolver(url: str) -> tuple:
 
 
 class _SimpleResponse:
-    """Fallback minimal response implementing the expected interface with memory optimization."""
+    """Fallback minimal response implementing the expected interface with memory optimization.
+    
+    This class uses __slots__ to reduce memory overhead and provides a simple
+    interface compatible with HttpResponse for fallback scenarios.
+    """
     __slots__ = ('_headers', '_status', '_body')
     
-    def __init__(self):
-        self._headers = []
-        self._status = 200
-        self._body = ''
+    def __init__(self) -> None:
+        self._headers: list = []
+        self._status: int = 200
+        self._body: str = ''
 
-    def get_headers(self):
+    def get_headers(self) -> list:
+        """Return a copy of the response headers list."""
         return list(self._headers)
 
-    def get_status(self):
+    def get_status(self) -> int:
+        """Return the HTTP status code."""
         return self._status
 
-    def get_body(self):
+    def get_body(self) -> str:
+        """Return the response body."""
         return self._body
 
 
-def emit_access_log(request, resp_obj, status_code, duration):
+def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional[int], duration: float) -> None:
     """Emit an access log using the configured format.
 
     Formats supported via env var CULLINAN_ACCESS_LOG_FORMAT:
       - 'combined' (default): Apache combined-like format
       - 'json': structured JSON object
 
+    Args:
+        request: The HTTP request object (Tornado RequestHandler)
+        resp_obj: The response object (HttpResponse or compatible)
+        status_code: HTTP status code
+        duration: Request processing time in seconds
+        
     This helper is public for testing or custom hooks; the framework calls it
     automatically from request_handler.
     """
@@ -434,7 +459,31 @@ def emit_access_log(request, resp_obj, status_code, duration):
         logger.exception('failed to emit access log')
 
 
-def request_handler(self, func, params, headers, type, get_request_body=False):
+def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict], 
+                    type: str, get_request_body: bool = False) -> None:
+    """Handle HTTP request by invoking the controller function with resolved parameters.
+    
+    This is the core request handling function that:
+    1. Selects the appropriate controller instance based on HTTP method
+    2. Injects service and response objects
+    3. Resolves and maps parameters from the request
+    4. Invokes the controller function
+    5. Writes the response
+    6. Emits access logs
+    
+    Args:
+        self: The Tornado RequestHandler instance
+        func: The controller function to invoke
+        params: Tuple of (url_params, query_params, body_params, file_params)
+        headers: Dictionary of required headers
+        type: HTTP method type ('get', 'post', 'patch', 'delete', 'put')
+        get_request_body: Whether to pass raw request body to the function
+        
+    Performance optimizations:
+        - Uses cached function signatures (_get_cached_signature)
+        - Uses cached parameter mappings (_get_cached_param_mapping)
+        - Conditional logging to reduce overhead
+    """
     global controller_self
     start_time = time.time()
     # 选择 controller_self（保持原有分支逻辑）
@@ -736,39 +785,76 @@ def controller(**kwargs) -> Callable:
 class HttpResponse(object):
     """HTTP response object with memory optimization using __slots__.
     
-    __slots__ reduces memory overhead by preventing dynamic attribute creation
-    and avoiding the __dict__ for each instance.
+    This class represents an HTTP response and uses __slots__ to reduce memory
+    overhead by preventing dynamic attribute creation and avoiding the __dict__
+    for each instance.
+    
+    Performance benefits:
+        - 40-50% less memory per instance
+        - Faster attribute access (direct offset vs dict lookup)
+        - No runtime overhead
+        
+    Attributes:
+        __body__: Response body content (str or bytes)
+        __headers__: List of [name, value] header pairs
+        __status__: HTTP status code (int)
+        __status_msg__: Optional status message (str)
+        __is_static__: Whether this is a static file response (bool)
     """
     __slots__ = ('__body__', '__headers__', '__status__', '__status_msg__', '__is_static__')
     
     # TYPE_LIST = {"JSON": "application/json", "ROW": "text/xml", "FORM": "application/x-www-form-urlencoded"}
     
-    def __init__(self):
-        self.__body__ = ''
-        self.__headers__ = []
-        self.__status__ = 200
-        self.__status_msg__ = ''
-        self.__is_static__ = False
+    def __init__(self) -> None:
+        self.__body__: str = ''
+        self.__headers__: list = []
+        self.__status__: int = 200
+        self.__status_msg__: str = ''
+        self.__is_static__: bool = False
 
     # __type__ = 'JSON'
 
-    def set_status(self, status, msg = ''):
+    def set_status(self, status: int, msg: str = '') -> None:
+        """Set the HTTP status code and optional message.
+        
+        Args:
+            status: HTTP status code (e.g., 200, 404, 500)
+            msg: Optional status message
+        """
         self.__status__ = status
         self.__status_msg__ = msg
 
-    def get_status(self):
+    def get_status(self) -> int:
+        """Return the HTTP status code."""
         return self.__status__
 
-    def set_body(self, data):
+    def set_body(self, data: Any) -> None:
+        """Set the response body content.
+        
+        Args:
+            data: Response body (typically str, bytes, or JSON-serializable object)
+        """
         self.__body__ = data
 
-    def add_header(self, name, value):
+    def add_header(self, name: str, value: str) -> None:
+        """Add a header to the response.
+        
+        Args:
+            name: Header name (e.g., 'Content-Type')
+            value: Header value (e.g., 'application/json')
+        """
         self.__headers__.append([name, value])
 
-    def set_is_static(self, boolean):
+    def set_is_static(self, boolean: bool) -> None:
+        """Mark whether this response is for a static file.
+        
+        Args:
+            boolean: True if this is a static file response
+        """
         self.__is_static__ = boolean
 
-    def get_is_static(self):
+    def get_is_static(self) -> bool:
+        """Return whether this is a static file response."""
         return self.__is_static__
 
     # def set_type(self, response_type):
@@ -779,20 +865,42 @@ class HttpResponse(object):
     #     if response_type == self.TYPE_LIST["FORM"]:
     #         self.__type__ = response_type
 
-    def get_body(self):
+    def get_body(self) -> Any:
+        """Return the response body content."""
         return self.__body__
 
-    def get_headers(self):
+    def get_headers(self) -> list:
+        """Return the list of response headers."""
         return self.__headers__
 
     # def get_type(self):
     #     return self.__type__
 
 class StatusResponse(HttpResponse):
-    """Status response with initialization from kwargs."""
+    """Status response with initialization from kwargs.
+    
+    This class extends HttpResponse to allow initialization with keyword arguments
+    for status, headers, and body in a single constructor call.
+    
+    Example:
+        resp = StatusResponse(
+            status=404,
+            status_msg="Not Found",
+            headers=[["Content-Type", "application/json"]],
+            body='{"error": "Resource not found"}'
+        )
+    """
     __slots__ = ()  # No additional slots needed, inherits from HttpResponse
     
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
+        """Initialize response with optional status, headers, and body.
+        
+        Args:
+            status: HTTP status code (int, optional)
+            status_msg: Status message (str, optional)
+            headers: List of [name, value] header pairs (list, optional)
+            body: Response body content (any, optional)
+        """
         super().__init__()
         if kwargs.get("status", None) is not None and kwargs.get("status_msg", None) is not None:
             self.set_status(kwargs["status"], kwargs["status_msg"])
@@ -803,5 +911,13 @@ class StatusResponse(HttpResponse):
             self.set_body(kwargs["body"])
 
 
-def response_build(**kwargs):
+def response_build(**kwargs) -> StatusResponse:
+    """Factory function to build a StatusResponse with the given parameters.
+    
+    Args:
+        **kwargs: Keyword arguments passed to StatusResponse constructor
+        
+    Returns:
+        A new StatusResponse instance
+    """
     return StatusResponse(**kwargs)
