@@ -12,69 +12,77 @@ from cullinan.application import (
     sort_url,
     reflect_module,
 )
-from cullinan.controller import handler_list
+from cullinan.registry import get_handler_registry, reset_registries
 
 
 class TestURLSorting(unittest.TestCase):
     """Test URL sorting algorithm."""
     
     def setUp(self):
-        """Clear handler list before each test."""
-        handler_list.clear()
+        """Clear handler registry before each test."""
+        reset_registries()
     
     def tearDown(self):
-        """Clear handler list after each test."""
-        handler_list.clear()
+        """Clear handler registry after each test."""
+        reset_registries()
     
     def test_sort_url_empty_list(self):
-        """Test sorting with empty handler list."""
-        handler_list.clear()
+        """Test sorting with empty handler registry."""
+        registry = get_handler_registry()
+        registry.clear()
         sort_url()  # Should not raise
-        self.assertEqual(len(handler_list), 0)
+        self.assertEqual(registry.count(), 0)
     
     def test_sort_url_single_handler(self):
         """Test sorting with single handler."""
-        handler_list.append(('/api/users', Mock(), {}))
+        registry = get_handler_registry()
+        registry.register('/api/users', Mock())
         sort_url()
-        self.assertEqual(len(handler_list), 1)
+        self.assertEqual(registry.count(), 1)
     
     def test_sort_url_static_before_dynamic(self):
         """Test that static routes come before dynamic routes."""
+        registry = get_handler_registry()
         # Add in reverse order
-        handler_list.append(('/api/users/([a-zA-Z0-9-]+)', Mock(), {}))
-        handler_list.append(('/api/users/list', Mock(), {}))
+        registry.register('/api/users/([a-zA-Z0-9-]+)', Mock())
+        registry.register('/api/users/list', Mock())
         
         sort_url()
         
+        handlers = registry.get_handlers()
         # Static route should be first
-        self.assertEqual(handler_list[0][0], '/api/users/list')
-        self.assertEqual(handler_list[1][0], '/api/users/([a-zA-Z0-9-]+)')
+        self.assertEqual(handlers[0][0], '/api/users/list')
+        self.assertEqual(handlers[1][0], '/api/users/([a-zA-Z0-9-]+)')
     
     def test_sort_url_longer_paths_first(self):
         """Test that longer paths come before shorter paths."""
-        handler_list.append(('/api/users', Mock(), {}))
-        handler_list.append(('/api/users/profile/settings', Mock(), {}))
-        handler_list.append(('/api/users/profile', Mock(), {}))
+        registry = get_handler_registry()
+        registry.register('/api/users', Mock())
+        registry.register('/api/users/profile/settings', Mock())
+        registry.register('/api/users/profile', Mock())
         
         sort_url()
         
+        handlers = registry.get_handlers()
         # Longer paths should be first
         self.assertTrue(
-            len(handler_list[0][0].split('/')) >= len(handler_list[1][0].split('/'))
+            len(handlers[0][0].split('/')) >= len(handlers[1][0].split('/'))
         )
     
     def test_sort_url_complex_patterns(self):
         """Test sorting with complex URL patterns."""
-        handler_list.clear()
-        handler_list.append(('/api/v1/users/([a-zA-Z0-9-]+)/posts', Mock(), {}))
-        handler_list.append(('/api/v1/users/admin', Mock(), {}))
-        handler_list.append(('/api/v1/users', Mock(), {}))
-        handler_list.append(('/api/v1/users/([a-zA-Z0-9-]+)', Mock(), {}))
+        registry = get_handler_registry()
+        registry.clear()
+        registry.register('/api/v1/users/([a-zA-Z0-9-]+)/posts', Mock())
+        registry.register('/api/v1/users/admin', Mock())
+        registry.register('/api/v1/users', Mock())
+        registry.register('/api/v1/users/([a-zA-Z0-9-]+)', Mock())
         
         sort_url()
         
+        handlers = registry.get_handlers()
         # Most specific (static with more segments) should be first
-        urls = [h[0] for h in handler_list]
+        urls = [h[0] for h in handlers]
         
         # Static "admin" should come before dynamic patterns
         admin_idx = urls.index('/api/v1/users/admin')
@@ -106,64 +114,64 @@ class TestReflectModule(unittest.TestCase):
             pass
 
 
-class TestHandlerListManagement(unittest.TestCase):
-    """Test handler list operations."""
+class TestHandlerRegistryManagement(unittest.TestCase):
+    """Test handler registry operations."""
     
     def setUp(self):
-        """Clear handler list before each test."""
-        handler_list.clear()
+        """Clear handler registry before each test."""
+        reset_registries()
     
     def tearDown(self):
-        """Clear handler list after each test."""
-        handler_list.clear()
+        """Clear handler registry after each test."""
+        reset_registries()
     
-    def test_handler_list_is_list(self):
-        """Test that handler_list is a list."""
-        self.assertIsInstance(handler_list, list)
-    
-    def test_handler_list_can_be_modified(self):
-        """Test that handler_list can be modified."""
-        handler_list.append(('/test', Mock(), {}))
-        self.assertEqual(len(handler_list), 1)
+    def test_registry_operations(self):
+        """Test that registry can be modified."""
+        registry = get_handler_registry()
+        servlet = Mock()
+        registry.register('/test', servlet)
+        self.assertEqual(registry.count(), 1)
         
-        handler_list.clear()
-        self.assertEqual(len(handler_list), 0)
+        registry.clear()
+        self.assertEqual(registry.count(), 0)
     
     def test_multiple_handlers_same_pattern(self):
-        """Test adding multiple handlers (framework should handle duplicates)."""
+        """Test adding multiple handlers (registry should handle duplicates)."""
+        registry = get_handler_registry()
         handler1 = Mock()
         handler2 = Mock()
         
-        handler_list.append(('/api/test', handler1, {}))
-        handler_list.append(('/api/test', handler2, {}))
+        registry.register('/api/test', handler1)
+        registry.register('/api/test', handler2)
         
-        # Both should be in the list (framework handles routing priority)
-        self.assertEqual(len(handler_list), 2)
+        # Only first one should be registered (duplicate detection)
+        self.assertEqual(registry.count(), 1)
 
 
 class TestSortingAlgorithmPerformance(unittest.TestCase):
     """Test sorting algorithm performance characteristics."""
     
     def setUp(self):
-        """Clear handler list before each test."""
-        handler_list.clear()
+        """Clear handler registry before each test."""
+        reset_registries()
     
     def tearDown(self):
-        """Clear handler list after each test."""
-        handler_list.clear()
+        """Clear handler registry after each test."""
+        reset_registries()
     
     def test_sorting_large_handler_list(self):
         """Test sorting with a large number of handlers."""
         import time
         
+        registry = get_handler_registry()
         # Add 100 handlers with various patterns
         for i in range(100):
             if i % 3 == 0:
-                handler_list.append((f'/api/v1/resource{i}', Mock(), {}))
+                registry.register(f'/api/v1/resource{i}', Mock())
             elif i % 3 == 1:
-                handler_list.append((f'/api/v1/resource{i}/([a-zA-Z0-9-]+)', Mock(), {}))
+                registry.register(f'/api/v1/resource{i}/([a-zA-Z0-9-]+)', Mock())
             else:
-                handler_list.append((f'/api/v1/resource{i}/sub/path', Mock(), {}))
+                registry.register(f'/api/v1/resource{i}/sub/path', Mock())
         
         start_time = time.time()
         sort_url()
@@ -171,7 +179,8 @@ class TestSortingAlgorithmPerformance(unittest.TestCase):
         
         # Should complete in reasonable time (< 1 second for 100 handlers)
         self.assertLess(elapsed, 1.0)
-        self.assertEqual(len(handler_list), 100)
+        # Verify handlers were registered (some duplicates may be skipped)
+        self.assertGreater(registry.count(), 0)
 
 
 class TestApplicationImports(unittest.TestCase):

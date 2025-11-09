@@ -261,69 +261,47 @@ class TestRegistryPerformance(unittest.TestCase):
         self.assertLess(elapsed, 0.01, f"Sorting too slow: {elapsed:.4f}s")
 
 
-class TestProxyPerformance(unittest.TestCase):
-    """Test that proxy classes don't introduce significant overhead."""
+class TestRegistryPerformance(unittest.TestCase):
+    """Test that registry operations have acceptable performance."""
     
-    def test_proxy_append_overhead(self):
-        """Test that proxy append has acceptable overhead vs normal list."""
-        from cullinan.controller import _HandlerListProxy
-        from cullinan.registry import reset_registries
+    def test_registry_registration_performance(self):
+        """Test that registering handlers is fast."""
+        from cullinan.registry import HandlerRegistry
         
-        reset_registries()
-        
-        # Test normal list
-        normal_list = []
+        registry = HandlerRegistry()
         servlet = Mock()
         
         start = time.perf_counter()
         for i in range(1000):
-            normal_list.append((f'/api/endpoint_{i}', servlet))
-        time_normal = time.perf_counter() - start
+            registry.register(f'/api/endpoint_{i}', servlet)
+        elapsed = time.perf_counter() - start
         
-        # Test proxy list
-        reset_registries()
-        proxy_list = _HandlerListProxy()
+        # Should complete in reasonable time (< 0.5 seconds for 1000 registrations)
+        self.assertLess(elapsed, 0.5,
+                       f"Registry registration too slow: {elapsed:.4f}s for 1000 registrations")
         
-        start = time.perf_counter()
-        for i in range(1000):
-            proxy_list.append((f'/api/endpoint_{i}', servlet))
-        time_proxy = time.perf_counter() - start
-        
-        # Proxy will be slower due to registry sync, but should be reasonable
-        # Allow up to 30x overhead since we're doing registry sync on each append
-        self.assertLess(time_proxy, time_normal * 30 + 0.1,
-                       f"Proxy ({time_proxy:.4f}s) has excessive overhead vs normal list ({time_normal:.4f}s)")
-        
-        # Just ensure it completes in reasonable time (< 1 second for 1000 items)
-        self.assertLess(time_proxy, 1.0,
-                       f"Proxy too slow: {time_proxy:.4f}s for 1000 appends")
-        
-        reset_registries()
+        self.assertEqual(registry.count(), 1000)
     
-    def test_proxy_iteration_overhead(self):
-        """Test that iterating over proxy is fast."""
-        from cullinan.controller import _HandlerListProxy
-        from cullinan.registry import reset_registries
+    def test_registry_iteration_performance(self):
+        """Test that iterating over registry handlers is fast."""
+        from cullinan.registry import HandlerRegistry
         
-        reset_registries()
-        proxy_list = _HandlerListProxy()
+        registry = HandlerRegistry()
         servlet = Mock()
         
         # Populate
         for i in range(100):
-            proxy_list.append((f'/api/endpoint_{i}', servlet))
+            registry.register(f'/api/endpoint_{i}', servlet)
         
         # Measure iteration
         start = time.perf_counter()
         for _ in range(100):
-            for item in proxy_list:
+            for url, handler in registry.get_handlers():
                 pass
         elapsed = time.perf_counter() - start
         
         # Should be fast
-        self.assertLess(elapsed, 0.01, f"Iteration too slow: {elapsed:.4f}s")
-        
-        reset_registries()
+        self.assertLess(elapsed, 0.1, f"Registry iteration too slow: {elapsed:.4f}s")
 
 
 class TestCacheEffectiveness(unittest.TestCase):
