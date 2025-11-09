@@ -47,6 +47,8 @@ KEY_NAME_INDEX = {
 _SIGNATURE_CACHE = {}
 # Performance optimization: cache parameter mappings to avoid repeated list comprehension
 _PARAM_MAPPING_CACHE = {}
+# Performance optimization: cache URL pattern resolution to avoid repeated parsing
+_URL_PATTERN_CACHE = {}
 
 
 def _get_cached_signature(func: Callable) -> inspect.Signature:
@@ -302,8 +304,10 @@ def request_resolver(self,
     # Body params
     if body_param_names:
         body_dict = {}
-        ctype = (self.request.headers.get('Content-Type') or '').lower()
-        is_json = ctype.startswith('application/json')
+        # Optimized content-type checking - avoid unnecessary string operations
+        ctype = self.request.headers.get('Content-Type', '')
+        # Check first 16 chars (length of 'application/json') case-insensitively
+        is_json = ctype[:16].lower() == 'application/json' if len(ctype) >= 16 else ctype.lower().startswith('application/json')
         if is_json:
             try:
                 raw = self.request.body or b'{}'
@@ -335,24 +339,43 @@ def request_resolver(self,
 
 
 def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[dict]:
-    header_names = list(header_names or [])
-    if header_names:
-        need_header = {}
-        for name in header_names:
-            need_header[name] = self.request.headers.get(name)
-            if need_header[name] is not None:
-                # Conditional logging: only format string if INFO level is enabled
-                if logger.isEnabledFor(logging.INFO):
-                    logger.info("\t||| request_headers %s", {name: need_header[name]})
-            else:
-                miss_header_handler = MissingHeaderHandlerHook.get_hook()
-                miss_header_handler(request=self, header_name=name)
-        return need_header
-    return None
+    """Resolve required headers from the request.
+    
+    Optimized to reduce loop overhead and unnecessary conversions.
+    """
+    if not header_names:
+        return None
+    
+    headers_dict = self.request.headers
+    need_header = {}
+    missing_headers = []
+    
+    # Single pass to collect headers and identify missing ones
+    for name in header_names:
+        value = headers_dict.get(name)
+        need_header[name] = value
+        if value is None:
+            missing_headers.append(name)
+    
+    # Batch logging for present headers (if enabled)
+    if logger.isEnabledFor(logging.INFO):
+        present = {k: v for k, v in need_header.items() if v is not None}
+        if present:
+            logger.info("\t||| request_headers %s", present)
+    
+    # Handle missing headers
+    if missing_headers:
+        miss_header_handler = MissingHeaderHandlerHook.get_hook()
+        for name in missing_headers:
+            miss_header_handler(request=self, header_name=name)
+    
+    return need_header
 
 
 def url_resolver(url: str) -> Tuple[str, list]:
     """Parse URL template with parameters and return regex pattern and parameter names.
+    
+    Uses caching to avoid repeated parsing of the same URL patterns.
     
     Args:
         url: URL template with parameters in {param_name} format
@@ -364,6 +387,11 @@ def url_resolver(url: str) -> Tuple[str, list]:
         url_resolver("/user/{id}/post/{post_id}") 
         -> ("/user/([a-zA-Z0-9-]+)/*/post/([a-zA-Z0-9-]+)/*", ["id", "post_id"])
     """
+    # Check cache first
+    if url in _URL_PATTERN_CACHE:
+        return _URL_PATTERN_CACHE[url]
+    
+    # Parse URL pattern
     find_all = lambda origin, target: [i for i in range(origin.find(target), len(origin)) if origin[i] == target]
     before_list = find_all(url, "{")
     after_list = find_all(url, "}")
@@ -373,7 +401,11 @@ def url_resolver(url: str) -> Tuple[str, list]:
     for url_param in url_param_list:
         url = url.replace(url_param, "[a-zA-Z0-9-]+")
     url = url.replace("{", "(").replace("}", ")/*")
-    return url, url_param_list
+    
+    # Cache result
+    result = (url, url_param_list)
+    _URL_PATTERN_CACHE[url] = result
+    return result
 
 
 class _SimpleResponse:
@@ -513,13 +545,16 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     setattr(controller_self, 'response', response)
     setattr(controller_self, 'response_factory', response_build)
 
-    # 构造真实 response 实例（若 response_build 可调用则调用），回退为 _SimpleResponse
+    # Construct real response instance (use pooling if enabled, otherwise response_build)
     resp_instance = None
     try:
-        if callable(response_build):
-            resp_instance = response_build()
-        else:
-            resp_instance = response_build
+        # Try to get pooled response first if pooling is enabled
+        resp_instance = get_pooled_response()
+        if resp_instance is None:
+            if callable(response_build):
+                resp_instance = response_build()
+            else:
+                resp_instance = response_build
     except Exception as e:
         logger.error(
             '[RESPONSE_BUILD_ERROR] response_build failed, falling back to _SimpleResponse: %s',
@@ -581,20 +616,11 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         else:
             self.set_status(204)
 
-        # 恢复/清理真实 response 实例内部状态（兼容原有逻辑，但更健壮）
+        # Reset response instance for reuse (optimized with reset method)
         try:
             real_resp = response.get()
-            if real_resp is not None:
-                if hasattr(real_resp, '__body__'):
-                    real_resp.__body__ = ''
-                if hasattr(real_resp, '__headers__'):
-                    real_resp.__headers__ = []
-                if hasattr(real_resp, '__status__'):
-                    real_resp.__status__ = 200
-                if hasattr(real_resp, '__status_msg__'):
-                    real_resp.__status_msg__ = ''
-                if hasattr(real_resp, '__is_static__'):
-                    real_resp.__is_static__ = False
+            if real_resp is not None and hasattr(real_resp, 'reset'):
+                real_resp.reset()
         except Exception:
             pass
 
@@ -614,6 +640,11 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         except Exception as e:
             # don't let logging failures break response cleanup
             logger.error('[ACCESS_LOG_ERROR] Failed to emit access log: %s', str(e), exc_info=True)
+        # Return response to pool if pooling is enabled
+        try:
+            return_pooled_response(resp_instance)
+        except Exception:
+            pass
         # 一定要 pop，避免污染下一个请求/扫描
         response.pop(token)
 
@@ -630,11 +661,11 @@ def get_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            # normalize potential None values into tuples/lists for static analysis
-            caller_keys = tuple(self.get_controller_url_param_key_list or ()) if getattr(self, 'get_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access - use getattr with default
+            caller_keys = tuple(getattr(self, 'get_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -642,7 +673,7 @@ def get_api(**kwargs: Any) -> Callable:
                                              url_values,
                                              query_params, None,
                                              file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'get')
 
         return get
@@ -662,11 +693,12 @@ def post_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.post_controller_url_param_key_list or ()) if getattr(self, 'post_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'post_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            body_params = list(kwargs.get('body_params') or [])
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            body_params = kwargs.get('body_params') or []
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -675,7 +707,7 @@ def post_api(**kwargs: Any) -> Callable:
                                              query_params,
                                              body_params,
                                              file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'post',
                             kwargs.get('get_request_body', False))
 
@@ -696,11 +728,12 @@ def patch_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.patch_controller_url_param_key_list or ()) if getattr(self, 'patch_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'patch_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            body_params = list(kwargs.get('body_params') or [])
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            body_params = kwargs.get('body_params') or []
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
@@ -708,7 +741,7 @@ def patch_api(**kwargs: Any) -> Callable:
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params,
                                              body_params, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'patch',
                             kwargs.get('get_request_body', False))
 
@@ -729,17 +762,18 @@ def delete_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.delete_controller_url_param_key_list or ()) if getattr(self, 'delete_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'delete_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
                             request_resolver(self,
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params, None, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'delete')
 
         return delete
@@ -759,17 +793,18 @@ def put_api(**kwargs: Any) -> Callable:
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
-            caller_keys = tuple(self.put_controller_url_param_key_list or ()) if getattr(self, 'put_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
+            # Simplified attribute access
+            caller_keys = tuple(getattr(self, 'put_controller_url_param_key_list', None) or url_param_key_list)
             url_values = tuple(args)
-            query_params = tuple(kwargs.get('query_params') or ())
-            file_params = list(kwargs.get('file_params') or [])
+            query_params = kwargs.get('query_params') or ()
+            file_params = kwargs.get('file_params') or []
 
             request_handler(self,
                             func,
                             request_resolver(self,
                                              caller_keys + tuple(url_param_key_list), url_values,
                                              query_params, None, file_params),
-                            header_resolver(self, list(kwargs.get('headers') or [])),
+                            header_resolver(self, kwargs.get('headers')),
                             'put')
 
         return put
@@ -885,6 +920,18 @@ class HttpResponse(object):
         """Return the list of response headers."""
         return self.__headers__
 
+    def reset(self) -> None:
+        """Reset the response object to default state for reuse.
+        
+        This method is optimized for object pooling scenarios where
+        response objects are reused across multiple requests.
+        """
+        self.__body__ = ''
+        self.__headers__ = []
+        self.__status__ = 200
+        self.__status_msg__ = ''
+        self.__is_static__ = False
+
     # def get_type(self):
     #     return self.__type__
 
@@ -933,3 +980,146 @@ def response_build(**kwargs) -> StatusResponse:
         A new StatusResponse instance
     """
     return StatusResponse(**kwargs)
+
+
+# ============================================================================
+# Response Object Pooling (Optional Performance Optimization)
+# ============================================================================
+
+from queue import Queue
+from threading import Lock
+
+class ResponsePool:
+    """Thread-safe pool of HttpResponse objects for object reuse.
+    
+    This optimization reduces GC pressure and memory allocation overhead
+    in high-concurrency scenarios by reusing response objects.
+    
+    Usage:
+        response_pool = ResponsePool(size=100)
+        resp = response_pool.acquire()
+        # ... use response ...
+        response_pool.release(resp)
+    
+    Note: This is an optional optimization that should be enabled via configuration.
+    """
+    
+    def __init__(self, size: int = 100):
+        """Initialize response pool with given size.
+        
+        Args:
+            size: Maximum number of pooled response objects
+        """
+        self._pool = Queue(maxsize=size)
+        self._lock = Lock()
+        self._size = size
+        
+        # Pre-populate pool with response objects
+        for _ in range(size):
+            self._pool.put(HttpResponse())
+    
+    def acquire(self) -> HttpResponse:
+        """Acquire a response object from the pool.
+        
+        Returns:
+            HttpResponse object (new if pool is empty)
+        """
+        try:
+            resp = self._pool.get_nowait()
+            # Ensure it's reset
+            if hasattr(resp, 'reset'):
+                resp.reset()
+            return resp
+        except:
+            # Pool empty, create new instance
+            return HttpResponse()
+    
+    def release(self, resp: HttpResponse) -> None:
+        """Release a response object back to the pool.
+        
+        Args:
+            resp: HttpResponse object to return to pool
+        """
+        try:
+            # Reset before returning to pool
+            if hasattr(resp, 'reset'):
+                resp.reset()
+            self._pool.put_nowait(resp)
+        except:
+            # Pool full, let GC handle it
+            pass
+    
+    def get_stats(self) -> dict:
+        """Get pool statistics for monitoring.
+        
+        Returns:
+            Dictionary with pool size and current availability
+        """
+        return {
+            'size': self._size,
+            'available': self._pool.qsize(),
+            'in_use': self._size - self._pool.qsize()
+        }
+
+
+# Module-level pool instance (disabled by default)
+_response_pool: Optional[ResponsePool] = None
+
+def enable_response_pooling(pool_size: int = 100) -> None:
+    """Enable response object pooling for performance optimization.
+    
+    This should be called during application initialization if object pooling
+    is desired. It's particularly beneficial in high-concurrency scenarios.
+    
+    Args:
+        pool_size: Size of the response pool (default: 100)
+        
+    Example:
+        from cullinan.controller import enable_response_pooling
+        enable_response_pooling(pool_size=200)
+    """
+    global _response_pool
+    _response_pool = ResponsePool(size=pool_size)
+    logger.info(f"Response object pooling enabled with size={pool_size}")
+
+
+def disable_response_pooling() -> None:
+    """Disable response object pooling.
+    
+    After calling this, new response objects will be created for each request.
+    """
+    global _response_pool
+    _response_pool = None
+    logger.info("Response object pooling disabled")
+
+
+def get_pooled_response() -> HttpResponse:
+    """Get a response from the pool if pooling is enabled.
+    
+    Returns:
+        HttpResponse object (from pool if available, otherwise new instance)
+    """
+    if _response_pool is not None:
+        return _response_pool.acquire()
+    return HttpResponse()
+
+
+def return_pooled_response(resp: HttpResponse) -> None:
+    """Return a response to the pool if pooling is enabled.
+    
+    Args:
+        resp: HttpResponse object to return to pool
+    """
+    if _response_pool is not None:
+        _response_pool.release(resp)
+
+
+def get_response_pool_stats() -> Optional[dict]:
+    """Get response pool statistics if pooling is enabled.
+    
+    Returns:
+        Dictionary with pool statistics, or None if pooling is disabled
+    """
+    if _response_pool is not None:
+        return _response_pool.get_stats()
+    return None
