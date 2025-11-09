@@ -279,7 +279,9 @@ def request_resolver(self,
                 url_dict[k] = url_param_value_list[i]
             except Exception:
                 url_dict[k] = None
-        logger.info("\t||| url_params %s", url_dict)
+        # Conditional logging: only format string if INFO level is enabled
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("\t||| url_params %s", url_dict)
 
     # Query params
     if query_param_names:
@@ -289,7 +291,9 @@ def request_resolver(self,
                 query_dict[name] = self.get_query_argument(name)
             except Exception:
                 query_dict[name] = None
-        logger.info("\t||| query_params %s", query_dict)
+        # Conditional logging: only format string if INFO level is enabled
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("\t||| query_params %s", query_dict)
 
     # Body params
     if body_param_names:
@@ -310,14 +314,18 @@ def request_resolver(self,
                     body_dict[name] = self.get_body_argument(name)
                 except Exception:
                     body_dict[name] = None
-        logger.info("\t||| body_params %s", body_dict)
+        # Conditional logging: only format string if INFO level is enabled
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("\t||| body_params %s", body_dict)
 
     # File params
     if file_param_key_list:
         file_dict = {}
         for name in file_param_key_list:
             file_dict[name] = (self.request.files.get(name) if isinstance(self.request.files, dict) else None)
-        logger.info("\t||| file_params %s", list((file_dict or {}).keys()))
+        # Conditional logging: only format string if INFO level is enabled
+        if logger.isEnabledFor(logging.INFO):
+            logger.info("\t||| file_params %s", list((file_dict or {}).keys()))
 
     return url_dict, query_dict, body_dict, file_dict
 
@@ -329,7 +337,9 @@ def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[d
         for name in header_names:
             need_header[name] = self.request.headers.get(name)
             if need_header[name] is not None:
-                logger.info("\t||| request_headers %s", {name: need_header[name]})
+                # Conditional logging: only format string if INFO level is enabled
+                if logger.isEnabledFor(logging.INFO):
+                    logger.info("\t||| request_headers %s", {name: need_header[name]})
             else:
                 miss_header_handler = MissingHeaderHandlerHook.get_hook()
                 miss_header_handler(request=self, header_name=name)
@@ -556,7 +566,9 @@ def get_api(**kwargs: Any) -> Callable:
 
         @EncapsulationHandler.add_func(url=local_url, type='get')
         def get(self, *args):
-            logger.info("\t||| request:")
+            # Conditional logging: only log if INFO level is enabled
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("\t||| request:")
             # normalize potential None values into tuples/lists for static analysis
             caller_keys = tuple(self.get_controller_url_param_key_list or ()) if getattr(self, 'get_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
             url_values = tuple(args)
@@ -586,7 +598,9 @@ def post_api(**kwargs: Any) -> Callable:
 
         @EncapsulationHandler.add_func(url=local_url, type='post')
         def post(self, *args):
-            logger.info("\t||| request:")
+            # Conditional logging: only log if INFO level is enabled
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("\t||| request:")
             caller_keys = tuple(self.post_controller_url_param_key_list or ()) if getattr(self, 'post_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
             url_values = tuple(args)
             query_params = tuple(kwargs.get('query_params') or ())
@@ -618,7 +632,9 @@ def patch_api(**kwargs: Any) -> Callable:
 
         @EncapsulationHandler.add_func(url=local_url, type='patch')
         def patch(self, *args):
-            logger.info("\t||| request:")
+            # Conditional logging: only log if INFO level is enabled
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("\t||| request:")
             caller_keys = tuple(self.patch_controller_url_param_key_list or ()) if getattr(self, 'patch_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
             url_values = tuple(args)
             query_params = tuple(kwargs.get('query_params') or ())
@@ -649,7 +665,9 @@ def delete_api(**kwargs: Any) -> Callable:
 
         @EncapsulationHandler.add_func(url=local_url, type='delete')
         def delete(self, *args):
-            logger.info("\t||| request:")
+            # Conditional logging: only log if INFO level is enabled
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("\t||| request:")
             caller_keys = tuple(self.delete_controller_url_param_key_list or ()) if getattr(self, 'delete_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
             url_values = tuple(args)
             query_params = tuple(kwargs.get('query_params') or ())
@@ -677,7 +695,9 @@ def put_api(**kwargs: Any) -> Callable:
 
         @EncapsulationHandler.add_func(url=local_url, type='put')
         def put(self, *args):
-            logger.info("\t||| request:")
+            # Conditional logging: only log if INFO level is enabled
+            if logger.isEnabledFor(logging.INFO):
+                logger.info("\t||| request:")
             caller_keys = tuple(self.put_controller_url_param_key_list or ()) if getattr(self, 'put_controller_url_param_key_list', None) is not None else tuple(url_param_key_list)
             url_values = tuple(args)
             query_params = tuple(kwargs.get('query_params') or ())
