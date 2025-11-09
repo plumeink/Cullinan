@@ -824,42 +824,44 @@ def scan_service(modules: list):
         reflect_module(mod, 'nobody')
 
 
-def get_index_list(url_list: list) -> list:
-    index_list = []
-    for index in range(0, url_list.__len__()):
-        if url_list[index] == '([a-zA-Z0-9-]+)':
-            index_list.append(index)
-    index_list.append('*')
-    return index_list
-
-
 def sort_url():
-    if handler_list.__len__() == 0:
+    """Sort URL handlers with O(n log n) complexity instead of O(n³).
+    
+    Optimized version that uses Python's built-in sorting with a custom key function.
+    Handlers with dynamic segments (e.g., ([a-zA-Z0-9-]+)) are prioritized lower than
+    static segments to ensure more specific routes match first.
+    """
+    if len(handler_list) == 0:
         return
-    handler_list_length = []
-    for index in range(0, handler_list.__len__()):
-        handler_list[index] = list(handler_list[index])
-        handler_list[index][0] = handler_list[index][0].split('/')
-        index_list = get_index_list(handler_list[index][0])
-        handler_list_length.append(index_list.__len__())
-        handler_list[index].append(index_list)
-    for index in range(0, max(handler_list_length)):
-        for i in range(0, handler_list.__len__()):
-            for j in range(i + 1, handler_list.__len__()):
-                if handler_list[i][2].__len__() >= index + 1 and handler_list[j][2].__len__() >= index + 1:
-                    if handler_list[i][2][index] != '*' and handler_list[j][2][index] != '*':
-                        if handler_list[i][2][index] < handler_list[j][2][index]:
-                            handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
-                    elif handler_list[i][2][index] != '*' and handler_list[j][2][index] == '*':
-                        handler_list[i], handler_list[j] = handler_list[j], handler_list[i]
-                    elif handler_list[i][2][index] == '*':
-                        continue
-    for item in handler_list:
-        url = ""
-        for index in range(1, len(item[0])):
-            url = url + "/" + item[0][index]
-        item[0] = url
-        del item[2]
+    
+    def get_sort_key(handler):
+        """Generate a sort key for a handler based on its URL pattern.
+        
+        Returns a tuple that ensures:
+        - Static segments come before dynamic segments
+        - Longer paths come before shorter paths
+        - Lexicographic order within same priority level
+        """
+        url = handler[0]
+        parts = url.split('/')
+        
+        # Build priority tuple: (priority_value, part_content)
+        # priority_value: 0 for static, 1 for dynamic
+        priority = []
+        for part in parts:
+            if part == '([a-zA-Z0-9-]+)':
+                # Dynamic segment - lower priority (sorts later)
+                priority.append((1, part))
+            else:
+                # Static segment - higher priority (sorts earlier)
+                priority.append((0, part))
+        
+        # Return tuple for sorting: negative length ensures longer paths first,
+        # then priority tuple for segment-by-segment comparison
+        return (-len(parts), priority)
+    
+    # Sort handler_list in-place using the optimized key function
+    handler_list.sort(key=get_sort_key)
 
 
 def is_started_directly() -> bool:

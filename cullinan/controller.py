@@ -39,6 +39,20 @@ KEY_NAME_INDEX = {
     "file_params": 3,
 }
 
+# Performance optimization: cache function signatures to avoid repeated inspect.signature() calls
+_SIGNATURE_CACHE = {}
+
+
+def _get_cached_signature(func):
+    """Get cached function signature to avoid repeated inspect.signature() calls.
+    
+    This optimization significantly reduces overhead in request handling by caching
+    the inspection results for each function.
+    """
+    if func not in _SIGNATURE_CACHE:
+        _SIGNATURE_CACHE[func] = inspect.signature(func)
+    return _SIGNATURE_CACHE[func]
+
 
 class ResponseProxy:
     """
@@ -424,8 +438,8 @@ def request_handler(self, func, params, headers, type, get_request_body=False):
     token = response.push(resp_instance)
 
     try:
-        # 使用 inspect.signature 获取参数名并构建参数列表
-        sig = inspect.signature(func)
+        # Performance optimization: use cached signature instead of inspect.signature(func)
+        sig = _get_cached_signature(func)
         param_names = [p.name for p in sig.parameters.values()
                        if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)]
         if param_names and param_names[0] == 'self':
