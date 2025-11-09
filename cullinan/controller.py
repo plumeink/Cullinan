@@ -12,6 +12,7 @@ import logging
 import time
 import os
 import json
+import warnings
 from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service import service_list
 from cullinan.exceptions import (
@@ -19,6 +20,7 @@ from cullinan.exceptions import (
 )
 from cullinan.logging_utils import should_log, log_if_enabled
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol
+from cullinan.registry import get_handler_registry, get_header_registry
 
 class ResponseProtocol(Protocol):
     def push(self, resp: Any) -> Any: ...
@@ -33,8 +35,192 @@ logger = logging.getLogger(__name__)
 # access logger (separate name so users can configure access logs separately)
 access_logger = logging.getLogger('cullinan.access')
 
-handler_list = []
-header_list = []
+
+# ============================================================================
+# Registry Pattern Integration (Non-Destructive Proxy Approach)
+# ============================================================================
+
+class _HandlerListProxy(list):
+    """Transparent proxy for handler_list that maintains backward compatibility.
+    
+    This proxy wraps the legacy global handler_list while simultaneously
+    synchronizing operations with the new HandlerRegistry. It enables a
+    non-destructive migration path where both old and new APIs work together.
+    
+    Key Features:
+    - Full backward compatibility with list interface
+    - Automatic synchronization with HandlerRegistry
+    - Zero breaking changes to existing code
+    - Enables gradual migration to Registry pattern
+    
+    Example:
+        # Old code continues to work:
+        handler_list.append((url, servlet))
+        
+        # New code can use registry:
+        get_handler_registry().register(url, servlet)
+        
+        # Both stay synchronized automatically
+    """
+    
+    def __init__(self):
+        """Initialize proxy with empty list and registry reference."""
+        super().__init__()
+        self._registry = get_handler_registry()
+        self._sync_enabled = True
+    
+    def append(self, item):
+        """Append handler to both list and registry.
+        
+        Args:
+            item: Tuple of (url_pattern, servlet_class)
+        """
+        super().append(item)
+        if self._sync_enabled and item and isinstance(item, (tuple, list)) and len(item) >= 2:
+            url, servlet = item[0], item[1]
+            self._registry.register(url, servlet)
+    
+    def extend(self, items):
+        """Extend list with multiple handlers.
+        
+        Args:
+            items: Iterable of (url_pattern, servlet_class) tuples
+        """
+        super().extend(items)
+        if self._sync_enabled:
+            for item in items:
+                if item and isinstance(item, (tuple, list)) and len(item) >= 2:
+                    url, servlet = item[0], item[1]
+                    self._registry.register(url, servlet)
+    
+    def insert(self, index, item):
+        """Insert handler at specific index.
+        
+        Args:
+            index: Position to insert at
+            item: Tuple of (url_pattern, servlet_class)
+        """
+        super().insert(index, item)
+        if self._sync_enabled and item and isinstance(item, (tuple, list)) and len(item) >= 2:
+            url, servlet = item[0], item[1]
+            self._registry.register(url, servlet)
+    
+    def clear(self):
+        """Clear both list and registry."""
+        super().clear()
+        if self._sync_enabled:
+            self._registry.clear()
+    
+    def sort(self, *args, **kwargs):
+        """Sort the handler list and update registry.
+        
+        After sorting, the registry is updated to reflect the new order.
+        """
+        super().sort(*args, **kwargs)
+        if self._sync_enabled:
+            # Sync registry with sorted list
+            self._registry.clear()
+            for item in self:
+                if item and isinstance(item, (tuple, list)) and len(item) >= 2:
+                    url, servlet = item[0], item[1]
+                    self._registry.register(url, servlet)
+    
+    def disable_sync(self):
+        """Temporarily disable registry synchronization (for internal use)."""
+        self._sync_enabled = False
+    
+    def enable_sync(self):
+        """Re-enable registry synchronization."""
+        self._sync_enabled = True
+    
+    def get_registry(self):
+        """Get the underlying HandlerRegistry for advanced usage.
+        
+        Returns:
+            HandlerRegistry instance
+        """
+        return self._registry
+
+
+class _HeaderListProxy(list):
+    """Transparent proxy for header_list that maintains backward compatibility.
+    
+    Similar to _HandlerListProxy, this enables non-destructive migration
+    from global header_list to HeaderRegistry pattern.
+    
+    Example:
+        # Old code continues to work:
+        header_list.append(('Content-Type', 'application/json'))
+        
+        # New code can use registry:
+        get_header_registry().register(('Content-Type', 'application/json'))
+    """
+    
+    def __init__(self):
+        """Initialize proxy with empty list and registry reference."""
+        super().__init__()
+        self._registry = get_header_registry()
+        self._sync_enabled = True
+    
+    def append(self, item):
+        """Append header to both list and registry.
+        
+        Args:
+            item: Header tuple or object
+        """
+        super().append(item)
+        if self._sync_enabled:
+            self._registry.register(item)
+    
+    def extend(self, items):
+        """Extend list with multiple headers.
+        
+        Args:
+            items: Iterable of header tuples
+        """
+        super().extend(items)
+        if self._sync_enabled:
+            for item in items:
+                self._registry.register(item)
+    
+    def insert(self, index, item):
+        """Insert header at specific index.
+        
+        Args:
+            index: Position to insert at
+            item: Header tuple or object
+        """
+        super().insert(index, item)
+        if self._sync_enabled:
+            self._registry.register(item)
+    
+    def clear(self):
+        """Clear both list and registry."""
+        super().clear()
+        if self._sync_enabled:
+            self._registry.clear()
+    
+    def disable_sync(self):
+        """Temporarily disable registry synchronization (for internal use)."""
+        self._sync_enabled = False
+    
+    def enable_sync(self):
+        """Re-enable registry synchronization."""
+        self._sync_enabled = True
+    
+    def get_registry(self):
+        """Get the underlying HeaderRegistry for advanced usage.
+        
+        Returns:
+            HeaderRegistry instance
+        """
+        return self._registry
+
+
+# Initialize global lists using proxy pattern for backward compatibility
+# These maintain full list interface while synchronizing with registries
+handler_list = _HandlerListProxy()
+header_list = _HeaderListProxy()
 controller_func_list = []
 KEY_NAME_INDEX = {
     "url_params": 0,
