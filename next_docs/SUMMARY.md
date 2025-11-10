@@ -1,102 +1,84 @@
-# Quick Summary - Cullinan Next Architecture
+# Cullinan v0.7.0 Architecture Planning Documents
 
-## What Was Done
-
-### 1. Documentation Created
-✅ **11 comprehensive documents** (~200KB total):
-- Analysis documents (3): Service layer value, registry pattern, framework comparison
-- Design documents (3): Core module design, implementation plan, migration guide
-- Technical documents (4): API specs, testing strategy, code examples, compatibility
-- Index document (1): README with complete overview
-
-### 2. Branch Created
-✅ **`next` branch** established for experimental development
-
-### 3. Key Decisions
-
-**Service Layer: KEEP AND ENHANCE**
-- Dependency injection (opt-in)
-- Lifecycle management (on_init, on_destroy)
-- Testing utilities (mocks, test registry)
-- 100% backward compatible
-
-**Implementation Timeline: 5-6 weeks**
-- Week 1-2: Core module
-- Week 3: Service integration
-- Week 4: Testing utilities
-- Week 5: Documentation
-- Week 6: Buffer
-
-## Quick Links
-
-- **Start Here**: [README.md](README.md)
-- **Why Service Layer**: [01-service-layer-analysis.md](01-service-layer-analysis.md)
-- **Technical Design**: [04-core-module-design.md](04-core-module-design.md)
-- **Migration Help**: [06-migration-guide.md](06-migration-guide.md)
-- **Code Examples**: [09-code-examples.md](09-code-examples.md)
-
-## For Developers
-
-### Want to Use New Features?
-1. Read [06-migration-guide.md](06-migration-guide.md)
-2. Review [09-code-examples.md](09-code-examples.md)
-3. Start with simple services
-4. Gradually adopt DI and lifecycle hooks
-
-### Want to Contribute?
-1. Read all analysis docs (01-03)
-2. Study [04-core-module-design.md](04-core-module-design.md)
-3. Follow [05-implementation-plan.md](05-implementation-plan.md)
-4. Check [08-testing-strategy.md](08-testing-strategy.md)
-
-## Key Features (When Implemented)
-
-### Dependency Injection
-```python
-@service(dependencies=['EmailService'])
-class UserService(Service):
-    def on_init(self):
-        self.email = self.dependencies['EmailService']
-```
-
-### Lifecycle Hooks
-```python
-@service
-class DatabaseService(Service):
-    def on_init(self):
-        self.pool = create_pool()
-    
-    def on_destroy(self):
-        self.pool.close()
-```
-
-### Easy Testing
-```python
-from cullinan.testing import TestRegistry, MockService
-
-def test_user_service():
-    registry = TestRegistry()
-    registry.register_mock('EmailService', MockEmailService())
-    # Test with mocked dependencies
-```
-
-## Status
-
-- [x] Analysis complete
-- [x] Design complete
-- [x] Documentation complete
-- [x] Branch created
-- [ ] Implementation (to be done in `next` branch)
-
-## Next Steps
-
-1. Review docs with stakeholders
-2. Gather community feedback
-3. Begin implementation in `next` branch
-4. Test with early adopters
-5. Iterate and refine
+**Status**: ✅ COMPLETED & CONSOLIDATED  
+**Version**: 0.7.0-alpha1  
+**Date**: November 10, 2025
 
 ---
 
-**Created**: 2025-11-10  
-**Status**: Planning Complete, Ready for Implementation
+## 📌 Important Notice
+
+All planning and analysis documents have been **consolidated** into:
+
+### **[ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)** 📖
+
+This master document contains:
+- Complete service layer analysis
+- Registry pattern evaluation
+- Core module design
+- Implementation details
+- Testing strategy
+- Migration guide
+- Future roadmap
+
+**Please refer to ARCHITECTURE_MASTER.md for all architectural information.**
+
+---
+
+## Historical Documents (Archived)
+
+The following documents were used during the planning phase and have been consolidated into ARCHITECTURE_MASTER.md:
+
+- ✅ `01-service-layer-analysis.md` - Service layer value analysis
+- ✅ `02-registry-pattern-evaluation.md` - Registry pattern deep dive
+- ✅ `03-architecture-comparison.md` - Framework comparison study
+- ✅ `04-core-module-design.md` - Core module specifications
+- ✅ `05-implementation-plan.md` - Implementation roadmap
+- ✅ `06-migration-guide.md` - Detailed migration instructions
+- ✅ `07-api-specifications.md` - Complete API reference
+- ✅ `08-testing-strategy.md` - Testing approach and utilities
+- ✅ `09-code-examples.md` - Comprehensive code examples
+- ✅ `10-backward-compatibility.md` - Compatibility analysis
+
+These files remain in this directory for historical reference but are no longer actively maintained.
+
+---
+
+## Implementation Status
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| Core Module | ✅ Implemented | `cullinan/core/` |
+| Enhanced Services | ✅ Implemented | `cullinan/service_new/` |
+| WebSocket Registry | ✅ Implemented | `cullinan/websocket_registry.py` |
+| Request Context | ✅ Implemented | `cullinan/core/context.py` |
+| Testing Utilities | ✅ Implemented | `cullinan/testing/` |
+| Documentation | ✅ Updated | `docs/README.md`, `CHANGELOG.md` |
+| Examples | ✅ Created | `examples/v070_demo.py` |
+
+---
+
+## Quick Links
+
+- **Master Document**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **Main README**: [../README.MD](../README.MD)
+- **CHANGELOG**: [../CHANGELOG.md](../CHANGELOG.md)
+- **Documentation**: [../docs/README.md](../docs/README.md)
+- **v0.7.0 Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
+
+---
+
+## For Developers
+
+If you're looking to understand the v0.7.0 architecture:
+
+1. ✅ Start with [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+2. ✅ Review [../CHANGELOG.md](../CHANGELOG.md) for migration guide
+3. ✅ Study [../examples/v070_demo.py](../examples/v070_demo.py) for practical usage
+4. ✅ Read source code in `cullinan/core/` for implementation details
+
+---
+
+**Last Updated**: November 10, 2025  
+**Maintained By**: Cullinan Development Team
+

@@ -15,6 +15,14 @@ from cullinan.core import (
     LifecycleManager,
     LifecycleState,
     LifecycleAware,
+    RequestContext,
+    get_current_context,
+    set_current_context,
+    create_context,
+    destroy_context,
+    ContextManager,
+    get_context_value,
+    set_context_value,
 )
 
 # Export enhanced service layer
@@ -55,7 +63,15 @@ from cullinan.testing import (
     TestRegistry,
 )
 
-__version__ = '0.8.0-alpha'
+# Export WebSocket support
+from cullinan.websocket_registry import (
+    WebSocketRegistry,
+    websocket_handler,
+    get_websocket_registry,
+    reset_websocket_registry,
+)
+
+__version__ = '0.7.0-alpha1'
 
 __all__ = [
     # Configuration
@@ -70,6 +86,14 @@ __all__ = [
     'LifecycleManager',
     'LifecycleState',
     'LifecycleAware',
+    'RequestContext',
+    'get_current_context',
+    'set_current_context',
+    'create_context',
+    'destroy_context',
+    'ContextManager',
+    'get_context_value',
+    'set_context_value',
     
     # Service layer
     'Service',
@@ -98,5 +122,11 @@ __all__ = [
     'ServiceTestCase',
     'MockService',
     'TestRegistry',
+    
+    # WebSocket
+    'WebSocketRegistry',
+    'websocket_handler',
+    'get_websocket_registry',
+    'reset_websocket_registry',
 ]
 

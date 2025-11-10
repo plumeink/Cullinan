@@ -14,6 +14,16 @@ from .registry import Registry, SimpleRegistry
 from .injection import DependencyInjector
 from .lifecycle import LifecycleManager
 from .types import LifecycleState, LifecycleAware
+from .context import (
+    RequestContext,
+    get_current_context,
+    set_current_context,
+    create_context,
+    destroy_context,
+    ContextManager,
+    get_context_value,
+    set_context_value
+)
 from .exceptions import (
     CullinanCoreError,
     RegistryError,
@@ -36,6 +46,16 @@ __all__ = [
     'LifecycleManager',
     'LifecycleState',
     'LifecycleAware',
+    
+    # Request Context
+    'RequestContext',
+    'get_current_context',
+    'set_current_context',
+    'create_context',
+    'destroy_context',
+    'ContextManager',
+    'get_context_value',
+    'set_context_value',
     
     # Exceptions
     'CullinanCoreError',
