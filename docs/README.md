@@ -64,7 +64,7 @@ Want to use v0.7.0? Check these resources:
 1. **[Main README](../README.MD)** - Overview and quick start
 2. **[v0.7.0 Demo](../examples/v070_demo.py)** - Comprehensive example
 3. **[CHANGELOG](../CHANGELOG.md)** - Migration guide from v0.6.x
-4. **[Docs Index](../docs/README.md)** - Complete documentation
+4. **[Docs Index](README.md)** - Complete documentation
 
 ### For Developers
 
@@ -212,7 +212,7 @@ See [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md#future-roadmap) for details.
 
 - **Architecture**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
 - **Summary**: [SUMMARY.md](SUMMARY.md)
-- **Main Docs**: [../docs/README.md](../docs/README.md)
+- **Main Docs**: [README.md](README.md)
 - **Examples**: [../examples/](../examples/)
 - **Source**: [../cullinan/](../cullinan/)
 
