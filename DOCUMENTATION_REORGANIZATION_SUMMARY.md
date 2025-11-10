@@ -181,7 +181,7 @@ docs/
 - **架构文档**: [docs/zh/ARCHITECTURE_MASTER.md](../docs/zh/ARCHITECTURE_MASTER.md)
 - **摘要**: [docs/zh/SUMMARY.md](../docs/zh/SUMMARY.md)
 
-### Legacy Documentation (v0.6.x)
+### Legacy Documentation (v0.6x)
 - **English**: [docs_legacy/README.md](../docs_legacy/README.md)
 - **Chinese**: [docs_legacy/zh/README_zh.md](../docs_legacy/zh/README_zh.md)
 
@@ -194,7 +194,7 @@ docs/
 ## Benefits
 
 1. **Clean Organization**: Root directory decluttered, focused on essentials
-2. **Clear Versioning**: Legacy v0.6.x docs separated from new v0.7.0 docs
+2. **Clear Versioning**: Legacy v0.6x docs separated from new v0.7.0 docs
 3. **Bilingual Support**: Full English and Chinese documentation
 4. **Preserved History**: All historical documents archived for reference
 5. **Better Navigation**: Language switchers and consistent internal linking
@@ -210,7 +210,7 @@ docs/
 - Start at [docs/README.md](../docs/README.md) (English) or [docs/zh/README.md](../docs/zh/README.md) (中文)
 - All documentation updated for new architecture
 
-**For v0.6.x Users**:
+**For v0.6x Users**:
 - Legacy docs at [docs_legacy/README.md](../docs_legacy/README.md)
 - Migration guide in [CHANGELOG.md](../CHANGELOG.md)
 
@@ -257,7 +257,7 @@ All five phases of the documentation reorganization have been successfully compl
 4. ✅ Bilingual structure implemented
 5. ✅ Quality assurance verified
 
-The project now has a modern, well-organized, bilingual documentation structure that supports both v0.7.0 and legacy v0.6.x users, with proper language-specific internal linking and historical records preserved.
+The project now has a modern, well-organized, bilingual documentation structure that supports both v0.7.0 and legacy v0.6x users, with proper language-specific internal linking and historical records preserved.
 
 ---
 

@@ -12,7 +12,7 @@ Welcome to Cullinan! The complete documentation for building production-ready we
 
 This documentation covers the new architecture introduced in v0.7.0 with enhanced services, WebSocket support, and unified registry pattern.
 
-**Looking for v0.6.x documentation?** See the [v0.6.x Legacy Docs](#v06x-legacy-documentation) section below.
+**Looking for v0.6x documentation?** See the [v0.6x Legacy Docs](#v06x-legacy-documentation) section below.
 
 ---
 
@@ -25,7 +25,7 @@ This documentation covers the new architecture introduced in v0.7.0 with enhance
 - **Testing Utilities**: Mock services and test registries
 - **Better Architecture**: Modular design with clear separation of concerns
 
-**Migration Guide**: See [CHANGELOG.md](../CHANGELOG.md) for upgrading from v0.6.x
+**Migration Guide**: See [CHANGELOG.md](../CHANGELOG.md) for upgrading from v0.6x
 
 ---
 
@@ -234,15 +234,15 @@ All examples are located in the [`examples/`](../examples/) directory:
 
 ---
 
-## v0.6.x Legacy Documentation
+## v0.6x Legacy Documentation
 
-Documentation for the older v0.6.x architecture (deprecated):
+Documentation for the older v0.6x architecture (deprecated):
 
-> **⚠️ Note**: v0.6.x documentation applies only to versions prior to v0.7.0. The architecture has changed significantly in v0.7.0.
+> **⚠️ Note**: v0.6x documentation applies only to versions prior to v0.7.0. The architecture has changed significantly in v0.7.0.
 
-### Key Differences from v0.6.x
+### Key Differences from v0.6x
 
-| Feature | v0.6.x | v0.7.0 |
+| Feature | v0.6x | v0.7.0 |
 |---------|--------|--------|
 | Service Layer | Simple `@service` | Enhanced with DI + lifecycle |
 | WebSocket | Basic decorator | Registry integration |
