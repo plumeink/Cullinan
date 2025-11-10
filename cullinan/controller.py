@@ -37,190 +37,13 @@ access_logger = logging.getLogger('cullinan.access')
 
 
 # ============================================================================
-# Registry Pattern Integration (Non-Destructive Proxy Approach)
+# Registry Pattern Integration (Direct Registry Usage)
 # ============================================================================
+# Global lists have been completely replaced with registry pattern.
+# Use get_handler_registry() and get_header_registry() for all operations.
 
-class _HandlerListProxy(list):
-    """Transparent proxy for handler_list that maintains backward compatibility.
-    
-    This proxy wraps the legacy global handler_list while simultaneously
-    synchronizing operations with the new HandlerRegistry. It enables a
-    non-destructive migration path where both old and new APIs work together.
-    
-    Key Features:
-    - Full backward compatibility with list interface
-    - Automatic synchronization with HandlerRegistry
-    - Zero breaking changes to existing code
-    - Enables gradual migration to Registry pattern
-    
-    Example:
-        # Old code continues to work:
-        handler_list.append((url, servlet))
-        
-        # New code can use registry:
-        get_handler_registry().register(url, servlet)
-        
-        # Both stay synchronized automatically
-    """
-    
-    def __init__(self):
-        """Initialize proxy with empty list and registry reference."""
-        super().__init__()
-        self._registry = get_handler_registry()
-        self._sync_enabled = True
-    
-    def append(self, item):
-        """Append handler to both list and registry.
-        
-        Args:
-            item: Tuple of (url_pattern, servlet_class)
-        """
-        super().append(item)
-        if self._sync_enabled and item and isinstance(item, (tuple, list)) and len(item) >= 2:
-            url, servlet = item[0], item[1]
-            self._registry.register(url, servlet)
-    
-    def extend(self, items):
-        """Extend list with multiple handlers.
-        
-        Args:
-            items: Iterable of (url_pattern, servlet_class) tuples
-        """
-        super().extend(items)
-        if self._sync_enabled:
-            for item in items:
-                if item and isinstance(item, (tuple, list)) and len(item) >= 2:
-                    url, servlet = item[0], item[1]
-                    self._registry.register(url, servlet)
-    
-    def insert(self, index, item):
-        """Insert handler at specific index.
-        
-        Args:
-            index: Position to insert at
-            item: Tuple of (url_pattern, servlet_class)
-        """
-        super().insert(index, item)
-        if self._sync_enabled and item and isinstance(item, (tuple, list)) and len(item) >= 2:
-            url, servlet = item[0], item[1]
-            self._registry.register(url, servlet)
-    
-    def clear(self):
-        """Clear both list and registry."""
-        super().clear()
-        if self._sync_enabled:
-            self._registry.clear()
-    
-    def sort(self, *args, **kwargs):
-        """Sort the handler list and update registry.
-        
-        After sorting, the registry is updated to reflect the new order.
-        """
-        super().sort(*args, **kwargs)
-        if self._sync_enabled:
-            # Sync registry with sorted list
-            self._registry.clear()
-            for item in self:
-                if item and isinstance(item, (tuple, list)) and len(item) >= 2:
-                    url, servlet = item[0], item[1]
-                    self._registry.register(url, servlet)
-    
-    def disable_sync(self):
-        """Temporarily disable registry synchronization (for internal use)."""
-        self._sync_enabled = False
-    
-    def enable_sync(self):
-        """Re-enable registry synchronization."""
-        self._sync_enabled = True
-    
-    def get_registry(self):
-        """Get the underlying HandlerRegistry for advanced usage.
-        
-        Returns:
-            HandlerRegistry instance
-        """
-        return self._registry
-
-
-class _HeaderListProxy(list):
-    """Transparent proxy for header_list that maintains backward compatibility.
-    
-    Similar to _HandlerListProxy, this enables non-destructive migration
-    from global header_list to HeaderRegistry pattern.
-    
-    Example:
-        # Old code continues to work:
-        header_list.append(('Content-Type', 'application/json'))
-        
-        # New code can use registry:
-        get_header_registry().register(('Content-Type', 'application/json'))
-    """
-    
-    def __init__(self):
-        """Initialize proxy with empty list and registry reference."""
-        super().__init__()
-        self._registry = get_header_registry()
-        self._sync_enabled = True
-    
-    def append(self, item):
-        """Append header to both list and registry.
-        
-        Args:
-            item: Header tuple or object
-        """
-        super().append(item)
-        if self._sync_enabled:
-            self._registry.register(item)
-    
-    def extend(self, items):
-        """Extend list with multiple headers.
-        
-        Args:
-            items: Iterable of header tuples
-        """
-        super().extend(items)
-        if self._sync_enabled:
-            for item in items:
-                self._registry.register(item)
-    
-    def insert(self, index, item):
-        """Insert header at specific index.
-        
-        Args:
-            index: Position to insert at
-            item: Header tuple or object
-        """
-        super().insert(index, item)
-        if self._sync_enabled:
-            self._registry.register(item)
-    
-    def clear(self):
-        """Clear both list and registry."""
-        super().clear()
-        if self._sync_enabled:
-            self._registry.clear()
-    
-    def disable_sync(self):
-        """Temporarily disable registry synchronization (for internal use)."""
-        self._sync_enabled = False
-    
-    def enable_sync(self):
-        """Re-enable registry synchronization."""
-        self._sync_enabled = True
-    
-    def get_registry(self):
-        """Get the underlying HeaderRegistry for advanced usage.
-        
-        Returns:
-            HeaderRegistry instance
-        """
-        return self._registry
-
-
-# Initialize global lists using proxy pattern for backward compatibility
-# These maintain full list interface while synchronizing with registries
-handler_list = _HandlerListProxy()
-header_list = _HeaderListProxy()
+# Temporary controller function list for decorator pattern
+# This is used during controller class decoration to collect methods
 controller_func_list = []
 KEY_NAME_INDEX = {
     "url_params": 0,
@@ -376,45 +199,59 @@ class EncapsulationHandler(object):
         # create servlet type plainly
         servlet = type('Servlet' + url.replace('/', ''), (Handler,), {})
         # attach the handler function as an instance method via set_fragment_method
-        if len(handler_list) == 0:
+        
+        # Check if URL already exists in registry
+        registry = get_handler_registry()
+        handlers = registry.get_handlers()
+        
+        if len(handlers) == 0:
             EncapsulationHandler.set_fragment_method(servlet, f)
             servlet.f = types.MethodType(f, servlet)
-            handler_list.append((url, servlet))
+            registry.register(url, servlet)
             return servlet
         else:
-            for item in handler_list:
-                if url == item[0]:
-                    EncapsulationHandler.set_fragment_method(item[1], f)
-                    item[1].f = types.MethodType(f, item[1])
-                    return item[1]
+            # Find existing handler for this URL
+            for handler_url, handler_servlet in handlers:
+                if url == handler_url:
+                    EncapsulationHandler.set_fragment_method(handler_servlet, f)
+                    handler_servlet.f = types.MethodType(f, handler_servlet)
+                    return handler_servlet
             else:
+                # URL not found, register new handler
                 EncapsulationHandler.set_fragment_method(servlet, f)
                 servlet.f = types.MethodType(f, servlet)
-                handler_list.append((url, servlet))
+                registry.register(url, servlet)
                 return servlet
 
     @staticmethod
     def add_url_ws(url: str, cls: Callable) -> object:
         servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,), {})
         setattr(servlet, 'service', service_list)
-        if len(handler_list) == 0:
+        
+        # Check if URL already exists in registry
+        registry = get_handler_registry()
+        handlers = registry.get_handlers()
+        
+        if len(handlers) == 0:
             for item in dir(cls):
                 if not item.startswith('__') and not item.endswith('__'):
                     setattr(servlet, item, cls.__dict__[item])
-            handler_list.append((url, servlet))
+            registry.register(url, servlet)
             return servlet
         else:
-            for item in handler_list:
-                if url == item[0]:
+            # Find existing handler for this URL
+            for handler_url, handler_servlet in handlers:
+                if url == handler_url:
                     for i in dir(cls):
                         if not i.startswith('__') and not i.endswith('__'):
-                            setattr(servlet, item, cls.__dict__[item])
-                    return item[1]
+                            setattr(handler_servlet, i, cls.__dict__[i])
+                    return handler_servlet
             else:
+                # URL not found, register new handler
                 for item in dir(cls):
                     if not item.startswith('__') and not item.endswith('__'):
                         setattr(servlet, item, cls.__dict__[item])
-                handler_list.append((url, servlet))
+                registry.register(url, servlet)
                 return servlet
 
 
@@ -433,8 +270,10 @@ class Handler(tornado.web.RequestHandler):
         pass
 
     def set_default_headers(self):
-        if header_list:
-            for header in header_list:
+        # Use header registry instead of global list
+        header_registry = get_header_registry()
+        if header_registry.has_headers():
+            for header in header_registry.get_headers():
                 self.set_header(header[0], header[1])
 
     def options(self):
@@ -783,9 +622,10 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         else:
             resp_obj = response.get()
 
-        # 写出 headers/status/body（保留全局 header_list 行为）
-        if len(header_list) > 0:
-            for header in header_list:
+        # 写出 headers/status/body（使用 header registry）
+        header_registry = get_header_registry()
+        if header_registry.has_headers():
+            for header in header_registry.get_headers():
                 self.set_header(header[0], header[1])
         if resp_obj and getattr(resp_obj, "get_headers", None):
             for header in (resp_obj.get_headers() or []):

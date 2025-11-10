@@ -8,7 +8,7 @@ import logging
 import signal
 
 import tornado.ioloop
-from cullinan.controller import handler_list, header_list
+from cullinan.registry import get_handler_registry, get_header_registry
 from dotenv import load_dotenv
 from pathlib import Path
 import tornado.ioloop
@@ -218,41 +218,12 @@ def scan_service(modules: list) -> None:
 def sort_url() -> None:
     """Sort URL handlers with O(n log n) complexity instead of O(n³).
     
-    Optimized version that uses Python's built-in sorting with a custom key function.
+    Optimized version that uses the HandlerRegistry's built-in sort method.
     Handlers with dynamic segments (e.g., ([a-zA-Z0-9-]+)) are prioritized lower than
     static segments to ensure more specific routes match first.
     """
-    if len(handler_list) == 0:
-        return
-    
-    def get_sort_key(handler):
-        """Generate a sort key for a handler based on its URL pattern.
-        
-        Returns a tuple that ensures:
-        - Static segments come before dynamic segments
-        - Longer paths come before shorter paths
-        - Lexicographic order within same priority level
-        """
-        url = handler[0]
-        parts = url.split('/')
-        
-        # Build priority tuple: (priority_value, part_content)
-        # priority_value: 0 for static, 1 for dynamic
-        priority = []
-        for part in parts:
-            if part == '([a-zA-Z0-9-]+)':
-                # Dynamic segment - lower priority (sorts later)
-                priority.append((1, part))
-            else:
-                # Static segment - higher priority (sorts earlier)
-                priority.append((0, part))
-        
-        # Return tuple for sorting: negative length ensures longer paths first,
-        # then priority tuple for segment-by-segment comparison
-        return (-len(parts), priority)
-    
-    # Sort handler_list in-place using the optimized key function
-    handler_list.sort(key=get_sort_key)
+    registry = get_handler_registry()
+    registry.sort()
 
 
 def is_started_directly() -> bool:
@@ -379,8 +350,13 @@ def run(handlers=None):
     scan_service(file_list_func())
     scan_controller(file_list_func())
     sort_url()
+    
+    # Get handlers from registry
+    handler_registry = get_handler_registry()
+    registered_handlers = handler_registry.get_handlers()
+    
     mapping = tornado.web.Application(
-        handlers=handler_list + handlers,
+        handlers=registered_handlers + handlers,
         **settings
     )
     logger.info("\t|||\t\t└---loading controller finish\n\t|||\t")
