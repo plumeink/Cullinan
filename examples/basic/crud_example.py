@@ -25,7 +25,7 @@ API端点:
 
 from cullinan import configure, application
 from cullinan.controller import controller, get_api, post_api, put_api, delete_api
-from cullinan.service import Service, service
+from cullinan import Service, service
 
 # 配置
 configure(user_packages=['__main__'])
