@@ -219,33 +219,19 @@ class TestBackwardCompatibility(unittest.TestCase):
         """Clean up after each test."""
         reset_handler_registry()
     
-    def test_can_import_from_cullinan_registry(self):
-        """Test that old import paths still work."""
-        # This should not raise ImportError
-        from cullinan.registry import HandlerRegistry as OldHandlerRegistry
-        from cullinan.registry import get_handler_registry as old_get_registry
-        
-        # Should be the same class/function
-        self.assertIs(OldHandlerRegistry, HandlerRegistry)
-        
-        # Should return the same instance
-        new_registry = get_handler_registry()
-        old_registry = old_get_registry()
-        self.assertIs(new_registry, old_registry)
-    
-    def test_old_api_still_works(self):
-        """Test that the old API still works as expected."""
-        from cullinan.registry import get_handler_registry as old_get_registry
-        
-        registry = old_get_registry()
-        handler = Mock()
-        
-        # Old API methods should still work
-        registry.register('/api/test', handler)
-        handlers = registry.get_handlers()
-        
-        self.assertEqual(len(handlers), 1)
-        self.assertEqual(handlers[0][0], '/api/test')
+    def test_handler_registry_exported_from_main(self):
+        """Test that handler registry is exported from main cullinan package."""
+        # Should be able to import from main package
+        from cullinan import HandlerRegistry, get_handler_registry
+
+        # Should be the same class
+        from cullinan.handler import HandlerRegistry as DirectImport
+        self.assertIs(HandlerRegistry, DirectImport)
+
+        # Should return a valid instance
+        registry = get_handler_registry()
+        self.assertIsNotNone(registry)
+        self.assertIsInstance(registry, HandlerRegistry)
 
 
 if __name__ == '__main__':

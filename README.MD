@@ -62,6 +62,14 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
   - Request context management
   - See [CHANGELOG.md](CHANGELOG.md) for migration guide from v0.6x
 
+### ⚠️ Important Notice (v0.7x)
+
+**Deprecated modules have been removed:**
+- `cullinan.registry` → Use `cullinan.handler` and `cullinan.controller`
+- `cullinan.websocket` → Use `cullinan.websocket_registry`
+
+**Migration required:** See [API Migration Guide](docs/API_MIGRATION_GUIDE.md) for details.
+
 ---
 
 ## 🚀 Quick Start

@@ -8,7 +8,8 @@ import logging
 import signal
 
 import tornado.ioloop
-from cullinan.registry import get_handler_registry, get_header_registry
+from cullinan.handler import get_handler_registry
+from cullinan.controller import get_header_registry
 from dotenv import load_dotenv
 from pathlib import Path
 import tornado.ioloop

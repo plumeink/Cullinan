@@ -11,12 +11,14 @@ This test module validates:
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 
-from cullinan.registry import (
+from cullinan.handler import (
     HandlerRegistry,
-    HeaderRegistry,
     get_handler_registry,
+    reset_handler_registry,
+)
+from cullinan.controller import (
+    HeaderRegistry,
     get_header_registry,
-    reset_registries,
 )
 
 
@@ -240,8 +242,9 @@ class TestGlobalRegistries(unittest.TestCase):
         self.assertEqual(header_reg.count(), 1)
         
         # Reset
-        reset_registries()
-        
+        reset_handler_registry()
+        header_reg.clear()
+
         # Should be cleared
         self.assertEqual(handler_reg.count(), 0)
         self.assertEqual(header_reg.count(), 0)

@@ -10,10 +10,12 @@ import unittest
 from unittest.mock import Mock, patch
 import sys
 
-from cullinan.registry import (
+from cullinan.handler import (
     get_handler_registry,
+    reset_handler_registry,
+)
+from cullinan.controller import (
     get_header_registry,
-    reset_registries,
 )
 
 
@@ -22,12 +24,14 @@ class TestHandlerRegistryAPI(unittest.TestCase):
     
     def setUp(self):
         """Reset state before each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+        get_header_registry().clear()
+
     def tearDown(self):
         """Clean up after each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+        get_header_registry().clear()
+
     def test_handler_registration(self):
         """Test handler registration."""
         registry = get_handler_registry()
@@ -87,12 +91,12 @@ class TestHeaderRegistryAPI(unittest.TestCase):
     
     def setUp(self):
         """Reset state before each test."""
-        reset_registries()
-    
+        get_header_registry().clear()
+
     def tearDown(self):
         """Clean up after each test."""
-        reset_registries()
-    
+        get_header_registry().clear()
+
     def test_header_registration(self):
         """Test header registration."""
         registry = get_header_registry()

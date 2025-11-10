@@ -199,8 +199,8 @@ class TestRegistryPerformance(unittest.TestCase):
     
     def test_handler_registration_is_fast(self):
         """Test that handler registration is O(1) amortized."""
-        from cullinan.registry import HandlerRegistry
-        
+        from cullinan.handler import HandlerRegistry
+
         registry = HandlerRegistry()
         servlet = Mock()
         
@@ -219,8 +219,8 @@ class TestRegistryPerformance(unittest.TestCase):
     
     def test_handler_retrieval_is_fast(self):
         """Test that handler retrieval is fast."""
-        from cullinan.registry import HandlerRegistry
-        
+        from cullinan.handler import HandlerRegistry
+
         registry = HandlerRegistry()
         servlet = Mock()
         
@@ -239,8 +239,8 @@ class TestRegistryPerformance(unittest.TestCase):
     
     def test_sorting_performance(self):
         """Test that handler sorting is O(n log n)."""
-        from cullinan.registry import HandlerRegistry
-        
+        from cullinan.handler import HandlerRegistry
+
         registry = HandlerRegistry()
         servlet = Mock()
         
@@ -266,8 +266,8 @@ class TestRegistryPerformance(unittest.TestCase):
     
     def test_registry_registration_performance(self):
         """Test that registering handlers is fast."""
-        from cullinan.registry import HandlerRegistry
-        
+        from cullinan.handler import HandlerRegistry
+
         registry = HandlerRegistry()
         servlet = Mock()
         
@@ -284,8 +284,8 @@ class TestRegistryPerformance(unittest.TestCase):
     
     def test_registry_iteration_performance(self):
         """Test that iterating over registry handlers is fast."""
-        from cullinan.registry import HandlerRegistry
-        
+        from cullinan.handler import HandlerRegistry
+
         registry = HandlerRegistry()
         servlet = Mock()
         

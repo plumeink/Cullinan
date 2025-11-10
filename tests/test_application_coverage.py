@@ -12,7 +12,7 @@ from cullinan.application import (
     sort_url,
     reflect_module,
 )
-from cullinan.registry import get_handler_registry, reset_registries
+from cullinan.handler import get_handler_registry, reset_handler_registry
 
 
 class TestURLSorting(unittest.TestCase):
@@ -20,12 +20,12 @@ class TestURLSorting(unittest.TestCase):
     
     def setUp(self):
         """Clear handler registry before each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def tearDown(self):
         """Clear handler registry after each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def test_sort_url_empty_list(self):
         """Test sorting with empty handler registry."""
         registry = get_handler_registry()
@@ -119,12 +119,12 @@ class TestHandlerRegistryManagement(unittest.TestCase):
     
     def setUp(self):
         """Clear handler registry before each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def tearDown(self):
         """Clear handler registry after each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def test_registry_operations(self):
         """Test that registry can be modified."""
         registry = get_handler_registry()
@@ -153,12 +153,12 @@ class TestSortingAlgorithmPerformance(unittest.TestCase):
     
     def setUp(self):
         """Clear handler registry before each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def tearDown(self):
         """Clear handler registry after each test."""
-        reset_registries()
-    
+        reset_handler_registry()
+
     def test_sorting_large_handler_list(self):
         """Test sorting with a large number of handlers."""
         import time

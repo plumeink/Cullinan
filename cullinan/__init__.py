@@ -71,6 +71,14 @@ from cullinan.websocket_registry import (
     reset_websocket_registry,
 )
 
+# Export controller utilities
+from cullinan.controller import (
+    set_missing_header_handler,
+    get_missing_header_handler,
+    HeaderRegistry,
+    get_header_registry,
+)
+
 __version__ = '0.7x'
 
 __all__ = [
@@ -128,5 +136,11 @@ __all__ = [
     'websocket_handler',
     'get_websocket_registry',
     'reset_websocket_registry',
+
+    # Controller utilities
+    'set_missing_header_handler',
+    'get_missing_header_handler',
+    'HeaderRegistry',
+    'get_header_registry',
 ]
 

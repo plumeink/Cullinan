@@ -13,14 +13,13 @@ import time
 import os
 import json
 import warnings
-from cullinan.hooks import MissingHeaderHandlerHook
 from cullinan.service.registry import get_service_registry
 from cullinan.exceptions import (
-    HandlerError, ParameterError, ResponseError, RequestError
+    HandlerError, ParameterError, ResponseError, RequestError, MissingHeaderException
 )
 from cullinan.logging_utils import should_log, log_if_enabled
-from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol
-from cullinan.registry import get_handler_registry, get_header_registry
+from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol, List
+from cullinan.handler import get_handler_registry
 
 class ResponseProtocol(Protocol):
     def push(self, resp: Any) -> Any: ...
@@ -58,6 +57,121 @@ _SIGNATURE_CACHE = {}
 _PARAM_MAPPING_CACHE = {}
 # Performance optimization: cache URL pattern resolution to avoid repeated parsing
 _URL_PATTERN_CACHE = {}
+
+
+# ============================================================================
+# Header Registry
+# ============================================================================
+class HeaderRegistry:
+    """Registry for global HTTP headers.
+
+    Manages headers that should be applied to all HTTP responses.
+    Provides methods for registration and retrieval of headers.
+    """
+
+    def __init__(self):
+        """Initialize an empty header registry."""
+        self._headers: List[Any] = []
+
+    def register(self, header: Any) -> None:
+        """Register a global header to be applied to all responses.
+
+        Args:
+            header: Header object or tuple to be added to responses
+        """
+        self._headers.append(header)
+        logger.debug(f"Registered global header: {header}")
+
+    def get_headers(self) -> List[Any]:
+        """Get all registered headers.
+
+        Returns:
+            List of header objects/tuples
+        """
+        return self._headers.copy()
+
+    def clear(self) -> None:
+        """Clear all registered headers.
+
+        Useful for testing or application reinitialization.
+        """
+        self._headers.clear()
+        logger.debug("Cleared all registered headers")
+
+    def count(self) -> int:
+        """Get the number of registered headers.
+
+        Returns:
+            Number of registered global headers
+        """
+        return len(self._headers)
+
+    def has_headers(self) -> bool:
+        """Check if any headers are registered.
+
+        Returns:
+            True if headers exist, False otherwise
+        """
+        return len(self._headers) > 0
+
+
+# Global header registry instance
+_default_header_registry = HeaderRegistry()
+
+
+def get_header_registry() -> HeaderRegistry:
+    """Get the default global header registry.
+
+    Returns:
+        The default HeaderRegistry instance
+    """
+    return _default_header_registry
+
+
+# ============================================================================
+# Missing Header Handler Hook
+# ============================================================================
+# Default handler for missing required headers - raises MissingHeaderException
+def _default_missing_header_handler(request, header_name: str):
+    """Default handler for missing required headers.
+
+    Args:
+        request: The request object (Controller instance)
+        header_name: Name of the missing header
+
+    Raises:
+        MissingHeaderException: Always raised by default
+    """
+    raise MissingHeaderException(header_name=header_name)
+
+
+# Global missing header handler hook
+_missing_header_handler = _default_missing_header_handler
+
+
+def set_missing_header_handler(handler: Callable[[Any, str], None]):
+    """Set custom missing header handler.
+
+    Args:
+        handler: Callable that takes (request, header_name) and handles the missing header
+
+    Example:
+        def custom_handler(request, header_name):
+            request.write_error(400, message=f"Missing header: {header_name}")
+
+        set_missing_header_handler(custom_handler)
+    """
+    global _missing_header_handler
+    _missing_header_handler = handler
+
+
+def get_missing_header_handler() -> Callable[[Any, str], None]:
+    """Get current missing header handler.
+
+    Returns:
+        The current missing header handler function
+    """
+    return _missing_header_handler
 
 
 def _get_cached_signature(func: Callable) -> inspect.Signature:
@@ -392,10 +506,10 @@ def header_resolver(self, header_names: Optional[Sequence] = None) -> Optional[d
     
     # Handle missing headers
     if missing_headers:
-        miss_header_handler = MissingHeaderHandlerHook.get_hook()
+        miss_header_handler = get_missing_header_handler()
         for name in missing_headers:
-            miss_header_handler(request=self, header_name=name)
-    
+            miss_header_handler(self, name)
+
     return need_header
 
 

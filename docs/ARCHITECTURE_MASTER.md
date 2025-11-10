@@ -3,6 +3,7 @@
 **[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
 
 **Version**: 0.7x  
+**Last Updated**: 2025-11-11  
 **Purpose**: Complete guide to Cullinan's architecture, features, and best practices
 
 ---
