@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.MD", "r", encoding="UTF-8") as fh:
     long_description = fh.read()
@@ -8,7 +8,7 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 setup(
     name='cullinan',
     version='0.72a1',
-    packages=['cullinan'],
+    packages=find_packages(exclude=['tests*', 'examples*', 'docs*', 'docs_archive*', 'scripts*']),
     description='Cullinan is written based on tornado and Sqlalchemy to help the project quickly build web application',
     author='plumeink',
     project_urls={
