@@ -140,15 +140,17 @@ class TestModuleStructure(unittest.TestCase):
 
     def test_service_module_complete(self):
         """Test service module has all expected components."""
-        from cullinan import service as service_module
+        from cullinan.service import (
+            Service, service, ServiceRegistry,
+            get_service_registry, reset_service_registry
+        )
 
-        expected = [
-            'Service', 'service', 'ServiceRegistry',
-            'get_service_registry', 'reset_service_registry'
-        ]
-
-        for item in expected:
-            self.assertTrue(hasattr(service_module, item), f"service.{item} should exist")
+        # Verify all expected components exist
+        self.assertIsNotNone(Service)
+        self.assertIsNotNone(service)
+        self.assertIsNotNone(ServiceRegistry)
+        self.assertIsNotNone(get_service_registry)
+        self.assertIsNotNone(reset_service_registry)
 
     def test_monitoring_module_complete(self):
         """Test monitoring module has all expected components."""
