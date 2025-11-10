@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Cullinan v0.71a1 - Comprehensive Feature Demo
+Cullinan v0.7x - Comprehensive Feature Demo
 
-This example demonstrates all major features of Cullinan v0.71a1:
+This example demonstrates all major features of Cullinan v0.7x:
 - Service layer with dependency injection
 - Lifecycle hooks (on_init, on_destroy)
 - WebSocket support with registry integration
@@ -212,7 +212,7 @@ class StatusController:
         
         return {
             'status': 'running',
-            'version': '0.71a1',
+            'version': '0.7x',
             'stats': {
                 'logs_count': len(log_service.logs),
                 'subscribers': len(notification_service.subscribers),
@@ -298,7 +298,7 @@ class NotificationHandler:
 def print_banner():
     """Print application banner."""
     print("=" * 70)
-    print("  Cullinan v0.71a1 - Comprehensive Feature Demo")
+    print("  Cullinan v0.7x - Comprehensive Feature Demo")
     print("=" * 70)
     print()
     print("Features demonstrated:")

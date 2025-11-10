@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Performance benchmarks for Cullinan v0.7.0 features.
+Performance benchmarks for Cullinan v0.7x features.
 
 Benchmarks:
 1. Registry lookup performance
@@ -285,7 +285,7 @@ def benchmark_complex_dependency_graph():
 
 
 def benchmark_memory_usage():
-    """Benchmark memory usage of v0.7.0 components."""
+    """Benchmark memory usage of v0.7x components."""
     import sys
     
     # Measure registry memory
@@ -332,7 +332,7 @@ def main():
     """Run all benchmarks."""
     print("\n")
     print("=" * 70)
-    print("CULLINAN v0.7.0 PERFORMANCE BENCHMARKS")
+    print("CULLINAN v0.7x PERFORMANCE BENCHMARKS")
     print("=" * 70)
     print()
     
@@ -347,7 +347,7 @@ def main():
     print("=" * 70)
     print("SUMMARY")
     print("=" * 70)
-    print("v0.7.0 Performance Characteristics:")
+    print("v0.7x Performance Characteristics:")
     print()
     print("✓ Registry Lookups:       ~100,000+ ops/sec (very fast)")
     print("✓ DI Resolution:          ~100x faster with caching")

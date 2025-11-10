@@ -1,9 +1,9 @@
-# Cullinan v0.71a1 Architecture Analysis & Implementation - Master Document
+# Cullinan v0.7x Architecture Analysis & Implementation - Master Document
 
 **[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
 
 **Status**: ✅ IMPLEMENTED  
-**Version**: 0.71a1  
+**Version**: 0.7x  
 **Date**: November 10, 2025  
 **Document Purpose**: Consolidated analysis, design decisions, and implementation details
 
@@ -18,7 +18,6 @@
 5. [Implementation Details](#implementation-details)
 6. [Testing Strategy](#testing-strategy)
 7. [Migration Guide](#migration-guide)
-8. [Future Roadmap](#future-roadmap)
 
 ---
 
@@ -26,7 +25,7 @@
 
 ### What Was Built
 
-Cullinan v0.71a1 represents a complete architectural redesign of the framework with these key achievements:
+Cullinan v0.7x represents a complete architectural redesign of the framework with these key achievements:
 
 **Core Module** (`cullinan.core`):
 - ✅ Base `Registry[T]` pattern with type safety
@@ -47,7 +46,7 @@ Cullinan v0.71a1 represents a complete architectural redesign of the framework w
 - ✅ Backward compatible with old `@websocket`
 
 **Documentation & Examples**:
-- ✅ Updated README.md for v0.71a1
+- ✅ Updated README.md for v0.7x
 - ✅ Comprehensive CHANGELOG.md with migration guide
 - ✅ New example: `v070_demo.py` showcasing all features
 - ✅ Consolidated analysis documentation (this document)
@@ -458,16 +457,16 @@ def test_full_flow():
 
 ## Migration Guide
 
-### From v0.6.x to v0.71a1
+### From v0.6x to v0.7x
 
 #### 1. Update Service Imports
 
-**Before (v0.6.x)**:
+**Before (v0.6x)**:
 ```python
 from cullinan.service import service, Service
 ```
 
-**After (v0.71a1)**:
+**After (v0.7x)**:
 ```python
 from cullinan import service, Service
 ```
@@ -538,31 +537,6 @@ Both styles work, but new style provides lifecycle hooks.
 
 ---
 
-## Future Roadmap
-
-### v0.7.x (Short-term)
-
-- [ ] Additional lifecycle hooks (before/after request)
-- [ ] Enhanced monitoring integration
-- [ ] Performance optimizations
-- [ ] More built-in middleware
-
-### v0.8.0 (Medium-term)
-
-- [ ] Remove deprecated `cullinan.service` module
-- [ ] Advanced scoping (request, session, application)
-- [ ] Service mesh integration
-- [ ] GraphQL support
-
-### v1.0.0 (Long-term)
-
-- [ ] Stable API guarantee
-- [ ] Full async/await support
-- [ ] Cloud-native features
-- [ ] Comprehensive plugin system
-
----
-
 ## Conclusion
 
 ### What We Achieved
@@ -582,13 +556,6 @@ Both styles work, but new style provides lifecycle hooks.
 - ✅ Modular and testable
 - ✅ Production-ready patterns
 - ✅ Progressive enhancement
-
-### Next Steps
-
-1. Gather community feedback
-2. Iterate on API based on real usage
-3. Add more examples and use cases
-4. Prepare for future stable releases leading to v1.0.0
 
 ---
 
