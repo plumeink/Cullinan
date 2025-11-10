@@ -1,34 +1,32 @@
-# Cullinan v0.7x Architecture Documentation
+# Cullinan v0.7x Documentation
 
 **[English](README.md)** | [中文](zh/README.md)
 
-**Status**: ✅ IMPLEMENTED  
-**Version**: 0.7x  
-**Date**: November 10, 2025
+**Version**: 0.7x
 
 ---
 
-## 📌 Documentation Status
+## 📚 Complete Architecture Guide
 
-All planning and analysis documents have been **consolidated** into a single master document:
+For comprehensive architectural information, design decisions, and implementation details, see:
 
 ## **[ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)** 📖
 
-This comprehensive document contains:
+This guide covers:
 
-1. **Executive Summary** - What was built and key decisions
-2. **Service Layer Analysis** - Why we kept and enhanced the service layer
-3. **Registry Pattern Evaluation** - Unified registry design
-4. **Core Module Design** - Architecture overview and components
-5. **Implementation Details** - How everything works
-6. **Testing Strategy** - Unit and integration testing
-7. **Migration Guide** - Upgrading from v0.6x to v0.7x
+1. **Executive Summary** - Overview and key design decisions
+2. **Service Layer** - Enhanced service layer with dependency injection
+3. **Registry Pattern** - Unified component registration
+4. **Core Module** - Architecture and components
+5. **Implementation Details** - How everything works together
+6. **Testing Strategy** - Testing approach and utilities
+7. **Migration Guide** - Upgrading from v0.6x
 
 ---
 
-## Implementation Complete ✅
+## 🚀 Features Overview
 
-The v0.7x architecture has been **fully implemented**:
+The v0.7x architecture includes:
 
 | Component | Status | Location |
 |-----------|--------|----------|
@@ -127,41 +125,6 @@ with create_context():
     ctx.set('request_id', 'abc-123')
     # Context automatically cleaned up
 ```
-
----
-
-## Historical Documents (Archived)
-
-The following planning documents were consolidated into ARCHITECTURE_MASTER.md:
-
-- `01-service-layer-analysis.md` - Service layer value analysis
-- `02-registry-pattern-evaluation.md` - Registry pattern evaluation
-- `03-architecture-comparison.md` - Framework comparisons
-- `04-core-module-design.md` - Core module specifications
-- `05-implementation-plan.md` - Implementation roadmap
-- `06-migration-guide.md` - Migration instructions
-- `07-api-specifications.md` - API reference
-- `08-testing-strategy.md` - Testing approach
-- `09-code-examples.md` - Code examples
-- `10-backward-compatibility.md` - Compatibility analysis
-
-These files remain for historical reference but are no longer actively maintained.
-
----
-
-## What Changed from Planning?
-
-The implementation closely follows the original plan with these refinements:
-
-| Aspect | Planned | Implemented | Notes |
-|--------|---------|-------------|-------|
-| Core Module | ✅ | ✅ | As designed |
-| Service DI | ✅ | ✅ | As designed |
-| Lifecycle Hooks | ✅ | ✅ | As designed |
-| Request Context | ✅ | ✅ | Implemented as designed |
-| WebSocket | ✅ | ✅ | Enhanced with lifecycle |
-| Testing | ✅ | ✅ | Implemented as designed |
-| Version | 0.8.0 | 0.7x | Changed for clarity |
 
 ---
 

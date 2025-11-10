@@ -1,19 +1,17 @@
-# Cullinan v0.7x Architecture Analysis & Implementation - Master Document
+# Cullinan v0.7x Architecture Guide
 
 **[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
 
-**Status**: ✅ IMPLEMENTED  
 **Version**: 0.7x  
-**Date**: November 10, 2025  
-**Document Purpose**: Consolidated analysis, design decisions, and implementation details
+**Purpose**: Complete guide to Cullinan's architecture, features, and best practices
 
 ---
 
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [Service Layer Analysis](#service-layer-analysis)
-3. [Registry Pattern Evaluation](#registry-pattern-evaluation)
+2. [Service Layer](#service-layer)
+3. [Registry Pattern](#registry-pattern)
 4. [Core Module Design](#core-module-design)
 5. [Implementation Details](#implementation-details)
 6. [Testing Strategy](#testing-strategy)
@@ -23,9 +21,9 @@
 
 ## Executive Summary
 
-### What Was Built
+### Framework Overview
 
-Cullinan v0.7x represents a complete architectural redesign of the framework with these key achievements:
+Cullinan v0.7x is a complete architectural redesign featuring:
 
 **Core Module** (`cullinan.core`):
 - ✅ Base `Registry[T]` pattern with type safety
@@ -46,10 +44,9 @@ Cullinan v0.7x represents a complete architectural redesign of the framework wit
 - ✅ Backward compatible with old `@websocket`
 
 **Documentation & Examples**:
-- ✅ Updated README.md for v0.7x
-- ✅ Comprehensive CHANGELOG.md with migration guide
-- ✅ New example: `v070_demo.py` showcasing all features
-- ✅ Consolidated analysis documentation (this document)
+- ✅ Comprehensive README and documentation
+- ✅ Migration guide in CHANGELOG.md
+- ✅ Complete example: `v070_demo.py` showcasing all features
 
 ### Design Philosophy
 
@@ -71,11 +68,11 @@ Cullinan v0.7x represents a complete architectural redesign of the framework wit
 
 ---
 
-## Service Layer Analysis
+## Service Layer
 
-### Why Keep the Service Layer?
+### Why Use the Service Layer?
 
-After thorough analysis, we decided to **keep and enhance** the service layer for these reasons:
+The service layer provides clear separation of concerns:
 
 #### 1. Clear Separation of Concerns
 
@@ -181,9 +178,9 @@ class AdminController:
 
 ---
 
-## Registry Pattern Evaluation
+## Registry Pattern
 
-### Why Unified Registry?
+### Unified Registry Design
 
 The registry pattern provides consistent component management across the framework:
 
