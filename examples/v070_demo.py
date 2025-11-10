@@ -245,7 +245,7 @@ class NotificationHandler:
         # Subscribe to notification service
         from cullinan import get_service_registry
         registry = get_service_registry()
-        notification_service = registry.get('NotificationService')
+        notification_service = registry.get_instance('NotificationService')
         if notification_service:
             notification_service.subscribe(client_id)
         
@@ -284,7 +284,7 @@ class NotificationHandler:
         # Unsubscribe from notification service
         from cullinan import get_service_registry
         registry = get_service_registry()
-        notification_service = registry.get('NotificationService')
+        notification_service = registry.get_instance('NotificationService')
         if notification_service:
             notification_service.unsubscribe(client_id)
         
