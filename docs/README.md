@@ -1,5 +1,7 @@
 # Cullinan v0.7.0 Architecture Documentation
 
+**[English](README.md)** | [中文](zh/README.md)
+
 **Status**: ✅ IMPLEMENTED  
 **Version**: 0.7.0-alpha1  
 **Date**: November 10, 2025

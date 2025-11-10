@@ -1,5 +1,7 @@
 # Cullinan v0.7.0 Architecture Analysis & Implementation - Master Document
 
+**[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
+
 **Status**: ✅ IMPLEMENTED  
 **Version**: 0.7.0-alpha1  
 **Date**: November 10, 2025  

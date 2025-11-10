@@ -1,5 +1,7 @@
 # Cullinan v0.7.0 Architecture Planning Documents
 
+**[English](SUMMARY.md)** | [中文](zh/SUMMARY.md)
+
 **Status**: ✅ COMPLETED & CONSOLIDATED  
 **Version**: 0.7.0-alpha1  
 **Date**: November 10, 2025
