@@ -1,107 +1,35 @@
 # -*- coding: utf-8 -*-
 """Handler and header registry for the Cullinan framework.
 
-This module provides a centralized registry for managing HTTP handlers and headers,
-replacing the previous global list-based approach with a more testable and maintainable
-dependency injection pattern.
+This module provides backward compatibility by re-exporting the new handler
+registry implementation from cullinan.handler module.
 
-Extracted from controller.py for better separation of concerns and testability.
+DEPRECATED: This module is maintained for backward compatibility.
+New code should import directly from cullinan.handler.
+
+For new code:
+    from cullinan.handler import HandlerRegistry, get_handler_registry
+
+For backward compatibility (still works):
+    from cullinan.registry import HandlerRegistry, get_handler_registry
 """
 
-from typing import List, Tuple, Any, Optional
+from typing import List, Any
 import logging
+import warnings
+
+# Import the new implementation from handler module
+from cullinan.handler import (
+    HandlerRegistry as _HandlerRegistry,
+    get_handler_registry as _get_handler_registry,
+    reset_handler_registry as _reset_handler_registry
+)
 
 logger = logging.getLogger(__name__)
 
+# Re-export for backward compatibility
+HandlerRegistry = _HandlerRegistry
 
-class HandlerRegistry:
-    """Registry for HTTP request handlers.
-    
-    Manages URL patterns and their associated handler (servlet) classes.
-    Provides methods for registration, retrieval, and sorting of handlers.
-    """
-    
-    def __init__(self):
-        """Initialize an empty handler registry."""
-        self._handlers: List[Tuple[str, Any]] = []
-    
-    def register(self, url: str, servlet: Any) -> None:
-        """Register a URL pattern with its handler servlet.
-        
-        Args:
-            url: URL pattern (may contain regex patterns like ([a-zA-Z0-9-]+))
-            servlet: Handler class for this URL pattern
-        """
-        # Check if URL already registered
-        for item in self._handlers:
-            if item[0] == url:
-                logger.debug(f"URL pattern already registered: {url}")
-                return
-        
-        self._handlers.append((url, servlet))
-        logger.debug(f"Registered handler for URL: {url}")
-    
-    def get_handlers(self) -> List[Tuple[str, Any]]:
-        """Get all registered handlers.
-        
-        Returns:
-            List of (url_pattern, servlet) tuples
-        """
-        return self._handlers.copy()
-    
-    def clear(self) -> None:
-        """Clear all registered handlers.
-        
-        Useful for testing or application reinitialization.
-        """
-        self._handlers.clear()
-        logger.debug("Cleared all registered handlers")
-    
-    def count(self) -> int:
-        """Get the number of registered handlers.
-        
-        Returns:
-            Number of registered URL patterns
-        """
-        return len(self._handlers)
-    
-    def sort(self) -> None:
-        """Sort handlers with O(n log n) complexity.
-        
-        Handlers with dynamic segments (e.g., ([a-zA-Z0-9-]+)) are prioritized
-        lower than static segments to ensure more specific routes match first.
-        """
-        if len(self._handlers) == 0:
-            return
-        
-        def get_sort_key(handler: Tuple[str, Any]) -> Tuple[int, List[Tuple[int, str]]]:
-            """Generate a sort key for a handler based on its URL pattern.
-            
-            Returns a tuple that ensures:
-            - Static segments come before dynamic segments
-            - Longer paths come before shorter paths
-            - Lexicographic order within same priority level
-            """
-            url = handler[0]
-            parts = url.split('/')
-            
-            # Build priority tuple: (priority_value, part_content)
-            # priority_value: 0 for static, 1 for dynamic
-            priority = []
-            for part in parts:
-                if part == '([a-zA-Z0-9-]+)':
-                    # Dynamic segment - lower priority (sorts later)
-                    priority.append((1, part))
-                else:
-                    # Static segment - higher priority (sorts earlier)
-                    priority.append((0, part))
-            
-            # Return tuple for sorting: negative length ensures longer paths first,
-            # then priority tuple for segment-by-segment comparison
-            return (-len(parts), priority)
-        
-        self._handlers.sort(key=get_sort_key)
-        logger.debug(f"Sorted {len(self._handlers)} handlers")
 
 
 class HeaderRegistry:
@@ -157,9 +85,7 @@ class HeaderRegistry:
         return len(self._headers) > 0
 
 
-# Global registry instances (for backward compatibility)
-# These can be replaced with dependency injection in new code
-_default_handler_registry = HandlerRegistry()
+# Global header registry instance
 _default_header_registry = HeaderRegistry()
 
 
@@ -169,7 +95,7 @@ def get_handler_registry() -> HandlerRegistry:
     Returns:
         The default HandlerRegistry instance
     """
-    return _default_handler_registry
+    return _get_handler_registry()
 
 
 def get_header_registry() -> HeaderRegistry:
@@ -186,6 +112,6 @@ def reset_registries() -> None:
     
     Useful for testing to ensure clean state between tests.
     """
-    _default_handler_registry.clear()
+    _reset_handler_registry()
     _default_header_registry.clear()
     logger.debug("Reset all registries")
