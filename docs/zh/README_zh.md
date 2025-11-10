@@ -71,6 +71,14 @@
    - 测试最佳实践
    - 性能改进
 
+8. [**Service 层架构分析**](08-service-layer-analysis.md) 📊  
+   Service 层模式与依赖注入的专业分析
+   - Service 层价值主张与职责
+   - Spring IoC 与轻量级方案对比
+   - Service 注册中心必要性分析与决策矩阵
+   - 监控与追踪策略
+   - 架构建议与最佳实践
+
 ---
 
 ## 🚀 快速开始

@@ -71,6 +71,14 @@ Welcome to Cullinan! The complete documentation for building production-ready we
    - Testing best practices
    - Performance improvements
 
+8. [**Service Layer Architecture Analysis**](08-service-layer-analysis.md) 📊
+   Professional analysis of service layer patterns and dependency injection.
+   - Service layer value proposition and responsibilities
+   - Spring IoC vs lightweight approaches comparison
+   - Service registry necessity analysis with decision matrices
+   - Monitoring and tracking strategies
+   - Architectural recommendations and best practices
+
 ---
 
 ## 🚀 Quick Start
