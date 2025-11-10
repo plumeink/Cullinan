@@ -1,9 +1,9 @@
-# Cullinan v0.7.0 架构规划文档
+# Cullinan v0.71a1 架构规划文档
 
 **[English](../SUMMARY.md)** | [中文](SUMMARY.md)
 
 **状态**: ✅ 已完成并整合  
-**版本**: 0.7.0-alpha1  
+**版本**: 0.71a1  
 **日期**: 2025年11月10日
 
 ---
@@ -66,13 +66,13 @@
 - **主 README**: [../../README.MD](../../README.MD)
 - **CHANGELOG**: [../../CHANGELOG.md](../../CHANGELOG.md)
 - **文档**: [README.md](README.md)
-- **v0.7.0 演示**: [../../examples/v070_demo.py](../../examples/v070_demo.py)
+- **v0.71a1 演示**: [../../examples/v070_demo.py](../../examples/v070_demo.py)
 
 ---
 
 ## 对于开发者
 
-如果您想了解 v0.7.0 架构：
+如果您想了解 v0.71a1 架构：
 
 1. ✅ 从 [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md) 开始
 2. ✅ 查看 [../../CHANGELOG.md](../../CHANGELOG.md) 获取迁移指南

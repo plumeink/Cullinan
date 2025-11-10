@@ -47,7 +47,7 @@ Cullinan v0.7.0 代表了框架的完整架构重新设计，取得了以下关�
 - ✅ 与旧 `@websocket` 向后兼容
 
 **文档和示例**:
-- ✅ 更新了 v0.7.0 的 README.md
+- ✅ 更新了 v0.71a1 的 README.md
 - ✅ 具有迁移指南的综合 CHANGELOG.md
 - ✅ 新示例：展示所有功能的 `v070_demo.py`
 - ✅ 整合分析文档（本文档）
@@ -361,7 +361,7 @@ def test_full_stack():
 
 ## 迁移指南
 
-### 从 v0.6.x 升级到 v0.7.0
+### 从 v0.6.x 升级到 v0.71a1
 
 #### 1. 导入更改
 
@@ -369,7 +369,7 @@ def test_full_stack():
 # v0.6.x
 from cullinan.service import service, Service
 
-# v0.7.0
+# v0.71a1
 from cullinan import service, Service
 ```
 
@@ -381,7 +381,7 @@ from cullinan import service, Service
 class UserService(Service):
     pass
 
-# v0.7.0（可选增强）
+# v0.71a1（可选增强）
 @service(dependencies=['EmailService'])
 class UserService(Service):
     def on_init(self):
@@ -396,7 +396,7 @@ class UserService(Service):
 class ChatHandler:
     pass
 
-# v0.7.0（推荐）
+# v0.71a1（推荐）
 @websocket_handler(url='/ws/chat')
 class ChatHandler:
     def on_init(self):
@@ -408,7 +408,7 @@ class ChatHandler:
 
 ## 未来路线图
 
-### v0.7.x（短期）
+### 短期计划
 
 - [ ] 更多生命周期钩子 (`on_request`, `on_response`)
 - [ ] 性能优化

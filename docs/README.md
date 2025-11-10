@@ -1,9 +1,9 @@
-# Cullinan v0.7.0 Architecture Documentation
+# Cullinan v0.71a1 Architecture Documentation
 
 **[English](README.md)** | [中文](zh/README.md)
 
 **Status**: ✅ IMPLEMENTED  
-**Version**: 0.7.0-alpha1  
+**Version**: 0.71a1  
 **Date**: November 10, 2025
 
 ---
@@ -22,14 +22,14 @@ This comprehensive document contains:
 4. **Core Module Design** - Architecture overview and components
 5. **Implementation Details** - How everything works
 6. **Testing Strategy** - Unit and integration testing
-7. **Migration Guide** - Upgrading from v0.6.x to v0.7.0
-8. **Future Roadmap** - Plans for v0.7.x, v0.8.0, and v1.0.0
+7. **Migration Guide** - Upgrading from v0.6.x to v0.71a1
+8. **Future Roadmap** - Plans for future releases and v1.0.0
 
 ---
 
 ## Implementation Complete ✅
 
-The v0.7.0 architecture has been **fully implemented**:
+The v0.71a1 architecture has been **fully implemented**:
 
 | Component | Status | Location |
 |-----------|--------|----------|
@@ -53,7 +53,7 @@ The v0.7.0 architecture has been **fully implemented**:
 | - CHANGELOG | ✅ | `CHANGELOG.md` |
 | - Docs Index | ✅ | `docs/README.md` |
 | **Examples** | ✅ Complete | `examples/` |
-| - v0.7.0 Demo | ✅ | `examples/v070_demo.py` |
+| - v0.71a1 Demo | ✅ | `examples/v070_demo.py` |
 
 ---
 
@@ -61,10 +61,10 @@ The v0.7.0 architecture has been **fully implemented**:
 
 ### For Users
 
-Want to use v0.7.0? Check these resources:
+Want to use v0.71a1? Check these resources:
 
 1. **[Main README](../README.MD)** - Overview and quick start
-2. **[v0.7.0 Demo](../examples/v070_demo.py)** - Comprehensive example
+2. **[v0.71a1 Demo](../examples/v070_demo.py)** - Comprehensive example
 3. **[CHANGELOG](../CHANGELOG.md)** - Migration guide from v0.6.x
 4. **[Docs Index](README.md)** - Complete documentation
 
@@ -159,10 +159,10 @@ The implementation closely follows the original plan with these refinements:
 | Core Module | ✅ | ✅ | As designed |
 | Service DI | ✅ | ✅ | As designed |
 | Lifecycle Hooks | ✅ | ✅ | As designed |
-| Request Context | ✅ | ✅ | As designed |
+| Request Context | ✅ | ✅ | Implemented as designed |
 | WebSocket | ✅ | ✅ | Enhanced with lifecycle |
-| Testing | ✅ | ✅ | As designed |
-| Version | 0.8.0 | 0.7.0-alpha1 | Changed for clarity |
+| Testing | ✅ | ✅ | Implemented as designed |
+| Version | 0.8.0 | 0.71a1 | Changed for clarity |
 
 ---
 

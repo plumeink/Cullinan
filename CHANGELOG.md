@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.7.0-alpha1] - 2025-11-10
+## [0.71a1] - 2025-11-10
 
 ### 🚀 Major Architectural Refactoring
 
-This is a major release with breaking changes and a completely redesigned architecture. Version 0.7.0 is not backward compatible with 0.6.x.
+This is a major release with breaking changes and a completely redesigned architecture. Version 0.71a1 is not backward compatible with 0.6.x.
 
 ### Added
 

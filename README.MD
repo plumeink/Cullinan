@@ -15,7 +15,7 @@
 
 # Cullinan
 
-**A lightweight, modular Python web framework with enhanced architecture for v0.7.0+**
+**A lightweight, modular Python web framework with enhanced architecture**
 
 Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build production-ready web applications with modern patterns like dependency injection, lifecycle management, and unified registry.
 
@@ -51,11 +51,11 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 ### Language / 语言
 
 - **[English Documentation](docs/README.md)** - Complete English documentation
-- **[中文文档](docs/zh/README_zh.md)** - 完整中文文档
+- **[中文文档](docs/zh/README.md)** - 完整中文文档
 
-### Version-Specific Documentation
+### Current Version
 
-- **v0.7.0-alpha1 (Current)** - New architecture with enhanced features
+- **v0.71a1** - Enhanced architecture with modern features
   - Core module with registry, DI, and lifecycle management
   - Enhanced service layer with dependency injection
   - WebSocket support with unified registry
@@ -117,7 +117,7 @@ my_app/
 ├── controllers/         # Controllers
 │   ├── __init__.py
 │   └── api.py
-├── services/            # Services (NEW in v0.7.0)
+├── services/            # Services
 │   ├── __init__.py
 │   ├── user.py
 │   └── email.py
@@ -250,65 +250,17 @@ if __name__ == '__main__':
 
 ---
 
-## 🆕 What's New in v0.7.0
+## 📖 Additional Documentation
 
-### Core Module
-- **Registry Pattern**: Unified registration for services, handlers, WebSockets
-- **Dependency Injection**: Optional DI for managing complex dependencies
-- **Lifecycle Management**: Hooks for initialization and cleanup
-- **Request Context**: Thread-safe context for request-scoped data
+For detailed guides on advanced features, configuration, and deployment, please refer to the [complete documentation](docs/README.md).
 
-### Enhanced Service Layer
-```python
-# Simple service (backward compatible)
-@service
-class SimpleService(Service):
-    pass
-
-# Service with dependencies
-@service(dependencies=['DatabaseService'])
-class AdvancedService(Service):
-    def on_init(self):
-        self.db = self.dependencies['DatabaseService']
-```
-
-### WebSocket Integration
-```python
-# WebSocket with lifecycle support
-@websocket_handler(url='/ws/updates')
-class UpdatesHandler:
-    def on_init(self):
-        # Initialize resources
-        pass
-```
-
-### Testing Utilities
-```python
-from cullinan.testing import TestRegistry, MockService
-
-def test_user_service():
-    registry = TestRegistry()
-    registry.register_mock('EmailService', MockEmailService())
-    # Test with mocked dependencies
-```
-
----
-
-## 📖 Documentation Structure
-
-```
-docs/
-├── README.md                    # Documentation index
-├── index.md                     # Framework overview
-├── 01-configuration.md          # Configuration guide
-├── 02-packaging.md              # Packaging guide
-├── 03-troubleshooting.md        # Troubleshooting
-├── 04-quick-reference.md        # Quick reference
-├── 05-build-scripts.md          # Build scripts guide
-├── 07-registry-center.md        # Registry pattern guide (NEW)
-├── 08-service-layer.md          # Service layer guide (NEW)
-└── v0.6x/                       # v0.6.x documentation (legacy)
-```
+Key topics include:
+- **Configuration** - Environment setup and configuration options
+- **Packaging** - Building standalone executables with Nuitka/PyInstaller
+- **Service Layer** - Advanced service patterns and dependency injection
+- **Registry Pattern** - Understanding the unified registry system
+- **Testing** - Writing tests with mock services and test registries
+- **Troubleshooting** - Common issues and solutions
 
 ---
 

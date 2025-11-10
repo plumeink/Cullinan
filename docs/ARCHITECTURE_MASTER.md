@@ -1,9 +1,9 @@
-# Cullinan v0.7.0 Architecture Analysis & Implementation - Master Document
+# Cullinan v0.71a1 Architecture Analysis & Implementation - Master Document
 
 **[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
 
 **Status**: ✅ IMPLEMENTED  
-**Version**: 0.7.0-alpha1  
+**Version**: 0.71a1  
 **Date**: November 10, 2025  
 **Document Purpose**: Consolidated analysis, design decisions, and implementation details
 
@@ -26,7 +26,7 @@
 
 ### What Was Built
 
-Cullinan v0.7.0 represents a complete architectural redesign of the framework with these key achievements:
+Cullinan v0.71a1 represents a complete architectural redesign of the framework with these key achievements:
 
 **Core Module** (`cullinan.core`):
 - ✅ Base `Registry[T]` pattern with type safety
@@ -47,7 +47,7 @@ Cullinan v0.7.0 represents a complete architectural redesign of the framework wi
 - ✅ Backward compatible with old `@websocket`
 
 **Documentation & Examples**:
-- ✅ Updated README.md for v0.7.0
+- ✅ Updated README.md for v0.71a1
 - ✅ Comprehensive CHANGELOG.md with migration guide
 - ✅ New example: `v070_demo.py` showcasing all features
 - ✅ Consolidated analysis documentation (this document)
@@ -458,7 +458,7 @@ def test_full_flow():
 
 ## Migration Guide
 
-### From v0.6.x to v0.7.0
+### From v0.6.x to v0.71a1
 
 #### 1. Update Service Imports
 
@@ -467,7 +467,7 @@ def test_full_flow():
 from cullinan.service import service, Service
 ```
 
-**After (v0.7.0)**:
+**After (v0.71a1)**:
 ```python
 from cullinan import service, Service
 ```
@@ -588,7 +588,7 @@ Both styles work, but new style provides lifecycle hooks.
 1. Gather community feedback
 2. Iterate on API based on real usage
 3. Add more examples and use cases
-4. Prepare for v0.7.0 stable release
+4. Prepare for future stable releases leading to v1.0.0
 
 ---
 

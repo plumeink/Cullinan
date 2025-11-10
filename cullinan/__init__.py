@@ -71,7 +71,7 @@ from cullinan.websocket_registry import (
     reset_websocket_registry,
 )
 
-__version__ = '0.7.0-alpha1'
+__version__ = '0.71a1'
 
 __all__ = [
     # Configuration
