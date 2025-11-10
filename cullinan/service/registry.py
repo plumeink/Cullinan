@@ -122,6 +122,13 @@ class ServiceRegistry(Registry[Type[Service]]):
             return None
         
         try:
+            # First ensure all dependencies are initialized
+            deps = self._metadata.get(name, {}).get('dependencies', [])
+            for dep_name in deps:
+                if dep_name not in self._instances:
+                    # Recursively get dependencies first
+                    self.get_instance(dep_name)
+            
             # Resolve dependencies and create instance
             instance = self._injector.resolve(name)
             
