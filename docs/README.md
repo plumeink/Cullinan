@@ -151,27 +151,6 @@ class UserService(Service):
 
 ---
 
-## Future Roadmap
-
-See [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md#future-roadmap) for details.
-
-**Short term (v0.7.x)**:
-- Additional lifecycle hooks
-- Performance optimizations
-- More middleware
-
-**Medium term (v0.8.0)**:
-- Remove deprecated modules
-- Advanced scoping
-- Service mesh integration
-
-**Long term (v1.0.0)**:
-- Stable API guarantee
-- Full async/await
-- Cloud-native features
-
----
-
 ## Resources
 
 - **Architecture**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)

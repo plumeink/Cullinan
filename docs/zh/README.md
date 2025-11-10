@@ -151,27 +151,6 @@ class UserService(Service):
 
 ---
 
-## 未来路线图
-
-详情请参见 [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md#未来路线图)。
-
-**短期 (v0.7.x)**：
-- 额外的生命周期钩子
-- 性能优化
-- 更多中间件
-
-**中期 (v0.8.0)**：
-- 移除已弃用的模块
-- 高级作用域
-- 服务网格集成
-
-**长期 (v1.0.0)**：
-- 稳定的 API 保证
-- 完全 async/await
-- 云原生功能
-
----
-
 ## 资源
 
 - **架构**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
