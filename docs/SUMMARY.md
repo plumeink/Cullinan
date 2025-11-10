@@ -1,5 +1,7 @@
 # Cullinan v0.7.0 Architecture Planning Documents
 
+**[English](SUMMARY.md)** | [中文](zh/SUMMARY.md)
+
 **Status**: ✅ COMPLETED & CONSOLIDATED  
 **Version**: 0.7.0-alpha1  
 **Date**: November 10, 2025
@@ -63,7 +65,7 @@ These files remain in this directory for historical reference but are no longer 
 - **Master Document**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
 - **Main README**: [../README.MD](../README.MD)
 - **CHANGELOG**: [../CHANGELOG.md](../CHANGELOG.md)
-- **Documentation**: [../docs/README.md](../docs/README.md)
+- **Documentation**: [README.md](README.md)
 - **v0.7.0 Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
 
 ---
