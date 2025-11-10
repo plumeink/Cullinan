@@ -1,32 +1,29 @@
-# Cullinan v0.71a1 Architecture Analysis & Implementation - Master Document
+# Cullinan v0.7x Architecture Guide
 
 **[English](ARCHITECTURE_MASTER.md)** | [中文](zh/ARCHITECTURE_MASTER.md)
 
-**Status**: ✅ IMPLEMENTED  
-**Version**: 0.71a1  
-**Date**: November 10, 2025  
-**Document Purpose**: Consolidated analysis, design decisions, and implementation details
+**Version**: 0.7x  
+**Purpose**: Complete guide to Cullinan's architecture, features, and best practices
 
 ---
 
 ## Table of Contents
 
 1. [Executive Summary](#executive-summary)
-2. [Service Layer Analysis](#service-layer-analysis)
-3. [Registry Pattern Evaluation](#registry-pattern-evaluation)
+2. [Service Layer](#service-layer)
+3. [Registry Pattern](#registry-pattern)
 4. [Core Module Design](#core-module-design)
 5. [Implementation Details](#implementation-details)
 6. [Testing Strategy](#testing-strategy)
 7. [Migration Guide](#migration-guide)
-8. [Future Roadmap](#future-roadmap)
 
 ---
 
 ## Executive Summary
 
-### What Was Built
+### Framework Overview
 
-Cullinan v0.71a1 represents a complete architectural redesign of the framework with these key achievements:
+Cullinan v0.7x is a complete architectural redesign featuring:
 
 **Core Module** (`cullinan.core`):
 - ✅ Base `Registry[T]` pattern with type safety
@@ -47,10 +44,9 @@ Cullinan v0.71a1 represents a complete architectural redesign of the framework w
 - ✅ Backward compatible with old `@websocket`
 
 **Documentation & Examples**:
-- ✅ Updated README.md for v0.71a1
-- ✅ Comprehensive CHANGELOG.md with migration guide
-- ✅ New example: `v070_demo.py` showcasing all features
-- ✅ Consolidated analysis documentation (this document)
+- ✅ Comprehensive README and documentation
+- ✅ Migration guide in CHANGELOG.md
+- ✅ Complete example: `v070_demo.py` showcasing all features
 
 ### Design Philosophy
 
@@ -72,11 +68,11 @@ Cullinan v0.71a1 represents a complete architectural redesign of the framework w
 
 ---
 
-## Service Layer Analysis
+## Service Layer
 
-### Why Keep the Service Layer?
+### Why Use the Service Layer?
 
-After thorough analysis, we decided to **keep and enhance** the service layer for these reasons:
+The service layer provides clear separation of concerns:
 
 #### 1. Clear Separation of Concerns
 
@@ -182,9 +178,9 @@ class AdminController:
 
 ---
 
-## Registry Pattern Evaluation
+## Registry Pattern
 
-### Why Unified Registry?
+### Unified Registry Design
 
 The registry pattern provides consistent component management across the framework:
 
@@ -458,16 +454,16 @@ def test_full_flow():
 
 ## Migration Guide
 
-### From v0.6.x to v0.71a1
+### From v0.6x to v0.7x
 
 #### 1. Update Service Imports
 
-**Before (v0.6.x)**:
+**Before (v0.6x)**:
 ```python
 from cullinan.service import service, Service
 ```
 
-**After (v0.71a1)**:
+**After (v0.7x)**:
 ```python
 from cullinan import service, Service
 ```
@@ -538,31 +534,6 @@ Both styles work, but new style provides lifecycle hooks.
 
 ---
 
-## Future Roadmap
-
-### v0.7.x (Short-term)
-
-- [ ] Additional lifecycle hooks (before/after request)
-- [ ] Enhanced monitoring integration
-- [ ] Performance optimizations
-- [ ] More built-in middleware
-
-### v0.8.0 (Medium-term)
-
-- [ ] Remove deprecated `cullinan.service` module
-- [ ] Advanced scoping (request, session, application)
-- [ ] Service mesh integration
-- [ ] GraphQL support
-
-### v1.0.0 (Long-term)
-
-- [ ] Stable API guarantee
-- [ ] Full async/await support
-- [ ] Cloud-native features
-- [ ] Comprehensive plugin system
-
----
-
 ## Conclusion
 
 ### What We Achieved
@@ -582,13 +553,6 @@ Both styles work, but new style provides lifecycle hooks.
 - ✅ Modular and testable
 - ✅ Production-ready patterns
 - ✅ Progressive enhancement
-
-### Next Steps
-
-1. Gather community feedback
-2. Iterate on API based on real usage
-3. Add more examples and use cases
-4. Prepare for future stable releases leading to v1.0.0
 
 ---
 

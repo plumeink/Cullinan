@@ -1,9 +1,9 @@
-# Cullinan v0.71a1 Architecture Planning Documents
+# Cullinan v0.7x Architecture Planning Documents
 
 **[English](SUMMARY.md)** | [中文](zh/SUMMARY.md)
 
 **Status**: ✅ COMPLETED & CONSOLIDATED  
-**Version**: 0.71a1  
+**Version**: 0.7x  
 **Date**: November 10, 2025
 
 ---
@@ -21,7 +21,6 @@ This master document contains:
 - Implementation details
 - Testing strategy
 - Migration guide
-- Future roadmap
 
 **Please refer to ARCHITECTURE_MASTER.md for all architectural information.**
 
@@ -66,13 +65,13 @@ These files remain in this directory for historical reference but are no longer 
 - **Main README**: [../README.MD](../README.MD)
 - **CHANGELOG**: [../CHANGELOG.md](../CHANGELOG.md)
 - **Documentation**: [README.md](README.md)
-- **v0.71a1 Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
+- **v0.7x Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
 
 ---
 
 ## For Developers
 
-If you're looking to understand the v0.71a1 architecture:
+If you're looking to understand the v0.7x architecture:
 
 1. ✅ Start with [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
 2. ✅ Review [../CHANGELOG.md](../CHANGELOG.md) for migration guide

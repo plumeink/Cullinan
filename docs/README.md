@@ -1,35 +1,32 @@
-# Cullinan v0.71a1 Architecture Documentation
+# Cullinan v0.7x Documentation
 
 **[English](README.md)** | [中文](zh/README.md)
 
-**Status**: ✅ IMPLEMENTED  
-**Version**: 0.71a1  
-**Date**: November 10, 2025
+**Version**: 0.7x
 
 ---
 
-## 📌 Documentation Status
+## 📚 Complete Architecture Guide
 
-All planning and analysis documents have been **consolidated** into a single master document:
+For comprehensive architectural information, design decisions, and implementation details, see:
 
 ## **[ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)** 📖
 
-This comprehensive document contains:
+This guide covers:
 
-1. **Executive Summary** - What was built and key decisions
-2. **Service Layer Analysis** - Why we kept and enhanced the service layer
-3. **Registry Pattern Evaluation** - Unified registry design
-4. **Core Module Design** - Architecture overview and components
-5. **Implementation Details** - How everything works
-6. **Testing Strategy** - Unit and integration testing
-7. **Migration Guide** - Upgrading from v0.6.x to v0.71a1
-8. **Future Roadmap** - Plans for future releases and v1.0.0
+1. **Executive Summary** - Overview and key design decisions
+2. **Service Layer** - Enhanced service layer with dependency injection
+3. **Registry Pattern** - Unified component registration
+4. **Core Module** - Architecture and components
+5. **Implementation Details** - How everything works together
+6. **Testing Strategy** - Testing approach and utilities
+7. **Migration Guide** - Upgrading from v0.6x
 
 ---
 
-## Implementation Complete ✅
+## 🚀 Features Overview
 
-The v0.71a1 architecture has been **fully implemented**:
+The v0.7x architecture includes:
 
 | Component | Status | Location |
 |-----------|--------|----------|
@@ -53,7 +50,7 @@ The v0.71a1 architecture has been **fully implemented**:
 | - CHANGELOG | ✅ | `CHANGELOG.md` |
 | - Docs Index | ✅ | `docs/README.md` |
 | **Examples** | ✅ Complete | `examples/` |
-| - v0.71a1 Demo | ✅ | `examples/v070_demo.py` |
+| - v0.7x Demo | ✅ | `examples/v070_demo.py` |
 
 ---
 
@@ -61,11 +58,11 @@ The v0.71a1 architecture has been **fully implemented**:
 
 ### For Users
 
-Want to use v0.71a1? Check these resources:
+Want to use v0.7x? Check these resources:
 
 1. **[Main README](../README.MD)** - Overview and quick start
-2. **[v0.71a1 Demo](../examples/v070_demo.py)** - Comprehensive example
-3. **[CHANGELOG](../CHANGELOG.md)** - Migration guide from v0.6.x
+2. **[v0.7x Demo](../examples/v070_demo.py)** - Comprehensive example
+3. **[CHANGELOG](../CHANGELOG.md)** - Migration guide from v0.6x
 4. **[Docs Index](README.md)** - Complete documentation
 
 ### For Developers
@@ -131,52 +128,17 @@ with create_context():
 
 ---
 
-## Historical Documents (Archived)
-
-The following planning documents were consolidated into ARCHITECTURE_MASTER.md:
-
-- `01-service-layer-analysis.md` - Service layer value analysis
-- `02-registry-pattern-evaluation.md` - Registry pattern evaluation
-- `03-architecture-comparison.md` - Framework comparisons
-- `04-core-module-design.md` - Core module specifications
-- `05-implementation-plan.md` - Implementation roadmap
-- `06-migration-guide.md` - Migration instructions
-- `07-api-specifications.md` - API reference
-- `08-testing-strategy.md` - Testing approach
-- `09-code-examples.md` - Code examples
-- `10-backward-compatibility.md` - Compatibility analysis
-
-These files remain for historical reference but are no longer actively maintained.
-
----
-
-## What Changed from Planning?
-
-The implementation closely follows the original plan with these refinements:
-
-| Aspect | Planned | Implemented | Notes |
-|--------|---------|-------------|-------|
-| Core Module | ✅ | ✅ | As designed |
-| Service DI | ✅ | ✅ | As designed |
-| Lifecycle Hooks | ✅ | ✅ | As designed |
-| Request Context | ✅ | ✅ | Implemented as designed |
-| WebSocket | ✅ | ✅ | Enhanced with lifecycle |
-| Testing | ✅ | ✅ | Implemented as designed |
-| Version | 0.8.0 | 0.71a1 | Changed for clarity |
-
----
-
-## Migration from v0.6.x
+## Migration from v0.6x
 
 See [CHANGELOG Migration Guide](../CHANGELOG.md#migration-guide) for detailed instructions.
 
 **Quick summary**:
 
 ```python
-# Old (v0.6.x)
+# Old (v0.6x)
 from cullinan.service import service, Service
 
-# New (v0.7.0)
+# New (v0.7x)
 from cullinan import service, Service
 
 # New features available:
@@ -186,27 +148,6 @@ class UserService(Service):
         # Lifecycle hook
         pass
 ```
-
----
-
-## Future Roadmap
-
-See [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md#future-roadmap) for details.
-
-**Short term (v0.7.x)**:
-- Additional lifecycle hooks
-- Performance optimizations
-- More middleware
-
-**Medium term (v0.8.0)**:
-- Remove deprecated modules
-- Advanced scoping
-- Service mesh integration
-
-**Long term (v1.0.0)**:
-- Stable API guarantee
-- Full async/await
-- Cloud-native features
 
 ---
 

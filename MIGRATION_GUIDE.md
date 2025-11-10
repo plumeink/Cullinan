@@ -52,10 +52,10 @@ Migrate service-by-service, adding new features only where beneficial.
 #### Step 1: Import from new module
 
 ```python
-# Before (v0.6.x)
+# Before (v0.6x)
 from cullinan.service import service, Service
 
-# After (v0.71a1)
+# After (v0.7x)
 from cullinan import service, Service
 ```
 
@@ -240,11 +240,11 @@ class AsyncEmailService(Service):
 
 ### Q: Can I mix old and new styles?
 
-**A:** No. In v0.71a1, the old `cullinan.service` module has been removed. All services should use the new API imported from `cullinan` root package.
+**A:** No. In v0.7x, the old `cullinan.service` module has been removed. All services should use the new API imported from `cullinan` root package.
 
 ### Q: What happened to the old service.py?
 
-**A:** It has been removed in v0.71a1. The enhanced service layer is now in `cullinan/service/` and exported through the main `cullinan` package.
+**A:** It has been removed in v0.7x. The enhanced service layer is now in `cullinan/service/` and exported through the main `cullinan` package.
 
 ### Q: How do I initialize services?
 

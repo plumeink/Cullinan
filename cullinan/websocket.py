@@ -3,7 +3,7 @@
 WebSocket support for Cullinan framework.
 
 This module provides WebSocket decorator support with registry integration.
-For v0.7.0+, WebSocket handlers are managed through the unified registry pattern.
+For v0.7x+, WebSocket handlers are managed through the unified registry pattern.
 """
 
 from typing import Callable
@@ -13,7 +13,7 @@ import warnings
 
 
 def websocket(**kwargs) -> Callable:
-    """WebSocket decorator for v0.6.x compatibility.
+    """WebSocket decorator for v0.6x compatibility.
     
     Args:
         url: URL pattern for the WebSocket endpoint

@@ -1,32 +1,29 @@
-# Cullinan v0.7.0 架构分析与实现 - 主文档
+# Cullinan v0.7x 架构指南
 
 **[English](../ARCHITECTURE_MASTER.md)** | [中文](ARCHITECTURE_MASTER.md)
 
-**状态**: ✅ 已实现  
-**版本**: 0.7.0-alpha1  
-**日期**: 2025年11月10日  
-**文档目的**: 整合分析、设计决策和实现细节
+**版本**: 0.7x  
+**目的**: Cullinan 架构、功能和最佳实践的完整指南
 
 ---
 
 ## 目录
 
 1. [执行摘要](#执行摘要)
-2. [服务层分析](#服务层分析)
-3. [注册表模式评估](#注册表模式评估)
+2. [服务层](#服务层)
+3. [注册表模式](#注册表模式)
 4. [核心模块设计](#核心模块设计)
 5. [实现细节](#实现细节)
 6. [测试策略](#测试策略)
 7. [迁移指南](#迁移指南)
-8. [未来路线图](#未来路线图)
 
 ---
 
 ## 执行摘要
 
-### 构建内容
+### 框架概述
 
-Cullinan v0.7.0 代表了框架的完整架构重新设计，取得了以下关键成就：
+Cullinan v0.7x 是一个完整的架构重新设计，具有以下特性：
 
 **核心模块** (`cullinan.core`):
 - ✅ 具有类型安全的基础 `Registry[T]` 模式
@@ -47,10 +44,9 @@ Cullinan v0.7.0 代表了框架的完整架构重新设计，取得了以下关�
 - ✅ 与旧 `@websocket` 向后兼容
 
 **文档和示例**:
-- ✅ 更新了 v0.71a1 的 README.md
-- ✅ 具有迁移指南的综合 CHANGELOG.md
-- ✅ 新示例：展示所有功能的 `v070_demo.py`
-- ✅ 整合分析文档（本文档）
+- ✅ 完整的 README 和文档
+- ✅ CHANGELOG.md 中的迁移指南
+- ✅ 完整示例：展示所有功能的 `v070_demo.py`
 
 ### 设计理念
 
@@ -72,11 +68,11 @@ Cullinan v0.7.0 代表了框架的完整架构重新设计，取得了以下关�
 
 ---
 
-## 服务层分析
+## 服务层
 
-### 为什么保留服务层？
+### 为什么使用服务层？
 
-经过彻底分析，我们决定**保留和增强**服务层，原因如下：
+服务层提供了清晰的关注点分离：
 
 #### 1. 清晰的关注点分离
 
@@ -150,11 +146,11 @@ def cli_send_email():
 
 ---
 
-## 注册表模式评估
+## 注册表模式
 
 ### 统一注册表设计
 
-我们实现了一个**统一注册表模式**，适用于所有组件：
+统一注册表模式适用于所有组件：
 
 ```python
 # 基础注册表（通用）
@@ -361,27 +357,27 @@ def test_full_stack():
 
 ## 迁移指南
 
-### 从 v0.6.x 升级到 v0.71a1
+### 从 v0.6x 升级到 v0.7x
 
 #### 1. 导入更改
 
 ```python
-# v0.6.x
+# v0.6x
 from cullinan.service import service, Service
 
-# v0.71a1
+# v0.7x
 from cullinan import service, Service
 ```
 
 #### 2. 服务声明
 
 ```python
-# v0.6.x
+# v0.6x
 @service
 class UserService(Service):
     pass
 
-# v0.71a1（可选增强）
+# v0.7x（可选增强）
 @service(dependencies=['EmailService'])
 class UserService(Service):
     def on_init(self):
@@ -391,43 +387,18 @@ class UserService(Service):
 #### 3. WebSocket
 
 ```python
-# v0.6.x
+# v0.6x
 @websocket(url='/ws/chat')
 class ChatHandler:
     pass
 
-# v0.71a1（推荐）
+# v0.7x（推荐）
 @websocket_handler(url='/ws/chat')
 class ChatHandler:
     def on_init(self):
         # 初始化逻辑
         pass
 ```
-
----
-
-## 未来路线图
-
-### 短期计划
-
-- [ ] 更多生命周期钩子 (`on_request`, `on_response`)
-- [ ] 性能优化
-- [ ] 额外的中间件
-- [ ] 改进的文档
-
-### v0.8.0（中期）
-
-- [ ] 移除已弃用的 API
-- [ ] 高级作用域（singleton、request、transient）
-- [ ] 服务网格集成
-- [ ] GraphQL 支持
-
-### v1.0.0（长期）
-
-- [ ] 稳定的 API 保证
-- [ ] 完全 async/await 支持
-- [ ] 云原生功能
-- [ ] 微服务工具
 
 ---
 

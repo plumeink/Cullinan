@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.71a1] - 2025-11-10
+## [0.7x] - 2025-11-10
 
 ### 🚀 Major Architectural Refactoring
 
-This is a major release with breaking changes and a completely redesigned architecture. Version 0.71a1 is not backward compatible with 0.6.x.
+This is a major release with breaking changes and a completely redesigned architecture. Version 0.7x is not backward compatible with 0.6x.
 
 ### Added
 
@@ -102,7 +102,7 @@ This is a major release with breaking changes and a completely redesigned archit
 
 #### Documentation
 
-- **Updated README.md**: Reflects v0.7.0 architecture
+- **Updated README.md**: Reflects v0.7x architecture
   - New feature highlights
   - Service layer examples
   - WebSocket examples
@@ -133,7 +133,7 @@ This is a major release with breaking changes and a completely redesigned archit
   - `@service` decorator with dependency support
   - Controller.py updated to use new service registry
   
-- **Version**: Updated from v0.8.0-alpha to v0.7.0-alpha1
+- **Version**: Updated from v0.8.0-alpha to v0.7x
   - Following semantic versioning
   - Alpha release indicates API may still change
 
@@ -163,7 +163,7 @@ This is a major release with breaking changes and a completely redesigned archit
 
 - **cullinan.service**: Old service module completely removed
   - All deprecation warnings eliminated
-  - Clean break for v0.7.0 architecture
+  - Clean break for v0.7x architecture
   
 ### Fixed
 
@@ -181,20 +181,20 @@ This is a major release with breaking changes and a completely redesigned archit
 
 ### Migration Guide
 
-For users upgrading from v0.6.x to v0.7.0:
+For users upgrading from v0.6x to v0.7x:
 
 1. **Service Layer**:
    ```python
-   # Old (v0.6.x) - NO LONGER WORKS
+   # Old (v0.6x) - NO LONGER WORKS
    from cullinan.service import service, Service
    
-   # New (v0.7.0)
+   # New (v0.7x)
    from cullinan import service, Service
    ```
 
 2. **Service with Dependencies**:
    ```python
-   # New feature in v0.7.0
+   # New feature in v0.7x
    @service(dependencies=['EmailService'])
    class UserService(Service):
        def on_init(self):
@@ -203,7 +203,7 @@ For users upgrading from v0.6.x to v0.7.0:
 
 3. **Async Service Lifecycle**:
    ```python
-   # New in v0.7.0
+   # New in v0.7x
    @service(dependencies=['DatabaseService'])
    class UserService(Service):
        async def on_init(self):
@@ -222,10 +222,10 @@ For users upgrading from v0.6.x to v0.7.0:
 
 4. **WebSocket Handlers**:
    ```python
-   # Old (v0.6.x)
+   # Old (v0.6x)
    from cullinan.websocket import websocket
    
-   # New (v0.7.0) - both work, but new style preferred
+   # New (v0.7x) - both work, but new style preferred
    from cullinan import websocket_handler
    
    @websocket_handler(url='/ws/chat')
@@ -253,11 +253,11 @@ For users upgrading from v0.6.x to v0.7.0:
 
 ---
 
-## [0.6.x] - Legacy Features
+## [0.6x] - Legacy Features
 
-### Summary of v0.6.x Features
+### Summary of v0.6x Features
 
-All features from v0.6.x versions are consolidated here for reference:
+All features from v0.6x versions are consolidated here for reference:
 
 #### Configuration System (v0.6.3)
 
@@ -301,23 +301,23 @@ All features from v0.6.x versions are consolidated here for reference:
 - **SQLAlchemy Integration**: Built-in ORM support
 - **Cross-Platform**: Windows, Linux, and macOS support
 
-### Fixed (v0.6.x)
+### Fixed (v0.6x)
 
 - Controller and Service modules not being scanned after Nuitka compilation
 - Controller and Service modules not being scanned after PyInstaller packaging
 - Incorrect module discovery in onefile mode
 - Missing modules in standalone/onedir mode
 
-### Technical Details (v0.6.x)
+### Technical Details (v0.6x)
 
-- **Backward Compatible**: All v0.6.x changes were backward compatible
+- **Backward Compatible**: All v0.6x changes were backward compatible
 - **Performance**: Minimal performance impact (< 100ms for scanning)
-- **Zero Configuration**: Works out of the box in v0.6.x
+- **Zero Configuration**: Works out of the box in v0.6x
 
 ---
 
 ## Notes
 
-- **v0.7.0+**: New architecture, not backward compatible
-- **v0.6.x**: Legacy version, documentation available in `docs/v0.6x/`
-- **Migration**: See migration guide above for upgrading from v0.6.x to v0.7.0
+- **v0.7x+**: New architecture, not backward compatible
+- **v0.6x**: Legacy version, documentation available in `docs/v0.6x/`
+- **Migration**: See migration guide above for upgrading from v0.6x to v0.7x
