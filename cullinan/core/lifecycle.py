@@ -7,6 +7,8 @@ and shutdown ordering based on dependencies.
 
 from typing import Dict, List, Optional, Any
 import logging
+import asyncio
+import inspect
 
 from .types import LifecycleState
 from .exceptions import LifecycleError
@@ -76,6 +78,22 @@ class LifecycleManager:
         
         logger.info(f"Initialized {len(order)} components")
     
+    async def initialize_all_async(self) -> None:
+        """Initialize all registered components in dependency order (async version).
+        
+        Raises:
+            LifecycleError: If initialization fails or circular dependency
+        """
+        # Calculate initialization order
+        order = self._calculate_order()
+        self._initialization_order = order
+        
+        # Initialize each component
+        for name in order:
+            await self._initialize_component_async(name)
+        
+        logger.info(f"Initialized {len(order)} components (async)")
+    
     def destroy_all(self) -> None:
         """Destroy all components in reverse initialization order.
         
@@ -96,6 +114,27 @@ class LifecycleManager:
             logger.warning(f"Failed to destroy {len(errors)} component(s)")
         else:
             logger.info(f"Destroyed {len(order)} components")
+    
+    async def destroy_all_async(self) -> None:
+        """Destroy all components in reverse initialization order (async version).
+        
+        Continues even if individual components fail to destroy.
+        """
+        # Destroy in reverse order
+        order = list(reversed(self._initialization_order))
+        
+        errors = []
+        for name in order:
+            try:
+                await self._destroy_component_async(name)
+            except Exception as e:
+                logger.error(f"Error destroying {name}: {e}", exc_info=True)
+                errors.append((name, e))
+        
+        if errors:
+            logger.warning(f"Failed to destroy {len(errors)} component(s)")
+        else:
+            logger.info(f"Destroyed {len(order)} components (async)")
     
     def get_state(self, name: str) -> Optional[LifecycleState]:
         """Get the lifecycle state of a component.
@@ -130,7 +169,47 @@ class LifecycleManager:
             # Call on_init if it exists
             if hasattr(component, 'on_init') and callable(component.on_init):
                 logger.debug(f"Calling on_init for {name}")
-                component.on_init()
+                result = component.on_init()
+                # If on_init returns a coroutine, it needs to be awaited
+                if inspect.iscoroutine(result):
+                    logger.warning(f"Component {name}.on_init() is async but called synchronously. Use initialize_all_async() instead.")
+                    # Clean up the coroutine to avoid warnings
+                    result.close()
+            
+            self._states[name] = LifecycleState.INITIALIZED
+            logger.debug(f"Initialized component: {name}")
+        
+        except Exception as e:
+            self._states[name] = LifecycleState.CREATED  # Rollback state
+            logger.error(f"Failed to initialize {name}: {e}", exc_info=True)
+            raise LifecycleError(f"Failed to initialize {name}: {e}") from e
+    
+    async def _initialize_component_async(self, name: str) -> None:
+        """Initialize a single component (async version).
+        
+        Args:
+            name: Component identifier
+        
+        Raises:
+            LifecycleError: If initialization fails
+        """
+        component = self._components[name]
+        current_state = self._states[name]
+        
+        if current_state != LifecycleState.CREATED:
+            logger.debug(f"Component {name} already initialized, skipping")
+            return
+        
+        self._states[name] = LifecycleState.INITIALIZING
+        
+        try:
+            # Call on_init if it exists
+            if hasattr(component, 'on_init') and callable(component.on_init):
+                logger.debug(f"Calling on_init for {name}")
+                result = component.on_init()
+                # If on_init is async, await it
+                if inspect.iscoroutine(result):
+                    await result
             
             self._states[name] = LifecycleState.INITIALIZED
             logger.debug(f"Initialized component: {name}")
@@ -159,7 +238,44 @@ class LifecycleManager:
             # Call on_destroy if it exists
             if hasattr(component, 'on_destroy') and callable(component.on_destroy):
                 logger.debug(f"Calling on_destroy for {name}")
-                component.on_destroy()
+                result = component.on_destroy()
+                # If on_destroy returns a coroutine, it needs to be awaited
+                if inspect.iscoroutine(result):
+                    logger.warning(f"Component {name}.on_destroy() is async but called synchronously. Use destroy_all_async() instead.")
+                    # Clean up the coroutine to avoid warnings
+                    result.close()
+            
+            self._states[name] = LifecycleState.DESTROYED
+            logger.debug(f"Destroyed component: {name}")
+        
+        except Exception as e:
+            # Don't rollback state on destroy failure
+            logger.error(f"Error destroying {name}: {e}", exc_info=True)
+            raise
+    
+    async def _destroy_component_async(self, name: str) -> None:
+        """Destroy a single component (async version).
+        
+        Args:
+            name: Component identifier
+        """
+        component = self._components[name]
+        current_state = self._states[name]
+        
+        if current_state == LifecycleState.DESTROYED:
+            logger.debug(f"Component {name} already destroyed, skipping")
+            return
+        
+        self._states[name] = LifecycleState.DESTROYING
+        
+        try:
+            # Call on_destroy if it exists
+            if hasattr(component, 'on_destroy') and callable(component.on_destroy):
+                logger.debug(f"Calling on_destroy for {name}")
+                result = component.on_destroy()
+                # If on_destroy is async, await it
+                if inspect.iscoroutine(result):
+                    await result
             
             self._states[name] = LifecycleState.DESTROYED
             logger.debug(f"Destroyed component: {name}")

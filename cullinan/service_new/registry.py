@@ -129,6 +129,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         """Initialize all registered services in dependency order.
         
         Creates instances and calls on_init() for each service.
+        For async on_init methods, use initialize_all_async() instead.
         """
         # Get all service names
         service_names = list(self._items.keys())
@@ -164,14 +165,65 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.error(f"Service initialization failed: {e}", exc_info=True)
             raise
     
+    async def initialize_all_async(self) -> None:
+        """Initialize all registered services in dependency order (async version).
+        
+        Creates instances and calls on_init() for each service, properly handling async methods.
+        """
+        # Get all service names
+        service_names = list(self._items.keys())
+        
+        if not service_names:
+            logger.debug("No services to initialize")
+            return
+        
+        # Get initialization order
+        try:
+            init_order = self._injector.get_dependency_order(service_names)
+        except Exception as e:
+            logger.error(f"Failed to determine initialization order: {e}")
+            raise
+        
+        # Create instances in order
+        for name in init_order:
+            try:
+                instance = self.get_instance(name)
+                if instance:
+                    # Register with lifecycle manager
+                    deps = self._metadata.get(name, {}).get('dependencies', [])
+                    self._lifecycle.register_component(name, instance, dependencies=deps)
+            except Exception as e:
+                logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
+                raise
+        
+        # Initialize all (async)
+        try:
+            await self._lifecycle.initialize_all_async()
+            logger.info(f"Initialized {len(service_names)} services (async)")
+        except Exception as e:
+            logger.error(f"Service initialization failed: {e}", exc_info=True)
+            raise
+    
     def destroy_all(self) -> None:
         """Destroy all service instances in reverse dependency order.
         
         Calls on_destroy() for each service instance.
+        For async on_destroy methods, use destroy_all_async() instead.
         """
         try:
             self._lifecycle.destroy_all()
             logger.info("Destroyed all service instances")
+        except Exception as e:
+            logger.error(f"Service destruction failed: {e}", exc_info=True)
+    
+    async def destroy_all_async(self) -> None:
+        """Destroy all service instances in reverse dependency order (async version).
+        
+        Calls on_destroy() for each service instance, properly handling async methods.
+        """
+        try:
+            await self._lifecycle.destroy_all_async()
+            logger.info("Destroyed all service instances (async)")
         except Exception as e:
             logger.error(f"Service destruction failed: {e}", exc_info=True)
     
