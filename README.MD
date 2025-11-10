@@ -30,6 +30,7 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 - 🏭 **Production Ready** - Built on battle-tested Tornado
 - 🗄️ **SQLAlchemy Integration** - Built-in ORM support
 - 🔧 **Smart Module Loading** - Auto-discovery for development, configurable for packaging
+- 📋 **Registry Center** - Centralized, testable handler and header management
 
 ---
 
