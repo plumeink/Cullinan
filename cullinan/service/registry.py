@@ -7,6 +7,7 @@ with support for dependency injection and lifecycle management.
 
 from typing import Type, Optional, List, Dict, Any
 import logging
+import inspect
 
 from cullinan.core import Registry, DependencyInjector, LifecycleManager
 from cullinan.core.exceptions import RegistryError, DependencyResolutionError
@@ -45,6 +46,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         self._injector = DependencyInjector()
         self._lifecycle = LifecycleManager()
         self._instances: Dict[str, Service] = {}
+        self._initialized: set = set()  # Track which services have had on_init called
     
     def register(self, name: str, service_class: Type[Service], 
                  dependencies: Optional[List[str]] = None, **metadata) -> None:
@@ -98,7 +100,10 @@ class ServiceRegistry(Registry[Type[Service]]):
         """Get or create a service instance.
         
         If the service hasn't been instantiated yet, it will be created
-        with its dependencies resolved.
+        with its dependencies resolved and on_init() will be called.
+        
+        Note: This method only supports synchronous on_init(). If your service
+        has an async on_init(), use initialize_all_async() instead.
         
         Args:
             name: Service identifier
@@ -117,9 +122,43 @@ class ServiceRegistry(Registry[Type[Service]]):
             return None
         
         try:
+            # First ensure all dependencies are initialized
+            deps = self._metadata.get(name, {}).get('dependencies', [])
+            for dep_name in deps:
+                if dep_name not in self._instances:
+                    # Recursively get dependencies first
+                    self.get_instance(dep_name)
+            
             # Resolve dependencies and create instance
             instance = self._injector.resolve(name)
+            
+            # Store instance first
             self._instances[name] = instance
+            
+            # Call on_init lifecycle hook if it exists and hasn't been called yet
+            if name not in self._initialized:
+                if hasattr(instance, 'on_init') and callable(instance.on_init):
+                    try:
+                        result = instance.on_init()
+                        # Check if on_init is async
+                        if inspect.iscoroutine(result):
+                            logger.warning(
+                                f"Service {name}.on_init() is async but called synchronously. "
+                                f"Use initialize_all_async() instead for proper async support."
+                            )
+                            # Clean up the coroutine to avoid warnings
+                            result.close()
+                        self._initialized.add(name)
+                        logger.debug(f"Called on_init for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_init for {name}: {e}", exc_info=True)
+                        # Remove from instances if initialization failed
+                        self._instances.pop(name, None)
+                        raise
+                else:
+                    # Mark as initialized even if no on_init method
+                    self._initialized.add(name)
+            
             return instance
         except Exception as e:
             logger.error(f"Failed to instantiate service {name}: {e}", exc_info=True)
@@ -145,25 +184,27 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.error(f"Failed to determine initialization order: {e}")
             raise
         
-        # Create instances in order
+        # Create instances in order (get_instance will call on_init)
         for name in init_order:
             try:
                 instance = self.get_instance(name)
                 if instance:
-                    # Register with lifecycle manager
+                    # Register with lifecycle manager for destroy_all support
                     deps = self._metadata.get(name, {}).get('dependencies', [])
                     self._lifecycle.register_component(name, instance, dependencies=deps)
+                    # Mark as initialized since get_instance already called on_init
+                    from cullinan.core.types import LifecycleState
+                    self._lifecycle._states[name] = LifecycleState.INITIALIZED
+                else:
+                    logger.warning(f"Failed to create instance for {name}")
             except Exception as e:
                 logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
                 raise
         
-        # Initialize all
-        try:
-            self._lifecycle.initialize_all()
-            logger.info(f"Initialized {len(service_names)} services")
-        except Exception as e:
-            logger.error(f"Service initialization failed: {e}", exc_info=True)
-            raise
+        # Set initialization order for destroy_all
+        self._lifecycle._initialization_order = init_order
+        
+        logger.info(f"Initialized {len(service_names)} services")
     
     async def initialize_all_async(self) -> None:
         """Initialize all registered services in dependency order (async version).
@@ -184,21 +225,30 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.error(f"Failed to determine initialization order: {e}")
             raise
         
-        # Create instances in order
+        # Create instances in order and initialize them with async support
         for name in init_order:
             try:
-                instance = self.get_instance(name)
-                if instance:
-                    # Register with lifecycle manager
+                # Create instance without calling on_init (we'll do it via LifecycleManager)
+                if name not in self._instances:
+                    instance = self._injector.resolve(name)
+                    self._instances[name] = instance
+                else:
+                    instance = self._instances[name]
+                
+                # Register with lifecycle manager if not already initialized
+                if name not in self._initialized:
                     deps = self._metadata.get(name, {}).get('dependencies', [])
                     self._lifecycle.register_component(name, instance, dependencies=deps)
             except Exception as e:
                 logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
                 raise
         
-        # Initialize all (async)
+        # Initialize all (handles async on_init properly)
         try:
             await self._lifecycle.initialize_all_async()
+            # Mark all as initialized
+            for name in init_order:
+                self._initialized.add(name)
             logger.info(f"Initialized {len(service_names)} services (async)")
         except Exception as e:
             logger.error(f"Service initialization failed: {e}", exc_info=True)
@@ -236,6 +286,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         self._injector.clear()
         self._lifecycle.clear()
         self._instances.clear()
+        self._initialized.clear()
         logger.debug("Cleared service registry")
     
     def list_instances(self) -> Dict[str, Service]:

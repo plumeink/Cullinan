@@ -221,7 +221,7 @@ class TestAsyncServiceLayer(unittest.TestCase):
         self.registry.register('AsyncService', AsyncService)
         
         # Use sync initialization (should log warning but not crash)
-        with self.assertLogs('cullinan.core.lifecycle', level='WARNING') as cm:
+        with self.assertLogs('cullinan.service.registry', level='WARNING') as cm:
             self.registry.initialize_all()
         
         # Should have warning about async method
