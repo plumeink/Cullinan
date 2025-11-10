@@ -14,7 +14,7 @@ import os
 import json
 import warnings
 from cullinan.hooks import MissingHeaderHandlerHook
-from cullinan.service import service_list
+from cullinan.service_new.registry import get_service_registry
 from cullinan.exceptions import (
     HandlerError, ParameterError, ResponseError, RequestError
 )
@@ -226,7 +226,9 @@ class EncapsulationHandler(object):
     @staticmethod
     def add_url_ws(url: str, cls: Callable) -> object:
         servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,), {})
-        setattr(servlet, 'service', service_list)
+        # Use new service registry - provide instance dict access for backward compatibility
+        service_registry = get_service_registry()
+        setattr(servlet, 'service', service_registry.list_instances())
         
         # Check if URL already exists in registry
         registry = get_handler_registry()
@@ -566,7 +568,9 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         )
 
     # 注入 service 与 module-level proxy（controller 方法仍可通过 self.response 访问）
-    setattr(controller_self, 'service', service_list)
+    # Use new service registry - provide instance dict access for backward compatibility
+    service_registry = get_service_registry()
+    setattr(controller_self, 'service', service_registry.list_instances())
     setattr(controller_self, 'response', response)
     setattr(controller_self, 'response_factory', response_build)
 
