@@ -53,8 +53,8 @@ This documentation covers the new architecture introduced in v0.7.0 with enhance
 
 1. [**Configuration Guide**](01-configuration.md)
    A complete guide to Cullinan's configuration system.
-   - Basic Configuration → [Example](../examples/config/config_example.py)
-   - JSON Configuration → [Example](../examples/config/cullinan.json)
+   - Basic Configuration → [Example](../examples/config_example.py)
+   - JSON Configuration → [Example](../examples/cullinan.json)
    - Environment Variables
    - Packaging Configuration
 
@@ -70,7 +70,7 @@ This documentation covers the new architecture introduced in v0.7.0 with enhance
    - Module Not Found Errors
    - Controller/Service Registration
    - Packaging Problems
-   - Debugging Tips → [Diagnostic Tool](../examples/packaging/diagnose_app.py)
+   - Debugging Tips → [Diagnostic Tool](../examples/diagnose_app.py)
 
 4. [**Quick Reference**](04-quick-reference.md)
    A quick reference card for common tasks.
@@ -192,13 +192,12 @@ All examples are located in the [`examples/`](../examples/) directory:
 - [`service_examples.py`](../examples/service_examples.py) - Service patterns
 
 ### Configuration Examples
-- [`config_example.py`](../examples/config/config_example.py) - Code-based configuration
-- [`cullinan.json`](../examples/config/cullinan.json) - JSON-based configuration
-- [`APP_CONFIG_EXAMPLE.md`](../examples/APP_CONFIG_EXAMPLE.md) - Configuration documentation
+- [`config_example.py`](../examples/config_example.py) - Code-based configuration
+- [`cullinan.json`](../examples/cullinan.json) - JSON-based configuration
 
 ### Packaging Examples
-- [`packaging_test.py`](../examples/packaging/packaging_test.py) - Packaging test
-- [`diagnose_app.py`](../examples/packaging/diagnose_app.py) - Diagnostic tool
+- [`packaging_test.py`](../examples/packaging_test.py) - Packaging test
+- [`diagnose_app.py`](../examples/diagnose_app.py) - Diagnostic tool
 
 ---
 
@@ -222,13 +221,13 @@ All examples are located in the [`examples/`](../examples/) directory:
 → [v0.7.0 Demo: WebSocket](../examples/v070_demo.py) → [WebSocket Registry](../cullinan/websocket_registry.py)
 
 **Configure My Application**
-→ [Configuration Guide](01-configuration.md) → [Configuration Examples](../examples/config/config_example.py)
+→ [Configuration Guide](01-configuration.md) → [Configuration Examples](../examples/config_example.py)
 
 **Package and Deploy**
 → [Packaging Guide](02-packaging.md) → [Build Scripts](05-build-scripts.md)
 
 **Fix Packaging Issues**
-→ [Troubleshooting](03-troubleshooting.md) → [Diagnostic Tool](../examples/packaging/diagnose_app.py)
+→ [Troubleshooting](03-troubleshooting.md) → [Diagnostic Tool](../examples/diagnose_app.py)
 
 **Use the Build Scripts**
 → [Build Scripts Guide](05-build-scripts.md) → [Scripts Directory](../scripts/)
@@ -300,12 +299,10 @@ examples/
 ├── basic/
 │   ├── hello_world.py
 │   └── crud_example.py
-├── config/
-│   ├── config_example.py
-│   └── cullinan.json
-└── packaging/
-    ├── packaging_test.py
-    └── diagnose_app.py
+├── config_example.py            # Configuration examples
+├── cullinan.json                # JSON configuration
+├── packaging_test.py            # Packaging test
+└── diagnose_app.py              # Diagnostic tool
 
 scripts/
 ├── build_app.py                # Universal builder
