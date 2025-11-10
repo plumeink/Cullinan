@@ -63,7 +63,9 @@ v0.7x 架构包括：
 1. **[主 README](../../README.MD)** - 概述和快速入门
 2. **[v0.7x 演示](../../examples/v070_demo.py)** - 综合示例
 3. **[迁移指南](MIGRATION_GUIDE.md)** - 从 v0.6x 升级
-4. **[更新日志](../../CHANGELOG.md)** - 版本历史和更改
+4. **[API迁移指南](API_MIGRATION_GUIDE.md)** - 完整的API迁移指南 ⚠️ **新增**
+5. **[旧代码清理参考](LEGACY_CLEANUP_REFERENCE.md)** - 快速清理参考
+6. **[更新日志](../../CHANGELOG.md)** - 版本历史和更改
 
 ### 对于开发者
 

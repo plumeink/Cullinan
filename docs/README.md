@@ -63,7 +63,9 @@ Want to use v0.7x? Check these resources:
 1. **[Main README](../README.MD)** - Overview and quick start
 2. **[v0.7x Demo](../examples/v070_demo.py)** - Comprehensive example
 3. **[Migration Guide](MIGRATION_GUIDE.md)** - Upgrading from v0.6x
-4. **[CHANGELOG](../CHANGELOG.md)** - Version history and changes
+4. **[API Migration Guide](API_MIGRATION_GUIDE.md)** - Complete API migration guide ⚠️ **New**
+5. **[Legacy Cleanup Reference](LEGACY_CLEANUP_REFERENCE.md)** - Quick reference for cleanup
+6. **[CHANGELOG](../CHANGELOG.md)** - Version history and changes
 
 ### For Developers
 
