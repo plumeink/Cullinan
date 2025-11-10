@@ -64,6 +64,13 @@ Welcome to Cullinan! The complete documentation for building production-ready we
    - Explanation of the auto-detection logic
    - Migration guide from the old method
 
+7. [**Registry Center**](07-registry-center.md) 🆕
+   Centralized handler and header registry system.
+   - HandlerRegistry and HeaderRegistry APIs
+   - Migration from global lists
+   - Testing best practices
+   - Performance improvements
+
 ---
 
 ## 🚀 Quick Start

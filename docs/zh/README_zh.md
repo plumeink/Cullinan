@@ -64,6 +64,13 @@
    - 自动检测逻辑说明
    - 从旧方法迁移指南
 
+7. [**注册中心**](07-registry-center.md) 🆕  
+   集中化的处理器和头部注册系统
+   - HandlerRegistry 和 HeaderRegistry API
+   - 从全局列表迁移
+   - 测试最佳实践
+   - 性能改进
+
 ---
 
 ## 🚀 快速开始
