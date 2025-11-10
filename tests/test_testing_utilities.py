@@ -13,7 +13,7 @@ from cullinan.testing import (
     ServiceTestCase,
     IsolatedServiceTestCase
 )
-from cullinan.service_new import Service, service, get_service_registry
+from cullinan.service import Service, service, get_service_registry
 
 
 # ============================================================================

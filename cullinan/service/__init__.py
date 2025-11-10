@@ -9,8 +9,8 @@ This module provides an enhanced service layer with:
 
 Usage:
     # Simple service (backward compatible)
-    from cullinan.service_new import service, Service
-    
+    from cullinan.service import service, Service
+
     @service
     class EmailService(Service):
         def send_email(self, to, subject, body):

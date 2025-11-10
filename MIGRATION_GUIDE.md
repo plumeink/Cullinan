@@ -18,7 +18,7 @@ This guide helps you migrate from the basic service layer to the enhanced servic
 - Lifecycle management (on_init, on_destroy)
 - Type-safe exception hierarchy
 
-### Enhanced Service Layer (`cullinan.service_new`)
+### Enhanced Service Layer (`cullinan.service`)
 - Service base class with lifecycle hooks
 - ServiceRegistry with dependency injection
 - Enhanced @service decorator with dependencies parameter
@@ -52,11 +52,11 @@ Migrate service-by-service, adding new features only where beneficial.
 #### Step 1: Import from new module
 
 ```python
-# Before
+# Before (v0.6.x)
 from cullinan.service import service, Service
 
-# After
-from cullinan.service_new import service, Service
+# After (v0.7.0)
+from cullinan import service, Service
 ```
 
 #### Step 2: Add dependencies (optional)
@@ -101,7 +101,7 @@ class DatabaseService(Service):
 For new projects or major refactoring, use all enhanced features.
 
 ```python
-from cullinan.service_new import service, Service, get_service_registry
+from cullinan import service, Service, get_service_registry
 
 # Define services with dependencies
 @service
@@ -240,18 +240,18 @@ class AsyncEmailService(Service):
 
 ### Q: Can I mix old and new styles?
 
-**A:** Yes. You can have some services using `cullinan.service` and others using `cullinan.service_new`.
+**A:** No. In v0.7.0, the old `cullinan.service` module has been removed. All services should use the new API imported from `cullinan` root package.
 
-### Q: What happens to the old service.py?
+### Q: What happened to the old service.py?
 
-**A:** It remains unchanged and fully supported. The new module is `service_new`.
+**A:** It has been removed in v0.7.0. The enhanced service layer is now in `cullinan/service/` and exported through the main `cullinan` package.
 
 ### Q: How do I initialize services?
 
 **A:** Call `registry.initialize_all()` once during application startup.
 
 ```python
-from cullinan.service_new import get_service_registry
+from cullinan import get_service_registry
 
 # During app startup
 registry = get_service_registry()

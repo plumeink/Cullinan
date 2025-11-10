@@ -36,10 +36,10 @@ The v0.7.0 architecture has been **fully implemented**:
 | - Dependency Injection | ✅ | `core/injection.py` |
 | - Lifecycle Management | ✅ | `core/lifecycle.py` |
 | - Request Context | ✅ | `core/context.py` |
-| **Service Layer** | ✅ Complete | `cullinan/service_new/` |
-| - Enhanced Services | ✅ | `service_new/base.py` |
-| - ServiceRegistry | ✅ | `service_new/registry.py` |
-| - @service Decorator | ✅ | `service_new/decorators.py` |
+| **Service Layer** | ✅ Complete | `cullinan/service/` |
+| - Enhanced Services | ✅ | `service/base.py` |
+| - ServiceRegistry | ✅ | `service/registry.py` |
+| - @service Decorator | ✅ | `service/decorators.py` |
 | **WebSocket** | ✅ Complete | `cullinan/websocket_registry.py` |
 | - WebSocketRegistry | ✅ | `websocket_registry.py` |
 | - @websocket_handler | ✅ | `websocket_registry.py` |
@@ -73,7 +73,7 @@ Want to understand the architecture?
 1. **[ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)** - Complete design doc
 2. **Source Code**:
    - `cullinan/core/` - Core components
-   - `cullinan/service_new/` - Service layer
+   - `cullinan/service/` - Service layer
    - `cullinan/websocket_registry.py` - WebSocket integration
 3. **[Testing Guide](ARCHITECTURE_MASTER.md#testing-strategy)** - How to test
 

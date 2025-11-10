@@ -14,7 +14,7 @@ import os
 import json
 import warnings
 from cullinan.hooks import MissingHeaderHandlerHook
-from cullinan.service_new.registry import get_service_registry
+from cullinan.service.registry import get_service_registry
 from cullinan.exceptions import (
     HandlerError, ParameterError, ResponseError, RequestError
 )

@@ -21,8 +21,8 @@ Successfully implemented all requirements for Cullinan v0.7.0-alpha1 framework r
 
 **Files Modified**:
 - `cullinan/core/lifecycle.py` (added async support)
-- `cullinan/service_new/base.py` (updated documentation)
-- `cullinan/service_new/registry.py` (added async methods)
+- `cullinan/service/base.py` (updated documentation)
+- `cullinan/service/registry.py` (added async methods)
 
 **Tests Added**:
 - `tests/test_async_support.py` (10 new tests)
@@ -158,8 +158,8 @@ Memory per Item:        26 bytes
 
 ### Files Modified (4)
 1. `cullinan/core/lifecycle.py` - Added async lifecycle support
-2. `cullinan/service_new/base.py` - Updated Service class documentation
-3. `cullinan/service_new/registry.py` - Added async initialization methods
+2. `cullinan/service/base.py` - Updated Service class documentation
+3. `cullinan/service/registry.py` - Added async initialization methods
 4. `cullinan/controller.py` - Updated to use new service registry
 
 ### Files Removed (1)

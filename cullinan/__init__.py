@@ -26,7 +26,7 @@ from cullinan.core import (
 )
 
 # Export enhanced service layer
-from cullinan.service_new import (
+from cullinan.service import (
     Service,
     ServiceRegistry,
     service,

@@ -32,7 +32,7 @@ cullinan/
 │   ├── types.py            # Common types
 │   └── exceptions.py       # Core exceptions
 │
-├── service_new/            # Enhanced service layer
+├── service/            # Enhanced service layer
 │   ├── base.py            # Service base class
 │   ├── registry.py        # ServiceRegistry
 │   └── decorators.py      # @service decorator
@@ -60,7 +60,7 @@ cullinan/
 │   core   │  ← Foundation (no dependencies)
 └────┬─────┘
      │
-     ├─────→ service_new   ← Uses core.Registry
+     ├─────→ service       ← Uses core.Registry
      ├─────→ handler       ← Uses core.Registry
      ├─────→ middleware    ← Standalone
      ├─────→ monitoring    ← Standalone

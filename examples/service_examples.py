@@ -5,7 +5,7 @@ Comprehensive examples demonstrating the enhanced Cullinan service layer.
 This file shows various usage patterns from simple to advanced.
 """
 
-from cullinan.service_new import Service, service, get_service_registry
+from cullinan.service import Service, service, get_service_registry
 
 
 # ============================================================================
@@ -42,7 +42,7 @@ print("Example 2: Service with Dependencies")
 print("="*70)
 
 # Clear registry for fresh start
-from cullinan.service_new import reset_service_registry
+from cullinan.service import reset_service_registry
 reset_service_registry()
 
 @service

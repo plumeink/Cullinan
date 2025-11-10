@@ -49,7 +49,7 @@ These files remain in this directory for historical reference but are no longer 
 | Component | Status | Location |
 |-----------|--------|----------|
 | Core Module | ✅ Implemented | `cullinan/core/` |
-| Enhanced Services | ✅ Implemented | `cullinan/service_new/` |
+| Enhanced Services | ✅ Implemented | `cullinan/service/` |
 | WebSocket Registry | ✅ Implemented | `cullinan/websocket_registry.py` |
 | Request Context | ✅ Implemented | `cullinan/core/context.py` |
 | Testing Utilities | ✅ Implemented | `cullinan/testing/` |

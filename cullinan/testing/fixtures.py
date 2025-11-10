@@ -7,7 +7,7 @@ Provides reusable test fixtures and utilities.
 import unittest
 from typing import Optional
 
-from cullinan.service_new import reset_service_registry
+from cullinan.service import reset_service_registry
 from .registry import TestRegistry
 
 

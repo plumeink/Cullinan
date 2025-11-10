@@ -38,7 +38,7 @@ The enhanced service layer adds enterprise-grade dependency injection, lifecycle
 - CircularDependencyError (circular dependencies)
 - LifecycleError (lifecycle issues)
 
-### 2. Enhanced Service Layer (`cullinan.service_new`)
+### 2. Enhanced Service Layer (`cullinan.service`)
 
 **Enhanced Service Base Class**
 ```python
@@ -121,7 +121,7 @@ class TestUserService(IsolatedServiceTestCase):
 ### Simple Service (No Dependencies)
 
 ```python
-from cullinan.service_new import service, Service
+from cullinan.service import service, Service
 
 @service
 class LogService(Service):
@@ -197,7 +197,7 @@ class ProductService(Service):
 ### Application Initialization
 
 ```python
-from cullinan.service_new import get_service_registry
+from cullinan.service import get_service_registry
 
 # During application startup
 def initialize_app():

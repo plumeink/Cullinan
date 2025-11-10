@@ -32,7 +32,7 @@ Cullinan v0.7.0 represents a complete architectural redesign of the framework wi
 - ✅ `LifecycleManager` with initialization/cleanup hooks
 - ✅ `RequestContext` for thread-safe request-scoped data
 
-**Enhanced Service Layer** (`cullinan.service_new`):
+**Enhanced Service Layer** (`cullinan.service`):
 - ✅ `Service` base class with lifecycle hooks (`on_init`, `on_destroy`)
 - ✅ `ServiceRegistry` with dependency injection
 - ✅ `@service` decorator with dependency specification
@@ -234,7 +234,7 @@ cullinan/
 │   ├── types.py               # LifecycleState, LifecycleAware
 │   └── exceptions.py          # Core exceptions
 │
-├── service_new/               # Service Layer
+├── service/                   # Service Layer
 │   ├── __init__.py
 │   ├── base.py                # Service base class
 │   ├── registry.py            # ServiceRegistry

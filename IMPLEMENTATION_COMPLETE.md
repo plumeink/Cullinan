@@ -19,7 +19,7 @@ A foundation module providing reusable patterns for the entire framework:
 
 **Total**: 719 lines of production code
 
-### 2. Enhanced Service Layer (`cullinan/service_new/`)
+### 2. Enhanced Service Layer (`cullinan/service/`)
 
 An enhanced service layer with dependency injection and lifecycle support:
 

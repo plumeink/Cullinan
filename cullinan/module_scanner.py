@@ -150,12 +150,20 @@ def _is_user_module_by_path(mod_name: str, mod) -> bool:
     if not mod_file:
         return False
     
+    # Normalize path separators for cross-platform compatibility
+    mod_file_normalized = mod_file.replace('\\', '/').replace('//', '/')
+
     # Exclude site-packages (third-party libraries)
-    if 'site-packages' in mod_file:
+    if 'site-packages' in mod_file_normalized:
         return False
     
     # Exclude standard library (typically in lib/python3.x/)
-    if 'lib' + os.sep + 'python' in mod_file:
+    # Check both Unix-style and Windows-style paths
+    if '/lib/python' in mod_file_normalized or '\\lib\\python' in mod_file:
+        return False
+
+    # Also check for Python installation patterns
+    if '/usr/lib/python' in mod_file_normalized:
         return False
     
     # Exclude packaging tools

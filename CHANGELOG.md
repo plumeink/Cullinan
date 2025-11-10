@@ -43,7 +43,7 @@ This is a major release with breaking changes and a completely redesigned archit
   - Methods: `set()`, `get()`, `has()`, `delete()`, `clear()`
   - Metadata support and cleanup callbacks
 
-#### Enhanced Service Layer (`cullinan.service_new`)
+#### Enhanced Service Layer (`cullinan.service`)
 
 - **Service Base Class**: Enhanced `Service` with lifecycle hooks
   - `on_init()`: Called when service is initialized (can be sync or async)
@@ -147,7 +147,7 @@ This is a major release with breaking changes and a completely redesigned archit
   
 - **Modular Design**: Clear separation of concerns
   - `core/` - Foundation (registry, DI, lifecycle, context)
-  - `service_new/` - Service layer (enhanced with async support)
+  - `service/` - Service layer (enhanced with async support)
   - `handler/` - HTTP handlers
   - `middleware/` - Middleware chain
   - `monitoring/` - Monitoring hooks

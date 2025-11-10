@@ -28,12 +28,12 @@ Created the foundational `cullinan/core/` module providing:
 
 ### 2. Enhanced Service Layer (✅ COMPLETE)
 
-Refactored service layer in `cullinan/service_new/`:
+Refactored service layer in `cullinan/service/`:
 
 **Files:**
-- `service_new/base.py` - Enhanced `Service` base class
-- `service_new/registry.py` - `ServiceRegistry` using `core.Registry`
-- `service_new/decorators.py` - Enhanced `@service` decorator
+- `service/base.py` - Enhanced `Service` base class
+- `service/registry.py` - `ServiceRegistry` using `core.Registry`
+- `service/decorators.py` - Enhanced `@service` decorator
 
 **Key Features:**
 - Services can declare dependencies: `@service(dependencies=['EmailService'])`
@@ -155,7 +155,7 @@ Execution time: ~0.06 seconds
 │  (Registry, DI, Lifecycle)       │
 └───────────┬──────────────────────┘
             │
-            ├──────→ service_new (enhanced services)
+            ├──────→ service (enhanced services)
             ├──────→ handler (HTTP handlers)
             ├──────→ middleware (standalone)
             ├──────→ monitoring (standalone)
@@ -211,7 +211,7 @@ class UserService(Service):
 ```
 cullinan/
 ├── core/           (6 files, ~1500 LOC)
-├── service_new/    (3 files, ~800 LOC)
+├── service/        (3 files, ~800 LOC)
 ├── handler/        (3 files, ~300 LOC)
 ├── middleware/     (2 files, ~250 LOC)
 ├── monitoring/     (2 files, ~300 LOC)

@@ -8,7 +8,7 @@ Tests service registration, dependency injection, and lifecycle management.
 import unittest
 from unittest.mock import Mock, MagicMock, call
 
-from cullinan.service_new import (
+from cullinan.service import (
     Service,
     service,
     ServiceRegistry,
