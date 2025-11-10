@@ -62,8 +62,8 @@ Want to use v0.7x? Check these resources:
 
 1. **[Main README](../README.MD)** - Overview and quick start
 2. **[v0.7x Demo](../examples/v070_demo.py)** - Comprehensive example
-3. **[CHANGELOG](../CHANGELOG.md)** - Migration guide from v0.6x
-4. **[Docs Index](README.md)** - Complete documentation
+3. **[Migration Guide](MIGRATION_GUIDE.md)** - Upgrading from v0.6x
+4. **[CHANGELOG](../CHANGELOG.md)** - Version history and changes
 
 ### For Developers
 
@@ -130,7 +130,7 @@ with create_context():
 
 ## Migration from v0.6x
 
-See [CHANGELOG Migration Guide](../CHANGELOG.md#migration-guide) for detailed instructions.
+See [Migration Guide](MIGRATION_GUIDE.md) for detailed instructions.
 
 **Quick summary**:
 
@@ -153,14 +153,15 @@ class UserService(Service):
 
 ## Resources
 
-- **Architecture**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
-- **Summary**: [SUMMARY.md](SUMMARY.md)
-- **Main Docs**: [README.md](README.md)
+- **Architecture Guide**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **Migration Guide**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+- **Documentation Index**: [README.md](README.md)
 - **Examples**: [../examples/](../examples/)
-- **Source**: [../cullinan/](../cullinan/)
+- **Source Code**: [../cullinan/](../cullinan/)
+- **Changelog**: [../CHANGELOG.md](../CHANGELOG.md)
 
 ---
 
-**Last Updated**: November 10, 2025  
+**Last Updated**: November 11, 2025  
 **Status**: Implementation Complete  
 **Maintained By**: Cullinan Development Team

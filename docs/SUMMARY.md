@@ -4,7 +4,7 @@
 
 **Status**: ✅ COMPLETED & CONSOLIDATED  
 **Version**: 0.7x  
-**Date**: November 10, 2025
+**Date**: November 11, 2025
 
 ---
 
@@ -28,7 +28,7 @@ This master document contains:
 
 ## Historical Documents (Archived)
 
-The following documents were used during the planning phase and have been consolidated into ARCHITECTURE_MASTER.md:
+The following documents were used during the planning phase and have been consolidated into ARCHITECTURE_MASTER.md. They are now archived in `../docs_archive/planning/`:
 
 - ✅ `01-service-layer-analysis.md` - Service layer value analysis
 - ✅ `02-registry-pattern-evaluation.md` - Registry pattern deep dive
@@ -41,7 +41,7 @@ The following documents were used during the planning phase and have been consol
 - ✅ `09-code-examples.md` - Comprehensive code examples
 - ✅ `10-backward-compatibility.md` - Compatibility analysis
 
-These files remain in this directory for historical reference but are no longer actively maintained.
+These files are available in the archive for historical reference.
 
 ---
 
@@ -61,10 +61,11 @@ These files remain in this directory for historical reference but are no longer 
 
 ## Quick Links
 
-- **Master Document**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **Architecture Guide**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **Migration Guide**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+- **Documentation Index**: [README.md](README.md)
 - **Main README**: [../README.MD](../README.MD)
-- **CHANGELOG**: [../CHANGELOG.md](../CHANGELOG.md)
-- **Documentation**: [README.md](README.md)
+- **Changelog**: [../CHANGELOG.md](../CHANGELOG.md)
 - **v0.7x Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
 
 ---
@@ -73,13 +74,13 @@ These files remain in this directory for historical reference but are no longer 
 
 If you're looking to understand the v0.7x architecture:
 
-1. ✅ Start with [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+2. ✅ Review [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for upgrading from v0.6x
 2. ✅ Review [../CHANGELOG.md](../CHANGELOG.md) for migration guide
 3. ✅ Study [../examples/v070_demo.py](../examples/v070_demo.py) for practical usage
 4. ✅ Read source code in `cullinan/core/` for implementation details
 
 ---
 
-**Last Updated**: November 10, 2025  
+**Last Updated**: November 11, 2025  
 **Maintained By**: Cullinan Development Team
 

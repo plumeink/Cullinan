@@ -560,7 +560,7 @@ Both styles work, but new style provides lifecycle hooks.
 
 ### Related Documents (Archived)
 
-The following detailed analysis documents were consolidated into this master document:
+The following detailed analysis documents were consolidated into this master document and are now available in `docs_archive/planning/`:
 
 - `01-service-layer-analysis.md` - Service layer value analysis
 - `02-registry-pattern-evaluation.md` - Registry pattern deep dive
@@ -573,12 +573,10 @@ The following detailed analysis documents were consolidated into this master doc
 - `09-code-examples.md` - Comprehensive code examples
 - `10-backward-compatibility.md` - Compatibility analysis
 
-These documents remain available in `next_docs/` for historical reference.
-
 ### Key Resources
 
 - **Main Documentation**: `docs/README.md`
-- **Quick Reference**: `docs/04-quick-reference.md`
+- **Migration Guide**: `docs/MIGRATION_GUIDE.md`
 - **Example Application**: `examples/v070_demo.py`
 - **CHANGELOG**: `CHANGELOG.md`
 

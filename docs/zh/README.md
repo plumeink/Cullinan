@@ -60,10 +60,10 @@ v0.7x 架构包括：
 
 想要使用 v0.7x？查看这些资源：
 
-1. **[主 README](../../README.MD)** - 概览和快速入门
+1. **[主 README](../../README.MD)** - 概述和快速入门
 2. **[v0.7x 演示](../../examples/v070_demo.py)** - 综合示例
-3. **[CHANGELOG](../../CHANGELOG.md)** - 从 v0.6x 的迁移指南
-4. **[文档索引](README.md)** - 完整文档
+3. **[迁移指南](MIGRATION_GUIDE.md)** - 从 v0.6x 升级
+4. **[更新日志](../../CHANGELOG.md)** - 版本历史和更改
 
 ### 对于开发者
 
@@ -130,7 +130,7 @@ with create_context():
 
 ## 从 v0.6x 迁移
 
-详细说明请参见 [CHANGELOG 迁移指南](../../CHANGELOG.md#迁移指南)。
+详细说明请参见 [迁移指南](MIGRATION_GUIDE.md)。
 
 **快速摘要**：
 
@@ -153,14 +153,15 @@ class UserService(Service):
 
 ## 资源
 
-- **架构**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
-- **摘要**: [SUMMARY.md](SUMMARY.md)
-- **主文档**: [README.md](README.md)
+- **架构指南**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **迁移指南**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+- **文档索引**: [README.md](README.md)
 - **示例**: [../../examples/](../../examples/)
 - **源代码**: [../../cullinan/](../../cullinan/)
+- **更新日志**: [../../CHANGELOG.md](../../CHANGELOG.md)
 
 ---
-
+**最后更新**: 2025年11月11日  
 **最后更新**: 2025年11月10日  
 **状态**: 实现完成  
 **维护者**: Cullinan 开发团队

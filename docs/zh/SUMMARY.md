@@ -4,7 +4,7 @@
 
 **状态**: ✅ 已完成并整合  
 **版本**: 0.7x  
-**日期**: 2025年11月10日
+**日期**: 2025年11月11日
 
 ---
 
@@ -28,7 +28,7 @@
 
 ## 历史文档（已归档）
 
-以下文档在规划阶段使用，已整合到 ARCHITECTURE_MASTER.md：
+以下文档在规划阶段使用，现已整合到 ARCHITECTURE_MASTER.md 中。它们现在归档在 `../../docs_archive/planning/` 中：
 
 - ✅ `01-service-layer-analysis.md` - 服务层价值分析
 - ✅ `02-registry-pattern-evaluation.md` - 注册表模式深入研究
@@ -41,7 +41,7 @@
 - ✅ `09-code-examples.md` - 综合代码示例
 - ✅ `10-backward-compatibility.md` - 兼容性分析
 
-这些文件保留在此目录中作为历史参考，但不再积极维护。
+这些文件可在归档中查阅以供历史参考。
 
 ---
 
@@ -61,10 +61,11 @@
 
 ## 快速链接
 
-- **主文档**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **架构指南**: [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md)
+- **迁移指南**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+- **文档索引**: [README.md](README.md)
 - **主 README**: [../../README.MD](../../README.MD)
-- **CHANGELOG**: [../../CHANGELOG.md](../../CHANGELOG.md)
-- **文档**: [README.md](README.md)
+- **更新日志**: [../../CHANGELOG.md](../../CHANGELOG.md)
 - **v0.7x 演示**: [../../examples/v070_demo.py](../../examples/v070_demo.py)
 
 ---
@@ -74,12 +75,12 @@
 如果您想了解 v0.7x 架构：
 
 1. ✅ 从 [ARCHITECTURE_MASTER.md](ARCHITECTURE_MASTER.md) 开始
-2. ✅ 查看 [../../CHANGELOG.md](../../CHANGELOG.md) 获取迁移指南
+2. ✅ 查看 [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) 了解如何从 v0.6x 升级
 3. ✅ 学习 [../../examples/v070_demo.py](../../examples/v070_demo.py) 了解实际用法
 4. ✅ 阅读 `cullinan/core/` 中的源代码了解实现细节
 
 ---
 
-**最后更新**: 2025年11月10日  
+**最后更新**: 2025年11月11日  
 **维护者**: Cullinan 开发团队
 
