@@ -55,8 +55,12 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 
 ### Version-Specific Documentation
 
-- **v0.7.0+ (Current)** - New architecture with enhanced features
-- **[v0.6.x Documentation](docs/v0.6x/)** - Legacy version (deprecated)
+- **v0.7.0-alpha1 (Current)** - New architecture with enhanced features
+  - Core module with registry, DI, and lifecycle management
+  - Enhanced service layer with dependency injection
+  - WebSocket support with unified registry
+  - Request context management
+  - See [CHANGELOG.md](CHANGELOG.md) for migration guide from v0.6.x
 
 ---
 
