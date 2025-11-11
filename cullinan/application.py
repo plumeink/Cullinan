@@ -353,20 +353,67 @@ def run(handlers=None):
     logger.info("\t|||\t\t└---configuring dependency injection...")
     from cullinan.core.injection import get_injection_registry
     from cullinan.service.registry import get_service_registry
+    from cullinan.core.lifecycle_enhanced import get_lifecycle_manager
 
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
+    lifecycle_manager = get_lifecycle_manager()
 
     # Set ServiceRegistry as dependency provider (priority 100)
     injection_registry.add_provider_registry(service_registry, priority=100)
     logger.info("\t|||\t\t\t└---dependency injection configured")
 
     # Now scan services and controllers
-    logger.info("\t|||\t\t└---scanning controller...")
+    logger.info("\t|||\t\t└---scanning services...")
     logger.info("\t|||\t\t\t...")
     scan_service(file_list_func())
+
+    logger.info("\t|||\t\t└---scanning controllers...")
+    logger.info("\t|||\t\t\t...")
     scan_controller(file_list_func())
     sort_url()
+
+    # ========== NEW: Execute Service Lifecycle Startup ==========
+    logger.info("\t|||\t\t└---initializing services lifecycle...")
+    try:
+        # Instantiate and register all services with lifecycle manager
+        service_count = service_registry.count()
+        if service_count > 0:
+            logger.info(f"\t|||\t\t\t└---found {service_count} services")
+
+            for service_name in service_registry.list_all():
+                # Get or create service instance
+                service_instance = service_registry.get_instance(service_name)
+
+                if service_instance is None:
+                    logger.warning(f"\t|||\t\t\t⚠ Failed to instantiate {service_name}")
+                    continue
+
+                # Get dependencies metadata
+                metadata = service_registry.get_metadata(service_name)
+                dependencies = metadata.get('dependencies', []) if metadata else []
+
+                # Register with lifecycle manager
+                lifecycle_manager.register(
+                    service_instance,
+                    name=service_name,
+                    dependencies=dependencies
+                )
+
+            # Execute lifecycle startup (will call on_startup hooks)
+            logger.info("\t|||\t\t└---starting services (executing lifecycle hooks)...")
+
+            # Run async startup in a temporary event loop
+            loop = tornado.ioloop.IOLoop.current()
+            loop.run_sync(lifecycle_manager.startup)
+
+            logger.info("\t|||\t\t\t└---all services started successfully")
+        else:
+            logger.info("\t|||\t\t\t└---no services to start")
+    except Exception as e:
+        logger.error(f"\t|||\t\t\t✗ Service lifecycle startup failed: {e}", exc_info=True)
+        raise
+    # ========== END Service Lifecycle ==========
 
     # Get handlers from registry
     handler_registry = get_handler_registry()
@@ -422,6 +469,17 @@ def run(handlers=None):
     except Exception:
         logger.exception("Exception running IOLoop")
     finally:
+        # ========== NEW: Execute Service Lifecycle Shutdown ==========
+        logger.info("\t|||\t\t└---shutting down services...")
+        try:
+            # Execute lifecycle shutdown (will call on_shutdown hooks)
+            loop = tornado.ioloop.IOLoop.current()
+            loop.run_sync(lambda: lifecycle_manager.shutdown(timeout=30, force=True))
+            logger.info("\t|||\t\t\t└---all services stopped successfully")
+        except Exception as e:
+            logger.error(f"\t|||\t\t\t✗ Service lifecycle shutdown error: {e}", exc_info=True)
+        # ========== END Service Lifecycle Shutdown ==========
+
         # Stop accepting new connections and stop the IOLoop.
         try:
             http_server.stop()
