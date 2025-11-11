@@ -23,7 +23,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 docs_archive/reports
-
+.github/copilot-instructions.md
 # Virtual Environment
 .venv/
 venv/

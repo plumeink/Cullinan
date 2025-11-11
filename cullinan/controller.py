@@ -730,6 +730,9 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     # 绑定到 contextvars，返回 token
     token = response.push(resp_instance)
 
+    # Initialize resp_obj to avoid UnboundLocalError in exception handler
+    resp_obj = None
+
     try:
         # Performance optimization: use pre-compiled parameter mapping
         param_names, needs_request_body, needs_headers = _get_cached_param_mapping(func)
@@ -1015,12 +1018,60 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
-        # 1. 标记为可注入（使用 core 的装饰器）
-        from cullinan.core.injection import injectable
-        cls = injectable(cls)
+        # 1. 先扫描类的注入需求（但不使用 @injectable，因为它会包装 __init__）
+        from cullinan.core.injection import get_injection_registry
+
+        injection_registry = get_injection_registry()
+
+        # 扫描类的注入需求
+        injection_registry.scan_class(cls)
+
+        # 尝试立即注入到类属性（因为 controller 是类方法，不是实例方法）
+        if injection_registry.has_injections(cls):
+            try:
+                # 将 Inject 标记替换为实际的 service 实例
+                from cullinan.service.registry import get_service_registry
+                service_registry = get_service_registry()
+
+                injection_info = injection_registry.get_injection_info(cls)
+                if injection_info:
+                    for attr_name, (dep_name, required) in injection_info.items():
+                        try:
+                            # 尝试获取 service 实例
+                            dep_instance = service_registry.get_instance(dep_name)
+
+                            if dep_instance is None:
+                                # Service 还不存在 - 创建延迟加载的属性
+                                # 使用 property 实现延迟获取
+                                def make_lazy_property(service_name, is_required):
+                                    @property
+                                    def lazy_getter(self):
+                                        from cullinan.service.registry import get_service_registry
+                                        svc_registry = get_service_registry()
+                                        instance = svc_registry.get_instance(service_name)
+                                        if instance is None and is_required:
+                                            raise RuntimeError(
+                                                f"Required service '{service_name}' not found. "
+                                                f"Make sure the service is registered before using the controller."
+                                            )
+                                        return instance
+                                    return lazy_getter
+
+                                # 设置为 property
+                                setattr(cls, attr_name, make_lazy_property(dep_name, required))
+                                logger.debug(f"Set lazy loader for {cls.__name__}.{attr_name} -> {dep_name}")
+                            else:
+                                # Service 已存在 - 直接设置
+                                setattr(cls, attr_name, dep_instance)
+                                logger.debug(f"Injected {dep_name} into {cls.__name__}.{attr_name} (class-level)")
+                        except Exception as e:
+                            logger.error(f"Failed to inject {dep_name}: {e}")
+                            if required:
+                                raise
+            except Exception as e:
+                logger.error(f"Dependency injection failed for {cls.__name__}: {e}")
 
         # 2. 获取在类定义时收集的方法（通过 add_func）
-        # 注意：方法装饰器在类定义时就已执行，它们会将方法添加到上下文
         func_list = _controller_decoration_context.get() or []
 
         # 3. 扫描类的所有属性，查找被装饰的方法

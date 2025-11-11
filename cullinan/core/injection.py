@@ -147,32 +147,65 @@ class InjectionRegistry:
         return metadata
 
     def _get_type_hints(self, cls: Type) -> Dict:
-        """获取类型提示（带缓存）"""
+        """获取类型提示（带缓存，支持字符串注解）
+
+        支持：
+        1. 标准类型注解: service: EmailService = Inject()
+        2. 字符串注解: service: 'EmailService' = Inject()  (推荐，无需 import)
+        3. 原始注解: 直接从 __annotations__ 读取
+        """
         if cls not in self._type_hint_cache:
             try:
+                # 尝试使用 get_type_hints（会解析字符串）
                 self._type_hint_cache[cls] = get_type_hints(cls)
             except Exception as e:
-                logger.debug(f"Could not get type hints for {cls.__name__}: {e}")
-                self._type_hint_cache[cls] = {}
+                logger.debug(f"get_type_hints failed for {cls.__name__}: {e}, falling back to __annotations__")
+                # 回退到直接使用 __annotations__（保留字符串）
+                # 这样支持 'EmailService' 形式的注解，无需 import
+                try:
+                    self._type_hint_cache[cls] = getattr(cls, '__annotations__', {})
+                except Exception as e2:
+                    logger.debug(f"Could not get annotations for {cls.__name__}: {e2}")
+                    self._type_hint_cache[cls] = {}
         return self._type_hint_cache[cls]
 
     def _resolve_dependency_name(self, explicit_name: Optional[str],
                                   attr_name: str, attr_type: Type) -> str:
-        """解析依赖名称
+        """解析依赖名称（支持字符串类型注解，像 SpringBoot 一样无需 import）
 
         优先级：
         1. Inject(name='xxx') 明确指定的名称
-        2. 从类型注解推断（如果类型有 __name__）
+        2. 从类型注解推断（支持字符串 'ServiceName' 和实际类型）
         3. 使用属性名
+
+        示例：
+            # 方式1: 字符串注解（无需 import，推荐）
+            email_service: 'EmailService' = Inject()
+
+            # 方式2: 实际类型（需要 import）
+            email_service: EmailService = Inject()
+
+            # 方式3: 显式指定
+            email_service = Inject(name='EmailService')
         """
         if explicit_name:
             return explicit_name
+
+        # 支持字符串类型注解（像 Spring 一样无需 import）
+        if isinstance(attr_type, str):
+            # 'EmailService' -> 'EmailService'
+            return attr_type
 
         # 尝试从类型推断
         if attr_type is not Any and hasattr(attr_type, '__name__'):
             return attr_type.__name__
 
-        # 回退到属性名
+        # 回退到属性名（驼峰转类名）
+        # 例如: email_service -> EmailService
+        if '_' in attr_name:
+            # snake_case -> PascalCase
+            return ''.join(word.capitalize() for word in attr_name.split('_'))
+
         return attr_name
 
     def add_provider_registry(self, registry: Registry, priority: int = 0) -> None:
