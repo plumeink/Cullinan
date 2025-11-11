@@ -2,24 +2,30 @@
 """WebSocket registry module for Cullinan framework.
 
 Provides enhanced WebSocket support with:
-- Registry pattern for WebSocket handlers
+- Registry pattern for WebSocket handlers (based on cullinan.core.Registry)
+- Type-based dependency injection (same as @controller and @service)
 - Lifecycle management
-- Dependency injection support
 - Integration with service layer
 
 Usage:
-    from cullinan import websocket_handler, WebSocketHandler
-    
+    from cullinan import websocket_handler
+    from cullinan.core import Inject
+    from cullinan.service import Service, service
+
+    @service
+    class NotificationService(Service):
+        def send_notification(self, message):
+            return f"Notification: {message}"
+
     @websocket_handler(url='/ws/chat')
-    class ChatHandler(WebSocketHandler):
-        def on_init(self):
-            # Lifecycle hook - called when handler is registered
-            pass
-        
+    class ChatHandler:
+        # Type injection - automatically resolved!
+        notification_service: NotificationService = Inject()
+
         def on_open(self):
-            # Called when WebSocket connection is opened
-            pass
-        
+            # Use injected service directly
+            self.notification_service.send_notification("User connected")
+
         def on_message(self, message):
             # Handle incoming message
             self.write_message(f"Echo: {message}")
@@ -77,9 +83,13 @@ class WebSocketRegistry(Registry['Type[Any]']):
             logger.warning(f"URL {url} already mapped to {existing_name}, skipping {name}")
             return
         
-        # Store handler class and metadata
+        # Store handler class
         self._items[name] = handler_class
         
+        # Initialize metadata dict if needed (lazy initialization from parent class)
+        if self._metadata is None:
+            self._metadata = {}
+
         # Store metadata including URL
         handler_metadata = metadata.copy()
         if url:
@@ -204,8 +214,11 @@ def reset_websocket_registry() -> None:
 
 
 def websocket_handler(url: Optional[str] = None, **options) -> Callable:
-    """Decorator for registering WebSocket handlers.
-    
+    """Decorator for registering WebSocket handlers with dependency injection support.
+
+    Supports type-based dependency injection using cullinan.core.Inject, providing
+    the same developer experience as @controller and @service decorators.
+
     Args:
         url: URL pattern for the WebSocket endpoint (e.g., '/ws/chat')
         **options: Additional options (dependencies, etc.)
@@ -214,21 +227,41 @@ def websocket_handler(url: Optional[str] = None, **options) -> Callable:
         Decorator function
     
     Example:
+        from cullinan.core import Inject
+        from cullinan.service import Service, service
+
+        @service
+        class NotificationService(Service):
+            def send(self, message):
+                return f"Sent: {message}"
+
         @websocket_handler(url='/ws/chat')
         class ChatHandler:
+            # Type injection - automatically injected!
+            notification_service: NotificationService = Inject()
+
             def on_open(self):
-                pass
-            
+                # Use injected service directly
+                self.notification_service.send("User connected")
+
             def on_message(self, message):
-                self.write_message(f"Echo: {message}")
-            
+                result = self.notification_service.send(message)
+                self.write_message(f"Echo: {result}")
+
             def on_close(self):
                 pass
     """
     def decorator(handler_class: Type[Any]) -> Type[Any]:
+        # 1. Mark as injectable (using core's decorator)
+        from cullinan.core.injection import injectable
+        handler_class = injectable(handler_class)
+
+        # 2. Register to WebSocketRegistry
         registry = get_websocket_registry()
         name = handler_class.__name__
         registry.register(name, handler_class, url=url, **options)
+
+        logger.debug(f"Registered WebSocket handler: {name} (injectable)")
         return handler_class
     
     return decorator
