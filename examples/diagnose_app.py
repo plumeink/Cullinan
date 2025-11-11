@@ -94,13 +94,16 @@ print()
 # 5. Controller 检查
 print("5. Controller 注册情况:")
 try:
-    from cullinan.controller import handler_list
-    print(f"   已注册的 Handler: {len(handler_list)}")
-    if handler_list:
-        for handler in handler_list[:5]:
-            print(f"     - {handler}")
-        if len(handler_list) > 5:
-            print(f"     ... 还有 {len(handler_list) - 5} 个")
+    from cullinan.handler import get_handler_registry
+    handler_registry = get_handler_registry()
+    handlers = handler_registry.get_handlers()
+    print(f"   已注册的 Handler: {len(handlers)}")
+    if handlers:
+        for url, servlet in handlers[:5]:
+            servlet_name = servlet.__name__ if hasattr(servlet, '__name__') else str(servlet)
+            print(f"     - {url} -> {servlet_name}")
+        if len(handlers) > 5:
+            print(f"     ... 还有 {len(handlers) - 5} 个")
     else:
         print("   ⚠ 警告: 没有已注册的 Handler!")
 except Exception as e:

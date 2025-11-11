@@ -71,12 +71,14 @@ def main():
     app = Application()
 
     # 验证 Controller 注册
-    from cullinan.controller import handler_list
-    print(f"Registered handlers: {len(handler_list)}")
-    for handler in handler_list[:5]:
-        print(f"  - {handler[0]}")
-    if len(handler_list) > 5:
-        print(f"  ... and {len(handler_list) - 5} more")
+    from cullinan.handler import get_handler_registry
+    handler_registry = get_handler_registry()
+    handlers = handler_registry.get_handlers()
+    print(f"Registered handlers: {len(handlers)}")
+    for url, servlet in handlers[:5]:
+        print(f"  - {url}")
+    if len(handlers) > 5:
+        print(f"  ... and {len(handlers) - 5} more")
     print()
 
     print("Starting application...")

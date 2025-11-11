@@ -14,6 +14,7 @@ import os
 import json
 import warnings
 from cullinan.service.registry import get_service_registry
+from cullinan.controller.registry import get_controller_registry
 from cullinan.exceptions import (
     HandlerError, ParameterError, ResponseError, RequestError, MissingHeaderException
 )
@@ -39,11 +40,12 @@ access_logger = logging.getLogger('cullinan.access')
 # Registry Pattern Integration (Direct Registry Usage)
 # ============================================================================
 # Global lists have been completely replaced with registry pattern.
-# Use get_handler_registry() and get_header_registry() for all operations.
+# Use get_handler_registry(), get_header_registry(), and get_controller_registry() for all operations.
 
-# Temporary controller function list for decorator pattern
+# Context variable for controller method collection during decoration (thread-safe)
 # This is used during controller class decoration to collect methods
-controller_func_list = []
+_controller_decoration_context: contextvars.ContextVar[List] = contextvars.ContextVar('_controller_decoration_context', default=None)
+
 KEY_NAME_INDEX = {
     "url_params": 0,
     "query_params": 1,
@@ -303,8 +305,24 @@ class EncapsulationHandler(object):
 
     @staticmethod
     def add_func(url: str, type: str) -> Callable:
+        """Register a controller method for the currently decorating controller.
+
+        Args:
+            url: URL pattern for this method
+            type: HTTP method type (get, post, put, delete, etc.)
+
+        Returns:
+            Decorator function
+        """
         def inner(func: Callable):
-            controller_func_list.append((url, func, type))
+            # Get the current decoration context (set by @controller decorator)
+            func_list = _controller_decoration_context.get()
+            if func_list is None:
+                # Fallback: if no context, create a temporary list and set it
+                func_list = []
+                _controller_decoration_context.set(func_list)
+            func_list.append((url, func, type))
+            return func
 
         return inner
 
@@ -957,6 +975,29 @@ def put_api(**kwargs: Any) -> Callable:
 
 
 def controller(**kwargs) -> Callable:
+    """Decorator for registering controller classes with their routes.
+
+    This decorator uses the ControllerRegistry from cullinan.core to manage
+    controller registration, replacing the old global list approach.
+
+    Usage:
+        @controller(url='/api/users')
+        class UserController:
+            @get('')
+            def list_users(self):
+                return {'users': []}
+
+            @post('')
+            def create_user(self, body_params):
+                return {'created': True}
+
+    Args:
+        **kwargs: Decorator arguments
+            - url: Base URL prefix for this controller
+
+    Returns:
+        Decorator function
+    """
     url = kwargs.get('url', '')
     global url_params
     url_params = None
@@ -964,12 +1005,49 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
-        for item in controller_func_list:
-            if controller_func_list:
-                handler = EncapsulationHandler.add_url(url + item[0], item[1])
-                setattr(handler, item[2] + '_controller_self', cls)
-                setattr(handler, item[2] + '_controller_url_param_key_list', url_params)
-        controller_func_list.clear()
+        # Create a new context for collecting methods
+        func_list = []
+        token = _controller_decoration_context.set(func_list)
+
+        try:
+            # Import the class (this triggers method decorators like @get, @post)
+            # The decorators will populate func_list via add_func
+            pass
+
+            # Get controller registry
+            controller_registry = get_controller_registry()
+
+            # Register the controller class
+            controller_name = cls.__name__
+            controller_registry.register(controller_name, cls, url_prefix=url)
+
+            # Process collected methods and register handlers
+            handler_registry = get_handler_registry()
+
+            for item in func_list:
+                method_url, method_func, http_method = item
+                full_url = url + method_url
+
+                # Register method in controller registry
+                controller_registry.register_method(
+                    controller_name,
+                    method_url,
+                    http_method,
+                    method_func
+                )
+
+                # Create and register handler (backward compatible)
+                handler = EncapsulationHandler.add_url(full_url, method_func)
+                setattr(handler, http_method + '_controller_self', cls)
+                setattr(handler, http_method + '_controller_url_param_key_list', url_params)
+
+            logger.debug(f"Registered controller: {controller_name} with {len(func_list)} methods")
+
+        finally:
+            # Clean up context
+            _controller_decoration_context.set(None)
+
+        return cls
 
     return inner
 

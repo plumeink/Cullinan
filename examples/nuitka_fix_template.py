@@ -80,14 +80,16 @@ def main():
     if IS_NUITKA or IS_FROZEN:
         print("Running in packaged mode, verifying Controller registration...")
         try:
-            from cullinan.controller import handler_list
-            print(f"Registered handlers: {len(handler_list)}")
-            if len(handler_list) > 0:
+            from cullinan.handler import get_handler_registry
+            handler_registry = get_handler_registry()
+            handlers = handler_registry.get_handlers()
+            print(f"Registered handlers: {len(handlers)}")
+            if len(handlers) > 0:
                 print("✓ Controllers successfully registered!")
-                for handler in handler_list[:5]:
-                    print(f"  - {handler[0]}")  # URL pattern
-                if len(handler_list) > 5:
-                    print(f"  ... and {len(handler_list) - 5} more")
+                for url, servlet in handlers[:5]:
+                    print(f"  - {url}")  # URL pattern
+                if len(handlers) > 5:
+                    print(f"  ... and {len(handlers) - 5} more")
             else:
                 print("⚠ WARNING: No handlers registered!")
                 print("  This means Controllers were not loaded properly.")

@@ -122,12 +122,14 @@ print()
 # 5. Controller 检查
 print("5. Controller 检查:")
 try:
-    from cullinan.controller import handler_list
-    print(f"   已注册的 Handler 数量: {len(handler_list)}")
-    if handler_list:
+    from cullinan.handler import get_handler_registry
+    handler_registry = get_handler_registry()
+    handlers = handler_registry.get_handlers()
+    print(f"   已注册的 Handler 数量: {len(handlers)}")
+    if handlers:
         print("   已注册的路由:")
-        for handler in handler_list:
-            print(f"     - {handler}")
+        for url, servlet in handlers:
+            print(f"     - {url} -> {servlet.__name__ if hasattr(servlet, '__name__') else servlet}")
     else:
         print("   ⚠ 警告: 未找到任何已注册的 Handler!")
 except Exception as e:
@@ -167,8 +169,10 @@ if user_count == 0:
     print()
 
 try:
-    from cullinan.controller import handler_list
-    if len(handler_list) == 0:
+    from cullinan.handler import get_handler_registry
+    handler_registry = get_handler_registry()
+    handlers = handler_registry.get_handlers()
+    if len(handlers) == 0:
         print("⚠ 警告: Controller 未被注册")
         print("  可能原因:")
         print("  1. Controller 模块未被正确导入")
