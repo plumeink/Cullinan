@@ -11,7 +11,6 @@ from cullinan.config import configure, get_config, CullinanConfig
 from cullinan.core import (
     Registry,
     SimpleRegistry,
-    DependencyInjector,
     LifecycleManager,
     LifecycleState,
     LifecycleAware,
@@ -23,6 +22,11 @@ from cullinan.core import (
     ContextManager,
     get_context_value,
     set_context_value,
+    # Dependency Injection
+    Inject,
+    injectable,
+    get_injection_registry,
+    reset_injection_registry,
 )
 
 # Export enhanced service layer

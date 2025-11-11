@@ -1,226 +1,384 @@
 # -*- coding: utf-8 -*-
-"""Dependency injection engine for Cullinan framework.
+"""通用依赖注入系统 - Core 层基础设施
 
-Provides lightweight dependency injection capabilities with support
-for providers, singletons, and dependency resolution.
+提供类似 Spring 的依赖注入功能，支持：
+- 类型注解注入
+- 延迟注入（与扫描顺序无关）
+- 自动装配（基于类型或名称）
+- 可选依赖和必需依赖
+
+性能优化：
+- 使用 __slots__ 减少内存占用
+- 延迟解析依赖（首次使用时才解析）
+- 缓存类型提示避免重复解析
 """
 
-from typing import Dict, List, Optional, Any, Callable, Set
+from typing import Type, Any, Dict, Optional, get_type_hints
+from dataclasses import dataclass
 import logging
+import inspect
 
-from .exceptions import DependencyResolutionError, CircularDependencyError
+from .registry import Registry
+from .exceptions import RegistryError
 
 logger = logging.getLogger(__name__)
 
 
-class DependencyInjector:
-    """Lightweight dependency injector for Cullinan.
-    
-    Manages providers and singletons, resolves dependencies in correct order,
-    and detects circular dependencies.
-    
-    Usage:
-        injector = DependencyInjector()
-        injector.register_provider('service_a', ServiceA)
-        injector.register_provider('service_b', ServiceB, dependencies=['service_a'])
-        
-        instance = injector.resolve('service_b')
+# ============================================================================
+# 注入标记类
+# ============================================================================
+
+@dataclass
+class Inject:
+    """依赖注入标记 - 类似 Spring 的 @Autowired
+
+    使用方式：
+        class UserController:
+            # 方式1: 自动推断（从类型注解）
+            user_service: UserService = Inject()
+
+            # 方式2: 指定名称
+            auth: Any = Inject(name='AuthService')
+
+            # 方式3: 可选依赖
+            cache: Any = Inject(name='CacheService', required=False)
+
+    Args:
+        name: 依赖名称（如果不指定，从属性名或类型推断）
+        required: 是否必需（True 时找不到依赖会抛出异常）
     """
-    
+    name: Optional[str] = None
+    required: bool = True
+
+    def __repr__(self):
+        return f"Inject(name={self.name!r}, required={self.required})"
+
+
+# ============================================================================
+# 依赖注入元数据
+# ============================================================================
+
+class InjectionMetadata:
+    """注入元数据 - 记录类需要注入的信息
+
+    性能优化：使用 __slots__ 减少内存占用
+    """
+    __slots__ = ('target_class', 'injections')
+
+    def __init__(self, target_class: Type):
+        self.target_class = target_class
+        # {attribute_name: (dependency_name, required)}
+        self.injections: Dict[str, tuple] = {}
+
+    def add_injection(self, attr_name: str, dep_name: str, required: bool = True):
+        """添加注入信息"""
+        self.injections[attr_name] = (dep_name, required)
+
+    def __repr__(self):
+        return f"InjectionMetadata({self.target_class.__name__}, {len(self.injections)} injections)"
+
+
+# ============================================================================
+# 依赖注入注册表
+# ============================================================================
+
+class InjectionRegistry:
+    """依赖注入注册表 - 管理所有需要注入的类
+
+    职责：
+    1. 扫描类的类型注解，记录注入需求
+    2. 在运行时解析并注入依赖
+    3. 支持多个依赖提供者（Registry）
+    """
+
+    __slots__ = ('_metadata', '_provider_registries', '_type_hint_cache')
+
     def __init__(self):
-        """Initialize the dependency injector."""
-        self._providers: Dict[str, Callable] = {}
-        self._dependencies: Dict[str, List[str]] = {}
-        self._singletons: Dict[str, Any] = {}
-        self._singleton_flags: Dict[str, bool] = {}
-    
-    def register_provider(self, name: str, provider: Callable, 
-                         dependencies: Optional[List[str]] = None,
-                         singleton: bool = True) -> None:
-        """Register a dependency provider.
-        
+        # {class: InjectionMetadata}
+        self._metadata: Dict[Type, InjectionMetadata] = {}
+        # 依赖提供者注册表列表（按优先级查找）
+        self._provider_registries: list = []
+        # 类型提示缓存
+        self._type_hint_cache: Dict[Type, Dict] = {}
+
+    def scan_class(self, cls: Type) -> InjectionMetadata:
+        """扫描类的类型注解，记录需要注入的属性
+
         Args:
-            name: Identifier for the dependency
-            provider: Callable that creates the dependency (class or factory)
-            dependencies: List of dependency names this provider needs
-            singleton: If True, provider is called once and cached
-        
-        Raises:
-            ValueError: If name already registered
-        """
-        if name in self._providers:
-            logger.warning(f"Provider already registered: {name}")
-            return
-        
-        self._providers[name] = provider
-        self._dependencies[name] = dependencies or []
-        self._singleton_flags[name] = singleton
-        
-        logger.debug(f"Registered provider: {name} (singleton={singleton})")
-    
-    def resolve(self, name: str, _resolving: Optional[Set[str]] = None) -> Any:
-        """Resolve a dependency and its dependencies recursively.
-        
-        Args:
-            name: Identifier of the dependency to resolve
-            _resolving: Internal set to track circular dependencies
-        
+            cls: 要扫描的类
+
         Returns:
-            The resolved dependency instance
-        
-        Raises:
-            DependencyResolutionError: If dependency not found
-            CircularDependencyError: If circular dependency detected
+            注入元数据对象
         """
-        if name not in self._providers:
-            raise DependencyResolutionError(f"Dependency not found: {name}")
-        
-        # Check for circular dependencies
-        if _resolving is None:
-            _resolving = set()
-        
-        if name in _resolving:
-            chain = ' -> '.join(list(_resolving) + [name])
-            raise CircularDependencyError(
-                f"Circular dependency detected: {chain}"
-            )
-        
-        # If singleton and already created, return cached instance
-        if self._singleton_flags.get(name, True) and name in self._singletons:
-            return self._singletons[name]
-        
-        # Mark as resolving
-        _resolving.add(name)
-        
+        if cls in self._metadata:
+            return self._metadata[cls]
+
+        metadata = InjectionMetadata(cls)
+
         try:
-            # Resolve dependencies first
-            resolved_deps = {}
-            for dep_name in self._dependencies.get(name, []):
-                resolved_deps[dep_name] = self.resolve(dep_name, _resolving)
-            
-            # Call provider
-            provider = self._providers[name]
-            
-            # If provider is a class, instantiate it
-            if isinstance(provider, type):
-                instance = provider()
-            else:
-                # Provider is a factory function
-                instance = provider()
-            
-            # Inject dependencies if instance has 'dependencies' attribute
-            if hasattr(instance, 'dependencies'):
-                instance.dependencies = resolved_deps
-            
-            # Cache if singleton
-            if self._singleton_flags.get(name, True):
-                self._singletons[name] = instance
-            
-            return instance
-        
-        finally:
-            # Unmark as resolving
-            _resolving.discard(name)
-    
-    def resolve_all(self, names: List[str]) -> Dict[str, Any]:
-        """Resolve multiple dependencies.
-        
-        Args:
-            names: List of dependency names to resolve
-        
-        Returns:
-            Dictionary mapping names to resolved instances
+            # 获取类型提示（带缓存）
+            hints = self._get_type_hints(cls)
+
+            for attr_name, attr_type in hints.items():
+                # 检查是否有 Inject 标记
+                default_value = getattr(cls, attr_name, None)
+
+                if isinstance(default_value, Inject):
+                    # 确定依赖名称
+                    dep_name = self._resolve_dependency_name(
+                        default_value.name,
+                        attr_name,
+                        attr_type
+                    )
+
+                    metadata.add_injection(attr_name, dep_name, default_value.required)
+                    logger.debug(
+                        f"Scan: {cls.__name__}.{attr_name} -> {dep_name} "
+                        f"(required={default_value.required})"
+                    )
+
+        except Exception as e:
+            logger.warning(f"Failed to scan {cls.__name__}: {e}")
+
+        if metadata.injections:
+            self._metadata[cls] = metadata
+            logger.debug(f"Registered injection metadata for {cls.__name__}")
+
+        return metadata
+
+    def _get_type_hints(self, cls: Type) -> Dict:
+        """获取类型提示（带缓存）"""
+        if cls not in self._type_hint_cache:
+            try:
+                self._type_hint_cache[cls] = get_type_hints(cls)
+            except Exception as e:
+                logger.debug(f"Could not get type hints for {cls.__name__}: {e}")
+                self._type_hint_cache[cls] = {}
+        return self._type_hint_cache[cls]
+
+    def _resolve_dependency_name(self, explicit_name: Optional[str],
+                                  attr_name: str, attr_type: Type) -> str:
+        """解析依赖名称
+
+        优先级：
+        1. Inject(name='xxx') 明确指定的名称
+        2. 从类型注解推断（如果类型有 __name__）
+        3. 使用属性名
         """
-        return {name: self.resolve(name) for name in names}
-    
-    def get_dependency_order(self, names: List[str]) -> List[str]:
-        """Get the order in which dependencies should be resolved.
-        
-        Uses topological sort to determine correct initialization order.
-        
+        if explicit_name:
+            return explicit_name
+
+        # 尝试从类型推断
+        if attr_type is not Any and hasattr(attr_type, '__name__'):
+            return attr_type.__name__
+
+        # 回退到属性名
+        return attr_name
+
+    def add_provider_registry(self, registry: Registry, priority: int = 0) -> None:
+        """添加依赖提供者注册表
+
         Args:
-            names: List of dependency names
-        
-        Returns:
-            Sorted list of names in dependency order
-        
+            registry: 提供依赖对象的注册表（如 ServiceRegistry）
+            priority: 优先级（数字越大优先级越高）
+        """
+        self._provider_registries.append((priority, registry))
+        # 按优先级排序（降序）
+        self._provider_registries.sort(key=lambda x: x[0], reverse=True)
+        logger.debug(f"Added provider: {registry.__class__.__name__} (priority={priority})")
+
+    def inject(self, instance: Any) -> None:
+        """注入依赖到实例
+
+        Args:
+            instance: 要注入的实例
+
         Raises:
-            CircularDependencyError: If circular dependency detected
+            RegistryError: 当必需的依赖找不到时
         """
-        # Build adjacency list
-        graph: Dict[str, List[str]] = {name: [] for name in names}
-        in_degree: Dict[str, int] = {name: 0 for name in names}
-        
-        for name in names:
-            if name not in self._dependencies:
-                continue
-            
-            for dep in self._dependencies[name]:
-                if dep in names:
-                    graph[dep].append(name)
-                    in_degree[name] += 1
-        
-        # Kahn's algorithm for topological sort
-        queue = [name for name in names if in_degree[name] == 0]
-        result = []
-        
-        while queue:
-            # Sort queue for deterministic ordering
-            queue.sort()
-            current = queue.pop(0)
-            result.append(current)
-            
-            for neighbor in graph[current]:
-                in_degree[neighbor] -= 1
-                if in_degree[neighbor] == 0:
-                    queue.append(neighbor)
-        
-        # If not all nodes processed, there's a cycle
-        if len(result) != len(names):
-            unprocessed = [name for name in names if name not in result]
-            raise CircularDependencyError(
-                f"Circular dependency detected among: {unprocessed}"
-            )
-        
-        return result
-    
-    def clear_singletons(self) -> None:
-        """Clear all singleton instances.
-        
-        Useful for testing or application restart.
+        cls = type(instance)
+        metadata = self._metadata.get(cls)
+
+        if not metadata:
+            return
+
+        if not self._provider_registries:
+            logger.warning(f"No provider registry set, cannot inject {cls.__name__}")
+            return
+
+        for attr_name, (dep_name, required) in metadata.injections.items():
+            try:
+                # 从提供者注册表获取依赖对象
+                dep_instance = self._resolve_dependency(dep_name)
+
+                if dep_instance is None:
+                    if required:
+                        raise RegistryError(
+                            f"Required dependency not found: {dep_name} "
+                            f"for {cls.__name__}.{attr_name}"
+                        )
+                    else:
+                        logger.debug(
+                            f"Optional dependency not found: {dep_name}, "
+                            f"skipping {cls.__name__}.{attr_name}"
+                        )
+                        continue
+
+                # 注入！
+                setattr(instance, attr_name, dep_instance)
+                logger.debug(f"Injected {dep_name} -> {cls.__name__}.{attr_name}")
+
+            except Exception as e:
+                logger.error(f"Injection failed for {cls.__name__}.{attr_name}: {e}")
+                if required:
+                    raise
+
+    def _resolve_dependency(self, name: str) -> Optional[Any]:
+        """从提供者注册表解析依赖（按优先级）
+
+        Args:
+            name: 依赖名称
+
+        Returns:
+            依赖实例，或 None
         """
-        self._singletons.clear()
-        logger.debug("Cleared all singleton instances")
-    
+        for priority, registry in self._provider_registries:
+            # 尝试从注册表获取实例
+            dep = None
+
+            if hasattr(registry, 'get_instance'):
+                # 优先使用 get_instance（适用于 ServiceRegistry）
+                try:
+                    dep = registry.get_instance(name)
+                except Exception as e:
+                    logger.debug(f"get_instance failed for {name}: {e}")
+
+            if dep is None and hasattr(registry, 'get'):
+                # 回退：直接从注册表获取
+                dep = registry.get(name)
+
+            if dep is not None:
+                return dep
+
+        return None
+
+    def has_injections(self, cls: Type) -> bool:
+        """检查类是否需要依赖注入
+
+        Args:
+            cls: 要检查的类
+
+        Returns:
+            True 如果需要注入，否则 False
+        """
+        return cls in self._metadata
+
+    def get_injection_info(self, cls: Type) -> Optional[Dict[str, tuple]]:
+        """获取类的注入信息（用于调试）
+
+        Args:
+            cls: 要查询的类
+
+        Returns:
+            注入信息字典，或 None
+        """
+        metadata = self._metadata.get(cls)
+        return metadata.injections if metadata else None
+
     def clear(self) -> None:
-        """Clear all providers and singletons.
-        
-        Useful for testing or complete reinitialization.
-        """
-        self._providers.clear()
-        self._dependencies.clear()
-        self._singletons.clear()
-        self._singleton_flags.clear()
-        logger.debug("Cleared all providers and singletons")
-    
-    def has_provider(self, name: str) -> bool:
-        """Check if a provider is registered.
-        
-        Args:
-            name: Identifier to check
-        
-        Returns:
-            True if provider exists, False otherwise
-        """
-        return name in self._providers
-    
-    def get_dependencies(self, name: str) -> List[str]:
-        """Get the dependencies for a given provider.
-        
-        Args:
-            name: Identifier of the provider
-        
-        Returns:
-            List of dependency names
-        """
-        return self._dependencies.get(name, []).copy()
+        """清空所有注入元数据"""
+        self._metadata.clear()
+        self._provider_registries.clear()
+        self._type_hint_cache.clear()
+        logger.debug("Cleared injection registry")
+
+
+# 全局注入注册表实例
+_global_injection_registry = InjectionRegistry()
+
+
+def get_injection_registry() -> InjectionRegistry:
+    """获取全局注入注册表
+
+    Returns:
+        全局 InjectionRegistry 实例
+    """
+    return _global_injection_registry
+
+
+def reset_injection_registry() -> None:
+    """重置全局注入注册表（用于测试）"""
+    _global_injection_registry.clear()
+    logger.debug("Reset global injection registry")
+
+
+# ============================================================================
+# 装饰器：自动扫描和注入
+# ============================================================================
+
+def injectable(cls: Optional[Type] = None):
+    """标记类可注入 - 自动扫描类型注解并在实例化时注入
+
+    使用方式：
+        @injectable
+        class UserController:
+            user_service: UserService = Inject()
+
+    注意：
+    - 装饰器会包装 __init__ 方法
+    - 在 __init__ 执行后自动注入依赖
+    - 与扫描顺序无关（延迟注入）
+
+    Args:
+        cls: 要标记的类
+
+    Returns:
+        包装后的类（在 __init__ 时自动注入）
+    """
+    def decorator(target_class: Type) -> Type:
+        # 1. 扫描类的注入需求
+        registry = get_injection_registry()
+        registry.scan_class(target_class)
+
+        # 2. 包装 __init__，在实例化后自动注入
+        original_init = target_class.__init__
+
+        # 使用 functools.wraps 保留原始函数的元数据
+        import functools
+
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            # 调用原始 __init__
+            original_init(self, *args, **kwargs)
+            # 自动注入依赖
+            try:
+                registry.inject(self)
+            except Exception as e:
+                logger.error(f"Injection failed during {target_class.__name__}.__init__: {e}")
+                raise
+
+        target_class.__init__ = new_init
+
+        logger.debug(f"Marked {target_class.__name__} as injectable")
+        return target_class
+
+    # 支持 @injectable 和 @injectable()
+    if cls is None:
+        return decorator
+    else:
+        return decorator(cls)
+
+
+# ============================================================================
+# 导出
+# ============================================================================
+
+__all__ = [
+    'Inject',
+    'InjectionRegistry',
+    'InjectionMetadata',
+    'get_injection_registry',
+    'reset_injection_registry',
+    'injectable',
+]
+

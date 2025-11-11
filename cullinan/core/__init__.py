@@ -11,7 +11,6 @@ These components serve as building blocks for the service and handler layers.
 """
 
 from .registry import Registry, SimpleRegistry
-from .injection import DependencyInjector
 from .lifecycle import LifecycleManager
 from .types import LifecycleState, LifecycleAware
 from .context import (
@@ -32,6 +31,18 @@ from .exceptions import (
     LifecycleError
 )
 
+# Legacy dependency injector (for backward compatibility)
+from .legacy_injection import DependencyInjector
+
+# Type-based Dependency Injection System
+from .injection import (
+    Inject,
+    injectable,
+    InjectionRegistry,
+    get_injection_registry,
+    reset_injection_registry
+)
+
 __version__ = "0.8.0-alpha"
 
 __all__ = [
@@ -39,9 +50,16 @@ __all__ = [
     'Registry',
     'SimpleRegistry',
     
-    # Dependency Injection
+    # Legacy Dependency Injector
     'DependencyInjector',
-    
+
+    # Type-based Dependency Injection
+    'Inject',
+    'injectable',
+    'InjectionRegistry',
+    'get_injection_registry',
+    'reset_injection_registry',
+
     # Lifecycle Management
     'LifecycleManager',
     'LifecycleState',

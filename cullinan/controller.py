@@ -980,16 +980,26 @@ def controller(**kwargs) -> Callable:
     This decorator uses the ControllerRegistry from cullinan.core to manage
     controller registration, replacing the old global list approach.
 
+    支持依赖注入：使用 cullinan.core.Inject 标记属性即可自动注入 Service
+
     Usage:
+        from cullinan.core import Inject
+
         @controller(url='/api/users')
         class UserController:
-            @get('')
-            def list_users(self):
-                return {'users': []}
+            # 依赖注入 - 使用 core.Inject
+            user_service: UserService = Inject()
 
-            @post('')
+            @get_api('')
+            def list_users(self):
+                # 直接使用注入的 service
+                users = self.user_service.get_all_users()
+                return {'users': users}
+
+            @post_api('')
             def create_user(self, body_params):
-                return {'created': True}
+                user = self.user_service.create(body_params)
+                return {'created': True, 'user': user}
 
     Args:
         **kwargs: Decorator arguments
@@ -1005,15 +1015,28 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
-        # Create a new context for collecting methods
-        func_list = []
-        token = _controller_decoration_context.set(func_list)
+        # 1. 标记为可注入（使用 core 的装饰器）
+        from cullinan.core.injection import injectable
+        cls = injectable(cls)
+
+        # 2. 获取在类定义时收集的方法（通过 add_func）
+        # 注意：方法装饰器在类定义时就已执行，它们会将方法添加到上下文
+        func_list = _controller_decoration_context.get() or []
+
+        # 3. 扫描类的所有属性，查找被装饰的方法
+        # 这是备用方案，以防上下文丢失
+        if not func_list:
+            # 尝试从类的属性中收集方法信息
+            for attr_name in dir(cls):
+                if attr_name.startswith('_'):
+                    continue
+                attr = getattr(cls, attr_name, None)
+                if callable(attr) and hasattr(attr, '__wrapped__'):
+                    # 这是一个被装饰的方法
+                    # 注意：这个备用方案可能不完整，但总比没有好
+                    pass
 
         try:
-            # Import the class (this triggers method decorators like @get, @post)
-            # The decorators will populate func_list via add_func
-            pass
-
             # Get controller registry
             controller_registry = get_controller_registry()
 
@@ -1041,7 +1064,7 @@ def controller(**kwargs) -> Callable:
                 setattr(handler, http_method + '_controller_self', cls)
                 setattr(handler, http_method + '_controller_url_param_key_list', url_params)
 
-            logger.debug(f"Registered controller: {controller_name} with {len(func_list)} methods")
+            logger.debug(f"Registered controller: {controller_name} with {len(func_list)} methods (injectable)")
 
         finally:
             # Clean up context

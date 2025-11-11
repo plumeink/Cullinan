@@ -346,12 +346,28 @@ def run(handlers=None):
         template_path=os.path.join(os.getcwd(), 'templates'),
         static_path=os.path.join(os.getcwd(), 'static')
     )
+
+    # IMPORTANT: Configure dependency injection system BEFORE scanning
+    # This ensures that when @service and @controller decorators execute,
+    # the injection system is already set up
+    logger.info("\t|||\t\t└---configuring dependency injection...")
+    from cullinan.core.injection import get_injection_registry
+    from cullinan.service.registry import get_service_registry
+
+    injection_registry = get_injection_registry()
+    service_registry = get_service_registry()
+
+    # Set ServiceRegistry as dependency provider (priority 100)
+    injection_registry.add_provider_registry(service_registry, priority=100)
+    logger.info("\t|||\t\t\t└---dependency injection configured")
+
+    # Now scan services and controllers
     logger.info("\t|||\t\t└---scanning controller...")
     logger.info("\t|||\t\t\t...")
     scan_service(file_list_func())
     scan_controller(file_list_func())
     sort_url()
-    
+
     # Get handlers from registry
     handler_registry = get_handler_registry()
     registered_handlers = handler_registry.get_handlers()
