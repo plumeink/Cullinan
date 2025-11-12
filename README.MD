@@ -1,8 +1,10 @@
 ![Python version](https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue)
 ![PyPI version](https://img.shields.io/pypi/v/cullinan.svg?style=flat&logo=pypi&color=green)
 ![PyPI downloads](https://img.shields.io/pypi/dm/cullinan.svg?style=flat&logo=pypi&color=blue)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/plumeink/Cullinan)
 ![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan.svg?style=flat&logo=github&color=white)
 ![License](https://img.shields.io/github/license/plumeink/cullinan.svg?style=flat&color=white)
+
 
 ```                                              
    _____      _ _ _                      
