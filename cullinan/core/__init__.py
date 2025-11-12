@@ -39,9 +39,19 @@ from .injection import (
     Inject,
     InjectByName,
     injectable,
+    inject_constructor,
     InjectionRegistry,
     get_injection_registry,
     reset_injection_registry
+)
+
+# Provider System
+from .provider import (
+    Provider,
+    InstanceProvider,
+    ClassProvider,
+    FactoryProvider,
+    ProviderRegistry
 )
 
 __version__ = "0.8.0-alpha"
@@ -53,10 +63,28 @@ __all__ = [
     
     # Legacy Dependency Injector
     'DependencyInjector',
+    # Provider System
+    'Provider',
+    'InstanceProvider',
+    'ClassProvider',
+    'FactoryProvider',
+    'ScopedProvider',
+    'ProviderRegistry',
 
+    # Scope System
+    'Scope',
+    'SingletonScope',
+    'TransientScope',
+    'RequestScope',
+    'get_singleton_scope',
+    'get_transient_scope',
+    'get_request_scope',
+
+    # Lifecycle Management
     # Type-based Dependency Injection
     'Inject',
     'InjectByName',
+    'inject_constructor',
     'injectable',
     'InjectionRegistry',
     'get_injection_registry',

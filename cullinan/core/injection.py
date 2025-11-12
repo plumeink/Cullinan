@@ -631,6 +631,120 @@ def injectable(cls: Optional[Type] = None):
 
 
 # ============================================================================
+# 构造器注入装饰器
+# ============================================================================
+
+def inject_constructor(cls: Optional[Type] = None):
+    """构造器注入装饰器 - 自动解析并注入构造函数参数
+
+    与 @injectable 不同，此装饰器在调用 __init__ 之前解析参数并注入。
+    适用于需要在构造时传入依赖的场景。
+
+    使用方式：
+        @inject_constructor
+        class UserController:
+            def __init__(self, user_service: UserService, config: Config):
+                self.user_service = user_service
+                self.config = config
+
+    混合使用：
+        @inject_constructor
+        @injectable
+        class UserController:
+            # 构造器注入（必需）
+            def __init__(self, user_service: UserService):
+                self.user_service = user_service
+
+            # 属性注入（可选）
+            cache: Cache = Inject(required=False)
+
+    Args:
+        cls: 要装饰的类
+
+    Returns:
+        包装后的类
+    """
+    import inspect
+    from typing import get_type_hints
+    import functools
+
+    def decorator(target_class: Type) -> Type:
+        original_init = target_class.__init__
+
+        try:
+            # 获取构造函数签名和类型提示
+            sig = inspect.signature(original_init)
+            hints = get_type_hints(original_init)
+        except Exception as e:
+            logger.warning(f"Cannot get signature for {target_class.__name__}.__init__: {e}")
+            return target_class
+
+        # 分析需要注入的参数
+        injectable_params = {}
+        for param_name, param in sig.parameters.items():
+            if param_name == 'self':
+                continue
+
+            # 获取参数类型
+            param_type = hints.get(param_name)
+            if param_type is None:
+                continue
+
+            # 判断是否必需
+            required = param.default == inspect.Parameter.empty
+            injectable_params[param_name] = (param_type, required)
+
+        if not injectable_params:
+            # 没有可注入的参数，直接返回
+            return target_class
+
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            # 解析并注入依赖
+            registry = get_injection_registry()
+
+            # 绑定已提供的参数
+            try:
+                bound_args = sig.bind_partial(self, *args, **kwargs)
+            except TypeError:
+                # 如果绑定失败，直接调用原始构造函数（让它抛出正确的错误）
+                original_init(self, *args, **kwargs)
+                return
+
+            # 为未提供的参数注入依赖
+            for param_name, (param_type, required) in injectable_params.items():
+                if param_name not in bound_args.arguments:
+                    # 参数未提供，尝试从注册表解析
+                    dep_name = param_type.__name__ if hasattr(param_type, '__name__') else str(param_type)
+                    dep_instance = registry._resolve_dependency(dep_name)
+
+                    if dep_instance is None:
+                        if required:
+                            raise RegistryError(
+                                f"Cannot inject required parameter '{param_name}' "
+                                f"of type '{dep_name}' in {target_class.__name__}.__init__. "
+                                f"Ensure it's registered with @service or in a registry."
+                            )
+                        # 可选参数未找到，使用默认值（如果有的话）
+                    else:
+                        kwargs[param_name] = dep_instance
+                        logger.debug(f"Injected {dep_name} into {target_class.__name__}.__init__({param_name})")
+
+            # 调用原始构造函数
+            original_init(self, *args, **kwargs)
+
+        target_class.__init__ = new_init
+        logger.debug(f"Enabled constructor injection for {target_class.__name__}")
+        return target_class
+
+    # 支持 @inject_constructor 和 @inject_constructor()
+    if cls is None:
+        return decorator
+    else:
+        return decorator(cls)
+
+
+# ============================================================================
 # 导出
 # ============================================================================
 
@@ -642,5 +756,5 @@ __all__ = [
     'get_injection_registry',
     'reset_injection_registry',
     'injectable',
+    'inject_constructor',  # 新增
 ]
-
