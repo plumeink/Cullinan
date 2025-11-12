@@ -60,7 +60,6 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
   - Enhanced service layer with dependency injection
   - WebSocket support with unified registry
   - Request context management
-  - See [CHANGELOG.md](docs_archive/reports/CHANGELOG.md) for migration guide from v0.6x
 
 ### ⚠️ Important Notice (v0.7x)
 
@@ -157,19 +156,23 @@ class EmailService(Service):
 
 ```python
 from cullinan import service, Service
+from cullinan.core import InjectByName
 
-@service(dependencies=['EmailService'])
+@service
 class UserService(Service):
     """Service for user management with email dependency."""
     
+    # Modern dependency injection using InjectByName
+    email_service = InjectByName('EmailService')
+    
     def on_init(self):
-        """Access dependencies after initialization."""
-        self.email = self.dependencies['EmailService']
+        """Initialization hook - dependencies are already injected."""
+        print("UserService initialized")
     
     def create_user(self, name, email):
         user = {'name': name, 'email': email}
-        # Send welcome email using injected service
-        self.email.send_email(email, "Welcome", f"Welcome {name}!")
+        # Use injected service directly - no need for self.dependencies
+        self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
         return user
     
     def on_destroy(self):
@@ -177,13 +180,41 @@ class UserService(Service):
         print("UserService shutting down")
 ```
 
+**Alternative: Type-based Injection with IDE Support**
+
+```python
+from cullinan import service, Service
+from cullinan.core import Inject
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from services.email import EmailService
+
+@service
+class UserService(Service):
+    """Service with type hints for better IDE support."""
+    
+    # Type-based injection with IDE autocomplete
+    email_service: 'EmailService' = Inject()
+    
+    def create_user(self, name, email):
+        # IDE now provides autocomplete for email_service methods
+        self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
+        return {"name": name, "email": email}
+```
+
 ### Controller (`controllers/api.py`)
 
 ```python
 from cullinan.controller import controller, get_api, post_api
+from cullinan.core import InjectByName
 
 @controller(url='/api')
 class UserController:
+    """Controller with automatic service injection."""
+    
+    # Inject UserService using InjectByName
+    user_service = InjectByName('UserService')
     
     @get_api(url='/users', query_params=['id'])
     def get_user(self, query_params):
@@ -196,8 +227,8 @@ class UserController:
     
     @post_api(url='/users', body_params=['name', 'email'])
     def create_user(self, body_params):
-        # Access service through registry
-        user = self.service['UserService'].create_user(
+        # Use injected service directly - it's the actual UserService instance
+        user = self.user_service.create_user(
             body_params['name'],
             body_params['email']
         )
@@ -208,21 +239,26 @@ class UserController:
         )
 ```
 
+**Note:** With InjectByName, `self.user_service` is the actual UserService instance, not a proxy. You can call all methods directly.
+
 ### WebSocket Support (`controllers/chat.py`)
 
 ```python
 from cullinan import websocket_handler
+from cullinan.core import InjectByName
 
 @websocket_handler(url='/ws/chat')
 class ChatHandler:
-    """WebSocket handler with registry integration."""
+    """WebSocket handler with dependency injection support."""
     
-    def on_init(self):
-        """Lifecycle hook for WebSocket handlers."""
-        self.clients = set()
+    # Optional: Inject services if needed
+    # user_service = InjectByName('UserService')
     
     def on_open(self):
         """Called when WebSocket connection opens."""
+        self.clients = getattr(ChatHandler, 'clients', set())
+        if not hasattr(ChatHandler, 'clients'):
+            ChatHandler.clients = set()
         self.clients.add(self)
         print(f"Client connected: {len(self.clients)} total")
     
@@ -230,12 +266,16 @@ class ChatHandler:
         """Handle incoming WebSocket message."""
         # Broadcast to all clients
         for client in self.clients:
-            client.write_message(f"Broadcast: {message}")
+            try:
+                client.write_message(f"Broadcast: {message}")
+            except:
+                pass
     
     def on_close(self):
         """Called when WebSocket connection closes."""
-        self.clients.remove(self)
-        print(f"Client disconnected: {len(self.clients)} remaining")
+        if hasattr(self, 'clients'):
+            self.clients.discard(self)
+            print(f"Client disconnected: {len(self.clients)} remaining")
 ```
 
 ### Application (`main.py`)

@@ -96,9 +96,44 @@ class UserService(Service):
 
 ### 3. Dependency Injection
 
-Inject services into controllers automatically:
+Inject services into controllers using `InjectByName`:
 
 ```python
+from cullinan.controller import controller, get_api
+from cullinan.core import InjectByName
+
+@controller(url='/api/users')
+class UserController:
+    # Inject service by name
+    user_service = InjectByName('UserService')
+    
+    @get_api(url='')
+    def list_users(self, query_params):
+        # Use injected service directly
+        users = self.user_service.get_all_users()
+        return {'users': users}
+```
+
+**Alternative: Type-based Injection with IDE Support**
+
+```python
+from cullinan.core import Inject
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from services.user_service import UserService
+
+@controller(url='/api/users')
+class UserController:
+    # Type-based injection with autocomplete
+    user_service: 'UserService' = Inject()
+    
+    @get_api(url='')
+    def list_users(self, query_params):
+        # IDE provides autocomplete for user_service methods
+        users = self.user_service.get_all_users()
+        return {'users': users}
+```
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
 

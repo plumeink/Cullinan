@@ -96,16 +96,16 @@ class UserService(Service):
 
 ### 3. 依赖注入
 
-自动将服务注入到控制器：
+使用 `InjectByName` 将服务注入到控制器：
 
 ```python
 from cullinan.controller import controller, get_api
-from cullinan.core import Inject
+from cullinan.core import InjectByName
 
 @controller(url='/api/users')
 class UserController:
-    # 使用字符串注解注入服务（无需 import！）
-    user_service: 'UserService' = Inject()
+    # 按名称注入服务
+    user_service = InjectByName('UserService')
     
     @get_api(url='')
     def list_users(self, query_params):
@@ -114,7 +114,27 @@ class UserController:
         return {'users': users}
 ```
 
-**无需导入 Service 类！** 只需使用字符串注解。
+**替代方案：类型注入与 IDE 支持**
+
+```python
+from cullinan.core import Inject
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from services.user_service import UserService
+
+@controller(url='/api/users')
+class UserController:
+    # 类型注入，支持 IDE 自动补全
+    user_service: 'UserService' = Inject()
+    
+    @get_api(url='')
+    def list_users(self, query_params):
+        # IDE 提供 user_service 方法的自动补全
+        users = self.user_service.get_all_users()
+        return {'users': users}
+```
+
 
 ### 4. 生命周期钩子
 
