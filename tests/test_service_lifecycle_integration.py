@@ -41,11 +41,11 @@ def test_service_lifecycle_with_phase():
 
         def on_startup(self):
             startup_log.append('DatabaseService')
-            logger.info("✓ DatabaseService.on_startup() called (phase=-100)")
+            logger.info("[OK] DatabaseService.on_startup() called (phase=-100)")
 
         def on_shutdown(self):
             shutdown_log.append('DatabaseService')
-            logger.info("✓ DatabaseService.on_shutdown() called")
+            logger.info("[OK] DatabaseService.on_shutdown() called")
 
     @service
     class BotService(Service):
@@ -56,12 +56,12 @@ def test_service_lifecycle_with_phase():
 
         def on_startup(self):
             startup_log.append('BotService')
-            logger.info("✓ BotService.on_startup() called (phase=-50)")
+            logger.info("[OK] BotService.on_startup() called (phase=-50)")
             logger.info(f"  Database injected: {type(self.database).__name__}")
 
         def on_shutdown(self):
             shutdown_log.append('BotService')
-            logger.info("✓ BotService.on_shutdown() called")
+            logger.info("[OK] BotService.on_shutdown() called")
 
     @service
     class UserService(Service):
@@ -70,11 +70,11 @@ def test_service_lifecycle_with_phase():
 
         def on_startup(self):
             startup_log.append('UserService')
-            logger.info("✓ UserService.on_startup() called (phase=0)")
+            logger.info("[OK] UserService.on_startup() called (phase=0)")
 
         def on_shutdown(self):
             shutdown_log.append('UserService')
-            logger.info("✓ UserService.on_shutdown() called")
+            logger.info("[OK] UserService.on_shutdown() called")
 
     # 模拟应用启动流程
     print("[1] 扫描和注册 Services...")
@@ -92,7 +92,7 @@ def test_service_lifecycle_with_phase():
             name=service_name,
             dependencies=dependencies
         )
-        print(f"    ✓ {service_name} 已注册")
+        print(f"    [OK] {service_name} 已注册")
 
     print("\n[3] 执行生命周期启动...")
     asyncio.run(lifecycle_manager.startup())
@@ -100,7 +100,7 @@ def test_service_lifecycle_with_phase():
     print("\n[4] 验证启动顺序...")
     expected_order = ['DatabaseService', 'BotService', 'UserService']
     assert startup_log == expected_order, f"启动顺序错误: {startup_log}"
-    print(f"    ✓ 启动顺序正确: {' -> '.join(startup_log)}")
+    print(f"    [OK] 启动顺序正确: {' -> '.join(startup_log)}")
 
     print("\n[5] 模拟 Web 服务器运行...")
     print("    (在实际应用中，这里会启动 Tornado)")
@@ -111,7 +111,7 @@ def test_service_lifecycle_with_phase():
     print("\n[7] 验证关闭顺序（逆序）...")
     expected_shutdown = ['UserService', 'BotService', 'DatabaseService']
     assert shutdown_log == expected_shutdown, f"关闭顺序错误: {shutdown_log}"
-    print(f"    ✓ 关闭顺序正确: {' -> '.join(shutdown_log)}")
+    print(f"    [OK] 关闭顺序正确: {' -> '.join(shutdown_log)}")
 
     print("\n" + "="*70)
     print("SUCCESS: Service 生命周期按 phase 正确执行！")
@@ -177,7 +177,7 @@ def test_async_lifecycle_hooks():
 
     assert 'startup_begin' in async_log
     assert 'startup_complete' in async_log
-    print("    ✓ 异步启动钩子执行成功")
+    print("    [OK] 异步启动钩子执行成功")
 
     # 关闭
     print("\n[2] 执行异步关闭...")
@@ -185,7 +185,7 @@ def test_async_lifecycle_hooks():
 
     assert 'shutdown_begin' in async_log
     assert 'shutdown_complete' in async_log
-    print("    ✓ 异步关闭钩子执行成功")
+    print("    [OK] 异步关闭钩子执行成功")
 
     print("\n" + "="*70)
     print("SUCCESS: 异步生命周期钩子正常工作！")
@@ -218,7 +218,7 @@ if __name__ == '__main__':
             print("  5. 启动 Web 服务器")
             print("  6. 处理请求")
             print("  7. 关闭时按逆序执行 on_shutdown")
-            print("\n✨ 您的 BotService 会在 Web 服务器启动前完成登录！")
+            print("\n[INFO] 您的 BotService 会在 Web 服务器启动前完成登录！")
             print("="*70 + "\n")
             exit(0)
     except Exception as e:

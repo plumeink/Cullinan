@@ -399,10 +399,10 @@ class LifecycleManager:
                     if inspect.isawaitable(result):
                         await result
 
-                logger.info(f"  ✓ {name}")
+                logger.info(f"  [OK] {name}")
 
             except Exception as e:
-                logger.error(f"  ✗ {name}: {e}")
+                logger.error(f"  [FAIL] {name}: {e}")
                 if not force:
                     raise LifecycleError(
                         f"Error in {name}.{phase.value}: {e}"

@@ -583,11 +583,11 @@ if error_details:
 print("\n" + "="*80)
 
 if passed == total:
-    print("✓ 所有测试通过 - IoC 系统安全稳定")
+    print("[OK] 所有测试通过 - IoC 系统安全稳定")
     print("="*80)
     sys.exit(0)
 else:
-    print(f"✗ {total - passed} 个测试失败 - 需要修复")
+    print(f"[FAIL] {total - passed} 个测试失败 - 需要修复")
     print("="*80)
     sys.exit(1)
 

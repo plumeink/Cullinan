@@ -52,7 +52,7 @@ def run_tests():
         print("  ⏳ T1.3: 完善构造器注入")
         return 0
     else:
-        print("❌ 测试失败")
+        print("[ERROR] 测试失败")
         print()
         print("请检查上述错误信息并修复问题")
         return 1

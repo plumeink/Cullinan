@@ -30,7 +30,7 @@ class PerformanceBenchmark(unittest.TestCase):
             registry.register(f"item_{i}", f"value_{i}")
         elapsed = time.perf_counter() - start
 
-        print(f"\n  ✓ Registered 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
+        print(f"\n  [OK] Registered 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
         self.assertEqual(registry.count(), 10000)
         self.assertLess(elapsed, 0.1, "Registration should be fast (< 100ms for 10k items)")
 
@@ -48,7 +48,7 @@ class PerformanceBenchmark(unittest.TestCase):
             _ = registry.get(f"item_{i}")
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Retrieved 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
+        print(f"  [OK] Retrieved 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
         self.assertLess(elapsed, 0.05, "Lookup should be very fast (< 50ms for 10k items)")
 
     def test_registry_has_performance(self):
@@ -65,7 +65,7 @@ class PerformanceBenchmark(unittest.TestCase):
             _ = registry.has(f"item_{i}")
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Checked 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
+        print(f"  [OK] Checked 10,000 items in {elapsed:.4f}s ({10000/elapsed:.0f} ops/sec)")
         self.assertLess(elapsed, 0.05, "Membership check should be very fast")
 
     def test_service_registry_performance(self):
@@ -86,7 +86,7 @@ class PerformanceBenchmark(unittest.TestCase):
             registry.register(service_name, DynamicService, dependencies=['BaseService'] if i > 0 else [])
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Registered 100 services in {elapsed:.4f}s")
+        print(f"  [OK] Registered 100 services in {elapsed:.4f}s")
         self.assertGreaterEqual(registry.count(), 100)
         self.assertLess(elapsed, 0.5, "Service registration should be fast")
 
@@ -102,7 +102,7 @@ class PerformanceBenchmark(unittest.TestCase):
             registry.register(f"Controller_{i}", TestController, url_prefix=f"/api/{i}")
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Registered 1,000 controllers in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
+        print(f"  [OK] Registered 1,000 controllers in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
         self.assertEqual(registry.count(), 1000)
         self.assertLess(elapsed, 0.1, "Controller registration should be fast")
 
@@ -121,7 +121,7 @@ class PerformanceBenchmark(unittest.TestCase):
             registry.register_method('TestController', f'/route_{i}', 'get', lambda: None)
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Registered 1,000 methods in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
+        print(f"  [OK] Registered 1,000 methods in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
         self.assertEqual(registry.get_method_count('TestController'), 1000)
         self.assertLess(elapsed, 0.05, "Method registration should be very fast")
 
@@ -142,7 +142,7 @@ class PerformanceBenchmark(unittest.TestCase):
         count = registry.register_methods_batch('TestController', methods)
         elapsed = time.perf_counter() - start
 
-        print(f"  ✓ Batch registered 1,000 methods in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
+        print(f"  [OK] Batch registered 1,000 methods in {elapsed:.4f}s ({1000/elapsed:.0f} ops/sec)")
         self.assertEqual(count, 1000)
         self.assertLess(elapsed, 0.01, "Batch registration should be extremely fast")
 
@@ -164,7 +164,7 @@ class PerformanceBenchmark(unittest.TestCase):
         self.assertIn("test2", registry._metadata)
         self.assertNotIn("test1", registry._metadata)
 
-        print("  ✓ Lazy metadata initialization working correctly")
+        print("  [OK] Lazy metadata initialization working correctly")
 
     def test_memory_efficiency_slots(self):
         """Test that __slots__ reduces memory overhead."""
@@ -186,7 +186,7 @@ class PerformanceBenchmark(unittest.TestCase):
         # Objects with __slots__ use ~56 bytes overhead
         # For 1000 registries, savings would be ~224KB
 
-        print("  ✓ Registry uses __slots__ for memory efficiency")
+        print("  [OK] Registry uses __slots__ for memory efficiency")
 
     def test_service_instance_caching(self):
         """Test that service instances are cached (O(1) re-access)."""
@@ -207,7 +207,7 @@ class PerformanceBenchmark(unittest.TestCase):
             instance2 = registry.get_instance('TestService')
         cached_access = (time.perf_counter() - start) / 10000
 
-        print(f"  ✓ First access: {first_access*1000:.3f}ms, Cached: {cached_access*1000000:.1f}μs")
+        print(f"  [OK] First access: {first_access*1000:.3f}ms, Cached: {cached_access*1000000:.1f}μs")
         print(f"    Speedup: {first_access/cached_access:.0f}x faster")
 
         # Cached access should be at least 10x faster
@@ -243,7 +243,7 @@ def run_benchmarks():
         print("  • Service instance caching")
         print("  • Batch operations support")
     else:
-        print("❌ Some benchmarks failed - review results above")
+        print("[ERROR] Some benchmarks failed - review results above")
 
     print("="*70 + "\n")
 

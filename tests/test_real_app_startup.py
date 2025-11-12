@@ -32,7 +32,7 @@ class DatabaseService(Service):
     """数据库服务"""
 
     def on_init(self):
-        logger.info("✓ DatabaseService initialized")
+        logger.info("[OK] DatabaseService initialized")
         self.connected = True
 
     def query(self, sql):
@@ -49,7 +49,7 @@ class UserService(Service):
     database = InjectByName('DatabaseService')
 
     def on_init(self):
-        logger.info("✓ UserService initialized")
+        logger.info("[OK] UserService initialized")
 
     def get_users(self):
         """获取用户列表"""
@@ -84,15 +84,15 @@ class UserController:
         try:
             # 调用 service 方法
             users = self.user_service.get_users()
-            logger.info(f"✓ Got users: {users}")
+            logger.info(f"[OK] Got users: {users}")
 
             # 调用测试方法
             binding = self.user_service.get_binding()
-            logger.info(f"✓ Got binding: {binding}")
+            logger.info(f"[OK] Got binding: {binding}")
 
             return {"status": "ok", "users": users}
         except AttributeError as e:
-            logger.error(f"✗ AttributeError: {e}")
+            logger.error(f"[FAIL] AttributeError: {e}")
             logger.error(f"  user_service type: {type(self.user_service)}")
             raise
 
@@ -116,15 +116,15 @@ def test_with_application_run():
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
     injection_registry.add_provider_registry(service_registry, priority=100)
-    print("✓ 依赖注入配置完成")
+    print("[OK] 依赖注入配置完成")
 
     print("\n[步骤 2] 检查已注册的 Service...")
     services = list(service_registry.list_all().keys())
-    print(f"✓ 已注册 Service: {services}")
+    print(f"[OK] 已注册 Service: {services}")
 
     print("\n[步骤 3] 初始化所有 Service...")
     service_registry.initialize_all()
-    print("✓ Service 初始化完成")
+    print("[OK] Service 初始化完成")
 
     print("\n[步骤 4] 验证 Service 实例...")
     for name in services:
@@ -136,15 +136,15 @@ def test_with_application_run():
 
     print("\n[步骤 5] 创建 Controller 实例并测试...")
     controller = UserController()
-    print(f"✓ Controller 创建: {type(controller).__name__}")
+    print(f"[OK] Controller 创建: {type(controller).__name__}")
     print(f"  • user_service 类型: {type(controller.user_service).__name__}")
 
     # 测试方法调用
     try:
         result = controller.user_service.get_binding()
-        print(f"✓ 方法调用成功: {result}")
+        print(f"[OK] 方法调用成功: {result}")
     except AttributeError as e:
-        print(f"✗ 方法调用失败: {e}")
+        print(f"[FAIL] 方法调用失败: {e}")
         raise
 
     print("\n" + "=" * 70)
@@ -179,13 +179,13 @@ def test_with_cullinan_app():
 
     print("\n[步骤 3] 创建 Controller 并测试...")
     controller = UserController()
-    print(f"✓ Controller 创建: {type(controller).__name__}")
+    print(f"[OK] Controller 创建: {type(controller).__name__}")
 
     try:
         result = controller.user_service.get_binding()
-        print(f"✓ 方法调用成功: {result}")
+        print(f"[OK] 方法调用成功: {result}")
     except AttributeError as e:
-        print(f"✗ 方法调用失败: {e}")
+        print(f"[FAIL] 方法调用失败: {e}")
         raise
 
     print("\n[步骤 4] 关闭应用...")
@@ -220,7 +220,7 @@ def main():
         print("=" * 70)
 
     except Exception as e:
-        logger.error(f"\n❌ 测试失败: {e}", exc_info=True)
+        logger.error(f"\n[ERROR] 测试失败: {e}", exc_info=True)
         sys.exit(1)
 
 

@@ -29,12 +29,12 @@ def test(description):
                 func()
                 tests_passed += 1
                 test_details.append(('PASS', description))
-                print(f"✓ {description}")
+                print(f"[OK] {description}")
                 return True
             except Exception as e:
                 tests_failed += 1
                 test_details.append(('FAIL', description, str(e)))
-                print(f"✗ {description}")
+                print(f"[FAIL] {description}")
                 print(f"  Error: {e}")
                 traceback.print_exc()
                 return False
@@ -504,18 +504,18 @@ if tests_failed > 0:
     print("FAILED TESTS:")
     for detail in test_details:
         if detail[0] == 'FAIL':
-            print(f"  ✗ {detail[1]}")
+            print(f"  [FAIL] {detail[1]}")
             if len(detail) > 2:
                 print(f"    {detail[2]}")
     print()
 
 # Exit with appropriate code
 if tests_failed == 0:
-    print("✓ ALL TESTS PASSED!")
+    print("[OK] ALL TESTS PASSED!")
     print()
     sys.exit(0)
 else:
-    print("✗ SOME TESTS FAILED")
+    print("[FAIL] SOME TESTS FAILED")
     print()
     sys.exit(1)
 

@@ -682,7 +682,7 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     global controller_self
     start_time = time.time()
 
-    # 🔥 关键修复：从工厂获取 Controller 类并实例化
+    # [HOT] 关键修复：从工厂获取 Controller 类并实例化
     # 这样 @injectable 会自动注入依赖，InjectByName 描述符会正常工作
     if type == 'get':
         controller_factory = getattr(self, 'get_controller_factory', None) or getattr(self, 'get_controller_self', None)
@@ -1088,7 +1088,7 @@ def controller(**kwargs) -> Callable:
 
                 # Create and register handler (backward compatible)
                 handler = EncapsulationHandler.add_url(full_url, method_func)
-                # 🔥 存储实例工厂函数，而不是类
+                # [HOT] 存储实例工厂函数，而不是类
                 # 这样在 request_handler 中可以按需创建实例
                 # @injectable 会自动注入依赖
                 setattr(handler, http_method + '_controller_factory', cls)

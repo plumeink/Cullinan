@@ -46,11 +46,11 @@ def test_websocket_with_injection():
 
     print("[1] WebSocket Handler Registration")
     assert websocket_registry.has('TestWebSocketHandler'), "Handler not registered"
-    print("  ✓ Handler registered")
+    print("  [OK] Handler registered")
 
     url = websocket_registry.get_url('TestWebSocketHandler')
     assert url == '/ws/test', f"Expected '/ws/test', got '{url}'"
-    print(f"  ✓ URL: {url}")
+    print(f"  [OK] URL: {url}")
 
     # Check dependency injection
     print("\n[2] Dependency Injection")
@@ -63,14 +63,14 @@ def test_websocket_with_injection():
     assert hasattr(handler, 'notification_service'), "notification_service not injected"
     assert isinstance(handler.notification_service, NotificationService), \
         "notification_service is not NotificationService instance"
-    print("  ✓ NotificationService injected")
+    print("  [OK] NotificationService injected")
 
     # Test functionality
     print("\n[3] Functionality Test")
     result = handler.on_message("test message")
     expected = "Echo: Notification: test message"
     assert result == expected, f"Expected '{expected}', got '{result}'"
-    print(f"  ✓ Result: {result}")
+    print(f"  [OK] Result: {result}")
 
     print("\n" + "="*50)
     print("SUCCESS: WebSocket dependency injection works!")

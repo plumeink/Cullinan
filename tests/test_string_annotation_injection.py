@@ -94,7 +94,7 @@ def test_string_annotation_injection():
     assert isinstance(user_svc, UserService), \
         f"user_service 应该是 UserService 实例，但是：{type(user_svc)}"
 
-    print("    ✓ 两个 Service 都已正确注入")
+    print("    [OK] 两个 Service 都已正确注入")
 
     # 4. 测试功能
     print("\n[4] 测试功能")
@@ -106,12 +106,12 @@ def test_string_annotation_injection():
 
     assert result_email == "Email sent to user@test.com"
     assert result_user == "User 123"
-    print("    ✓ 功能正常")
+    print("    [OK] 功能正常")
 
     print("\n" + "="*60)
     print("SUCCESS: 字符串注解注入完全正常！")
     print("="*60)
-    print("\n✨ 现在可以像 SpringBoot 一样使用依赖注入：")
+    print("\n[INFO] 现在可以像 SpringBoot 一样使用依赖注入：")
     print("   - 无需 import Service 类")
     print("   - 无需担心循环导入")
     print("   - Controller 可以在 Service 之前定义")
@@ -156,7 +156,7 @@ def test_mixed_annotations():
     assert isinstance(MixedController.svc_a, ServiceA)
     assert isinstance(MixedController.svc_b, ServiceB)
 
-    print("✓ 字符串注解和实际类型可以混合使用")
+    print("[OK] 字符串注解和实际类型可以混合使用")
 
     return True
 

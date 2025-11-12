@@ -58,21 +58,21 @@ class CullinanApplication:
             # Get registries (ServiceRegistry auto-registers itself as provider)
             injection_registry = get_injection_registry()
             service_registry = get_service_registry()
-            logger.info("  ✓ Dependency injection configured")
+            logger.info("  [OK] Dependency injection configured")
 
             # Step 2: Discover services (they are registered by @service decorator)
             logger.info("\n[2/3] Discovering services...")
             service_count = service_registry.count()
-            logger.info(f"  ✓ Found {service_count} registered services")
+            logger.info(f"  [OK] Found {service_count} registered services")
 
             # Step 3: Initialize all services (按依赖顺序实例化 + 调用 on_init)
             logger.info("\n[3/3] Initializing services...")
             if service_count > 0:
                 # 使用 initialize_all() 按依赖顺序初始化所有 Service
                 service_registry.initialize_all()
-                logger.info(f"  ✓ All {service_count} services initialized")
+                logger.info(f"  [OK] All {service_count} services initialized")
             else:
-                logger.info("  • No services to initialize")
+                logger.info("  [INFO] No services to initialize")
 
             self._running = True
 
@@ -81,7 +81,7 @@ class CullinanApplication:
             logger.info("╚═══════════════════════════════════════════════════════════════════╝\n")
 
         except Exception as e:
-            logger.error(f"\n✗ Application startup failed: {e}")
+            logger.error(f"\n[ERROR] Application startup failed: {e}")
             raise
 
     async def shutdown(self, force: bool = False) -> None:
@@ -107,7 +107,7 @@ class CullinanApplication:
                     else:
                         handler()
                 except Exception as e:
-                    logger.error(f"  ✗ Shutdown handler error: {e}")
+                    logger.error(f"  [ERROR] Shutdown handler error: {e}")
                     if not force:
                         raise
 
@@ -118,7 +118,7 @@ class CullinanApplication:
             logger.info("╚═══════════════════════════════════════════════════════════════════╝\n")
 
         except Exception as e:
-            logger.error(f"\n✗ Shutdown error: {e}")
+            logger.error(f"\n[ERROR] Shutdown error: {e}")
             if not force:
                 raise
 

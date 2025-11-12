@@ -29,7 +29,7 @@ class TestService(Service):
     """测试服务"""
 
     def on_init(self):
-        logger.info("✓ TestService.on_init() called")
+        logger.info("[OK] TestService.on_init() called")
 
     def get_binding(self):
         """测试方法"""
@@ -60,10 +60,10 @@ class TestController:
         # 2. 尝试调用方法
         try:
             result = self.test_service.get_binding()
-            logger.info(f"✓ Method call successful: {result}")
+            logger.info(f"[OK] Method call successful: {result}")
             return {"status": "ok", "result": result}
         except AttributeError as e:
-            logger.error(f"✗ AttributeError: {e}")
+            logger.error(f"[FAIL] AttributeError: {e}")
             logger.error(f"  test_service type: {type(self.test_service)}")
             logger.error(f"  test_service dir: {dir(self.test_service)[:10]}")
             raise
@@ -85,17 +85,17 @@ def diagnose():
 
     service_registry = get_service_registry()
     services = service_registry.list_all()
-    print(f"✓ 已注册 Service: {services}")
+    print(f"[OK] 已注册 Service: {services}")
 
     # 2. 初始化 Service
     print("\n[步骤 2] 初始化 Service...")
     service_registry.initialize_all()
-    print("✓ Service 初始化完成")
+    print("[OK] Service 初始化完成")
 
     # 3. 检查 Service 实例
     print("\n[步骤 3] 检查 Service 实例...")
     test_service = service_registry.get_instance('TestService')
-    print(f"✓ TestService 实例: {test_service}")
+    print(f"[OK] TestService 实例: {test_service}")
     print(f"  类型: {type(test_service)}")
     print(f"  有 get_binding 方法: {hasattr(test_service, 'get_binding')}")
 
@@ -130,7 +130,7 @@ def diagnose():
     # 创建实例
     print("\n[步骤 7] 创建 Controller 实例...")
     controller_instance = TestController()
-    print(f"✓ Controller 实例创建: {controller_instance}")
+    print(f"[OK] Controller 实例创建: {controller_instance}")
 
     # 检查实例属性
     print("\n[步骤 8] 检查实例属性...")
@@ -146,9 +146,9 @@ def diagnose():
     print("\n[步骤 9] 尝试调用 Service 方法...")
     try:
         result = controller_instance.test_service.get_binding()
-        print(f"✓ 成功！结果: {result}")
+        print(f"[OK] 成功！结果: {result}")
     except AttributeError as e:
-        print(f"✗ 失败！错误: {e}")
+        print(f"[FAIL] 失败！错误: {e}")
         print(f"  实际类型: {type(controller_instance.test_service)}")
         print(f"  实际值: {controller_instance.test_service}")
 
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     try:
         diagnose()
     except Exception as e:
-        logger.error(f"\n❌ 诊断失败: {e}", exc_info=True)
+        logger.error(f"\n[ERROR] 诊断失败: {e}", exc_info=True)
         import sys
         sys.exit(1)
 

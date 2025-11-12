@@ -51,18 +51,18 @@ def reflect_module(module_name: str, func: str) -> None:
     if not module_name:
         return
 
-    logger.debug("\t|||\t\t\tReflecting module: %s (func: %s)", module_name, func)
+    logger.debug("Reflecting module: %s (func: %s)", module_name, func)
 
     mod = None
 
     # 策略0: 优先检查 sys.modules（Nuitka 环境下模块通常已加载）
     if module_name in sys.modules:
         mod = sys.modules[module_name]
-        logger.info("\t|||\t\t\t✓ Found in sys.modules: %s", module_name)
+        logger.info("[OK] Found in sys.modules: %s", module_name)
 
         # 对于 controller 和 service，模块已加载意味着装饰器已执行
         if func in ('nobody', 'controller'):
-            logger.debug("\t|||\t\t\t✓ Module already loaded (decorators executed): %s", module_name)
+            logger.debug("[OK] Module already loaded (decorators executed): %s", module_name)
             return
 
         # 继续调用函数（如果需要）
@@ -71,24 +71,24 @@ def reflect_module(module_name: str, func: str) -> None:
                 fn = getattr(mod, func, None)
                 if callable(fn):
                     fn()
-                    logger.debug("\t|||\t\t\t✓ Called function: %s.%s", module_name, func)
+                    logger.debug("[OK] Called function: %s.%s", module_name, func)
             except Exception as e:
-                logger.debug("\t|||\t\t\t✗ Error calling %s.%s: %s", module_name, func, str(e))
+                logger.debug("[FAIL] Error calling %s.%s: %s", module_name, func, str(e))
         return
 
     # 策略1: 标准导入（适用于所有环境）
     try:
         mod = importlib.import_module(module_name)
-        logger.info("\t|||\t\t\t✓ Successfully imported: %s", module_name)
+        logger.info("[OK] Successfully imported: %s", module_name)
 
         # 对于 controller 和 service，导入即可（装饰器会执行）
         if func in ('nobody', 'controller'):
-            logger.debug("\t|||\t\t\t✓ Module imported (decorators executed): %s", module_name)
+            logger.debug("[OK] Module imported (decorators executed): %s", module_name)
             return
 
     except ImportError as e:
         error_msg = str(e)
-        logger.warning("\t|||\t\t\t✗ Import failed for %s: %s", module_name, error_msg)
+        logger.warning("[FAIL] Import failed for %s: %s", module_name, error_msg)
 
         # 策略2: 尝试相对导入（Nuitka 编译后可能需要）
         if is_nuitka_compiled() and '.' in module_name:
@@ -100,7 +100,7 @@ def reflect_module(module_name: str, func: str) -> None:
                     parent = importlib.import_module(parent_pkg)
                     if hasattr(parent, mod_part):
                         mod = getattr(parent, mod_part)
-                        logger.info("\t|||\t\t\t✓ Imported as attribute: %s from %s", mod_part, parent_pkg)
+                        logger.info("[OK] Imported as attribute: %s from %s", mod_part, parent_pkg)
 
                         if func in ('nobody', 'controller'):
                             return
@@ -108,19 +108,19 @@ def reflect_module(module_name: str, func: str) -> None:
                         # 尝试使用 __import__ 的 fromlist 参数
                         try:
                             mod = __import__(module_name, fromlist=[mod_part])
-                            logger.info("\t|||\t\t\t✓ Imported using __import__: %s", module_name)
+                            logger.info("[OK] Imported using __import__: %s", module_name)
 
                             if func in ('nobody', 'controller'):
                                 return
                         except Exception as e2:
-                            logger.debug("\t|||\t\t\t✗ __import__ also failed: %s", str(e2))
+                            logger.debug("[FAIL] __import__ also failed: %s", str(e2))
                 except Exception as e3:
-                    logger.debug("\t|||\t\t\t✗ Relative import failed: %s", str(e3))
+                    logger.debug("[FAIL] Relative import failed: %s", str(e3))
 
         # 策略3: 从 sys.modules 获取（可能已被打包工具预加载）
         if module_name in sys.modules:
             mod = sys.modules[module_name]
-            logger.info("\t|||\t\t\t✓ Found in sys.modules: %s", module_name)
+            logger.info("[OK] Found in sys.modules: %s", module_name)
 
             if func in ('nobody', 'controller'):
                 return
@@ -148,21 +148,21 @@ def reflect_module(module_name: str, func: str) -> None:
                             mod = importlib.util.module_from_spec(spec)
                             sys.modules[module_name] = mod  # 注册到 sys.modules
                             spec.loader.exec_module(mod)
-                            logger.info("\t|||\t\t\t✓ Imported from file: %s", module_path)
+                            logger.info("[OK] Imported from file: %s", module_path)
                             break
                     except Exception as import_ex:
-                        logger.warning("\t|||\t\t\t✗ Failed to import from file %s: %s", module_path, str(import_ex))
+                        logger.warning("[FAIL] Failed to import from file %s: %s", module_path, str(import_ex))
     except Exception as e:
-        logger.warning("\t|||\t\t\t✗ Unexpected error importing %s: %s", module_name, str(e))
+        logger.warning("[FAIL] Unexpected error importing %s: %s", module_name, str(e))
         return
 
     if mod is None:
-        logger.warning("\t|||\t\t\t✗ Could not import module: %s", module_name)
+        logger.warning("[FAIL] Could not import module: %s", module_name)
         return
 
     # 对于 controller 和 service，只需导入即可（装饰器会在导入时执行）
     if func in ('nobody', 'controller'):
-        logger.debug("\t|||\t\t\t✓ Module imported (decorators executed): %s", module_name)
+        logger.debug("[OK] Module imported (decorators executed): %s", module_name)
         return
 
     # 调用指定的函数（如果存在）
@@ -170,9 +170,9 @@ def reflect_module(module_name: str, func: str) -> None:
         fn = getattr(mod, func, None)
         if callable(fn):
             fn()
-            logger.debug("\t|||\t\t\t✓ Called function: %s.%s", module_name, func)
+            logger.debug("[OK] Called function: %s.%s", module_name, func)
     except Exception as e:
-        logger.debug("\t|||\t\t\t✗ Error calling %s.%s: %s", module_name, func, str(e))
+        logger.debug("[FAIL] Error calling %s.%s: %s", module_name, func, str(e))
         return
 
 
@@ -320,7 +320,7 @@ def run(handlers=None):
                 pass
     else:
         logger.info(BANNER)
-    logger.info("\t|||\tloading env...")
+    logger.info("loading env...")
     load_dotenv()
     load_dotenv(verbose=True)
     env_path = Path(os.getcwd()) / '.env'
@@ -333,7 +333,7 @@ def run(handlers=None):
     # IMPORTANT: Configure dependency injection system BEFORE scanning
     # This ensures that when @service and @controller decorators execute,
     # the injection system is already set up
-    logger.info("\t|||\t\t└---configuring dependency injection...")
+    logger.info("└---configuring dependency injection...")
     from cullinan.core.injection import get_injection_registry
     from cullinan.service.registry import get_service_registry
 
@@ -341,52 +341,52 @@ def run(handlers=None):
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
 
-    logger.info("\t|||\t\t\t└---dependency injection configured")
+    logger.info("└---dependency injection configured")
 
     # Now scan services and controllers
-    logger.info("\t|||\t\t└---scanning services...")
-    logger.info("\t|||\t\t\t...")
+    logger.info("└---scanning services...")
+    logger.info("...")
     service_modules = file_list_func()
 
     if not service_modules:
-        logger.warning("\t|||\t\t\t⚠ No modules found for service scanning!")
-        logger.warning("\t|||\t\t\t⚠ This is expected in packaged environments without configuration.")
-        logger.warning("\t|||\t\t\t⚠ Consider using cullinan.configure(user_packages=['your_app'])")
+        logger.warning("[WARN] No modules found for service scanning!")
+        logger.warning("[WARN] This is expected in packaged environments without configuration.")
+        logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
     else:
-        logger.info("\t|||\t\t\t└---found %d modules to scan", len(service_modules))
+        logger.info("└---found %d modules to scan", len(service_modules))
         scan_service(service_modules)
 
-    logger.info("\t|||\t\t└---scanning controllers...")
-    logger.info("\t|||\t\t\t...")
+    logger.info("└---scanning controllers...")
+    logger.info("...")
     controller_modules = file_list_func()
 
     if not controller_modules:
-        logger.warning("\t|||\t\t\t⚠ No modules found for controller scanning!")
-        logger.warning("\t|||\t\t\t⚠ This is expected in packaged environments without configuration.")
+        logger.warning("[WARN] No modules found for controller scanning!")
+        logger.warning("[WARN] This is expected in packaged environments without configuration.")
     else:
-        logger.info("\t|||\t\t\t└---found %d modules to scan", len(controller_modules))
+        logger.info("└---found %d modules to scan", len(controller_modules))
         scan_controller(controller_modules)
 
     sort_url()
 
     # ========== Service 初始化（扫描完成后） ==========
-    logger.info("\t|||\t\t└---initializing services...")
+    logger.info("└---initializing services...")
     from cullinan.service import get_service_registry
 
     service_registry = get_service_registry()
     service_count = service_registry.count()
 
     if service_count > 0:
-        logger.info(f"\t|||\t\t\t└---found {service_count} registered services")
+        logger.info(f"└---found {service_count} registered services")
         try:
             # 按依赖顺序初始化所有 Service（调用 initialize_all）
             service_registry.initialize_all()
-            logger.info(f"\t|||\t\t\t✓ All {service_count} services initialized")
+            logger.info(f"[OK] All {service_count} services initialized")
         except Exception as e:
-            logger.error(f"\t|||\t\t\t✗ Service initialization failed: {e}", exc_info=True)
-            logger.warning("\t|||\t\t\t⚠ Application will continue with partial initialization")
+            logger.error(f"[FAIL] Service initialization failed: {e}", exc_info=True)
+            logger.warning("[WARN] Application will continue with partial initialization")
     else:
-        logger.info("\t|||\t\t\t└---no services registered")
+        logger.info("└---no services registered")
     # ========== END Service 初始化 ==========
 
     # Get handlers from registry
@@ -397,19 +397,19 @@ def run(handlers=None):
         handlers=registered_handlers + handlers,
         **settings
     )
-    logger.info("\t|||\t\t└---loading controller finish\n\t|||\t")
+    logger.info("└---loading controller finish\n")
     define("port", default=os.getenv("SERVER_PORT", 4080), help="run on the given port", type=int)
-    logger.info("\t|||\tloading env finish\n\t|||\t")
+    logger.info("loading env finish\n")
     http_server = tornado.httpserver.HTTPServer(mapping)
     if os.getenv("SERVER_THREAD") is not None:
-        logger.info("\t|||\tserver is starting")
-        logger.info("\t|||\tport is %s", str(os.getenv("SERVER_PORT", 4080)))
+        logger.info("server is starting")
+        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
         http_server.bind(options.port)
         http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
     else:
         http_server.listen(options.port)
-        logger.info("\t|||\tserver is starting")
-        logger.info("\t|||\tport is %s", str(os.getenv("SERVER_PORT", 4080)))
+        logger.info("server is starting")
+        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
 
     # Register signal handlers to allow graceful shutdown (SIGINT/SIGTERM)
     try:

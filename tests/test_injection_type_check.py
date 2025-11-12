@@ -76,9 +76,9 @@ def test_injection_types():
     # 尝试调用方法
     try:
         result = controller1.test_service.get_something()
-        print(f"    ✓ 调用方法成功: {result}")
+        print(f"    [OK] 调用方法成功: {result}")
     except AttributeError as e:
-        print(f"    ✗ 调用方法失败: {e}")
+        print(f"    [FAIL] 调用方法失败: {e}")
         print(f"    实际对象: {controller1.test_service}")
         print(f"    dir(对象): {[m for m in dir(controller1.test_service) if not m.startswith('_')][:10]}")
 
@@ -98,9 +98,9 @@ def test_injection_types():
     # 尝试调用方法
     try:
         result = controller2.test_service.get_something()
-        print(f"    ✓ 调用方法成功: {result}")
+        print(f"    [OK] 调用方法成功: {result}")
     except AttributeError as e:
-        print(f"    ✗ 调用方法失败: {e}")
+        print(f"    [FAIL] 调用方法失败: {e}")
         print(f"    实际对象: {controller2.test_service}")
 
     # 5. 检查 __dict__

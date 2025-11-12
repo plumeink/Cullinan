@@ -65,7 +65,7 @@ def test_path_utils():
             print(f"   ✅ controller.py found at: {controller_path}")
             print(f"   Exists: {controller_path.exists()}")
         else:
-            print(f"   ❌ controller.py not found")
+            print(f"   [ERROR] controller.py not found")
         print()
 
         # 测试资源路径
@@ -94,7 +94,7 @@ def test_path_utils():
             print(f"   post_api: {post_api}")
             print(f"   get_controller_registry: {get_controller_registry}")
         except Exception as e:
-            print(f"   ❌ Controller import failed: {e}")
+            print(f"   [ERROR] Controller import failed: {e}")
         print()
 
         # 测试核心模块
@@ -112,7 +112,7 @@ def test_path_utils():
             print(f"   Inject: {Inject}")
             print(f"   injectable: {injectable}")
         except Exception as e:
-            print(f"   ❌ Core module import failed: {e}")
+            print(f"   [ERROR] Core module import failed: {e}")
         print()
 
         print("=" * 70)
@@ -122,7 +122,7 @@ def test_path_utils():
         return True
 
     except Exception as e:
-        print(f"\n❌ Test failed with error: {e}")
+        print(f"\n[ERROR] Test failed with error: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -154,7 +154,7 @@ def test_controller_loading():
         return True
 
     except Exception as e:
-        print(f"❌ Controller loading failed: {e}")
+        print(f"[ERROR] Controller loading failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -176,15 +176,15 @@ def main():
     print("\n" + "=" * 70)
     print("Test Summary")
     print("=" * 70)
-    print(f"Path Utils Test: {'✅ PASSED' if test1_passed else '❌ FAILED'}")
-    print(f"Controller Loading Test: {'✅ PASSED' if test2_passed else '❌ FAILED'}")
+    print(f"Path Utils Test: {'✅ PASSED' if test1_passed else '[ERROR] FAILED'}")
+    print(f"Controller Loading Test: {'✅ PASSED' if test2_passed else '[ERROR] FAILED'}")
     print("=" * 70)
 
     if test1_passed and test2_passed:
         print("\n🎉 All tests PASSED! The packaging fix is working correctly.")
         return 0
     else:
-        print("\n❌ Some tests FAILED. Please check the errors above.")
+        print("\n[ERROR] Some tests FAILED. Please check the errors above.")
         return 1
 
 

@@ -49,25 +49,25 @@ def print_header(text):
 def print_success(text):
     """打印成功信息"""
     if COLORS_AVAILABLE:
-        print(f"{Fore.GREEN}✓ {text}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}[OK] {text}{Style.RESET_ALL}")
     else:
-        print(f"✓ {text}")
+        print(f"[OK] {text}")
 
 
 def print_error(text):
     """打印错误信息"""
     if COLORS_AVAILABLE:
-        print(f"{Fore.RED}✗ {text}{Style.RESET_ALL}")
+        print(f"{Fore.RED}[FAIL] {text}{Style.RESET_ALL}")
     else:
-        print(f"✗ {text}")
+        print(f"[FAIL] {text}")
 
 
 def print_warning(text):
     """打印警告信息"""
     if COLORS_AVAILABLE:
-        print(f"{Fore.YELLOW}⚠ {text}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[WARN] {text}{Style.RESET_ALL}")
     else:
-        print(f"⚠ {text}")
+        print(f"[WARN] {text}")
 
 
 def run_tests(verbose=False, quick=False):

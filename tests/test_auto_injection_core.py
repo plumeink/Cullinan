@@ -47,7 +47,7 @@ class UserService(Service):
     email_service = InjectByName('EmailService')
     
     def on_init(self):
-        logger.info("✓ UserService initialized")
+        logger.info("[OK] UserService initialized")
     
     def create_user(self, name: str, email: str):
         """创建用户并发送欢迎邮件"""
@@ -129,39 +129,39 @@ def test_auto_injection():
     
     service_registry = get_service_registry()
     registered_services = service_registry.list_all()
-    print(f"✓ 已注册 {len(registered_services)} 个 Service:")
+    print(f"[OK] 已注册 {len(registered_services)} 个 Service:")
     for name in registered_services:
         print(f"  - {name}")
     
     # 2. 自动初始化所有 Service
     print("\n[步骤 2] 自动初始化所有 Service...")
     service_registry.initialize_all()
-    print("✓ 所有 Service 已初始化")
+    print("[OK] 所有 Service 已初始化")
     
     # 3. 测试 Service 层的注入
     print("\n[步骤 3] 测试 Service 层的依赖注入...")
     user_service = service_registry.get_instance('UserService')
-    print(f"✓ 获取到 UserService: {user_service}")
+    print(f"[OK] 获取到 UserService: {user_service}")
     
     # UserService 应该已经注入了 EmailService
-    print(f"✓ UserService.email_service: {user_service.email_service}")
+    print(f"[OK] UserService.email_service: {user_service.email_service}")
     
     # 测试 Service 方法
     result = user_service.create_user("Alice", "alice@example.com")
-    print(f"✓ 创建用户成功: {result}")
+    print(f"[OK] 创建用户成功: {result}")
     
     # 4. 测试 Controller 层的注入
     print("\n[步骤 4] 测试 Controller 层的依赖注入...")
     
     # 模拟 Controller 实例化
     controller_instance = UserController()
-    print(f"✓ Controller 实例化成功: {controller_instance}")
+    print(f"[OK] Controller 实例化成功: {controller_instance}")
     
     # Controller 应该已经注入了 UserService
-    print(f"✓ Controller.user_service: {controller_instance.user_service}")
+    print(f"[OK] Controller.user_service: {controller_instance.user_service}")
     
     # 验证注入的 service 可以调用方法
-    print(f"✓ 调用 service 方法: {controller_instance.user_service.get_something()}")
+    print(f"[OK] 调用 service 方法: {controller_instance.user_service.get_something()}")
 
     # 5. 验证注入链
     print("\n[步骤 5] 验证依赖注入链...")
@@ -177,12 +177,12 @@ def test_auto_injection():
     print("=" * 70)
     
     print("\n💡 关键特性:")
-    print("  1. ✓ Service 使用 @service 自动注册")
-    print("  2. ✓ Controller 和 Service 使用 InjectByName 注入")
-    print("  3. ✓ 完全不需要 import 被注入的类")
-    print("  4. ✓ 应用启动时自动初始化所有 Service")
-    print("  5. ✓ 延迟加载：首次访问时才解析依赖")
-    print("  6. ✓ 单例模式：所有注入的是同一个实例")
+    print("  1. [OK] Service 使用 @service 自动注册")
+    print("  2. [OK] Controller 和 Service 使用 InjectByName 注入")
+    print("  3. [OK] 完全不需要 import 被注入的类")
+    print("  4. [OK] 应用启动时自动初始化所有 Service")
+    print("  5. [OK] 延迟加载：首次访问时才解析依赖")
+    print("  6. [OK] 单例模式：所有注入的是同一个实例")
 
 
 if __name__ == '__main__':

@@ -59,7 +59,7 @@ def test_controller_class_level_injection():
     assert isinstance(channel_svc, ChannelService), \
         f"ERROR: channel_service is not ChannelService! Got {type(channel_svc)}"
 
-    print("  ✓ Class attribute is ChannelService instance (not Inject)")
+    print("  [OK] Class attribute is ChannelService instance (not Inject)")
 
     # Test functionality (without full HTTP request)
     print("\n[2] Testing direct access...")
@@ -72,7 +72,7 @@ def test_controller_class_level_injection():
     result = controller_class.channel_service.get_binding("test_repo")
     print(f"  Result: {result}")
     assert result == "binding_for_test_repo", f"Expected 'binding_for_test_repo', got {result}"
-    print("  ✓ Service method works correctly")
+    print("  [OK] Service method works correctly")
 
     print("\n" + "="*50)
     print("SUCCESS: Controller class-level injection works!")
@@ -116,14 +116,14 @@ def test_multiple_services_injection():
     # Verify both injected
     assert isinstance(MultiController.svc_a, ServiceA), "svc_a not injected"
     assert isinstance(MultiController.svc_b, ServiceB), "svc_b not injected"
-    print("  ✓ Both services injected")
+    print("  [OK] Both services injected")
 
     # Test direct access
     result_a = MultiController.svc_a.method_a()
     result_b = MultiController.svc_b.method_b()
     result = f"{result_a}-{result_b}"
     assert result == "A-B", f"Expected 'A-B', got {result}"
-    print(f"  ✓ Result: {result}")
+    print(f"  [OK] Result: {result}")
 
     print("\nSUCCESS: Multiple services injection works!")
 

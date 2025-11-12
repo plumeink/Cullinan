@@ -57,7 +57,7 @@ def test_complete_flow():
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
     injection_registry.add_provider_registry(service_registry, priority=100)
-    print("✓ Dependency injection configured")
+    print("[OK] Dependency injection configured")
 
     # Check service registration
     print(f"\n[Services]")

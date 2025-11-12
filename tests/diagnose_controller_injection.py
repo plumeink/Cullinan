@@ -42,7 +42,7 @@ class TestService(Service):
     def get_binding(self):
         return "binding_data"
 
-print("✓ TestService 已定义并注册")
+print("[OK] TestService 已定义并注册")
 
 # ============================================================================
 # 场景 2: 定义 Controller（模拟 @controller 装饰器）
@@ -63,19 +63,19 @@ class TestControllerWithInjectByName:
 
         # 检查是否是 InjectByName 对象
         if type(self.test_service).__name__ == 'InjectByName':
-            logger.error("  ✗ self.test_service 是 InjectByName 对象，注入失败！")
+            logger.error("  [FAIL] self.test_service 是 InjectByName 对象，注入失败！")
             return False
 
         # 尝试调用方法
         try:
             result = self.test_service.get_data()
-            logger.info(f"  ✓ 调用成功: {result}")
+            logger.info(f"  [OK] 调用成功: {result}")
             return True
         except AttributeError as e:
-            logger.error(f"  ✗ 调用失败: {e}")
+            logger.error(f"  [FAIL] 调用失败: {e}")
             return False
 
-print("✓ TestController 已定义")
+print("[OK] TestController 已定义")
 
 # ============================================================================
 # 场景 3: 检查 Controller 是否被标记为 injectable
@@ -91,7 +91,7 @@ if has_injections:
     injection_info = injection_registry.get_injection_info(TestControllerWithInjectByName)
     print(f"  注入信息: {injection_info}")
 else:
-    print("  ⚠️ Controller 未被标记为 injectable！")
+    print("  [WARN]️ Controller 未被标记为 injectable！")
 
 # ============================================================================
 # 场景 4: 初始化 Service
@@ -104,7 +104,7 @@ service_registry = get_service_registry()
 service_registry.initialize_all()
 
 test_service_instance = service_registry.get_instance('TestService')
-print(f"✓ TestService 已初始化: {test_service_instance}")
+print(f"[OK] TestService 已初始化: {test_service_instance}")
 print(f"  类型: {type(test_service_instance)}")
 
 # ============================================================================
@@ -130,7 +130,7 @@ if 'test_service' in controller.__dict__:
     print(f"    __dict__['test_service']: {type(controller.__dict__['test_service'])}")
     print(f"    是 TestService 实例: {isinstance(controller.__dict__['test_service'], TestService)}")
 else:
-    print(f"    ⚠️ 'test_service' 不在 __dict__ 中")
+    print(f"    [WARN]️ 'test_service' 不在 __dict__ 中")
 
 # ============================================================================
 # 场景 6: 调用 Controller 方法
@@ -156,18 +156,18 @@ class TestControllerWithInject:
         logger.info(f"  type(self.test_service) = {type(self.test_service)}")
 
         if type(self.test_service).__name__ == 'Inject':
-            logger.error("  ✗ self.test_service 是 Inject 对象，注入失败！")
+            logger.error("  [FAIL] self.test_service 是 Inject 对象，注入失败！")
             return False
 
         try:
             result = self.test_service.get_data()
-            logger.info(f"  ✓ 调用成功: {result}")
+            logger.info(f"  [OK] 调用成功: {result}")
             return True
         except AttributeError as e:
-            logger.error(f"  ✗ 调用失败: {e}")
+            logger.error(f"  [FAIL] 调用失败: {e}")
             return False
 
-print("✓ TestControllerWithInject 已定义")
+print("[OK] TestControllerWithInject 已定义")
 
 has_injections2 = injection_registry.has_injections(TestControllerWithInject)
 print(f"  是否在 InjectionRegistry 中: {has_injections2}")
@@ -190,19 +190,19 @@ print("诊断总结")
 print("=" * 80)
 
 if success:
-    print("✓ InjectByName 方式: 成功")
+    print("[OK] InjectByName 方式: 成功")
 else:
-    print("✗ InjectByName 方式: 失败")
+    print("[FAIL] InjectByName 方式: 失败")
 
 if success2:
-    print("✓ Inject 方式: 成功")
+    print("[OK] Inject 方式: 成功")
 else:
-    print("✗ Inject 方式: 失败")
+    print("[FAIL] Inject 方式: 失败")
 
 if not success or not success2:
-    print("\n⚠️ 发现问题，需要修复！")
+    print("\n[WARN]️ 发现问题，需要修复！")
     sys.exit(1)
 else:
-    print("\n✓ 所有测试通过！")
+    print("\n[OK] 所有测试通过！")
     sys.exit(0)
 

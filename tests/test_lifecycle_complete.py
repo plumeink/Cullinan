@@ -51,7 +51,7 @@ class TestLifecyclePhases(unittest.TestCase):
             self.execution_log,
             ['post_construct', 'startup', 'shutdown', 'pre_destroy']
         )
-        print("  ✓ Lifecycle phases execute in correct order")
+        print("  [OK] Lifecycle phases execute in correct order")
 
     def test_async_lifecycle_phases(self):
         """Test async lifecycle methods"""
@@ -76,7 +76,7 @@ class TestLifecyclePhases(unittest.TestCase):
 
         self.assertIn('post_construct_async', self.execution_log)
         self.assertIn('startup_async', self.execution_log)
-        print("  ✓ Async lifecycle methods work")
+        print("  [OK] Async lifecycle methods work")
 
 
 class TestDependencyOrdering(unittest.TestCase):
@@ -122,7 +122,7 @@ class TestDependencyOrdering(unittest.TestCase):
 
         # Verify A starts before B, B starts before C
         self.assertEqual(self.startup_order, ['A', 'B', 'C'])
-        print("  ✓ Dependency ordering works")
+        print("  [OK] Dependency ordering works")
 
     def test_shutdown_reverse_order(self):
         """Test that components shutdown in reverse order"""
@@ -152,7 +152,7 @@ class TestDependencyOrdering(unittest.TestCase):
 
         # B depends on A, so B shuts down first
         self.assertEqual(self.shutdown_order, ['B', 'A'])
-        print("  ✓ Shutdown reverse ordering works")
+        print("  [OK] Shutdown reverse ordering works")
 
 
 class TestPhaseControl(unittest.TestCase):
@@ -203,7 +203,7 @@ class TestPhaseControl(unittest.TestCase):
 
         # Should start in phase order: Early (-100), Middle (0), Late (100)
         self.assertEqual(self.startup_order, ['Early', 'Middle', 'Late'])
-        print("  ✓ Phase-based ordering works")
+        print("  [OK] Phase-based ordering works")
 
 
 class TestServiceIntegration(unittest.TestCase):
@@ -244,7 +244,7 @@ class TestServiceIntegration(unittest.TestCase):
 
         self.assertIn('service_init', execution_log)
         self.assertIn('service_start', execution_log)
-        print("  ✓ Service lifecycle integration works")
+        print("  [OK] Service lifecycle integration works")
 
     def test_service_dependency_chain(self):
         """Test lifecycle with service dependency chain"""
@@ -283,7 +283,7 @@ class TestServiceIntegration(unittest.TestCase):
 
         # Should follow phase order: A (-100), B (-50), C (0)
         self.assertEqual(startup_log, ['A', 'B', 'C'])
-        print("  ✓ Service dependency chain with phases works")
+        print("  [OK] Service dependency chain with phases works")
 
 
 def run_all_tests():
@@ -312,9 +312,9 @@ def run_all_tests():
     print(f"Errors: {len(result.errors)}")
 
     if result.wasSuccessful():
-        print("\n✓ All lifecycle tests passed!")
+        print("\n[OK] All lifecycle tests passed!")
     else:
-        print("\n✗ Some tests failed")
+        print("\n[FAIL] Some tests failed")
 
     print("="*70 + "\n")
 

@@ -38,9 +38,9 @@ print(f"  是 TestService: {type(instance.test_service).__name__ == 'TestService
 print("\n[测试 3] 调用方法")
 try:
     result = instance.test_service.get_data()
-    print(f"  ✓ 调用成功: {result}")
+    print(f"  [OK] 调用成功: {result}")
 except AttributeError as e:
-    print(f"  ✗ 调用失败: {e}")
+    print(f"  [FAIL] 调用失败: {e}")
 
 print("\n[关键结论]")
 print("  • 类属性访问返回 InjectByName 对象（描述符本身）")
