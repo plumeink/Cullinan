@@ -65,7 +65,7 @@ v0.7x 架构包括：
 3. **[迁移指南](MIGRATION_GUIDE.md)** - 从 v0.6x 升级
 4. **[API迁移指南](API_MIGRATION_GUIDE.md)** - 完整的API迁移指南 ⚠️ **新增**
 5. **[旧代码清理参考](LEGACY_CLEANUP_REFERENCE.md)** - 快速清理参考
-6. **[更新日志](../../CHANGELOG.md)** - 版本历史和更改
+6. **[更新日志](../../docs_archive/reports/CHANGELOG.md)** - 版本历史和更改
 
 ### 对于开发者
 
@@ -160,7 +160,7 @@ class UserService(Service):
 - **文档索引**: [README.md](README.md)
 - **示例**: [../../examples/](../../examples/)
 - **源代码**: [../../cullinan/](../../cullinan/)
-- **更新日志**: [../../CHANGELOG.md](../../CHANGELOG.md)
+- **更新日志**: [../../CHANGELOG.md](../../docs_archive/reports/CHANGELOG.md)
 
 ---
 **最后更新**: 2025年11月11日  

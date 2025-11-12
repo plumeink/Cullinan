@@ -65,7 +65,7 @@ These files are available in the archive for historical reference.
 - **Migration Guide**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
 - **Documentation Index**: [README.md](README.md)
 - **Main README**: [../README.MD](../README.MD)
-- **Changelog**: [../CHANGELOG.md](../CHANGELOG.md)
+- **Changelog**: [../CHANGELOG.md](../docs_archive/reports/CHANGELOG.md)
 - **v0.7x Demo**: [../examples/v070_demo.py](../examples/v070_demo.py)
 
 ---
@@ -75,7 +75,7 @@ These files are available in the archive for historical reference.
 If you're looking to understand the v0.7x architecture:
 
 2. ✅ Review [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for upgrading from v0.6x
-2. ✅ Review [../CHANGELOG.md](../CHANGELOG.md) for migration guide
+2. ✅ Review [../CHANGELOG.md](../docs_archive/reports/CHANGELOG.md) for migration guide
 3. ✅ Study [../examples/v070_demo.py](../examples/v070_demo.py) for practical usage
 4. ✅ Read source code in `cullinan/core/` for implementation details
 

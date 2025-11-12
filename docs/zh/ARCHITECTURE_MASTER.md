@@ -405,7 +405,7 @@ class ChatHandler:
 ## 资源
 
 - **主 README**: [../../README.MD](../../README.MD)
-- **CHANGELOG**: [../../CHANGELOG.md](../../CHANGELOG.md)
+- **CHANGELOG**: [../../CHANGELOG.md](../../docs_archive/reports/CHANGELOG.md)
 - **示例**: [../../examples/v070_demo.py](../../examples/v070_demo.py)
 - **源代码**: [../../cullinan/](../../cullinan/)
 

@@ -65,7 +65,7 @@
 - **迁移指南**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
 - **文档索引**: [README.md](README.md)
 - **主 README**: [../../README.MD](../../README.MD)
-- **更新日志**: [../../CHANGELOG.md](../../CHANGELOG.md)
+- **更新日志**: [../../CHANGELOG.md](../../docs_archive/reports/CHANGELOG.md)
 - **v0.7x 演示**: [../../examples/v070_demo.py](../../examples/v070_demo.py)
 
 ---
