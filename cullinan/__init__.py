@@ -120,7 +120,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.78'
+__version__ = '0.79'
 
 __all__ = [
     # Configuration
