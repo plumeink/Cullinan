@@ -51,7 +51,19 @@ from .provider import (
     InstanceProvider,
     ClassProvider,
     FactoryProvider,
+    ScopedProvider,
     ProviderRegistry
+)
+
+# Scope System
+from .scope import (
+    Scope,
+    SingletonScope,
+    TransientScope,
+    RequestScope,
+    get_singleton_scope,
+    get_transient_scope,
+    get_request_scope
 )
 
 __version__ = "0.8.0-alpha"
