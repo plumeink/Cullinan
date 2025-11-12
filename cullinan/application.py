@@ -2,14 +2,12 @@
 import importlib
 import inspect
 import os
-import pkgutil
 import importlib.util
 import logging
 import signal
 
 import tornado.ioloop
 from cullinan.handler import get_handler_registry
-from cullinan.controller import get_header_registry
 from dotenv import load_dotenv
 from pathlib import Path
 import tornado.ioloop
@@ -18,18 +16,11 @@ import tornado.web
 import tornado.httpserver
 from tornado.options import define, options
 import sys
-from cullinan.exceptions import CallerPackageException
 
 # Import module scanning utilities (refactored for better maintainability)
 from cullinan.module_scanner import (
     is_pyinstaller_frozen,
     is_nuitka_compiled,
-    get_nuitka_standalone_mode,
-    get_pyinstaller_mode,
-    get_caller_package,
-    scan_modules_nuitka,
-    scan_modules_pyinstaller,
-    list_submodules,
     file_list_func
 )
 
@@ -126,49 +117,41 @@ def reflect_module(module_name: str, func: str) -> None:
                 except Exception as e3:
                     logger.debug("\t|||\t\t\t✗ Relative import failed: %s", str(e3))
 
-        # 策略3: 打包环境特殊处理 - 从 sys.modules 获取
+        # 策略3: 从 sys.modules 获取（可能已被打包工具预加载）
         if module_name in sys.modules:
             mod = sys.modules[module_name]
             logger.info("\t|||\t\t\t✓ Found in sys.modules: %s", module_name)
 
             if func in ('nobody', 'controller'):
                 return
-    except ImportError as e:
-        logger.warning("\t|||\t\t\t✗ Import failed for %s: %s", module_name, str(e))
 
-        # 策略2: 打包环境特殊处理
-        # 尝试从 sys.modules 直接获取（可能已被打包工具预加载）
-        if module_name in sys.modules:
-            mod = sys.modules[module_name]
-            logger.info("\t|||\t\t\t✓ Found in sys.modules: %s", module_name)
-        else:
-            # 策略3: 尝试通过文件路径导入（最后手段）
-            if is_pyinstaller_frozen() or is_nuitka_compiled():
-                # 尝试构建可能的文件路径
-                base_dirs = []
+        # 策略4: 尝试通过文件路径导入（最后手段）
+        elif is_pyinstaller_frozen() or is_nuitka_compiled():
+            # 尝试构建可能的文件路径
+            base_dirs = []
 
-                if is_pyinstaller_frozen():
-                    meipass = getattr(sys, '_MEIPASS', None)
-                    if meipass:
-                        base_dirs.append(meipass)
+            if is_pyinstaller_frozen():
+                meipass = getattr(sys, '_MEIPASS', None)
+                if meipass:
+                    base_dirs.append(meipass)
 
-                if is_nuitka_compiled():
-                    exe_dir = os.path.dirname(sys.executable)
-                    base_dirs.append(exe_dir)
+            if is_nuitka_compiled():
+                exe_dir = os.path.dirname(sys.executable)
+                base_dirs.append(exe_dir)
 
-                for base in base_dirs:
-                    module_path = os.path.join(base, module_name.replace('.', os.sep) + '.py')
-                    if os.path.exists(module_path):
-                        try:
-                            spec = importlib.util.spec_from_file_location(module_name, module_path)
-                            if spec and spec.loader:
-                                mod = importlib.util.module_from_spec(spec)
-                                sys.modules[module_name] = mod  # 注册到 sys.modules
-                                spec.loader.exec_module(mod)
-                                logger.info("\t|||\t\t\t✓ Imported from file: %s", module_path)
-                                break
-                        except Exception as e:
-                            logger.warning("\t|||\t\t\t✗ Failed to import from file %s: %s", module_path, str(e))
+            for base in base_dirs:
+                module_path = os.path.join(base, module_name.replace('.', os.sep) + '.py')
+                if os.path.exists(module_path):
+                    try:
+                        spec = importlib.util.spec_from_file_location(module_name, module_path)
+                        if spec and spec.loader:
+                            mod = importlib.util.module_from_spec(spec)
+                            sys.modules[module_name] = mod  # 注册到 sys.modules
+                            spec.loader.exec_module(mod)
+                            logger.info("\t|||\t\t\t✓ Imported from file: %s", module_path)
+                            break
+                    except Exception as import_ex:
+                        logger.warning("\t|||\t\t\t✗ Failed to import from file %s: %s", module_path, str(import_ex))
     except Exception as e:
         logger.warning("\t|||\t\t\t✗ Unexpected error importing %s: %s", module_name, str(e))
         return
@@ -353,67 +336,58 @@ def run(handlers=None):
     logger.info("\t|||\t\t└---configuring dependency injection...")
     from cullinan.core.injection import get_injection_registry
     from cullinan.service.registry import get_service_registry
-    from cullinan.core.lifecycle_enhanced import get_lifecycle_manager
 
+    # Get registries (ServiceRegistry auto-registers itself as provider in __init__)
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
-    lifecycle_manager = get_lifecycle_manager()
 
-    # Set ServiceRegistry as dependency provider (priority 100)
-    injection_registry.add_provider_registry(service_registry, priority=100)
     logger.info("\t|||\t\t\t└---dependency injection configured")
 
     # Now scan services and controllers
     logger.info("\t|||\t\t└---scanning services...")
     logger.info("\t|||\t\t\t...")
-    scan_service(file_list_func())
+    service_modules = file_list_func()
+
+    if not service_modules:
+        logger.warning("\t|||\t\t\t⚠ No modules found for service scanning!")
+        logger.warning("\t|||\t\t\t⚠ This is expected in packaged environments without configuration.")
+        logger.warning("\t|||\t\t\t⚠ Consider using cullinan.configure(user_packages=['your_app'])")
+    else:
+        logger.info("\t|||\t\t\t└---found %d modules to scan", len(service_modules))
+        scan_service(service_modules)
 
     logger.info("\t|||\t\t└---scanning controllers...")
     logger.info("\t|||\t\t\t...")
-    scan_controller(file_list_func())
+    controller_modules = file_list_func()
+
+    if not controller_modules:
+        logger.warning("\t|||\t\t\t⚠ No modules found for controller scanning!")
+        logger.warning("\t|||\t\t\t⚠ This is expected in packaged environments without configuration.")
+    else:
+        logger.info("\t|||\t\t\t└---found %d modules to scan", len(controller_modules))
+        scan_controller(controller_modules)
+
     sort_url()
 
-    # ========== NEW: Execute Service Lifecycle Startup ==========
-    logger.info("\t|||\t\t└---initializing services lifecycle...")
-    try:
-        # Instantiate and register all services with lifecycle manager
-        service_count = service_registry.count()
-        if service_count > 0:
-            logger.info(f"\t|||\t\t\t└---found {service_count} services")
+    # ========== Service 初始化（扫描完成后） ==========
+    logger.info("\t|||\t\t└---initializing services...")
+    from cullinan.service import get_service_registry
 
-            for service_name in service_registry.list_all():
-                # Get or create service instance
-                service_instance = service_registry.get_instance(service_name)
+    service_registry = get_service_registry()
+    service_count = service_registry.count()
 
-                if service_instance is None:
-                    logger.warning(f"\t|||\t\t\t⚠ Failed to instantiate {service_name}")
-                    continue
-
-                # Get dependencies metadata
-                metadata = service_registry.get_metadata(service_name)
-                dependencies = metadata.get('dependencies', []) if metadata else []
-
-                # Register with lifecycle manager
-                lifecycle_manager.register(
-                    service_instance,
-                    name=service_name,
-                    dependencies=dependencies
-                )
-
-            # Execute lifecycle startup (will call on_startup hooks)
-            logger.info("\t|||\t\t└---starting services (executing lifecycle hooks)...")
-
-            # Run async startup in a temporary event loop
-            loop = tornado.ioloop.IOLoop.current()
-            loop.run_sync(lifecycle_manager.startup)
-
-            logger.info("\t|||\t\t\t└---all services started successfully")
-        else:
-            logger.info("\t|||\t\t\t└---no services to start")
-    except Exception as e:
-        logger.error(f"\t|||\t\t\t✗ Service lifecycle startup failed: {e}", exc_info=True)
-        raise
-    # ========== END Service Lifecycle ==========
+    if service_count > 0:
+        logger.info(f"\t|||\t\t\t└---found {service_count} registered services")
+        try:
+            # 按依赖顺序初始化所有 Service（调用 initialize_all）
+            service_registry.initialize_all()
+            logger.info(f"\t|||\t\t\t✓ All {service_count} services initialized")
+        except Exception as e:
+            logger.error(f"\t|||\t\t\t✗ Service initialization failed: {e}", exc_info=True)
+            logger.warning("\t|||\t\t\t⚠ Application will continue with partial initialization")
+    else:
+        logger.info("\t|||\t\t\t└---no services registered")
+    # ========== END Service 初始化 ==========
 
     # Get handlers from registry
     handler_registry = get_handler_registry()
@@ -469,16 +443,6 @@ def run(handlers=None):
     except Exception:
         logger.exception("Exception running IOLoop")
     finally:
-        # ========== NEW: Execute Service Lifecycle Shutdown ==========
-        logger.info("\t|||\t\t└---shutting down services...")
-        try:
-            # Execute lifecycle shutdown (will call on_shutdown hooks)
-            loop = tornado.ioloop.IOLoop.current()
-            loop.run_sync(lambda: lifecycle_manager.shutdown(timeout=30, force=True))
-            logger.info("\t|||\t\t\t└---all services stopped successfully")
-        except Exception as e:
-            logger.error(f"\t|||\t\t\t✗ Service lifecycle shutdown error: {e}", exc_info=True)
-        # ========== END Service Lifecycle Shutdown ==========
 
         # Stop accepting new connections and stop the IOLoop.
         try:

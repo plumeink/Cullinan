@@ -64,6 +64,13 @@ class ServiceRegistry(Registry[Type[Service]]):
         # Track initialized services (set for O(1) membership check)
         self._initialized: Set[str] = set()
 
+        # Register self as dependency provider for core's injection system
+        # This allows InjectByName to find services
+        from cullinan.core import get_injection_registry
+        injection_registry = get_injection_registry()
+        injection_registry.add_provider_registry(self, priority=10)
+        logger.debug("ServiceRegistry registered as dependency provider")
+
     def register(self, name: str, service_class: Type[Service], 
                  dependencies: Optional[List[str]] = None, **metadata) -> None:
         """Register a service class with optional dependencies (optimized).

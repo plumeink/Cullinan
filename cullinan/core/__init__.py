@@ -37,6 +37,7 @@ from .legacy_injection import DependencyInjector
 # Type-based Dependency Injection System
 from .injection import (
     Inject,
+    InjectByName,
     injectable,
     InjectionRegistry,
     get_injection_registry,
@@ -55,6 +56,7 @@ __all__ = [
 
     # Type-based Dependency Injection
     'Inject',
+    'InjectByName',
     'injectable',
     'InjectionRegistry',
     'get_injection_registry',

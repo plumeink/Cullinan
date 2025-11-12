@@ -149,7 +149,7 @@ class CacheService(Service):
 控制器访问服务的方式没有变化：
 
 ```python
-from cullinan import controller, post_api
+from cullinan.controller import controller, post_api
 
 @controller(url='/api')
 class UserController:

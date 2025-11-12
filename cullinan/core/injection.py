@@ -54,6 +54,105 @@ class Inject:
         return f"Inject(name={self.name!r}, required={self.required})"
 
 
+class InjectByName:
+    """基于字符串名称的依赖注入描述符（延迟加载，完全无需 import）
+
+    类似 Spring 的 @Autowired，但完全基于字符串名称，无需 import 依赖类。
+
+    使用方式:
+        from cullinan.core import InjectByName
+
+        class UserController:
+            # 方式1: 显式指定名称
+            user_service = InjectByName('UserService')
+
+            # 方式2: 根据属性名自动推断（user_service -> UserService）
+            email_service = InjectByName()
+
+            def get(self):
+                # self.user_service 自动注入，延迟加载
+                return self.user_service.get_all()
+
+    特性:
+    - 延迟加载：只在第一次访问时才注入
+    - 自动推断：user_service -> UserService
+    - 缓存机制：注入后缓存到实例，避免重复查找
+    - 完全无需 import 依赖类
+    - 支持测试 Mock
+    """
+
+    __slots__ = ('service_name', '_attr_name', 'required')
+
+    def __init__(self, service_name: Optional[str] = None, required: bool = True):
+        """初始化注入描述符
+
+        Args:
+            service_name: 依赖名称，如果为 None 则根据属性名自动推断
+            required: 是否必需（True 时找不到依赖会抛出异常）
+        """
+        self.service_name = service_name
+        self._attr_name = None
+        self.required = required
+
+    def __set_name__(self, owner, name):
+        """当作为类属性时��动调用，获取属性名"""
+        self._attr_name = name
+
+        # 如果没有指定 service_name，根据属性名自动推断
+        # user_service -> UserService
+        # email_service -> EmailService
+        if self.service_name is None:
+            self.service_name = ''.join(
+                word.capitalize() for word in name.split('_')
+            )
+
+        logger.debug(f"Registered InjectByName: {owner.__name__}.{name} -> {self.service_name}")
+
+    def __get__(self, instance, owner):
+        """获取注入的依赖实例（延迟加载）"""
+        if instance is None:
+            return self
+
+        # 检查实例字典中是否已缓存
+        attr_value = instance.__dict__.get(self._attr_name)
+        if attr_value is not None:
+            return attr_value
+
+        # 从全局注入注册表解析依赖
+        registry = get_injection_registry()
+        dependency = registry._resolve_dependency(self.service_name)
+
+        if dependency is None:
+            if self.required:
+                raise RegistryError(
+                    f"Required dependency '{self.service_name}' not found for "
+                    f"{instance.__class__.__name__}.{self._attr_name}. "
+                    f"Ensure it's registered with appropriate decorator."
+                )
+            else:
+                logger.debug(
+                    f"Optional dependency '{self.service_name}' not found, "
+                    f"returning None for {instance.__class__.__name__}.{self._attr_name}"
+                )
+                return None
+
+        # 缓存到实例字典，下次访问直接返回（O(1)）
+        instance.__dict__[self._attr_name] = dependency
+        logger.debug(
+            f"Injected {self.service_name} into "
+            f"{instance.__class__.__name__}.{self._attr_name}"
+        )
+
+        return dependency
+
+    def __set__(self, instance, value):
+        """允许手动设置（用于测试 Mock）"""
+        instance.__dict__[self._attr_name] = value
+
+    def __repr__(self):
+        return f"InjectByName(name={self.service_name!r}, required={self.required})"
+
+
 # ============================================================================
 # 依赖注入元数据
 # ============================================================================
@@ -408,6 +507,7 @@ def injectable(cls: Optional[Type] = None):
 
 __all__ = [
     'Inject',
+    'InjectByName',
     'InjectionRegistry',
     'InjectionMetadata',
     'get_injection_registry',

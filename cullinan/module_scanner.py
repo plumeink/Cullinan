@@ -19,27 +19,14 @@ import logging
 from typing import List, Optional
 from cullinan.exceptions import CallerPackageException
 
+# Import packaging-aware path utilities
+from cullinan.path_utils import (
+    is_pyinstaller_frozen,
+    is_nuitka_compiled,
+)
+
 logger = logging.getLogger(__name__)
 
-
-def is_pyinstaller_frozen() -> bool:
-    """Check if running in PyInstaller frozen/packaged environment.
-    
-    Returns:
-        bool: True if PyInstaller frozen, False otherwise
-    """
-    return getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
-
-
-def is_nuitka_compiled() -> bool:
-    """Check if running in Nuitka compiled environment.
-    
-    Nuitka sets the __compiled__ attribute during compilation.
-    
-    Returns:
-        bool: True if Nuitka compiled, False otherwise
-    """
-    return '__compiled__' in globals() or hasattr(sys, '__compiled__')
 
 
 def get_nuitka_standalone_mode() -> Optional[str]:
@@ -388,6 +375,11 @@ def scan_modules_nuitka() -> List[str]:
             pass
     
     logger.info("\t|||\t\t\tFound %d modules via Nuitka scanning", len(modules))
+    logger.info("\t|||\t\t\tTotal discovered modules: %d", len(modules))
+    if not modules:
+        logger.warning("\t|||\t\t\t⚠ No modules discovered! Consider configuring user_packages.")
+        logger.warning("\t|||\t\t\t⚠ Example: cullinan.configure(user_packages=['your_app'])")
+
     return modules
 
 
@@ -527,6 +519,11 @@ def scan_modules_pyinstaller() -> List[str]:
         
         logger.info("\t|||\t\t\tFound %d user modules in sys.modules", len(modules))
     
+    logger.info("\t|||\t\t\tTotal discovered modules: %d", len(modules))
+    if not modules:
+        logger.warning("\t|||\t\t\t⚠ No modules discovered! Consider configuring user_packages.")
+        logger.warning("\t|||\t\t\t⚠ Example: cullinan.configure(user_packages=['your_app'])")
+
     return modules
 
 

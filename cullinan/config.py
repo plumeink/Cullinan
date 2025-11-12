@@ -133,8 +133,21 @@ def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
 
     根据配置的用户包名，向上查找项目根目录
     例如：user_packages=['club.fnep'] -> 查找包含 club/fnep 的目录
+    支持所有打包环境 (development/Nuitka/PyInstaller)
     """
     import inspect
+
+    # In frozen/packaged environments, use path_utils for reliable path detection
+    try:
+        from cullinan.path_utils import get_base_path, is_frozen
+
+        if is_frozen():
+            # In frozen mode, return base path directly
+            return str(get_base_path())
+    except ImportError:
+        pass  # Fallback to legacy inspection method
+    except Exception:
+        pass  # Handle any other errors gracefully
 
     # 获取调用 configure 的文件路径
     frame = inspect.currentframe()

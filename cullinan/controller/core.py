@@ -681,22 +681,43 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
     """
     global controller_self
     start_time = time.time()
-    # 选择 controller_self（保持原有分支逻辑）
+
+    # 🔥 关键修复：从工厂获取 Controller 类并实例化
+    # 这样 @injectable 会自动注入依赖，InjectByName 描述符会正常工作
     if type == 'get':
-        controller_self = self.get_controller_self
+        controller_factory = getattr(self, 'get_controller_factory', None) or getattr(self, 'get_controller_self', None)
     elif type == 'post':
-        controller_self = self.post_controller_self
+        controller_factory = getattr(self, 'post_controller_factory', None) or getattr(self, 'post_controller_self', None)
     elif type == 'patch':
-        controller_self = self.patch_controller_self
+        controller_factory = getattr(self, 'patch_controller_factory', None) or getattr(self, 'patch_controller_self', None)
     elif type == 'delete':
-        controller_self = self.delete_controller_self
+        controller_factory = getattr(self, 'delete_controller_factory', None) or getattr(self, 'delete_controller_self', None)
     elif type == 'put':
-        controller_self = self.put_controller_self
+        controller_factory = getattr(self, 'put_controller_factory', None) or getattr(self, 'put_controller_self', None)
     else:
         raise HandlerError(
             "Unsupported request type",
             error_code="INVALID_REQUEST_TYPE",
             details={"type": type, "allowed_types": ["get", "post", "patch", "delete", "put"]}
+        )
+
+    if controller_factory is None:
+        raise HandlerError(
+            "Controller factory not found",
+            error_code="CONTROLLER_NOT_REGISTERED",
+            details={"type": type}
+        )
+
+    # 实例化 Controller（@injectable 会自动注入依赖）
+    try:
+        controller_self = controller_factory()
+        logger.debug(f"Instantiated controller: {controller_factory.__name__}")
+    except Exception as e:
+        logger.error(f"Failed to instantiate controller {controller_factory.__name__}: {e}", exc_info=True)
+        raise HandlerError(
+            "Controller instantiation failed",
+            error_code="CONTROLLER_INIT_ERROR",
+            details={"controller": controller_factory.__name__, "error": str(e)}
         )
 
     # 注入 service 与 module-level proxy（controller 方法仍可通过 self.response 访问）
@@ -983,15 +1004,15 @@ def controller(**kwargs) -> Callable:
     This decorator uses the ControllerRegistry from cullinan.core to manage
     controller registration, replacing the old global list approach.
 
-    支持依赖注入：使用 cullinan.core.Inject 标记属性即可自动注入 Service
+    支持依赖注入：使用 cullinan.core.InjectByName 或 Inject 标记属性即可自动注入 Service
 
     Usage:
-        from cullinan.core import Inject
+        from cullinan.core import InjectByName
 
         @controller(url='/api/users')
         class UserController:
-            # 依赖注入 - 使用 core.Inject
-            user_service: UserService = Inject()
+            # 依赖注入 - 使用 InjectByName，无需 import Service
+            user_service = InjectByName('UserService')
 
             @get_api('')
             def list_users(self):
@@ -1018,58 +1039,13 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
-        # 1. 先扫描类的注入需求（但不使用 @injectable，因为它会包装 __init__）
-        from cullinan.core.injection import get_injection_registry
+        # 1. 标记为可注入（使用 core 的 injectable 装饰器）
+        # 这会自动扫描类的注入需求并在实例化时注入
+        from cullinan.core import injectable
+        cls = injectable(cls)
 
-        injection_registry = get_injection_registry()
+        logger.debug(f"Marked {cls.__name__} as injectable")
 
-        # 扫描类的注入需求
-        injection_registry.scan_class(cls)
-
-        # 尝试立即注入到类属性（因为 controller 是类方法，不是实例方法）
-        if injection_registry.has_injections(cls):
-            try:
-                # 将 Inject 标记替换为实际的 service 实例
-                from cullinan.service.registry import get_service_registry
-                service_registry = get_service_registry()
-
-                injection_info = injection_registry.get_injection_info(cls)
-                if injection_info:
-                    for attr_name, (dep_name, required) in injection_info.items():
-                        try:
-                            # 尝试获取 service 实例
-                            dep_instance = service_registry.get_instance(dep_name)
-
-                            if dep_instance is None:
-                                # Service 还不存在 - 创建延迟加载的属性
-                                # 使用 property 实现延迟获取
-                                def make_lazy_property(service_name, is_required):
-                                    @property
-                                    def lazy_getter(self):
-                                        from cullinan.service.registry import get_service_registry
-                                        svc_registry = get_service_registry()
-                                        instance = svc_registry.get_instance(service_name)
-                                        if instance is None and is_required:
-                                            raise RuntimeError(
-                                                f"Required service '{service_name}' not found. "
-                                                f"Make sure the service is registered before using the controller."
-                                            )
-                                        return instance
-                                    return lazy_getter
-
-                                # 设置为 property
-                                setattr(cls, attr_name, make_lazy_property(dep_name, required))
-                                logger.debug(f"Set lazy loader for {cls.__name__}.{attr_name} -> {dep_name}")
-                            else:
-                                # Service 已存在 - 直接设置
-                                setattr(cls, attr_name, dep_instance)
-                                logger.debug(f"Injected {dep_name} into {cls.__name__}.{attr_name} (class-level)")
-                        except Exception as e:
-                            logger.error(f"Failed to inject {dep_name}: {e}")
-                            if required:
-                                raise
-            except Exception as e:
-                logger.error(f"Dependency injection failed for {cls.__name__}: {e}")
 
         # 2. 获取在类定义时收集的方法（通过 add_func）
         func_list = _controller_decoration_context.get() or []
@@ -1112,7 +1088,10 @@ def controller(**kwargs) -> Callable:
 
                 # Create and register handler (backward compatible)
                 handler = EncapsulationHandler.add_url(full_url, method_func)
-                setattr(handler, http_method + '_controller_self', cls)
+                # 🔥 存储实例工厂函数，而不是类
+                # 这样在 request_handler 中可以按需创建实例
+                # @injectable 会自动注入依赖
+                setattr(handler, http_method + '_controller_factory', cls)
                 setattr(handler, http_method + '_controller_url_param_key_list', url_params)
 
             logger.debug(f"Registered controller: {controller_name} with {len(func_list)} methods (injectable)")

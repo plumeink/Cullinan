@@ -10,7 +10,6 @@ import logging
 from typing import Optional, List, Callable
 import tornado.ioloop
 
-from cullinan.core.lifecycle_enhanced import get_lifecycle_manager, LifecycleManager
 from cullinan.service.registry import get_service_registry
 from cullinan.core.injection import get_injection_registry
 
@@ -23,7 +22,6 @@ class CullinanApplication:
     Handles:
     - Dependency injection setup
     - Service discovery and registration
-    - Lifecycle-managed startup
     - Graceful shutdown with timeout
     - Signal handling (SIGINT, SIGTERM)
 
@@ -39,7 +37,6 @@ class CullinanApplication:
             shutdown_timeout: Graceful shutdown timeout in seconds
         """
         self._shutdown_timeout = shutdown_timeout
-        self._lifecycle_manager: Optional[LifecycleManager] = None
         self._ioloop: Optional[tornado.ioloop.IOLoop] = None
         self._shutdown_handlers: List[Callable] = []
         self._running = False
@@ -50,8 +47,6 @@ class CullinanApplication:
         Steps:
         1. Configure dependency injection
         2. Discover and instantiate services
-        3. Register services with lifecycle manager
-        4. Execute lifecycle startup phases
         """
         logger.info("╔═══════════════════════════════════════════════════════════════════╗")
         logger.info("║           Cullinan Framework - Application Starting              ║")
@@ -59,46 +54,25 @@ class CullinanApplication:
 
         try:
             # Step 1: Configure dependency injection
-            logger.info("\n[1/4] Configuring dependency injection...")
+            logger.info("\n[1/3] Configuring dependency injection...")
+            # Get registries (ServiceRegistry auto-registers itself as provider)
             injection_registry = get_injection_registry()
             service_registry = get_service_registry()
-            injection_registry.add_provider_registry(service_registry, priority=100)
             logger.info("  ✓ Dependency injection configured")
 
             # Step 2: Discover services (they are registered by @service decorator)
-            logger.info("\n[2/4] Discovering services...")
+            logger.info("\n[2/3] Discovering services...")
             service_count = service_registry.count()
             logger.info(f"  ✓ Found {service_count} registered services")
 
-            # Step 3: Instantiate all services and register with lifecycle manager
-            logger.info("\n[3/4] Instantiating services and setting up lifecycle...")
-            self._lifecycle_manager = get_lifecycle_manager()
-
-            for service_name in service_registry.list_all():
-                # Get or create service instance
-                service_instance = service_registry.get_instance(service_name)
-
-                if service_instance is None:
-                    logger.warning(f"  ! Failed to instantiate {service_name}")
-                    continue
-
-                # Get dependencies for this service
-                metadata = service_registry.get_metadata(service_name)
-                dependencies = metadata.get('dependencies', []) if metadata else []
-
-                # Register with lifecycle manager
-                self._lifecycle_manager.register(
-                    service_instance,
-                    name=service_name,
-                    dependencies=dependencies
-                )
-                logger.debug(f"  ✓ Registered {service_name} for lifecycle management")
-
-            logger.info(f"  ✓ Lifecycle management configured for {service_count} services")
-
-            # Step 4: Execute lifecycle startup
-            logger.info("\n[4/4] Executing lifecycle startup phases...")
-            await self._lifecycle_manager.startup()
+            # Step 3: Initialize all services (按依赖顺序实例化 + 调用 on_init)
+            logger.info("\n[3/3] Initializing services...")
+            if service_count > 0:
+                # 使用 initialize_all() 按依赖顺序初始化所有 Service
+                service_registry.initialize_all()
+                logger.info(f"  ✓ All {service_count} services initialized")
+            else:
+                logger.info("  • No services to initialize")
 
             self._running = True
 
@@ -124,15 +98,8 @@ class CullinanApplication:
         logger.info("╚═══════════════════════════════════════════════════════════════════╝")
 
         try:
-            # Execute lifecycle shutdown
-            if self._lifecycle_manager:
-                await self._lifecycle_manager.shutdown(
-                    timeout=self._shutdown_timeout,
-                    force=force
-                )
-
             # Execute custom shutdown handlers
-            logger.info("\nExecuting custom shutdown handlers...")
+            logger.info("\nExecuting shutdown handlers...")
             for handler in self._shutdown_handlers:
                 try:
                     if asyncio.iscoroutinefunction(handler):

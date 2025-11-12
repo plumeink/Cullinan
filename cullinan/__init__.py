@@ -7,6 +7,27 @@ logging.getLogger('cullinan').addHandler(logging.NullHandler())
 # 导出配置接口
 from cullinan.config import configure, get_config, CullinanConfig
 
+# Export path utilities for packaging-aware path resolution
+from cullinan.path_utils import (
+    # Environment detection
+    is_frozen,
+    is_pyinstaller_frozen,
+    is_nuitka_compiled,
+    get_packaging_mode,
+    # Path resolution
+    get_base_path,
+    get_cullinan_package_path,
+    get_resource_path,
+    get_module_file_path,
+    get_executable_dir,
+    get_user_data_dir,
+    # Utilities
+    find_file_with_fallbacks,
+    import_module_from_path,
+    get_path_info,
+    log_path_info,
+)
+
 # Export core module (foundational components)
 from cullinan.core import (
     Registry,
@@ -27,6 +48,7 @@ from cullinan.core import (
     injectable,
     get_injection_registry,
     reset_injection_registry,
+    DependencyInjector,  # Legacy injection support
 )
 
 # Export enhanced service layer
@@ -75,36 +97,25 @@ from cullinan.websocket_registry import (
     reset_websocket_registry,
 )
 
-# Export controller registry from controller package
+# Export controller registry and decorators from controller package
+# Note: 'controller' is both a package and a decorator function
+# To avoid naming conflicts in Nuitka and other packagers:
+# - The package cullinan.controller contains all controller-related code
+# - Import the controller decorator as: from cullinan.controller import controller
 from cullinan.controller import (
     ControllerRegistry,
     get_controller_registry,
     reset_controller_registry,
+    # Controller decorators (import from cullinan.controller, not directly from cullinan)
+    get_api,
+    post_api,
+    patch_api,
+    delete_api,
+    put_api,
+    Handler,
+    response,
 )
 
-# Import controller utilities from controller.py file
-# Note: After importing the controller package above, we need to access the original controller.py module
-# It's been loaded but the name is shadowed. We can access it through parent imports in other modules.
-# The utilities (HeaderRegistry, etc.) are defined in controller.py which is imported by application.py
-# For now, we'll make them available by importing them when controller.py is loaded elsewhere
-
-# Placeholder - these will be available when controller.py is imported
-# They are exported from controller.py, not the controller package
-def _get_controller_utils():
-    """Lazy getter for controller utilities from controller.py module."""
-    import sys
-    # Try to find the actual controller.py module in sys.modules
-    for key in sys.modules:
-        if key.endswith('.controller') and hasattr(sys.modules[key], 'HeaderRegistry'):
-            mod = sys.modules[key]
-            if hasattr(mod, 'set_missing_header_handler'):
-                return mod
-    return None
-
-# We'll document that these should be imported directly from controller.py when needed
-# For backward compatibility, applications should use:
-#   from cullinan import controller as controller_decorators
-# or import controller.py functions directly in their code
 
 __version__ = '0.7x'
 
@@ -164,9 +175,39 @@ __all__ = [
     'get_websocket_registry',
     'reset_websocket_registry',
 
-    # Controller module
+    # Controller module (import controller decorator from cullinan.controller)
     'ControllerRegistry',
     'get_controller_registry',
     'reset_controller_registry',
+    'get_api',
+    'post_api',
+    'patch_api',
+    'delete_api',
+    'put_api',
+    'Handler',
+    'response',
+
+    # Path utilities (packaging support)
+    'is_frozen',
+    'is_pyinstaller_frozen',
+    'is_nuitka_compiled',
+    'get_packaging_mode',
+    'get_base_path',
+    'get_cullinan_package_path',
+    'get_resource_path',
+    'get_module_file_path',
+    'get_executable_dir',
+    'get_user_data_dir',
+    'find_file_with_fallbacks',
+    'import_module_from_path',
+    'get_path_info',
+    'log_path_info',
+
+    # Dependency Injection (legacy)
+    'Inject',
+    'injectable',
+    'get_injection_registry',
+    'reset_injection_registry',
+    'DependencyInjector',
 ]
 
