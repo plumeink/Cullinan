@@ -5,7 +5,7 @@ This module provides the old DependencyInjector class for backward compatibility
 with ServiceRegistry. New code should use the new injection system in injection.py.
 """
 
-from typing import Type, Dict, Optional, List, Any
+from typing import Type, Dict, Optional, List, Any, Set
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,12 +18,14 @@ class DependencyInjector:
     New code should use the new Inject-based injection system.
     """
 
-    __slots__ = ('_providers', '_dependencies', '_singletons')
+    __slots__ = ('_providers', '_dependencies', '_singletons', '_resolving')
 
     def __init__(self):
         self._providers: Dict[str, Type] = {}
         self._dependencies: Dict[str, List[str]] = {}
         self._singletons: Dict[str, Any] = {}
+        # Track currently resolving dependencies to detect cycles
+        self._resolving: Set[str] = set()
 
     def register_provider(self, name: str, provider_class: Type,
                          dependencies: Optional[List[str]] = None,
@@ -49,6 +51,9 @@ class DependencyInjector:
 
         Returns:
             Instance of the provider, or None if not found
+
+        Raises:
+            RecursionError: If circular dependency detected
         """
         # Check singleton cache
         if name in self._singletons:
@@ -57,33 +62,47 @@ class DependencyInjector:
         # Get provider class
         provider_class = self._providers.get(name)
         if not provider_class:
+            logger.warning(f"Provider not found: {name}")
             return None
 
-        # Resolve dependencies
-        deps = self._dependencies.get(name, [])
-        dep_instances = {}
-        for dep_name in deps:
-            dep_instance = self.resolve(dep_name)
-            if dep_instance:
-                dep_instances[dep_name] = dep_instance
+        # Check for circular dependency
+        if name in self._resolving:
+            cycle_path = ' -> '.join(list(self._resolving) + [name])
+            raise RecursionError(f"Circular dependency detected: {cycle_path}")
 
-        # Instantiate
-        instance = provider_class()
+        # Mark as resolving
+        self._resolving.add(name)
 
-        # Set dependencies
-        if hasattr(instance, 'dependencies'):
-            instance.dependencies = dep_instances
+        try:
+            # Resolve dependencies
+            deps = self._dependencies.get(name, [])
+            dep_instances = {}
+            for dep_name in deps:
+                dep_instance = self.resolve(dep_name)
+                if dep_instance:
+                    dep_instances[dep_name] = dep_instance
 
-        # Cache if singleton
-        self._singletons[name] = instance
+            # Instantiate
+            instance = provider_class()
 
-        return instance
+            # Set dependencies
+            if hasattr(instance, 'dependencies'):
+                instance.dependencies = dep_instances
+
+            # Cache if singleton
+            self._singletons[name] = instance
+
+            return instance
+        finally:
+            # Remove from resolving set
+            self._resolving.discard(name)
 
     def clear(self):
         """Clear all registered providers and cached instances"""
         self._providers.clear()
         self._dependencies.clear()
         self._singletons.clear()
+        self._resolving.clear()
 
     def get_dependency_order(self, names: List[str]) -> List[str]:
         """Get dependency-sorted order of names (topological sort)

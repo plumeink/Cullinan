@@ -14,9 +14,7 @@
 """
 
 from typing import Type, Any, Dict, Optional, get_type_hints
-from dataclasses import dataclass
 import logging
-import inspect
 
 from .registry import Registry
 from .exceptions import RegistryError
@@ -28,9 +26,8 @@ logger = logging.getLogger(__name__)
 # 注入标记类
 # ============================================================================
 
-@dataclass
 class Inject:
-    """依赖注入标记 - 类似 Spring 的 @Autowired
+    """依赖注入描述符 - 类似 Spring 的 @Autowired（延迟加载）
 
     使用方式：
         class UserController:
@@ -43,12 +40,103 @@ class Inject:
             # 方式3: 可选依赖
             cache: Any = Inject(name='CacheService', required=False)
 
+    特性:
+    - 延迟加载：首次访问时才解析依赖
+    - 自动推断：从类型注解或属性名推断服务名
+    - 实例缓存：解析后缓存到实例，避免重复查找
+    - 支持字符串注解：user_service: 'UserService' = Inject()
+    - 支持测试 Mock：可手动设置属性值
+
     Args:
         name: 依赖名称（如果不指定，从属性名或类型推断）
         required: 是否必需（True 时找不到依赖会抛出异常）
     """
-    name: Optional[str] = None
-    required: bool = True
+
+    __slots__ = ('name', 'required', '_attr_name', '_resolved_name')
+
+    def __init__(self, name: Optional[str] = None, required: bool = True):
+        self.name = name
+        self.required = required
+        self._attr_name = None
+        self._resolved_name = None
+
+    def __set_name__(self, owner, name):
+        """当作为类属性时自动调用，获取属性名"""
+        self._attr_name = name
+        logger.debug(f"Registered Inject: {owner.__name__}.{name} -> {self.name or 'auto'}")
+
+    def __get__(self, instance, owner):
+        """获取注入的依赖实例（延迟加载）"""
+        if instance is None:
+            return self
+
+        # 检查实例字典中是否已缓存
+        if self._attr_name:
+            attr_value = instance.__dict__.get(self._attr_name)
+            if attr_value is not None:
+                return attr_value
+
+        # 解析依赖名称（如果还没解析）
+        if self._resolved_name is None:
+            self._resolved_name = self._resolve_name(owner)
+
+        # 从全局注入注册表解析依赖
+        registry = get_injection_registry()
+        dependency = registry._resolve_dependency(self._resolved_name)
+
+        if dependency is None:
+            if self.required:
+                raise RegistryError(
+                    f"Required dependency '{self._resolved_name}' not found for "
+                    f"{owner.__name__}.{self._attr_name}. "
+                    f"Ensure it's registered with appropriate decorator."
+                )
+            else:
+                logger.debug(
+                    f"Optional dependency '{self._resolved_name}' not found, "
+                    f"returning None for {owner.__name__}.{self._attr_name}"
+                )
+                return None
+
+        # 缓存到实例字典（如果有属性名）
+        if self._attr_name:
+            instance.__dict__[self._attr_name] = dependency
+            logger.debug(
+                f"Injected {self._resolved_name} into "
+                f"{owner.__name__}.{self._attr_name}"
+            )
+
+        return dependency
+
+    def __set__(self, instance, value):
+        """允许手动设置（用于测试 Mock）"""
+        if self._attr_name:
+            instance.__dict__[self._attr_name] = value
+
+    def _resolve_name(self, owner_class: Type) -> str:
+        """解析依赖名称（从 name、类型注解或属性名）"""
+        # 优先使用明确指定的名称
+        if self.name:
+            return self.name
+
+        # 从类型注解推断
+        if self._attr_name and hasattr(owner_class, '__annotations__'):
+            anno = owner_class.__annotations__.get(self._attr_name)
+            if anno:
+                # 支持字符串注解
+                if isinstance(anno, str):
+                    return anno
+                # 支持实际类型
+                if hasattr(anno, '__name__'):
+                    return anno.__name__
+
+        # 回退到属性名转换（snake_case -> PascalCase）
+        if self._attr_name:
+            if '_' in self._attr_name:
+                return ''.join(word.capitalize() for word in self._attr_name.split('_'))
+            return self._attr_name
+
+        return 'Unknown'
 
     def __repr__(self):
         return f"Inject(name={self.name!r}, required={self.required})"

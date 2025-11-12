@@ -53,7 +53,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         registry.destroy_all()
     """
     
-    __slots__ = ('_injector', '_instances', '_initialized')
+    __slots__ = ('_injector', '_instances', '_initialized', '_instance_lock')
 
     def __init__(self):
         """Initialize the service registry with optimized storage."""
@@ -64,13 +64,15 @@ class ServiceRegistry(Registry[Type[Service]]):
         self._instances: Dict[str, Service] = {}
         # Track initialized services (set for O(1) membership check)
         self._initialized: Set[str] = set()
+        # Thread lock for concurrent singleton creation safety
+        import threading
+        self._instance_lock = threading.RLock()
 
         # Register self as dependency provider for core's injection system
         # This allows InjectByName to find services
         from cullinan.core import get_injection_registry
         injection_registry = get_injection_registry()
         injection_registry.add_provider_registry(self, priority=10)
-        logger.debug("ServiceRegistry registered as dependency provider")
         logger.debug("ServiceRegistry registered as dependency provider")
 
     def register(self, name: str, service_class: Type[Service], 
@@ -132,6 +134,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         """Get or create a service instance (O(1) cached lookup).
 
         Performance: O(1) for cached instances, O(n) for new instances with n dependencies
+        Thread-safe: Uses lock to ensure singleton behavior in concurrent scenarios
 
         If the service hasn't been instantiated yet, it will be created
         with its dependencies resolved and on_init() will be called.
@@ -148,7 +151,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         Raises:
             DependencyResolutionError: If dependencies cannot be resolved
         """
-        # Fast path: return cached instance (O(1))
+        # Fast path: return cached instance (O(1)) - no lock needed for read
         instance = self._instances.get(name)
         if instance is not None:
             return instance
@@ -158,53 +161,65 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.warning(f"Service not found: {name}")
             return None
         
-        try:
-            # Get dependencies (lazy metadata access)
-            deps = []
-            if self._metadata is not None and name in self._metadata:
-                deps = self._metadata[name].get('dependencies', [])
+        # Thread-safe singleton creation
+        with self._instance_lock:
+            # Double-check pattern: another thread might have created it
+            instance = self._instances.get(name)
+            if instance is not None:
+                return instance
 
-            # Ensure all dependencies are initialized first
-            for dep_name in deps:
-                if dep_name not in self._instances:
-                    # Recursively get dependencies
-                    self.get_instance(dep_name)
-            
-            # Resolve dependencies and create instance
-            instance = self._injector.resolve(name)
-            
-            # Cache instance immediately (O(1))
-            self._instances[name] = instance
-            
-            # Call on_init lifecycle hook if exists and not yet initialized
-            if name not in self._initialized:
-                if hasattr(instance, 'on_init') and callable(instance.on_init):
-                    try:
-                        result = instance.on_init()
-                        # Check if on_init is async
-                        if inspect.iscoroutine(result):
-                            logger.warning(
-                                f"Service {name}.on_init() is async but called synchronously. "
-                                f"Use initialize_all_async() instead for proper async support."
-                            )
-                            # Clean up the coroutine to avoid warnings
-                            result.close()
+            try:
+                # Get dependencies (lazy metadata access)
+                deps = []
+                if self._metadata is not None and name in self._metadata:
+                    deps = self._metadata[name].get('dependencies', [])
+
+                # Ensure all dependencies are initialized first
+                for dep_name in deps:
+                    if dep_name not in self._instances:
+                        # Recursively get dependencies (lock is reentrant)
+                        self.get_instance(dep_name)
+
+                # Resolve dependencies and create instance
+                instance = self._injector.resolve(name)
+
+                # Return None if resolve failed
+                if instance is None:
+                    logger.error(f"Injector.resolve returned None for {name}")
+                    return None
+
+                # Cache instance immediately (O(1))
+                self._instances[name] = instance
+
+                # Call on_init lifecycle hook if exists and not yet initialized
+                if name not in self._initialized:
+                    if hasattr(instance, 'on_init') and callable(instance.on_init):
+                        try:
+                            result = instance.on_init()
+                            # Check if on_init is async
+                            if inspect.iscoroutine(result):
+                                logger.warning(
+                                    f"Service {name}.on_init() is async but called synchronously. "
+                                    f"Use initialize_all_async() instead for proper async support."
+                                )
+                                # Clean up the coroutine to avoid warnings
+                                result.close()
+                            self._initialized.add(name)
+                            logger.debug(f"Called on_init for service: {name}")
+                        except Exception as e:
+                            logger.error(f"Error in on_init for {name}: {e}", exc_info=True)
+                            # Remove from instances if initialization failed
+                            self._instances.pop(name, None)
+                            raise
+                    else:
+                        # Mark as initialized even if no on_init method
                         self._initialized.add(name)
-                        logger.debug(f"Called on_init for service: {name}")
-                    except Exception as e:
-                        logger.error(f"Error in on_init for {name}: {e}", exc_info=True)
-                        # Remove from instances if initialization failed
-                        self._instances.pop(name, None)
-                        raise
-                else:
-                    # Mark as initialized even if no on_init method
-                    self._initialized.add(name)
-            
-            return instance
-        except Exception as e:
-            logger.error(f"Failed to instantiate service {name}: {e}", exc_info=True)
-            raise
-    
+
+                return instance
+            except Exception as e:
+                logger.error(f"Failed to instantiate service {name}: {e}", exc_info=True)
+                raise
+
     def initialize_all(self) -> None:
         """Initialize all registered services in dependency order.
         
