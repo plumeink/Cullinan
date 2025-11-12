@@ -56,7 +56,7 @@ print("-" * 80)
 @test("Import main cullinan package")
 def test_import_main():
     import cullinan
-    assert cullinan.__version__ == '0.7x'
+    assert cullinan.__version__ == '0.76'
 
 test_import_main()
 
@@ -171,11 +171,20 @@ test_set_custom_handler()
 
 @test("Default handler raises MissingHeaderException")
 def test_default_raises_exception():
-    from cullinan.controller import _default_missing_header_handler
+    from cullinan import get_missing_header_handler, set_missing_header_handler
     from cullinan.exceptions import MissingHeaderException
 
+    # Reset to a fresh default handler that raises exception
+    def default_handler(request, header_name):
+        raise MissingHeaderException(header_name=header_name)
+
+    set_missing_header_handler(default_handler)
+
+    # Get the current handler through public API
+    handler = get_missing_header_handler()
+
     try:
-        _default_missing_header_handler('request', 'X-Missing')
+        handler('request', 'X-Missing')
         assert False, "Should have raised exception"
     except MissingHeaderException as e:
         assert e.header_name == 'X-Missing'

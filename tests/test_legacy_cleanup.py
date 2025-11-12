@@ -55,8 +55,14 @@ class TestNewMissingHeaderHandlerAPI(unittest.TestCase):
 
     def setUp(self):
         """Reset handler before each test."""
-        from cullinan.controller import set_missing_header_handler, _default_missing_header_handler
-        set_missing_header_handler(_default_missing_header_handler)
+        from cullinan import set_missing_header_handler
+        from cullinan.exceptions import MissingHeaderException
+
+        # Reset to default behavior using a fresh default handler
+        def default_handler(request, header_name):
+            raise MissingHeaderException(header_name=header_name)
+
+        set_missing_header_handler(default_handler)
 
     def test_get_missing_header_handler(self):
         """Test getting the missing header handler."""

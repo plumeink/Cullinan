@@ -114,10 +114,13 @@ from cullinan.controller import (
     put_api,
     Handler,
     response,
+    # Missing header handler API
+    set_missing_header_handler,
+    get_missing_header_handler,
 )
 
 
-__version__ = '0.7x'
+__version__ = '0.76'
 
 __all__ = [
     # Configuration
@@ -186,6 +189,8 @@ __all__ = [
     'put_api',
     'Handler',
     'response',
+    'set_missing_header_handler',
+    'get_missing_header_handler',
 
     # Path utilities (packaging support)
     'is_frozen',
