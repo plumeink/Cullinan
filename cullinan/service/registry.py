@@ -28,37 +28,38 @@ class ServiceRegistry(Registry[Type[Service]]):
     This registry manages service classes and their instances with:
     - Fast O(1) service registration and lookup
     - Automatic dependency injection
-    - Lifecycle management (on_init/on_destroy)
+    - Lifecycle management (on_init/on_destroy/on_startup/on_shutdown)
     - Singleton instance caching
     - Memory-efficient storage with __slots__
 
     Performance optimizations:
-    - Lazy initialization of injector and lifecycle manager
+    - Lazy initialization of injector
     - Direct dict access for instance cache
     - Minimal metadata overhead
+    - Single dependency injector from core
 
     Usage:
         registry = ServiceRegistry()
         registry.register('EmailService', EmailService)
         registry.register('UserService', UserService, dependencies=['EmailService'])
         
-        # Initialize all services
+        # Initialize all services (calls on_init and on_startup)
         registry.initialize_all()
         
         # Get service instance (O(1) cached lookup)
         user_service = registry.get_instance('UserService')
         
-        # Cleanup
+        # Cleanup (calls on_shutdown and on_destroy)
         registry.destroy_all()
     """
     
-    __slots__ = ('_injector', '_lifecycle', '_instances', '_initialized')
+    __slots__ = ('_injector', '_instances', '_initialized')
 
     def __init__(self):
         """Initialize the service registry with optimized storage."""
         super().__init__()
+        # Use core's DependencyInjector for dependency resolution
         self._injector = DependencyInjector()
-        self._lifecycle = LifecycleManager()
         # Fast instance cache (O(1) lookup)
         self._instances: Dict[str, Service] = {}
         # Track initialized services (set for O(1) membership check)
@@ -69,6 +70,7 @@ class ServiceRegistry(Registry[Type[Service]]):
         from cullinan.core import get_injection_registry
         injection_registry = get_injection_registry()
         injection_registry.add_provider_registry(self, priority=10)
+        logger.debug("ServiceRegistry registered as dependency provider")
         logger.debug("ServiceRegistry registered as dependency provider")
 
     def register(self, name: str, service_class: Type[Service], 
@@ -206,8 +208,11 @@ class ServiceRegistry(Registry[Type[Service]]):
     def initialize_all(self) -> None:
         """Initialize all registered services in dependency order.
         
-        Creates instances and calls on_init() for each service.
-        For async on_init methods, use initialize_all_async() instead.
+        Creates instances and calls lifecycle hooks:
+        1. on_init() - via get_instance()
+        2. on_startup() - explicitly called here
+
+        For async methods, use initialize_all_async() instead.
         """
         # Get all service names
         service_names = list(self._items.keys())
@@ -227,64 +232,51 @@ class ServiceRegistry(Registry[Type[Service]]):
         for name in init_order:
             try:
                 instance = self.get_instance(name)
-                if instance:
-                    # Register with lifecycle manager for destroy_all support
-                    # Handle lazy metadata initialization
-                    deps = []
-                    if self._metadata is not None and name in self._metadata:
-                        deps = self._metadata[name].get('dependencies', [])
-                    self._lifecycle.register_component(name, instance, dependencies=deps)
-                    # Mark as initialized since get_instance already called on_init
-                    from cullinan.core.types import LifecycleState
-                    self._lifecycle._states[name] = LifecycleState.INITIALIZED
-                else:
+                if not instance:
                     logger.warning(f"Failed to create instance for {name}")
             except Exception as e:
                 logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
                 raise
         
-        # Set initialization order for destroy_all
-        self._lifecycle._initialization_order = init_order
-        
         logger.info(f"Initialized {len(service_names)} services")
 
-        # 🔥 调用 on_startup() 生命周期方法
+        # Call on_startup() lifecycle methods
         logger.debug("Calling on_startup() for all services...")
         for name in init_order:
             instance = self._instances.get(name)
             if instance:
                 try:
-                    # 检查是否有 on_startup 方法
+                    # Check for on_startup method
                     if hasattr(instance, 'on_startup') and callable(instance.on_startup):
                         result = instance.on_startup()
-                        # 检查是否是 async 方法
+                        # Check if async
                         if inspect.iscoroutine(result):
                             logger.warning(
                                 f"Service {name}.on_startup() is async but called synchronously. "
-                                f"Use initialize_all_async() instead or call startup_all_async() separately."
+                                f"Use initialize_all_async() instead or call startup separately."
                             )
                             result.close()
                         logger.debug(f"Called on_startup for service: {name}")
 
-                    # 也检查 on_post_construct（如果没有 on_init）
+                    # Also check on_post_construct
                     elif hasattr(instance, 'on_post_construct') and callable(instance.on_post_construct):
                         result = instance.on_post_construct()
                         if inspect.iscoroutine(result):
-                            logger.warning(
-                                f"Service {name}.on_post_construct() is async but called synchronously."
-                            )
+                            logger.warning(f"Service {name}.on_post_construct() is async.")
                             result.close()
                         logger.debug(f"Called on_post_construct for service: {name}")
                 except Exception as e:
                     logger.error(f"Error in on_startup/on_post_construct for {name}: {e}", exc_info=True)
-                    # 不 raise，继续启动其他服务
+                    # Don't raise, continue with other services
 
         logger.info(f"Startup complete for {len(service_names)} services")
 
     async def initialize_all_async(self) -> None:
         """Initialize all registered services in dependency order (async version).
         
-        Creates instances and calls on_init() for each service, properly handling async methods.
+        Creates instances and calls async lifecycle hooks:
+        1. on_init() or on_init_async()
+        2. on_startup() or on_startup_async()
         """
         # Get all service names
         service_names = list(self._items.keys())
@@ -300,93 +292,193 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.error(f"Failed to determine initialization order: {e}")
             raise
         
-        # Create instances in order and initialize them with async support
+        # Create instances and call on_init (async support)
         for name in init_order:
             try:
-                # Create instance without calling on_init (we'll do it via LifecycleManager)
                 if name not in self._instances:
+                    # Create instance
                     instance = self._injector.resolve(name)
                     self._instances[name] = instance
-                else:
-                    instance = self._instances[name]
-                
-                # Register with lifecycle manager if not already initialized
-                if name not in self._initialized:
-                    # Handle lazy metadata initialization
-                    deps = []
-                    if self._metadata is not None and name in self._metadata:
-                        deps = self._metadata[name].get('dependencies', [])
-                    self._lifecycle.register_component(name, instance, dependencies=deps)
+
+                    # Call on_init (async version if available)
+                    if hasattr(instance, 'on_init_async') and callable(instance.on_init_async):
+                        await instance.on_init_async()
+                        logger.debug(f"Called on_init_async for service: {name}")
+                    elif hasattr(instance, 'on_init') and callable(instance.on_init):
+                        result = instance.on_init()
+                        if inspect.iscoroutine(result):
+                            await result
+                        logger.debug(f"Called on_init for service: {name}")
+
+                    self._initialized.add(name)
             except Exception as e:
-                logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
+                logger.error(f"Failed to initialize {name}: {e}", exc_info=True)
                 raise
         
-        # Initialize all (handles async on_init properly)
-        try:
-            await self._lifecycle.initialize_all_async()
-            # Mark all as initialized
-            for name in init_order:
-                self._initialized.add(name)
-            logger.info(f"Initialized {len(service_names)} services (async)")
-        except Exception as e:
-            logger.error(f"Service initialization failed: {e}", exc_info=True)
-            raise
-    
+        logger.info(f"Initialized {len(service_names)} services")
+
+        # Call on_startup (async support)
+        logger.debug("Calling on_startup() for all services...")
+        for name in init_order:
+            instance = self._instances.get(name)
+            if instance:
+                try:
+                    # Check for async on_startup
+                    if hasattr(instance, 'on_startup_async') and callable(instance.on_startup_async):
+                        await instance.on_startup_async()
+                        logger.debug(f"Called on_startup_async for service: {name}")
+                    elif hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                        result = instance.on_startup()
+                        if inspect.iscoroutine(result):
+                            await result
+                        logger.debug(f"Called on_startup for service: {name}")
+                    # Also check on_post_construct
+                    elif hasattr(instance, 'on_post_construct_async') and callable(instance.on_post_construct_async):
+                        await instance.on_post_construct_async()
+                        logger.debug(f"Called on_post_construct_async for service: {name}")
+                    elif hasattr(instance, 'on_post_construct') and callable(instance.on_post_construct):
+                        result = instance.on_post_construct()
+                        if inspect.iscoroutine(result):
+                            await result
+                        logger.debug(f"Called on_post_construct for service: {name}")
+                except Exception as e:
+                    logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
+                    # Don't raise, continue with other services
+
+        logger.info(f"Startup complete for {len(service_names)} services (async)")
+
     def destroy_all(self) -> None:
         """Destroy all service instances in reverse dependency order.
         
-        Calls on_shutdown() and on_destroy() for each service instance.
+        Calls lifecycle hooks:
+        1. on_shutdown() - explicitly called here
+        2. on_destroy() - called for cleanup
+
         For async methods, use destroy_all_async() instead.
         """
         try:
-            # 🔥 首先调用 on_shutdown() 生命周期方法（按逆序）
-            if hasattr(self._lifecycle, '_initialization_order'):
-                shutdown_order = list(reversed(self._lifecycle._initialization_order))
-                logger.debug("Calling on_shutdown() for all services...")
+            # Get shutdown order (reverse of initialization)
+            if not self._instances:
+                logger.debug("No services to destroy")
+                return
 
-                for name in shutdown_order:
-                    instance = self._instances.get(name)
-                    if instance:
-                        try:
-                            # 检查是否有 on_shutdown 方法
-                            if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
-                                result = instance.on_shutdown()
-                                # 检查是否是 async 方法
-                                if inspect.iscoroutine(result):
-                                    logger.warning(
-                                        f"Service {name}.on_shutdown() is async but called synchronously. "
-                                        f"Use destroy_all_async() instead."
-                                    )
-                                    result.close()
-                                logger.debug(f"Called on_shutdown for service: {name}")
+            # Calculate reverse order
+            shutdown_order = list(reversed(list(self._instances.keys())))
 
-                            # 也检查 on_pre_destroy
-                            elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
-                                result = instance.on_pre_destroy()
-                                if inspect.iscoroutine(result):
-                                    logger.warning(
-                                        f"Service {name}.on_pre_destroy() is async but called synchronously."
-                                    )
-                                    result.close()
-                                logger.debug(f"Called on_pre_destroy for service: {name}")
-                        except Exception as e:
-                            logger.error(f"Error in on_shutdown/on_pre_destroy for {name}: {e}", exc_info=True)
-                            # 继续关闭其他服务
+            # Call on_shutdown() lifecycle methods
+            logger.debug("Calling on_shutdown() for all services...")
+            for name in shutdown_order:
+                instance = self._instances.get(name)
+                if instance:
+                    try:
+                        # Check for on_shutdown method
+                        if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
+                            result = instance.on_shutdown()
+                            if inspect.iscoroutine(result):
+                                logger.warning(
+                                    f"Service {name}.on_shutdown() is async but called synchronously. "
+                                    f"Use destroy_all_async() instead."
+                                )
+                                result.close()
+                            logger.debug(f"Called on_shutdown for service: {name}")
 
-            # 然后调用 on_destroy()
-            self._lifecycle.destroy_all()
-            logger.info("Destroyed all service instances")
+                        # Also check on_pre_destroy
+                        elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
+                            result = instance.on_pre_destroy()
+                            if inspect.iscoroutine(result):
+                                logger.warning(f"Service {name}.on_pre_destroy() is async.")
+                                result.close()
+                            logger.debug(f"Called on_pre_destroy for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_shutdown/on_pre_destroy for {name}: {e}", exc_info=True)
+                        # Continue with other services
+
+            # Call on_destroy() lifecycle methods
+            logger.debug("Calling on_destroy() for all services...")
+            for name in shutdown_order:
+                instance = self._instances.get(name)
+                if instance:
+                    try:
+                        if hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
+                            result = instance.on_destroy()
+                            if inspect.iscoroutine(result):
+                                logger.warning(
+                                    f"Service {name}.on_destroy() is async but called synchronously."
+                                )
+                                result.close()
+                            logger.debug(f"Called on_destroy for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_destroy for {name}: {e}", exc_info=True)
+                        # Continue with other services
+
+            logger.info(f"Destroyed {len(shutdown_order)} service instances")
         except Exception as e:
             logger.error(f"Service destruction failed: {e}", exc_info=True)
     
     async def destroy_all_async(self) -> None:
         """Destroy all service instances in reverse dependency order (async version).
         
-        Calls on_destroy() for each service instance, properly handling async methods.
+        Calls async lifecycle hooks:
+        1. on_shutdown() or on_shutdown_async()
+        2. on_destroy() or on_destroy_async()
         """
         try:
-            await self._lifecycle.destroy_all_async()
-            logger.info("Destroyed all service instances (async)")
+            # Get shutdown order (reverse of initialization)
+            if not self._instances:
+                logger.debug("No services to destroy")
+                return
+
+            # Calculate reverse order
+            shutdown_order = list(reversed(list(self._instances.keys())))
+
+            # Call on_shutdown() lifecycle methods (async support)
+            logger.debug("Calling on_shutdown() for all services...")
+            for name in shutdown_order:
+                instance = self._instances.get(name)
+                if instance:
+                    try:
+                        # Check for async on_shutdown
+                        if hasattr(instance, 'on_shutdown_async') and callable(instance.on_shutdown_async):
+                            await instance.on_shutdown_async()
+                            logger.debug(f"Called on_shutdown_async for service: {name}")
+                        elif hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
+                            result = instance.on_shutdown()
+                            if inspect.iscoroutine(result):
+                                await result
+                            logger.debug(f"Called on_shutdown for service: {name}")
+                        # Also check on_pre_destroy
+                        elif hasattr(instance, 'on_pre_destroy_async') and callable(instance.on_pre_destroy_async):
+                            await instance.on_pre_destroy_async()
+                            logger.debug(f"Called on_pre_destroy_async for service: {name}")
+                        elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
+                            result = instance.on_pre_destroy()
+                            if inspect.iscoroutine(result):
+                                await result
+                            logger.debug(f"Called on_pre_destroy for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_shutdown for {name}: {e}", exc_info=True)
+                        # Continue with other services
+
+            # Call on_destroy() lifecycle methods (async support)
+            logger.debug("Calling on_destroy() for all services...")
+            for name in shutdown_order:
+                instance = self._instances.get(name)
+                if instance:
+                    try:
+                        # Check for async on_destroy
+                        if hasattr(instance, 'on_destroy_async') and callable(instance.on_destroy_async):
+                            await instance.on_destroy_async()
+                            logger.debug(f"Called on_destroy_async for service: {name}")
+                        elif hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
+                            result = instance.on_destroy()
+                            if inspect.iscoroutine(result):
+                                await result
+                            logger.debug(f"Called on_destroy for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_destroy for {name}: {e}", exc_info=True)
+                        # Continue with other services
+
+            logger.info(f"Destroyed {len(shutdown_order)} service instances (async)")
         except Exception as e:
             logger.error(f"Service destruction failed: {e}", exc_info=True)
     
@@ -397,7 +489,6 @@ class ServiceRegistry(Registry[Type[Service]]):
         """
         super().clear()
         self._injector.clear()
-        self._lifecycle.clear()
         self._instances.clear()
         self._initialized.clear()
         logger.debug("Cleared service registry")
