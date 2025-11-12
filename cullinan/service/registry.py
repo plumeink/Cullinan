@@ -247,7 +247,40 @@ class ServiceRegistry(Registry[Type[Service]]):
         self._lifecycle._initialization_order = init_order
         
         logger.info(f"Initialized {len(service_names)} services")
-    
+
+        # 🔥 调用 on_startup() 生命周期方法
+        logger.debug("Calling on_startup() for all services...")
+        for name in init_order:
+            instance = self._instances.get(name)
+            if instance:
+                try:
+                    # 检查是否有 on_startup 方法
+                    if hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                        result = instance.on_startup()
+                        # 检查是否是 async 方法
+                        if inspect.iscoroutine(result):
+                            logger.warning(
+                                f"Service {name}.on_startup() is async but called synchronously. "
+                                f"Use initialize_all_async() instead or call startup_all_async() separately."
+                            )
+                            result.close()
+                        logger.debug(f"Called on_startup for service: {name}")
+
+                    # 也检查 on_post_construct（如果没有 on_init）
+                    elif hasattr(instance, 'on_post_construct') and callable(instance.on_post_construct):
+                        result = instance.on_post_construct()
+                        if inspect.iscoroutine(result):
+                            logger.warning(
+                                f"Service {name}.on_post_construct() is async but called synchronously."
+                            )
+                            result.close()
+                        logger.debug(f"Called on_post_construct for service: {name}")
+                except Exception as e:
+                    logger.error(f"Error in on_startup/on_post_construct for {name}: {e}", exc_info=True)
+                    # 不 raise，继续启动其他服务
+
+        logger.info(f"Startup complete for {len(service_names)} services")
+
     async def initialize_all_async(self) -> None:
         """Initialize all registered services in dependency order (async version).
         
@@ -302,10 +335,45 @@ class ServiceRegistry(Registry[Type[Service]]):
     def destroy_all(self) -> None:
         """Destroy all service instances in reverse dependency order.
         
-        Calls on_destroy() for each service instance.
-        For async on_destroy methods, use destroy_all_async() instead.
+        Calls on_shutdown() and on_destroy() for each service instance.
+        For async methods, use destroy_all_async() instead.
         """
         try:
+            # 🔥 首先调用 on_shutdown() 生命周期方法（按逆序）
+            if hasattr(self._lifecycle, '_initialization_order'):
+                shutdown_order = list(reversed(self._lifecycle._initialization_order))
+                logger.debug("Calling on_shutdown() for all services...")
+
+                for name in shutdown_order:
+                    instance = self._instances.get(name)
+                    if instance:
+                        try:
+                            # 检查是否有 on_shutdown 方法
+                            if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
+                                result = instance.on_shutdown()
+                                # 检查是否是 async 方法
+                                if inspect.iscoroutine(result):
+                                    logger.warning(
+                                        f"Service {name}.on_shutdown() is async but called synchronously. "
+                                        f"Use destroy_all_async() instead."
+                                    )
+                                    result.close()
+                                logger.debug(f"Called on_shutdown for service: {name}")
+
+                            # 也检查 on_pre_destroy
+                            elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
+                                result = instance.on_pre_destroy()
+                                if inspect.iscoroutine(result):
+                                    logger.warning(
+                                        f"Service {name}.on_pre_destroy() is async but called synchronously."
+                                    )
+                                    result.close()
+                                logger.debug(f"Called on_pre_destroy for service: {name}")
+                        except Exception as e:
+                            logger.error(f"Error in on_shutdown/on_pre_destroy for {name}: {e}", exc_info=True)
+                            # 继续关闭其他服务
+
+            # 然后调用 on_destroy()
             self._lifecycle.destroy_all()
             logger.info("Destroyed all service instances")
         except Exception as e:
