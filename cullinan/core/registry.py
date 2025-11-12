@@ -15,7 +15,7 @@ Performance optimizations:
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Dict, Optional, Any, List, Callable, Set, Iterable, Tuple
 import logging
-from functools import wraps
+import threading
 
 from .exceptions import RegistryError
 
@@ -48,7 +48,7 @@ class Registry(ABC, Generic[T]):
     """
     
     # Use __slots__ for memory efficiency (reduces memory by ~40%)
-    __slots__ = ('_items', '_metadata', '_initialized', '_hooks', '_frozen')
+    __slots__ = ('_items', '_metadata', '_initialized', '_hooks', '_frozen', '_lock')
 
     def __init__(self):
         """Initialize an empty registry with optimized storage."""
@@ -60,6 +60,7 @@ class Registry(ABC, Generic[T]):
         self._hooks: Optional[Dict[str, List[Callable]]] = None
         # Frozen state - prevents modification when True
         self._frozen: bool = False
+        self._lock = threading.RLock()
 
     @abstractmethod
     def register(self, name: str, item: T, **metadata) -> None:
@@ -156,29 +157,31 @@ class Registry(ABC, Generic[T]):
         Raises:
             RegistryError: If item not found or registry is frozen
         """
-        self._check_frozen()
-        if name not in self._items:
-            raise RegistryError(f"Item not found: {name}")
+        with self._lock:
+            self._check_frozen()
+            if name not in self._items:
+                raise RegistryError(f"Item not found: {name}")
 
-        # Lazy init metadata dict
-        if self._metadata is None:
-            self._metadata = {}
+            # Lazy init metadata dict
+            if self._metadata is None:
+                self._metadata = {}
 
-        if name not in self._metadata:
-            self._metadata[name] = {}
-        self._metadata[name].update(metadata)
+            if name not in self._metadata:
+                self._metadata[name] = {}
+            self._metadata[name].update(metadata)
 
     def clear(self) -> None:
         """Clear all registered items.
         
         Useful for testing or application reinitialization.
         """
-        self._check_frozen()
-        self._items.clear()
-        if self._metadata is not None:
-            self._metadata.clear()
-        logger.debug("Cleared registry")
-    
+        with self._lock:
+            self._check_frozen()
+            self._items.clear()
+            if self._metadata is not None:
+                self._metadata.clear()
+            logger.debug("Cleared registry")
+
     def count(self) -> int:
         """Get the number of registered items (O(1) operation).
 
@@ -334,11 +337,26 @@ class SimpleRegistry(Registry[T]):
     - Lazy metadata initialization
     - Hook support for extensibility
     - Minimal memory footprint
+    - Configurable duplicate registration policy
 
     Use this for simple registration needs or as a base for custom registries.
     """
 
-    __slots__ = ()  # No additional slots, use parent's
+    __slots__ = ('_duplicate_policy',)
+
+    def __init__(self, duplicate_policy: str = 'warn'):
+        """Initialize registry with duplicate policy.
+
+        Args:
+            duplicate_policy: How to handle duplicate registrations
+                - 'error': Raise RegistryError (strict mode)
+                - 'warn': Log warning and skip (default, backward compatible)
+                - 'replace': Silently replace existing item
+        """
+        super().__init__()
+        if duplicate_policy not in ('error', 'warn', 'replace'):
+            raise ValueError(f"Invalid duplicate_policy: {duplicate_policy}. Must be 'error', 'warn', or 'replace'")
+        self._duplicate_policy = duplicate_policy
 
     def register(self, name: str, item: T, **metadata) -> None:
         """Register an item with optional metadata (optimized).
@@ -353,30 +371,37 @@ class SimpleRegistry(Registry[T]):
         Raises:
             RegistryError: If name already registered, invalid, or registry frozen
         """
-        self._check_frozen()
-        self._validate_name(name)
-        
-        # Trigger pre-register hooks
-        self._trigger_hooks('pre_register', name, item, metadata)
+        with self._lock:
+            self._check_frozen()
+            self._validate_name(name)
 
-        # Fast path: check existence
-        if name in self._items:
-            logger.warning(f"Item already registered: {name}")
-            return
-        
-        # Register item (O(1))
-        self._items[name] = item
+            # Trigger pre-register hooks
+            self._trigger_hooks('pre_register', name, item, metadata)
 
-        # Lazy metadata initialization - only create dict if metadata provided
-        if metadata:
-            if self._metadata is None:
-                self._metadata = {}
-            self._metadata[name] = metadata
-        
-        logger.debug(f"Registered item: {name}")
+            # Handle duplicate registration based on policy
+            if name in self._items:
+                if self._duplicate_policy == 'error':
+                    raise RegistryError(f"Item already registered: {name}")
+                elif self._duplicate_policy == 'warn':
+                    logger.warning(f"Item already registered: {name}, skipping")
+                    return
+                elif self._duplicate_policy == 'replace':
+                    logger.debug(f"Replacing existing item: {name}")
+                    # Continue to register (replace)
 
-        # Trigger post-register hooks
-        self._trigger_hooks('post_register', name, item)
+            # Register item (O(1))
+            self._items[name] = item
+
+            # Lazy metadata initialization - only create dict if metadata provided
+            if metadata:
+                if self._metadata is None:
+                    self._metadata = {}
+                self._metadata[name] = metadata
+
+            logger.debug(f"Registered item: {name}")
+
+            # Trigger post-register hooks
+            self._trigger_hooks('post_register', name, item)
 
     def get(self, name: str) -> Optional[T]:
         """Retrieve a registered item by name (optimized O(1)).
@@ -401,25 +426,26 @@ class SimpleRegistry(Registry[T]):
         Raises:
             RegistryError: If registry is frozen
         """
-        self._check_frozen()
+        with self._lock:
+            self._check_frozen()
 
-        if name not in self._items:
-            return False
+            if name not in self._items:
+                return False
 
-        # Trigger pre-unregister hooks
-        self._trigger_hooks('pre_unregister', name)
+            # Trigger pre-unregister hooks
+            self._trigger_hooks('pre_unregister', name)
 
-        # Remove item
-        del self._items[name]
-        if self._metadata is not None and name in self._metadata:
-            del self._metadata[name]
+            # Remove item
+            del self._items[name]
+            if self._metadata is not None and name in self._metadata:
+                del self._metadata[name]
 
-        logger.debug(f"Unregistered item: {name}")
+            logger.debug(f"Unregister item: {name}")
 
-        # Trigger post-unregister hooks
-        self._trigger_hooks('post_unregister', name)
+            # Trigger post-unregister hooks
+            self._trigger_hooks('post_unregister', name)
 
-        return True
+            return True
 
     def get_or_default(self, name: str, default: T) -> T:
         """Get item or return default if not found (O(1)).
@@ -446,11 +472,12 @@ class SimpleRegistry(Registry[T]):
         Raises:
             RegistryError: If registry is frozen
         """
-        self._check_frozen()
+        with self._lock:
+            self._check_frozen()
 
-        if name not in self._items:
-            return False
+            if name not in self._items:
+                return False
 
-        self._items[name] = item
-        logger.debug(f"Updated item: {name}")
-        return True
+            self._items[name] = item
+            logger.debug(f"Updated item: {name}")
+            return True

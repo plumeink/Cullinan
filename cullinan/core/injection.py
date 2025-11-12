@@ -13,13 +13,18 @@
 - 缓存类型提示避免重复解析
 """
 
-from typing import Type, Any, Dict, Optional, get_type_hints
+from typing import Type, Any, Dict, Optional, get_type_hints, Set
 import logging
+import threading
+from contextvars import ContextVar
 
 from .registry import Registry
-from .exceptions import RegistryError
+from .exceptions import RegistryError, CircularDependencyError
 
 logger = logging.getLogger(__name__)
+
+# 线程本地的解析栈，用于检测循环依赖
+_resolving_stack: ContextVar[Set[str]] = ContextVar('_resolving_stack', default=None)
 
 
 # ============================================================================
@@ -278,7 +283,7 @@ class InjectionRegistry:
     3. 支持多个依赖提供者（Registry）
     """
 
-    __slots__ = ('_metadata', '_provider_registries', '_type_hint_cache')
+    __slots__ = ('_metadata', '_provider_registries', '_type_hint_cache', '_lock')
 
     def __init__(self):
         # {class: InjectionMetadata}
@@ -287,6 +292,8 @@ class InjectionRegistry:
         self._provider_registries: list = []
         # 类型提示缓存
         self._type_hint_cache: Dict[Type, Dict] = {}
+        # 线程锁
+        self._lock = threading.RLock()
 
     def scan_class(self, cls: Type) -> InjectionMetadata:
         """扫描类的类型注解，记录需要注入的属性
@@ -297,41 +304,42 @@ class InjectionRegistry:
         Returns:
             注入元数据对象
         """
-        if cls in self._metadata:
-            return self._metadata[cls]
+        with self._lock:
+            if cls in self._metadata:
+                return self._metadata[cls]
 
-        metadata = InjectionMetadata(cls)
+            metadata = InjectionMetadata(cls)
 
-        try:
-            # 获取类型提示（带缓存）
-            hints = self._get_type_hints(cls)
+            try:
+                # 获取类型提示（带缓存）
+                hints = self._get_type_hints(cls)
 
-            for attr_name, attr_type in hints.items():
-                # 检查是否有 Inject 标记
-                default_value = getattr(cls, attr_name, None)
+                for attr_name, attr_type in hints.items():
+                    # 检查是否有 Inject 标记
+                    default_value = getattr(cls, attr_name, None)
 
-                if isinstance(default_value, Inject):
-                    # 确定依赖名称
-                    dep_name = self._resolve_dependency_name(
-                        default_value.name,
-                        attr_name,
-                        attr_type
-                    )
+                    if isinstance(default_value, Inject):
+                        # 确定依赖名称
+                        dep_name = self._resolve_dependency_name(
+                            default_value.name,
+                            attr_name,
+                            attr_type
+                        )
 
-                    metadata.add_injection(attr_name, dep_name, default_value.required)
-                    logger.debug(
-                        f"Scan: {cls.__name__}.{attr_name} -> {dep_name} "
-                        f"(required={default_value.required})"
-                    )
+                        metadata.add_injection(attr_name, dep_name, default_value.required)
+                        logger.debug(
+                            f"Scan: {cls.__name__}.{attr_name} -> {dep_name} "
+                            f"(required={default_value.required})"
+                        )
 
-        except Exception as e:
-            logger.warning(f"Failed to scan {cls.__name__}: {e}")
+            except Exception as e:
+                logger.warning(f"Failed to scan {cls.__name__}: {e}")
 
-        if metadata.injections:
-            self._metadata[cls] = metadata
-            logger.debug(f"Registered injection metadata for {cls.__name__}")
+            if metadata.injections:
+                self._metadata[cls] = metadata
+                logger.debug(f"Registered injection metadata for {cls.__name__}")
 
-        return metadata
+            return metadata
 
     def _get_type_hints(self, cls: Type) -> Dict:
         """获取类型提示（带缓存，支持字符串注解）
@@ -402,10 +410,11 @@ class InjectionRegistry:
             registry: 提供依赖对象的注册表（如 ServiceRegistry）
             priority: 优先级（数字越大优先级越高）
         """
-        self._provider_registries.append((priority, registry))
-        # 按优先级排序（降序）
-        self._provider_registries.sort(key=lambda x: x[0], reverse=True)
-        logger.debug(f"Added provider: {registry.__class__.__name__} (priority={priority})")
+        with self._lock:
+            self._provider_registries.append((priority, registry))
+            # 按优先级排序（降序）
+            self._provider_registries.sort(key=lambda x: x[0], reverse=True)
+            logger.debug(f"Added provider: {registry.__class__.__name__} (priority={priority})")
 
     def inject(self, instance: Any) -> None:
         """注入依赖到实例
@@ -418,6 +427,13 @@ class InjectionRegistry:
         """
         cls = type(instance)
         metadata = self._metadata.get(cls)
+
+        if metadata is None:
+            for base in cls.__mro__[1:]:
+                if base in self._metadata:
+                    metadata = self._metadata[base]
+                    logger.debug(f"Found injection metadata for {cls.__name__} from base class {base.__name__}")
+                    break
 
         if not metadata:
             return
@@ -454,33 +470,57 @@ class InjectionRegistry:
                     raise
 
     def _resolve_dependency(self, name: str) -> Optional[Any]:
-        """从提供者注册表解析依赖（按优先级）
+        """从提供者注册表解析依赖（按优先级），带循环依赖检测
 
         Args:
             name: 依赖名称
 
         Returns:
             依赖实例，或 None
+
+        Raises:
+            CircularDependencyError: 如果检测到循环依赖
         """
-        for priority, registry in self._provider_registries:
-            # 尝试从注册表获取实例
-            dep = None
+        # 获取当前线程的解析栈
+        resolving = _resolving_stack.get()
+        if resolving is None:
+            resolving = set()
+            _resolving_stack.set(resolving)
 
-            if hasattr(registry, 'get_instance'):
-                # 优先使用 get_instance（适用于 ServiceRegistry）
-                try:
-                    dep = registry.get_instance(name)
-                except Exception as e:
-                    logger.debug(f"get_instance failed for {name}: {e}")
+        # 检测循环依赖
+        if name in resolving:
+            cycle_path = ' -> '.join(list(resolving) + [name])
+            raise CircularDependencyError(
+                f"Circular dependency detected: {cycle_path}"
+            )
 
-            if dep is None and hasattr(registry, 'get'):
-                # 回退：直接从注册表获取
-                dep = registry.get(name)
+        # 将当前依赖加入解析栈
+        resolving.add(name)
+        try:
+            for priority, registry in self._provider_registries:
+                # 尝试从注册表获取实例
+                dep = None
 
-            if dep is not None:
-                return dep
+                if hasattr(registry, 'get_instance'):
+                    # 优先使用 get_instance（适用于 ServiceRegistry）
+                    try:
+                        dep = registry.get_instance(name)
+                    except Exception as e:
+                        logger.debug(f"get_instance failed for {name}: {e}")
 
-        return None
+                if dep is None and hasattr(registry, 'get'):
+                    # 回退：直接从注册表获取
+                    dep = registry.get(name)
+
+                if dep is not None:
+                    return dep
+
+            return None
+        finally:
+            # 从解析栈中移除
+            resolving.discard(name)
+            if not resolving:
+                _resolving_stack.set(None)
 
     def has_injections(self, cls: Type) -> bool:
         """检查类是否需要依赖注入
@@ -507,10 +547,11 @@ class InjectionRegistry:
 
     def clear(self) -> None:
         """清空所有注入元数据"""
-        self._metadata.clear()
-        self._provider_registries.clear()
-        self._type_hint_cache.clear()
-        logger.debug("Cleared injection registry")
+        with self._lock:
+            self._metadata.clear()
+            self._provider_registries.clear()
+            self._type_hint_cache.clear()
+            logger.debug("Cleared injection registry")
 
 
 # 全局注入注册表实例
