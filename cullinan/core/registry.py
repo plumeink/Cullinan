@@ -252,11 +252,12 @@ class Registry(ABC, Generic[T]):
             event: Event name
             callback: Callable to invoke on event
         """
-        if self._hooks is None:
-            self._hooks = {}
-        if event not in self._hooks:
-            self._hooks[event] = []
-        self._hooks[event].append(callback)
+        with self._lock:
+            if self._hooks is None:
+                self._hooks = {}
+            if event not in self._hooks:
+                self._hooks[event] = []
+            self._hooks[event].append(callback)
 
     def _trigger_hooks(self, event: str, *args, **kwargs) -> None:
         """Trigger all hooks for an event.
@@ -283,13 +284,15 @@ class Registry(ABC, Generic[T]):
 
         Useful for production environments where registrations should be immutable.
         """
-        self._frozen = True
-        logger.debug("Registry frozen")
+        with self._lock:
+            self._frozen = True
+            logger.debug("Registry frozen")
 
     def unfreeze(self) -> None:
         """Unfreeze the registry to allow modifications."""
-        self._frozen = False
-        logger.debug("Registry unfrozen")
+        with self._lock:
+            self._frozen = False
+            logger.debug("Registry unfrozen")
 
     def is_frozen(self) -> bool:
         """Check if registry is frozen.
