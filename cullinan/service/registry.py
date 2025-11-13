@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """Service registry for Cullinan framework.
 
-Provides service registration and management using the core Registry pattern,
-with support for dependency injection and lifecycle management.
+统一使用 cullinan.core 的 DI 系统，作为 InjectionRegistry 的 provider。
+
+架构设计（类似 Spring ApplicationContext）：
+- ServiceRegistry 存储服务类定义
+- 作为 provider 向 core.InjectionRegistry 提供服务实例
+- 完全解耦，不再使用 legacy DependencyInjector
+- 支持生命周期管理（on_init/on_startup/on_shutdown/on_destroy）
 
 Performance optimizations:
 - Fast O(1) service lookup with direct dict access
@@ -15,7 +20,7 @@ from typing import Type, Optional, List, Dict, Any, Set
 import logging
 import inspect
 
-from cullinan.core import Registry, DependencyInjector, LifecycleManager
+from cullinan.core import Registry, LifecycleManager
 from cullinan.core.exceptions import RegistryError, DependencyResolutionError
 from .base import Service
 
@@ -23,85 +28,96 @@ logger = logging.getLogger(__name__)
 
 
 class ServiceRegistry(Registry[Type[Service]]):
-    """Optimized registry for service classes with dependency injection support.
+    """服务注册表 - cullinan.core DI 系统的 Service Provider
 
-    This registry manages service classes and their instances with:
-    - Fast O(1) service registration and lookup
-    - Automatic dependency injection
-    - Lifecycle management (on_init/on_destroy/on_startup/on_shutdown)
-    - Singleton instance caching
-    - Memory-efficient storage with __slots__
+    职责（类似 Spring 的 BeanFactory）：
+    1. 存储服务类定义
+    2. 创建和缓存服务单例实例
+    3. 作为 provider 向 InjectionRegistry 提供服务实例
+    4. 管理服务生命周期（on_init/on_startup/on_shutdown/on_destroy）
 
-    Performance optimizations:
-    - Lazy initialization of injector
-    - Direct dict access for instance cache
-    - Minimal metadata overhead
-    - Single dependency injector from core
+    与 core.InjectionRegistry 的关系：
+    - ServiceRegistry 在初始化时注册为 InjectionRegistry 的 provider
+    - 当 Controller/Service 使用 Inject() 或 InjectByName() 时
+    - InjectionRegistry 会调用 ServiceRegistry.get_instance() 获取实例
+    - 形成完整的依赖注入链条
 
     Usage:
-        registry = ServiceRegistry()
+        # 通过 @service 装饰器自动注册（推荐）
+        @service
+        class EmailService(Service):
+            pass
+
+        # 或者手动注册
+        registry = get_service_registry()
         registry.register('EmailService', EmailService)
-        registry.register('UserService', UserService, dependencies=['EmailService'])
-        
-        # Initialize all services (calls on_init and on_startup)
+
+        # 初始化所有服务
         registry.initialize_all()
         
-        # Get service instance (O(1) cached lookup)
-        user_service = registry.get_instance('UserService')
-        
-        # Cleanup (calls on_shutdown and on_destroy)
+        # 获取服务实例（通常不需要手动调用，通过 Inject() 自动注入）
+        email_service = registry.get_instance('EmailService')
+
+        # 清理
         registry.destroy_all()
     """
     
-    __slots__ = ('_injector', '_instances', '_initialized', '_instance_lock')
+    __slots__ = ('_instances', '_initialized', '_instance_lock', '_lifecycle_manager')
 
     def __init__(self):
-        """Initialize the service registry with optimized storage."""
+        """初始化服务注册表，并注册为 core DI 系统的 provider"""
         super().__init__()
-        # Use core's DependencyInjector for dependency resolution
-        self._injector = DependencyInjector()
-        # Fast instance cache (O(1) lookup)
+
+        # 服务实例缓存 (O(1) lookup)
         self._instances: Dict[str, Service] = {}
-        # Track initialized services (set for O(1) membership check)
+
+        # 已初始化的服务集合 (O(1) membership check)
         self._initialized: Set[str] = set()
-        # Thread lock for concurrent singleton creation safety
+
+        # 线程锁（确保单例的线程安全）
         import threading
         self._instance_lock = threading.RLock()
 
-        # Register self as dependency provider for core's injection system
-        # This allows InjectByName to find services
+        # 生命周期管理器
+        self._lifecycle_manager = LifecycleManager()
+
+        # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
+        # 这样 Inject() 和 InjectByName() 就能通过 ServiceRegistry 获取服务实例
         from cullinan.core import get_injection_registry
         injection_registry = get_injection_registry()
         injection_registry.add_provider_registry(self, priority=10)
-        logger.debug("ServiceRegistry registered as dependency provider")
+        logger.debug("ServiceRegistry registered as core DI provider (priority=10)")
 
     def register(self, name: str, service_class: Type[Service], 
                  dependencies: Optional[List[str]] = None, **metadata) -> None:
-        """Register a service class with optional dependencies (optimized).
+        """注册服务类到统一 DI 容器（O(1) 操作）
 
-        Performance: O(1) registration
+        注意：
+        - 服务类应该使用 @service 装饰器，它会自动调用 @injectable
+        - @injectable 会扫描类的类型注解（Inject、InjectByName）并在实例化时注入
+        - dependencies 参数仅用于元数据和依赖顺序分析，实际注入由 core 处理
 
         Args:
-            name: Unique identifier for the service
-            service_class: The service class (not instance)
-            dependencies: List of service names this service depends on
-            **metadata: Additional metadata
-        
+            name: 服务唯一标识符（通常是类名）
+            service_class: 服务类（不是实例）
+            dependencies: 依赖的服务名称列表（可选，仅用于元数据）
+            **metadata: 其他元数据
+
         Raises:
-            RegistryError: If name already registered, invalid, or registry frozen
+            RegistryError: 如果名称已注册、无效或注册表已冻结
         """
         self._check_frozen()
         self._validate_name(name)
         
-        # Fast path: check if already registered
+        # Fast path: 检查是否已注册
         if name in self._items:
             logger.warning(f"Service already registered: {name}")
             return
         
-        # Store the class (O(1))
+        # 存储服务类 (O(1))
         self._items[name] = service_class
         
-        # Lazy metadata initialization - only create if needed
+        # Lazy metadata initialization - 仅在需要时创建
         if dependencies or metadata:
             if self._metadata is None:
                 self._metadata = {}
@@ -109,16 +125,8 @@ class ServiceRegistry(Registry[Type[Service]]):
             meta['dependencies'] = dependencies or []
             self._metadata[name] = meta
 
-        # Register with dependency injector
-        self._injector.register_provider(
-            name, 
-            service_class,
-            dependencies=dependencies,
-            singleton=True
-        )
-        
-        logger.debug(f"Registered service: {name}")
-    
+        logger.debug(f"Registered service class: {name} (DI via core.injectable)")
+
     def get(self, name: str) -> Optional[Type[Service]]:
         """Get the service class (not instance) by name (O(1) operation).
 
@@ -131,191 +139,165 @@ class ServiceRegistry(Registry[Type[Service]]):
         return self._items.get(name)
     
     def get_instance(self, name: str) -> Optional[Service]:
-        """Get or create a service instance (O(1) cached lookup).
+        """获取或创建服务实例（O(1) 缓存查找，线程安全）
 
-        Performance: O(1) for cached instances, O(n) for new instances with n dependencies
-        Thread-safe: Uses lock to ensure singleton behavior in concurrent scenarios
+        工作流程：
+        1. 检查缓存，如果已存在则直接返回（O(1））
+        2. 如果不存在，创建新实例（调用 __init__）
+        3. @injectable 装饰器会在 __init__ 后自动注入依赖
+        4. 调用生命周期钩子 on_init()
+        5. 缓存实例供下次使用
 
-        If the service hasn't been instantiated yet, it will be created
-        with its dependencies resolved and on_init() will be called.
-        
-        Note: This method only supports synchronous on_init(). If your service
-        has an async on_init(), use initialize_all_async() instead.
-        
+        注意：
+        - 此方法仅支持同步 on_init()
+        - 如果服务有异步 on_init()，使用 initialize_all_async()
+
         Args:
-            name: Service identifier
-        
+            name: 服务标识符
+
         Returns:
-            Service instance, or None if not found
-        
+            服务实例，如果未找到则返回 None
+
         Raises:
-            DependencyResolutionError: If dependencies cannot be resolved
+            DependencyResolutionError: 如果依赖无法解析
         """
-        # Fast path: return cached instance (O(1)) - no lock needed for read
+        # Fast path: 返回缓存的实例 (O(1)) - 读取不需要锁
         instance = self._instances.get(name)
         if instance is not None:
             return instance
 
-        # Check if service exists
+        # 检查服务是否存在
         if name not in self._items:
-            logger.warning(f"Service not found: {name}")
+            logger.debug(f"Service not found: {name}")
             return None
         
-        # Thread-safe singleton creation
+        # 线程安全的单例创建
         with self._instance_lock:
-            # Double-check pattern: another thread might have created it
+            # Double-check pattern: 另一个线程可能已经创建了它
             instance = self._instances.get(name)
             if instance is not None:
                 return instance
 
             try:
-                # Get dependencies (lazy metadata access)
-                deps = []
-                if self._metadata is not None and name in self._metadata:
-                    deps = self._metadata[name].get('dependencies', [])
+                service_class = self._items[name]
 
-                # Ensure all dependencies are initialized first
-                for dep_name in deps:
-                    if dep_name not in self._instances:
-                        # Recursively get dependencies (lock is reentrant)
-                        self.get_instance(dep_name)
+                # 【关键】直接实例化服务类
+                # @injectable 装饰器已经包装了 __init__，会在实例化后自动注入依赖
+                # 不再需要 legacy DependencyInjector.resolve()
+                instance = service_class()
 
-                # Resolve dependencies and create instance
-                instance = self._injector.resolve(name)
-
-                # Return None if resolve failed
-                if instance is None:
-                    logger.error(f"Injector.resolve returned None for {name}")
-                    return None
-
-                # Cache instance immediately (O(1))
+                # 立即缓存实例 (O(1))
                 self._instances[name] = instance
 
-                # Call on_init lifecycle hook if exists and not yet initialized
+                # 调用 on_init 生命周期钩子（如果存在且尚未初始化）
                 if name not in self._initialized:
                     if hasattr(instance, 'on_init') and callable(instance.on_init):
                         try:
                             result = instance.on_init()
-                            # Check if on_init is async
+                            # 检查 on_init 是否是异步的
                             if inspect.iscoroutine(result):
                                 logger.warning(
                                     f"Service {name}.on_init() is async but called synchronously. "
                                     f"Use initialize_all_async() instead for proper async support."
                                 )
-                                # Clean up the coroutine to avoid warnings
+                                # 清理 coroutine 以避免警告
                                 result.close()
                             self._initialized.add(name)
                             logger.debug(f"Called on_init for service: {name}")
                         except Exception as e:
                             logger.error(f"Error in on_init for {name}: {e}", exc_info=True)
-                            # Remove from instances if initialization failed
+                            # 如果初始化失败，从实例缓存中移除
                             self._instances.pop(name, None)
                             raise
                     else:
-                        # Mark as initialized even if no on_init method
+                        # 即使没有 on_init 方法也标记为已初始化
                         self._initialized.add(name)
 
+                logger.debug(f"Created service instance: {name} (dependencies injected by @injectable)")
                 return instance
+
             except Exception as e:
                 logger.error(f"Failed to instantiate service {name}: {e}", exc_info=True)
-                raise
+                raise DependencyResolutionError(f"Failed to create {name}: {e}") from e
 
     def initialize_all(self) -> None:
-        """Initialize all registered services in dependency order.
-        
-        Creates instances and calls lifecycle hooks:
-        1. on_init() - via get_instance()
-        2. on_startup() - explicitly called here
+        """初始化所有注册的服务
 
-        For async methods, use initialize_all_async() instead.
+        执行流程：
+        1. 按照注册顺序创建实例（调用 get_instance）
+        2. get_instance 会触发 @injectable 自动注入依赖
+        3. 调用 on_init() 生命周期钩子
+        4. 调用 on_startup() 生命周期钩子
+
+        注意：
+        - 对于异步方法，请使用 initialize_all_async()
+        - 依赖顺序由 core.InjectionRegistry 自动处理
         """
-        # Get all service names
+        # 获取所有服务名称
         service_names = list(self._items.keys())
         
         if not service_names:
             logger.debug("No services to initialize")
             return
         
-        # Get initialization order
-        try:
-            init_order = self._injector.get_dependency_order(service_names)
-        except Exception as e:
-            logger.error(f"Failed to determine initialization order: {e}")
-            raise
-        
-        # Create instances in order (get_instance will call on_init)
-        for name in init_order:
+        # 按注册顺序初始化（core DI 系统会自动处理依赖顺序）
+        logger.info(f"Initializing {len(service_names)} services...")
+
+        for name in service_names:
             try:
+                # get_instance 会创建实例并调用 on_init
                 instance = self.get_instance(name)
                 if not instance:
                     logger.warning(f"Failed to create instance for {name}")
-            except Exception as e:
-                logger.error(f"Failed to create instance for {name}: {e}", exc_info=True)
-                raise
-        
-        logger.info(f"Initialized {len(service_names)} services")
+                    continue
 
-        # Call on_startup() lifecycle methods
-        logger.debug("Calling on_startup() for all services...")
-        for name in init_order:
-            instance = self._instances.get(name)
-            if instance:
-                try:
-                    # Check for on_startup method
-                    if hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                # 调用 on_startup 钩子
+                if hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                    try:
                         result = instance.on_startup()
-                        # Check if async
                         if inspect.iscoroutine(result):
                             logger.warning(
                                 f"Service {name}.on_startup() is async but called synchronously. "
-                                f"Use initialize_all_async() instead or call startup separately."
+                                f"Use initialize_all_async() instead."
                             )
                             result.close()
                         logger.debug(f"Called on_startup for service: {name}")
+                    except Exception as e:
+                        logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
 
-                    # Also check on_post_construct
-                    elif hasattr(instance, 'on_post_construct') and callable(instance.on_post_construct):
-                        result = instance.on_post_construct()
-                        if inspect.iscoroutine(result):
-                            logger.warning(f"Service {name}.on_post_construct() is async.")
-                            result.close()
-                        logger.debug(f"Called on_post_construct for service: {name}")
-                except Exception as e:
-                    logger.error(f"Error in on_startup/on_post_construct for {name}: {e}", exc_info=True)
-                    # Don't raise, continue with other services
+            except Exception as e:
+                logger.error(f"Failed to initialize service {name}: {e}", exc_info=True)
+                raise
 
-        logger.info(f"Startup complete for {len(service_names)} services")
+        logger.info(f"Successfully initialized {len(self._instances)} services")
 
     async def initialize_all_async(self) -> None:
-        """Initialize all registered services in dependency order (async version).
-        
-        Creates instances and calls async lifecycle hooks:
-        1. on_init() or on_init_async()
-        2. on_startup() or on_startup_async()
+        """初始化所有注册的服务（异步版本）
+
+        执行流程：
+        1. 创建实例（调用 get_instance 或直接实例化）
+        2. @injectable 自动注入依赖
+        3. 调用 on_init_async() 或 on_init()
+        4. 调用 on_startup_async() 或 on_startup()
         """
-        # Get all service names
         service_names = list(self._items.keys())
         
         if not service_names:
             logger.debug("No services to initialize")
             return
         
-        # Get initialization order
-        try:
-            init_order = self._injector.get_dependency_order(service_names)
-        except Exception as e:
-            logger.error(f"Failed to determine initialization order: {e}")
-            raise
-        
-        # Create instances and call on_init (async support)
-        for name in init_order:
+        logger.info(f"Initializing {len(service_names)} services (async)...")
+
+        # 创建实例并调用 on_init
+        for name in service_names:
             try:
                 if name not in self._instances:
-                    # Create instance
-                    instance = self._injector.resolve(name)
+                    service_class = self._items[name]
+                    # 直接实例化（@injectable 会自动注入）
+                    instance = service_class()
                     self._instances[name] = instance
 
-                    # Call on_init (async version if available)
+                    # 调用 on_init (async 优先)
                     if hasattr(instance, 'on_init_async') and callable(instance.on_init_async):
                         await instance.on_init_async()
                         logger.debug(f"Called on_init_async for service: {name}")
@@ -326,19 +308,18 @@ class ServiceRegistry(Registry[Type[Service]]):
                         logger.debug(f"Called on_init for service: {name}")
 
                     self._initialized.add(name)
+
             except Exception as e:
                 logger.error(f"Failed to initialize {name}: {e}", exc_info=True)
                 raise
         
-        logger.info(f"Initialized {len(service_names)} services")
-
-        # Call on_startup (async support)
+        # 调用 on_startup (async 支持)
         logger.debug("Calling on_startup() for all services...")
-        for name in init_order:
+        for name in service_names:
             instance = self._instances.get(name)
             if instance:
                 try:
-                    # Check for async on_startup
+                    # 检查 async on_startup
                     if hasattr(instance, 'on_startup_async') and callable(instance.on_startup_async):
                         await instance.on_startup_async()
                         logger.debug(f"Called on_startup_async for service: {name}")
@@ -347,18 +328,9 @@ class ServiceRegistry(Registry[Type[Service]]):
                         if inspect.iscoroutine(result):
                             await result
                         logger.debug(f"Called on_startup for service: {name}")
-                    # Also check on_post_construct
-                    elif hasattr(instance, 'on_post_construct_async') and callable(instance.on_post_construct_async):
-                        await instance.on_post_construct_async()
-                        logger.debug(f"Called on_post_construct_async for service: {name}")
-                    elif hasattr(instance, 'on_post_construct') and callable(instance.on_post_construct):
-                        result = instance.on_post_construct()
-                        if inspect.iscoroutine(result):
-                            await result
-                        logger.debug(f"Called on_post_construct for service: {name}")
                 except Exception as e:
                     logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
-                    # Don't raise, continue with other services
+                    # 不抛出异常，继续处理其他服务
 
         logger.info(f"Startup complete for {len(service_names)} services (async)")
 
@@ -498,12 +470,12 @@ class ServiceRegistry(Registry[Type[Service]]):
             logger.error(f"Service destruction failed: {e}", exc_info=True)
     
     def clear(self) -> None:
-        """Clear all services and instances.
-        
-        Useful for testing or application reinitialization.
+        """清空所有服务和实例
+
+        用于测试或应用程序重新初始化。
+        注意：不会清除 core.InjectionRegistry，仅清除 ServiceRegistry 自己的数据。
         """
         super().clear()
-        self._injector.clear()
         self._instances.clear()
         self._initialized.clear()
         logger.debug("Cleared service registry")

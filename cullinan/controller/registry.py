@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """Controller registry for Cullinan framework.
 
-Provides controller registration and management using the core Registry pattern.
-Controllers are classes that contain HTTP handler methods decorated with @get, @post, etc.
+统一使用 cullinan.core 的 DI 系统，作为 InjectionRegistry 的 provider。
+
+架构设计（类似 Spring MVC）：
+- ControllerRegistry 存储 Controller 类定义和路由信息
+- 作为 provider 向 core.InjectionRegistry 提供 Controller 实例
+- 完全解耦，依赖注入由 @injectable 处理
+- 支持路由注册和 HTTP 方法映射
 
 Performance optimizations:
 - Fast O(1) controller and method lookup
@@ -21,68 +26,79 @@ logger = logging.getLogger(__name__)
 
 
 class ControllerRegistry(Registry[Type[Any]]):
-    """Optimized registry for controller classes.
+    """Controller 注册表 - cullinan.core DI 系统的 Controller Provider
 
-    Manages controller classes and their metadata (URL prefixes, methods) with:
-    - Fast O(1) controller registration and lookup
-    - Efficient method registration and retrieval
-    - URL prefix management
-    - Memory-efficient storage with __slots__
+    职责（类似 Spring MVC 的 RequestMappingHandlerMapping）：
+    1. 存储 Controller 类定义
+    2. 管理 URL 路由和 HTTP 方法映射
+    3. 作为 provider 向 InjectionRegistry 提供 Controller 实例
+    4. 按需创建 Controller 实例（每次请求或单例）
 
-    Performance features:
-    - Direct dict access for O(1) operations
-    - Lazy initialization of method storage
-    - Minimal memory footprint
-    - Batch method registration
+    与 core.InjectionRegistry 的关系：
+    - ControllerRegistry 在初始化时注册为 InjectionRegistry 的 provider
+    - Controller 使用 Inject() 或 InjectByName() 注入 Service
+    - @injectable 装饰器会在 Controller 实例化时自动注入依赖
 
     Usage:
-        registry = ControllerRegistry()
+        # 通过 @controller 装饰器自动注册（推荐）
+        @controller(url='/api/users')
+        class UserController:
+            user_service = InjectByName('UserService')
+
+        # 或者手动注册
+        registry = get_controller_registry()
         registry.register('UserController', UserController, url_prefix='/api/users')
         registry.register_method('UserController', '', 'get', handler_func)
-
-        # Batch registration
-        registry.register_methods_batch('UserController', [
-            ('', 'get', list_func),
-            ('', 'post', create_func),
-        ])
-
-        controllers = registry.list_all()
-        methods = registry.get_methods('UserController')
     """
 
-    __slots__ = ('_controller_methods',)
+    __slots__ = ('_controller_methods', '_controller_instances')
 
     def __init__(self):
-        """Initialize an empty controller registry with optimized storage."""
+        """初始化 Controller 注册表，并注册为 core DI 系统的 provider"""
         super().__init__()
-        # Lazy init - only create when first method is registered
+
+        # Lazy init - 仅在首次注册方法时创建
         # Maps controller_name -> [(url, method, func), ...]
         self._controller_methods: Optional[Dict[str, List[Tuple[str, str, Any]]]] = None
 
+        # Controller 实例缓存（可选，用于单例 Controller）
+        # 默认每次请求创建新实例，但可以配置为单例
+        self._controller_instances: Dict[str, Any] = {}
+
+        # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
+        # 这样其他组件也可以通过 Inject() 注入 Controller（如果需要）
+        from cullinan.core import get_injection_registry
+        injection_registry = get_injection_registry()
+        injection_registry.add_provider_registry(self, priority=5)
+        logger.debug("ControllerRegistry registered as core DI provider (priority=5)")
+
     def register(self, name: str, controller_class: Type[Any],
                  url_prefix: str = '', **metadata) -> None:
-        """Register a controller class with optional URL prefix (O(1) operation).
+        """注册 Controller 类到统一 DI 容器（O(1) 操作）
 
-        Performance: O(1) registration
+        注意：
+        - Controller 类应该使用 @controller 装饰器，它会自动调用 @injectable
+        - @injectable 会扫描类的类型注解（Inject、InjectByName）并在实例化时注入
+        - Controller 实例通常按请求创建，也可以配置为单例
 
         Args:
-            name: Unique identifier for the controller (typically class name)
-            controller_class: The controller class
-            url_prefix: URL prefix for all routes in this controller
-            **metadata: Additional metadata (e.g., middleware, auth requirements)
+            name: Controller 唯一标识符（通常是类名）
+            controller_class: Controller 类
+            url_prefix: 所有路由的 URL 前缀
+            **metadata: 其他元数据（如 middleware、auth 要求等）
 
         Raises:
-            RegistryError: If name already registered, invalid, or registry frozen
+            RegistryError: 如果名称已注册、无效或注册表已冻结
         """
         self._check_frozen()
         self._validate_name(name)
 
-        # Fast path: check if already registered
+        # Fast path: 检查是否已注册
         if name in self._items:
             logger.warning(f"Controller already registered: {name}")
             return
 
-        # Register controller class (O(1))
+        # 注册 Controller 类 (O(1))
         self._items[name] = controller_class
 
         # Lazy metadata initialization
@@ -93,12 +109,12 @@ class ControllerRegistry(Registry[Type[Any]]):
             meta['url_prefix'] = url_prefix
             self._metadata[name] = meta
         elif self._metadata is not None or url_prefix == '':
-            # Store empty prefix for consistency if metadata dict exists
+            # 为一致性存储空前缀
             if self._metadata is None:
                 self._metadata = {}
             self._metadata[name] = {'url_prefix': url_prefix}
 
-        logger.debug(f"Registered controller: {name} with prefix: {url_prefix}")
+        logger.debug(f"Registered controller: {name} with prefix: {url_prefix} (DI via core.injectable)")
 
     def register_method(self, controller_name: str, url: str,
                        http_method: str, handler_func: Any) -> None:
@@ -168,15 +184,61 @@ class ControllerRegistry(Registry[Type[Any]]):
         return len(methods)
 
     def get(self, name: str) -> Optional[Type[Any]]:
-        """Get a controller class by name (O(1) operation).
+        """获取 Controller 类（O(1) 操作）
 
         Args:
-            name: Controller identifier
+            name: Controller 标识符
 
         Returns:
-            Controller class, or None if not found
+            Controller 类，如果未找到则返回 None
         """
         return self._items.get(name)
+
+    def get_instance(self, name: str, singleton: bool = False) -> Optional[Any]:
+        """获取或创建 Controller 实例（用于 DI provider 接口）
+
+        工作流程：
+        1. 如果是单例模式，检查缓存
+        2. 如果不存在，创建新实例（调用 __init__）
+        3. @injectable 装饰器会在 __init__ 后自动注入依赖
+        4. 返回实例
+
+        注意：
+        - Controller 通常按请求创建（singleton=False）
+        - 也支持单例模式（singleton=True），用于特殊场景
+
+        Args:
+            name: Controller 标识符
+            singleton: 是否使用单例模式（默认 False）
+
+        Returns:
+            Controller 实例，如果未找到则返回 None
+        """
+        # 检查 Controller 是否存在
+        if name not in self._items:
+            logger.debug(f"Controller not found: {name}")
+            return None
+
+        # 单例模式：检查缓存
+        if singleton:
+            instance = self._controller_instances.get(name)
+            if instance is not None:
+                return instance
+
+        # 创建新实例
+        controller_class = self._items[name]
+
+        # @injectable 装饰器已经包装了 __init__，会在实例化后自动注入依赖
+        instance = controller_class()
+
+        # 如果是单例，缓存实例
+        if singleton:
+            self._controller_instances[name] = instance
+            logger.debug(f"Created singleton controller instance: {name}")
+        else:
+            logger.debug(f"Created controller instance: {name}")
+
+        return instance
 
     def get_methods(self, controller_name: str) -> List[Tuple[str, str, Any]]:
         """Get all registered methods for a controller (O(1) lookup + copy).

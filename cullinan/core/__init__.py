@@ -66,7 +66,7 @@ from .scope import (
     get_request_scope
 )
 
-__version__ = "0.79"
+__version__ = "0.80"
 
 __all__ = [
     # Registry
