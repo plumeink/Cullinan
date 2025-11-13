@@ -194,16 +194,19 @@ class ServiceRegistry(Registry[Type[Service]]):
                     if hasattr(instance, 'on_init') and callable(instance.on_init):
                         try:
                             result = instance.on_init()
-                            # 检查 on_init 是否是异步的
+                            # [FIX HIGH] 检查 on_init 是否是异步的
+                            # 同步路径不能执行异步方法，抛出明确错误而不是静默失败
                             if inspect.iscoroutine(result):
-                                logger.warning(
-                                    f"Service {name}.on_init() is async but called synchronously. "
-                                    f"Use initialize_all_async() instead for proper async support."
+                                result.close()  # 清理 coroutine 以避免警告
+                                raise RuntimeError(
+                                    f"Service '{name}.on_init()' is async but 'get_instance()' is synchronous. "
+                                    f"Please use 'await initialize_all_async()' instead, or make 'on_init()' synchronous."
                                 )
-                                # 清理 coroutine 以避免警告
-                                result.close()
                             self._initialized.add(name)
                             logger.debug(f"Called on_init for service: {name}")
+                        except RuntimeError:
+                            # 重新抛出我们自己的 RuntimeError
+                            raise
                         except Exception as e:
                             logger.error(f"Error in on_init for {name}: {e}", exc_info=True)
                             # 如果初始化失败，从实例缓存中移除
@@ -255,15 +258,20 @@ class ServiceRegistry(Registry[Type[Service]]):
                 if hasattr(instance, 'on_startup') and callable(instance.on_startup):
                     try:
                         result = instance.on_startup()
+                        # [FIX HIGH] 同步路径检测到异步方法时抛出错误
                         if inspect.iscoroutine(result):
-                            logger.warning(
-                                f"Service {name}.on_startup() is async but called synchronously. "
-                                f"Use initialize_all_async() instead."
+                            result.close()  # 清理 coroutine
+                            raise RuntimeError(
+                                f"Service '{name}.on_startup()' is async but 'initialize_all()' is synchronous. "
+                                f"Please use 'await initialize_all_async()' instead, or make 'on_startup()' synchronous."
                             )
-                            result.close()
                         logger.debug(f"Called on_startup for service: {name}")
+                    except RuntimeError:
+                        # 重新抛出我们的 RuntimeError
+                        raise
                     except Exception as e:
                         logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
+                        raise
 
             except Exception as e:
                 logger.error(f"Failed to initialize service {name}: {e}", exc_info=True)
@@ -298,14 +306,19 @@ class ServiceRegistry(Registry[Type[Service]]):
                     self._instances[name] = instance
 
                     # 调用 on_init (async 优先)
-                    if hasattr(instance, 'on_init_async') and callable(instance.on_init_async):
-                        await instance.on_init_async()
-                        logger.debug(f"Called on_init_async for service: {name}")
-                    elif hasattr(instance, 'on_init') and callable(instance.on_init):
+                    if hasattr(instance, 'on_init') and callable(instance.on_init):
                         result = instance.on_init()
                         if inspect.iscoroutine(result):
                             await result
-                        logger.debug(f"Called on_init for service: {name}")
+                            logger.debug(f"Called on_init (async) for service: {name}")
+                        else:
+                            logger.debug(f"Called on_init (sync) for service: {name}")
+                    # 检查 on_init_async（显式命名的异步方法）
+                    elif hasattr(instance, 'on_init_async') and callable(instance.on_init_async):
+                        from cullinan.service.base import Service
+                        if instance.on_init_async.__func__ is not Service.on_init_async:
+                            await instance.on_init_async()
+                            logger.debug(f"Called on_init_async for service: {name}")
 
                     self._initialized.add(name)
 
@@ -319,15 +332,21 @@ class ServiceRegistry(Registry[Type[Service]]):
             instance = self._instances.get(name)
             if instance:
                 try:
-                    # 检查 async on_startup
-                    if hasattr(instance, 'on_startup_async') and callable(instance.on_startup_async):
-                        await instance.on_startup_async()
-                        logger.debug(f"Called on_startup_async for service: {name}")
-                    elif hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                    # 优先检查 on_startup 是否是 async 方法（子类重写）
+                    if hasattr(instance, 'on_startup') and callable(instance.on_startup):
                         result = instance.on_startup()
                         if inspect.iscoroutine(result):
                             await result
-                        logger.debug(f"Called on_startup for service: {name}")
+                            logger.debug(f"Called on_startup (async) for service: {name}")
+                        else:
+                            logger.debug(f"Called on_startup (sync) for service: {name}")
+                    # 再检查 on_startup_async（显式命名的异步方法）
+                    elif hasattr(instance, 'on_startup_async') and callable(instance.on_startup_async):
+                        # 检查是否是基类的默认空实现
+                        from cullinan.service.base import Service
+                        if instance.on_startup_async.__func__ is not Service.on_startup_async:
+                            await instance.on_startup_async()
+                            logger.debug(f"Called on_startup_async for service: {name}")
                 except Exception as e:
                     logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
                     # 不抛出异常，继续处理其他服务
@@ -342,66 +361,78 @@ class ServiceRegistry(Registry[Type[Service]]):
         2. on_destroy() - called for cleanup
 
         For async methods, use destroy_all_async() instead.
+
+        Raises:
+            RuntimeError: If async lifecycle methods are detected on sync path
         """
-        try:
-            # Get shutdown order (reverse of initialization)
-            if not self._instances:
-                logger.debug("No services to destroy")
-                return
+        # Get shutdown order (reverse of initialization)
+        if not self._instances:
+            logger.debug("No services to destroy")
+            return
 
-            # Calculate reverse order
-            shutdown_order = list(reversed(list(self._instances.keys())))
+        # Calculate reverse order
+        shutdown_order = list(reversed(list(self._instances.keys())))
 
-            # Call on_shutdown() lifecycle methods
-            logger.debug("Calling on_shutdown() for all services...")
-            for name in shutdown_order:
-                instance = self._instances.get(name)
-                if instance:
-                    try:
-                        # Check for on_shutdown method
-                        if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
-                            result = instance.on_shutdown()
-                            if inspect.iscoroutine(result):
-                                logger.warning(
-                                    f"Service {name}.on_shutdown() is async but called synchronously. "
-                                    f"Use destroy_all_async() instead."
-                                )
-                                result.close()
-                            logger.debug(f"Called on_shutdown for service: {name}")
+        # Call on_shutdown() lifecycle methods
+        logger.debug("Calling on_shutdown() for all services...")
+        for name in shutdown_order:
+            instance = self._instances.get(name)
+            if instance:
+                try:
+                    # Check for on_shutdown method
+                    if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
+                        result = instance.on_shutdown()
+                        # [FIX HIGH] 同步路径检测到异步方法时抛出错误
+                        if inspect.iscoroutine(result):
+                            result.close()
+                            raise RuntimeError(
+                                f"Service '{name}.on_shutdown()' is async but 'destroy_all()' is synchronous. "
+                                f"Please use 'await destroy_all_async()' instead, or make 'on_shutdown()' synchronous."
+                            )
+                        logger.debug(f"Called on_shutdown for service: {name}")
 
-                        # Also check on_pre_destroy
-                        elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
-                            result = instance.on_pre_destroy()
-                            if inspect.iscoroutine(result):
-                                logger.warning(f"Service {name}.on_pre_destroy() is async.")
-                                result.close()
-                            logger.debug(f"Called on_pre_destroy for service: {name}")
-                    except Exception as e:
-                        logger.error(f"Error in on_shutdown/on_pre_destroy for {name}: {e}", exc_info=True)
-                        # Continue with other services
+                    # Also check on_pre_destroy
+                    elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
+                        result = instance.on_pre_destroy()
+                        if inspect.iscoroutine(result):
+                            result.close()
+                            raise RuntimeError(
+                                f"Service '{name}.on_pre_destroy()' is async but 'destroy_all()' is synchronous. "
+                                f"Please use 'await destroy_all_async()' instead."
+                            )
+                        logger.debug(f"Called on_pre_destroy for service: {name}")
+                except RuntimeError:
+                    # 重新抛出我们的 RuntimeError（不捕获）
+                    raise
+                except Exception as e:
+                    logger.error(f"Error in on_shutdown/on_pre_destroy for {name}: {e}", exc_info=True)
+                    # Continue with other services
 
-            # Call on_destroy() lifecycle methods
-            logger.debug("Calling on_destroy() for all services...")
-            for name in shutdown_order:
-                instance = self._instances.get(name)
-                if instance:
-                    try:
-                        if hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
-                            result = instance.on_destroy()
-                            if inspect.iscoroutine(result):
-                                logger.warning(
-                                    f"Service {name}.on_destroy() is async but called synchronously."
-                                )
-                                result.close()
-                            logger.debug(f"Called on_destroy for service: {name}")
-                    except Exception as e:
-                        logger.error(f"Error in on_destroy for {name}: {e}", exc_info=True)
-                        # Continue with other services
+        # Call on_destroy() lifecycle methods
+        logger.debug("Calling on_destroy() for all services...")
+        for name in shutdown_order:
+            instance = self._instances.get(name)
+            if instance:
+                try:
+                    if hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
+                        result = instance.on_destroy()
+                        # [FIX HIGH] 同步路径检测到异步方法时抛出错误
+                        if inspect.iscoroutine(result):
+                            result.close()
+                            raise RuntimeError(
+                                f"Service '{name}.on_destroy()' is async but 'destroy_all()' is synchronous. "
+                                f"Please use 'await destroy_all_async()' instead, or make 'on_destroy()' synchronous."
+                            )
+                        logger.debug(f"Called on_destroy for service: {name}")
+                except RuntimeError:
+                    # 重新抛出我们的 RuntimeError（不捕获）
+                    raise
+                except Exception as e:
+                    logger.error(f"Error in on_destroy for {name}: {e}", exc_info=True)
+                    # Continue with other services
 
-            logger.info(f"Destroyed {len(shutdown_order)} service instances")
-        except Exception as e:
-            logger.error(f"Service destruction failed: {e}", exc_info=True)
-    
+        logger.info(f"Destroyed {len(shutdown_order)} service instances")
+
     async def destroy_all_async(self) -> None:
         """Destroy all service instances in reverse dependency order (async version).
         
@@ -424,24 +455,33 @@ class ServiceRegistry(Registry[Type[Service]]):
                 instance = self._instances.get(name)
                 if instance:
                     try:
-                        # Check for async on_shutdown
-                        if hasattr(instance, 'on_shutdown_async') and callable(instance.on_shutdown_async):
-                            await instance.on_shutdown_async()
-                            logger.debug(f"Called on_shutdown_async for service: {name}")
-                        elif hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
+                        # 优先检查 on_shutdown（可能是 async def）
+                        if hasattr(instance, 'on_shutdown') and callable(instance.on_shutdown):
                             result = instance.on_shutdown()
                             if inspect.iscoroutine(result):
                                 await result
-                            logger.debug(f"Called on_shutdown for service: {name}")
-                        # Also check on_pre_destroy
-                        elif hasattr(instance, 'on_pre_destroy_async') and callable(instance.on_pre_destroy_async):
-                            await instance.on_pre_destroy_async()
-                            logger.debug(f"Called on_pre_destroy_async for service: {name}")
+                                logger.debug(f"Called on_shutdown (async) for service: {name}")
+                            else:
+                                logger.debug(f"Called on_shutdown (sync) for service: {name}")
+                        # 检查显式命名的 on_shutdown_async
+                        elif hasattr(instance, 'on_shutdown_async') and callable(instance.on_shutdown_async):
+                            from cullinan.service.base import Service
+                            if instance.on_shutdown_async.__func__ is not Service.on_shutdown_async:
+                                await instance.on_shutdown_async()
+                                logger.debug(f"Called on_shutdown_async for service: {name}")
+                        # 检查 on_pre_destroy
                         elif hasattr(instance, 'on_pre_destroy') and callable(instance.on_pre_destroy):
                             result = instance.on_pre_destroy()
                             if inspect.iscoroutine(result):
                                 await result
-                            logger.debug(f"Called on_pre_destroy for service: {name}")
+                                logger.debug(f"Called on_pre_destroy (async) for service: {name}")
+                            else:
+                                logger.debug(f"Called on_pre_destroy (sync) for service: {name}")
+                        elif hasattr(instance, 'on_pre_destroy_async') and callable(instance.on_pre_destroy_async):
+                            from cullinan.service.base import Service
+                            if hasattr(Service, 'on_pre_destroy_async') and instance.on_pre_destroy_async.__func__ is not Service.on_pre_destroy_async:
+                                await instance.on_pre_destroy_async()
+                                logger.debug(f"Called on_pre_destroy_async for service: {name}")
                     except Exception as e:
                         logger.error(f"Error in on_shutdown for {name}: {e}", exc_info=True)
                         # Continue with other services
@@ -452,15 +492,20 @@ class ServiceRegistry(Registry[Type[Service]]):
                 instance = self._instances.get(name)
                 if instance:
                     try:
-                        # Check for async on_destroy
-                        if hasattr(instance, 'on_destroy_async') and callable(instance.on_destroy_async):
-                            await instance.on_destroy_async()
-                            logger.debug(f"Called on_destroy_async for service: {name}")
-                        elif hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
+                        # 优先检查 on_destroy（可能是 async def）
+                        if hasattr(instance, 'on_destroy') and callable(instance.on_destroy):
                             result = instance.on_destroy()
                             if inspect.iscoroutine(result):
                                 await result
-                            logger.debug(f"Called on_destroy for service: {name}")
+                                logger.debug(f"Called on_destroy (async) for service: {name}")
+                            else:
+                                logger.debug(f"Called on_destroy (sync) for service: {name}")
+                        # 检查显式命名的 on_destroy_async
+                        elif hasattr(instance, 'on_destroy_async') and callable(instance.on_destroy_async):
+                            from cullinan.service.base import Service
+                            if instance.on_destroy_async.__func__ is not Service.on_destroy_async:
+                                await instance.on_destroy_async()
+                                logger.debug(f"Called on_destroy_async for service: {name}")
                     except Exception as e:
                         logger.error(f"Error in on_destroy for {name}: {e}", exc_info=True)
                         # Continue with other services

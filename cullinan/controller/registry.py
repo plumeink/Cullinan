@@ -18,9 +18,10 @@ Performance optimizations:
 
 from typing import Type, Any, Optional, Dict, List, Tuple
 import logging
+import threading
 
 from cullinan.core import Registry
-from cullinan.core.exceptions import RegistryError
+from cullinan.core.exceptions import RegistryError, DependencyResolutionError
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class ControllerRegistry(Registry[Type[Any]]):
         registry.register_method('UserController', '', 'get', handler_func)
     """
 
-    __slots__ = ('_controller_methods', '_controller_instances')
+    __slots__ = ('_controller_methods', '_controller_instances', '_instance_lock')
 
     def __init__(self):
         """初始化 Controller 注册表，并注册为 core DI 系统的 provider"""
@@ -61,9 +62,13 @@ class ControllerRegistry(Registry[Type[Any]]):
         # Maps controller_name -> [(url, method, func), ...]
         self._controller_methods: Optional[Dict[str, List[Tuple[str, str, Any]]]] = None
 
-        # Controller 实例缓存（可选，用于单例 Controller）
-        # 默认每次请求创建新实例，但可以配置为单例
+        # Controller 实例缓存（单例模式）
+        # 每个 Controller 只创建一次，所有请求共享同一实例
+        # 注意：Controller 必须设计为无状态（线程安全）
         self._controller_instances: Dict[str, Any] = {}
+
+        # 线程锁（确保单例的线程安全）
+        self._instance_lock = threading.RLock()
 
         # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
         # 这样其他组件也可以通过 Inject() 注入 Controller（如果需要）
@@ -194,51 +199,62 @@ class ControllerRegistry(Registry[Type[Any]]):
         """
         return self._items.get(name)
 
-    def get_instance(self, name: str, singleton: bool = False) -> Optional[Any]:
-        """获取或创建 Controller 实例（用于 DI provider 接口）
+    def get_instance(self, name: str) -> Optional[Any]:
+        """获取或创建 Controller 单例实例（O(1) 缓存查找，线程安全）
 
-        工作流程：
-        1. 如果是单例模式，检查缓存
+        工作流程（类似 ServiceRegistry.get_instance）：
+        1. 检查缓存，如果已存在则直接返回（O(1））
         2. 如果不存在，创建新实例（调用 __init__）
         3. @injectable 装饰器会在 __init__ 后自动注入依赖
-        4. 返回实例
+        4. 缓存实例供所有请求共享
 
         注意：
-        - Controller 通常按请求创建（singleton=False）
-        - 也支持单例模式（singleton=True），用于特殊场景
+        - Controller 是单例，所有请求共享同一个实例
+        - Controller 必须设计为无状态（不在实例变量存储请求数据）
+        - 请求相关数据通过方法参数传递
 
         Args:
             name: Controller 标识符
-            singleton: 是否使用单例模式（默认 False）
 
         Returns:
             Controller 实例，如果未找到则返回 None
+
+        Raises:
+            DependencyResolutionError: 如果依赖无法解析
         """
+        # Fast path: 返回缓存的实例 (O(1)) - 读取不需要锁
+        instance = self._controller_instances.get(name)
+        if instance is not None:
+            return instance
+
         # 检查 Controller 是否存在
         if name not in self._items:
             logger.debug(f"Controller not found: {name}")
             return None
 
-        # 单例模式：检查缓存
-        if singleton:
+        # 线程安全的单例创建（Double-check locking pattern）
+        with self._instance_lock:
+            # Double-check: 另一个线程可能已经创建了它
             instance = self._controller_instances.get(name)
             if instance is not None:
                 return instance
 
-        # 创建新实例
-        controller_class = self._items[name]
+            try:
+                controller_class = self._items[name]
 
-        # @injectable 装饰器已经包装了 __init__，会在实例化后自动注入依赖
-        instance = controller_class()
+                # 【关键】直接实例化 Controller 类
+                # @injectable 装饰器已经包装了 __init__，会在实例化后自动注入依赖
+                instance = controller_class()
 
-        # 如果是单例，缓存实例
-        if singleton:
-            self._controller_instances[name] = instance
-            logger.debug(f"Created singleton controller instance: {name}")
-        else:
-            logger.debug(f"Created controller instance: {name}")
+                # 立即缓存实例 (O(1))
+                self._controller_instances[name] = instance
 
-        return instance
+                logger.debug(f"Created controller singleton: {name} (dependencies injected by @injectable)")
+                return instance
+
+            except Exception as e:
+                logger.error(f"Failed to instantiate controller {name}: {e}", exc_info=True)
+                raise DependencyResolutionError(f"Failed to create controller {name}: {e}") from e
 
     def get_methods(self, controller_name: str) -> List[Tuple[str, str, Any]]:
         """Get all registered methods for a controller (O(1) lookup + copy).

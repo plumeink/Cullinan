@@ -15,6 +15,7 @@ import json
 import warnings
 from cullinan.service.registry import get_service_registry
 from cullinan.controller.registry import get_controller_registry
+from cullinan.controller.stateless_validator import validate_stateless_controller, check_controller_init_source
 from cullinan.exceptions import (
     HandlerError, ParameterError, ResponseError, RequestError, MissingHeaderException
 )
@@ -654,21 +655,21 @@ def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional
         logger.error('[ACCESS_LOG_FORMAT_ERROR] Failed to format access log: %s', str(e), exc_info=True)
 
 
-def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict], 
-                    type: str, get_request_body: bool = False) -> None:
+async def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict],
+                          type: str, get_request_body: bool = False) -> None:
     """Handle HTTP request by invoking the controller function with resolved parameters.
     
     This is the core request handling function that:
     1. Selects the appropriate controller instance based on HTTP method
     2. Injects service and response objects
     3. Resolves and maps parameters from the request
-    4. Invokes the controller function
+    4. Invokes the controller function (supports both sync and async)
     5. Writes the response
     6. Emits access logs
     
     Args:
         self: The Tornado RequestHandler instance
-        func: The controller function to invoke
+        func: The controller function to invoke (can be sync or async)
         params: Tuple of (url_params, query_params, body_params, file_params)
         headers: Dictionary of required headers
         type: HTTP method type ('get', 'post', 'patch', 'delete', 'put')
@@ -678,6 +679,7 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
         - Uses cached function signatures (_get_cached_signature)
         - Uses cached parameter mappings (_get_cached_param_mapping)
         - Conditional logging to reduce overhead
+        - Automatic async/await handling for async controller methods
     """
     global controller_self
     start_time = time.time()
@@ -708,15 +710,27 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
             details={"type": type}
         )
 
-    # 实例化 Controller（@injectable 会自动注入依赖）
+    # [SINGLETON] 从 ControllerRegistry 获取单例实例
+    # 而不是每次请求都创建新实例
+    # @injectable 会在首次创建时自动注入依赖
     try:
-        controller_self = controller_factory()
-        logger.debug(f"Instantiated controller: {controller_factory.__name__}")
+        controller_registry = get_controller_registry()
+        controller_name = controller_factory.__name__
+        controller_self = controller_registry.get_instance(controller_name)
+
+        if controller_self is None:
+            raise HandlerError(
+                "Controller instance not found",
+                error_code="CONTROLLER_NOT_FOUND",
+                details={"controller": controller_name, "type": type}
+            )
+
+        logger.debug(f"Using controller singleton: {controller_name}")
     except Exception as e:
-        logger.error(f"Failed to instantiate controller {controller_factory.__name__}: {e}", exc_info=True)
+        logger.error(f"Failed to get controller {controller_factory.__name__}: {e}", exc_info=True)
         raise HandlerError(
-            "Controller instantiation failed",
-            error_code="CONTROLLER_INIT_ERROR",
+            "Controller retrieval failed",
+            error_code="CONTROLLER_GET_ERROR",
             details={"controller": controller_factory.__name__, "error": str(e)}
         )
 
@@ -775,6 +789,12 @@ def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict]
 
         # 调用目标函数
         response_ret = func(controller_self, *param_list) if len(param_list) > 0 else func(controller_self)
+
+        # [FIX CRITICAL] 检测并 await 异步协程
+        # 如果 controller 方法是 async def，func() 返回 coroutine 对象
+        # 必须 await 才能真正执行异步代码
+        if inspect.iscoroutine(response_ret):
+            response_ret = await response_ret
 
         # 返回值优先，否则使用 context 中绑定的实例
         if response_ret is not None and hasattr(response_ret, "get_headers") and hasattr(response_ret, "get_status") and hasattr(response_ret, "get_body"):
@@ -843,7 +863,7 @@ def get_api(**kwargs: Any) -> Callable:
             local_url, url_param_key_list = url_resolver(local_url)
 
         @EncapsulationHandler.add_func(url=local_url, type='get')
-        def get(self, *args):
+        async def get(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
@@ -853,14 +873,14 @@ def get_api(**kwargs: Any) -> Callable:
             query_params = kwargs.get('query_params') or ()
             file_params = kwargs.get('file_params') or []
 
-            request_handler(self,
-                            func,
-                            request_resolver(self, caller_keys + tuple(url_param_key_list),
-                                             url_values,
-                                             query_params, None,
-                                             file_params),
-                            header_resolver(self, kwargs.get('headers')),
-                            'get')
+            await request_handler(self,
+                                  func,
+                                  request_resolver(self, caller_keys + tuple(url_param_key_list),
+                                                   url_values,
+                                                   query_params, None,
+                                                   file_params),
+                                  header_resolver(self, kwargs.get('headers')),
+                                  'get')
 
         return get
 
@@ -875,7 +895,7 @@ def post_api(**kwargs: Any) -> Callable:
             local_url, url_param_key_list = url_resolver(local_url)
 
         @EncapsulationHandler.add_func(url=local_url, type='post')
-        def post(self, *args):
+        async def post(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
@@ -886,16 +906,16 @@ def post_api(**kwargs: Any) -> Callable:
             body_params = kwargs.get('body_params') or []
             file_params = kwargs.get('file_params') or []
 
-            request_handler(self,
-                            func,
-                            request_resolver(self, caller_keys + tuple(url_param_key_list),
-                                             url_values,
-                                             query_params,
-                                             body_params,
-                                             file_params),
-                            header_resolver(self, kwargs.get('headers')),
-                            'post',
-                            kwargs.get('get_request_body', False))
+            await request_handler(self,
+                                  func,
+                                  request_resolver(self, caller_keys + tuple(url_param_key_list),
+                                                   url_values,
+                                                   query_params,
+                                                   body_params,
+                                                   file_params),
+                                  header_resolver(self, kwargs.get('headers')),
+                                  'post',
+                                  kwargs.get('get_request_body', False))
 
         return post
 
@@ -910,7 +930,7 @@ def patch_api(**kwargs: Any) -> Callable:
             local_url, url_param_key_list = url_resolver(local_url)
 
         @EncapsulationHandler.add_func(url=local_url, type='patch')
-        def patch(self, *args):
+        async def patch(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
@@ -921,15 +941,15 @@ def patch_api(**kwargs: Any) -> Callable:
             body_params = kwargs.get('body_params') or []
             file_params = kwargs.get('file_params') or []
 
-            request_handler(self,
-                            func,
-                            request_resolver(self,
-                                             caller_keys + tuple(url_param_key_list), url_values,
-                                             query_params,
-                                             body_params, file_params),
-                            header_resolver(self, kwargs.get('headers')),
-                            'patch',
-                            kwargs.get('get_request_body', False))
+            await request_handler(self,
+                                  func,
+                                  request_resolver(self,
+                                                   caller_keys + tuple(url_param_key_list), url_values,
+                                                   query_params,
+                                                   body_params, file_params),
+                                  header_resolver(self, kwargs.get('headers')),
+                                  'patch',
+                                  kwargs.get('get_request_body', False))
 
         return patch
 
@@ -944,7 +964,7 @@ def delete_api(**kwargs: Any) -> Callable:
             local_url, url_param_key_list = url_resolver(local_url)
 
         @EncapsulationHandler.add_func(url=local_url, type='delete')
-        def delete(self, *args):
+        async def delete(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
@@ -954,13 +974,13 @@ def delete_api(**kwargs: Any) -> Callable:
             query_params = kwargs.get('query_params') or ()
             file_params = kwargs.get('file_params') or []
 
-            request_handler(self,
-                            func,
-                            request_resolver(self,
-                                             caller_keys + tuple(url_param_key_list), url_values,
-                                             query_params, None, file_params),
-                            header_resolver(self, kwargs.get('headers')),
-                            'delete')
+            await request_handler(self,
+                                  func,
+                                  request_resolver(self,
+                                                   caller_keys + tuple(url_param_key_list), url_values,
+                                                   query_params, None, file_params),
+                                  header_resolver(self, kwargs.get('headers')),
+                                  'delete')
 
         return delete
 
@@ -975,7 +995,7 @@ def put_api(**kwargs: Any) -> Callable:
             local_url, url_param_key_list = url_resolver(local_url)
 
         @EncapsulationHandler.add_func(url=local_url, type='put')
-        def put(self, *args):
+        async def put(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
                 logger.info("\t||| request:")
@@ -985,13 +1005,13 @@ def put_api(**kwargs: Any) -> Callable:
             query_params = kwargs.get('query_params') or ()
             file_params = kwargs.get('file_params') or []
 
-            request_handler(self,
-                            func,
-                            request_resolver(self,
-                                             caller_keys + tuple(url_param_key_list), url_values,
-                                             query_params, None, file_params),
-                            header_resolver(self, kwargs.get('headers')),
-                            'put')
+            await request_handler(self,
+                                  func,
+                                  request_resolver(self,
+                                                   caller_keys + tuple(url_param_key_list), url_values,
+                                                   query_params, None, file_params),
+                                  header_resolver(self, kwargs.get('headers')),
+                                  'put')
 
         return put
 
@@ -1039,6 +1059,18 @@ def controller(**kwargs) -> Callable:
         url, url_params = url_resolver(url)
 
     def inner(cls):
+        # 0. 验证 Controller 是否无状态（单例安全）
+        # 检查 __init__ 中是否有实例变量赋值
+        try:
+            # 使用运行时验证（包装 __init__）
+            # strict=False: 警告模式，不阻止启动
+            cls = validate_stateless_controller(cls, strict=False)
+
+            # 额外的源码静态检查（辅助信息）
+            check_controller_init_source(cls, strict=False)
+        except Exception as e:
+            logger.warning(f"Failed to validate stateless for {cls.__name__}: {e}")
+
         # 1. 标记为可注入（使用 core 的 injectable 装饰器）
         # 这会自动扫描类的注入需求并在实例化时注入
         from cullinan.core import injectable
