@@ -85,11 +85,12 @@ Next steps
 
 ## Running the demo (Windows PowerShell)
 
-To run the middleware demo locally (Windows PowerShell v5.1), create a venv, activate it, install the package and tornado, then run the example. Single-line commands use `;` per project conventions:
+Ensure you have a working Python environment (virtualenv, conda, or system Python). Install dependencies and run the example:
 
 ```powershell
-py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1; pip install -U pip; pip install -e .; pip install tornado
-.\\.venv\\Scripts\\Activate.ps1; python examples\\middleware_demo.py
+pip install -U pip
+pip install cullinan tornado
+python examples\middleware_demo.py
 ```
 
 Observed output (example run):

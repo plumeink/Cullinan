@@ -3,7 +3,7 @@ Run minimal Cullinan core examples for documentation smoke tests.
 Example 1: ProviderRegistry + SingletonScope + ScopedProvider + InjectionRegistry + @injectable property injection
 Example 2: Constructor injection with @inject_constructor
 
-Run from repo root: .\.venv\Scripts\Activate.ps1; python docs\work\core_examples.py
+Run from repo root: python docs\work\core_examples.py (ensure you have a Python environment with required dependencies installed)
 """
 from cullinan.core import (
     SingletonScope, ScopedProvider, ProviderRegistry,
@@ -81,4 +81,3 @@ if __name__ == '__main__':
     except Exception as e:
         print('\nCore examples failed:', e)
         raise
-

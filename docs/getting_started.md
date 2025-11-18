@@ -23,23 +23,58 @@ This page provides a minimal quick-start to install and run a small Cullinan app
 
 ## Install (PowerShell)
 
-python -m venv .venv; .\\.venv\\Scripts\\Activate.ps1; pip install -U pip; pip install -e .
+Ensure you have a working Python environment (Python 3.8+) and pip available. Then run:
+
+```powershell
+pip install -U pip
+pip install cullinan
+```
 
 ## Quick start
-1. Ensure you are in the repository root.
-2. Activate the virtualenv (see above command).
-3. Run the example server:
+1. Create a new project directory and change into it:
 
-python examples\\hello_http.py
+```powershell
+mkdir my_cullinan_project; cd my_cullinan_project
+```
 
-Expected: Server starts and listens on the configured port. Open http://localhost:8888 to see a response.
+2. Ensure you have a Python environment (virtualenv, conda, system Python, etc.). Install the published package:
+
+```powershell
+pip install -U pip
+pip install cullinan
+```
+
+3. Create a minimal application file `minimal_app.py` in your project with the following content:
+
+```python
+# minimal_app.py
+from cullinan import application
+from cullinan.controller import controller
+
+@controller(path='/hello')
+def hello_handler(request):
+    """Simple HTTP handler."""
+    return {'message': 'Hello from Cullinan!'}
+
+if __name__ == '__main__':
+    # Start the framework application (no instantiation required)
+    application.run()
+```
+
+4. Run your app:
+
+```powershell
+python minimal_app.py
+```
+
+Open `http://localhost:4080/hello` in your browser to verify the server is running.
 
 ## Verified example (local run)
 
 I ran the example locally in a Windows PowerShell session using the above commands. Observed log output (truncated):
 
 INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:8888/hello
+INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
 INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
 INFO:__main__:Response status: 200
 INFO:__main__:Response body: Hello Cullinan
@@ -53,7 +88,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan.app import create_app
+from cullinan import application
 from cullinan.controller import controller
 
 @controller(path='/hello')
@@ -62,20 +97,18 @@ def hello_handler(request):
     return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    app = create_app()
-    # Controllers are auto-discovered or explicitly registered
-    app.run()  # Starts Tornado IOLoop on default port
+    # Start the framework application (no instantiation required)
+    application.run()
 ```
 
 To run this example:
 
 ```powershell
 # Save the above code as minimal_app.py
-.\\.venv\\Scripts\\Activate.ps1
 python minimal_app.py
 ```
 
-Then visit `http://localhost:8888/hello` in your browser.
+Then visit `http://localhost:4080/hello` in your browser.
 
 ## Understanding the basics
 
@@ -285,7 +318,7 @@ config.set('server.port', 8080)
 ```
 
 ## Troubleshooting
-- If `Activate.ps1` fails, ensure PowerShell execution policy allows script execution: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
+- If you encounter errors installing packages, ensure your Python and pip are up to date and that you have network access to PyPI.
 
 ## Next steps
 - Read `docs/wiki/injection.md` for IoC/DI details.

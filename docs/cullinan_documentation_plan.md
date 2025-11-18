@@ -169,7 +169,7 @@ TL;DR：为 Cullinan (基于 Tornado 的 IoC/DI 框架) 编写中英双语文档
 - 发布前：CI 通过、文档链接完整性检查、示例在 Windows PowerShell 测试通过。
 
 关键校验命令（PowerShell 表示法，单行示例使用 `;` 分隔）：
-- 创建虚拟环境并激活：`py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1`
+- 创建虚拟环境并激活（可选）：请确保你有一个可用的 Python 环境（virtualenv/conda/system Python 等均可），无需在文档中硬性规定激活命令。
 - 安装开发依赖并安装本包（可选 extras）：`pip install -U pip; pip install -e .[dev]` 或 `pip install -e .`
 - 运行测试：`py -3 -m pytest -q`（或 `pytest -q`）
 - 运行单个示例（在 `examples/` 目录）：`py example_script.py` 或 `python -m examples.demo`（取决于示例实现）
@@ -233,7 +233,7 @@ TL;DR：为 Cullinan (基于 Tornado 的 IoC/DI 框架) 编写中英双语文档
 ## 11. 必要的命令与工具（PowerShell v5.1 示例说明）
 
 - 建议开发环境工具：Python 3.8+（项目当前要求请核对 `setup.py`）、pytest、mkdocs/sphinx、markdownlint、typora/VSCode（用于校对）、可选：graphviz（画依赖图）。
-- 虚拟环境（示例步骤，单行用 `;` 分隔）：`py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1`
+- 虚拟环境（示例说明）：如需在本地创建虚拟环境，请参考你的平台和偏好；文档示例统一使用 `pip` 命令假定已可用的 Python 环境。
 - 安装开发依赖：`pip install -U pip; pip install -e .[dev]`（或 `pip install -e .`）
 - 运行测试：`py -3 -m pytest -q`
 - 运行单个示例（示例位于 `examples/hello.py`）：`py examples\\hello.py`

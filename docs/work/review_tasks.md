@@ -13,18 +13,17 @@
 3. 运行最小可执行示例（由 AI 生成或开发者补充）
    - 操作：在 Windows PowerShell 中逐条执行示例命令（每行一个命令，禁止使用 `&&` 串联）。
    - 建议流程：
-     - 创建虚拟环境：
-       powershell
-       python -m venv .venv
-     - 激活虚拟环境：
-       powershell
-       .\.venv\Scripts\Activate.ps1
-     - 安装依赖（如有 requirements）：
-       powershell
-       python -m pip install -r requirements.txt
+     - 确保已准备好 Python 环境（virtualenv/conda/system Python 等任一环境均可）。
+     - 安装依赖（如有 requirements 或需要安装包）：
+       ```powershell
+       pip install -U pip
+       pip install -r requirements.txt  # if present
+       pip install cullinan
+       ```
      - 运行示例脚本（示例由 AI 放在 `examples/` 或 `docs/examples.md`）：
-       powershell
+       ```powershell
        python examples\hello_http.py
+       ```
    - 记录：把示例运行输出复制到 `docs/work/examples_run_output.md`（可选）或提交到 PR。
 
 4. 验证 IoC/DI 场景
@@ -60,4 +59,3 @@
 
 
 备注：如遇到实现与草稿不一致的地方，请在 `docs/work/review_tasks.md` 内添加新的条目，标注文件与具体行号，并把相关代码片段附上以便 AI 修正文档草稿。
-

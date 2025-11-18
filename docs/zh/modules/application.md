@@ -29,18 +29,19 @@ pr_links: []
 
 仓库包含一个最小示例 `examples/hello_http.py`，用于文档中的烟雾测试。该示例通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。
 
-PowerShell（Windows）运行命令（单行使用分号 `;`）：
+PowerShell（Windows）运行命令：
 
 ```powershell
-py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1; pip install -U pip; pip install -e .; pip install tornado
-.\\.venv\\Scripts\\Activate.ps1; python examples\\hello_http.py
+pip install -U pip
+pip install cullinan tornado
+python examples\hello_http.py
 ```
 
 观察到的输出（节选）：
 
 ```
 INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:8888/hello
+INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
 INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
 INFO:__main__:Response status: 200
 INFO:__main__:Response body: Hello Cullinan

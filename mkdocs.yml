@@ -13,6 +13,7 @@ nav:
     - Lifecycle: wiki/lifecycle.md
     - Middleware: wiki/middleware.md
     - Extensions: wiki/extensions.md
+    - RESTful API: wiki/restful_api.md
   - Modules:
     - app: modules/app.md
     - application: modules/application.md
@@ -52,6 +53,7 @@ plugins:
             Lifecycle: 生命周期
             Middleware: 中间件
             Extensions: 扩展
+            RESTful API: RESTful API
             Modules: 模块
             app: 应用
             application: 应用程序

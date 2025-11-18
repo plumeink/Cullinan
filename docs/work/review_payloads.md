@@ -52,11 +52,11 @@ Checklist for reviewer:
 
 Local smoke-check commands (PowerShell):
 ```
-py -3 -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+# Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan tornado mkdocs mkdocs-material
 # Run examples or tests that exercise core, e.g.:
 python -m pytest tests/test_core_injection.py -q
-```
 ```
 
 ---
@@ -94,10 +94,10 @@ Checklist for reviewer:
 
 Local smoke-check:
 ```
-py -3 -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+# Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan
 python examples\controller_di_middleware.py
-```
 ```
 
 ---
@@ -134,10 +134,10 @@ Checklist for reviewer:
 
 Local smoke-check:
 ```
-py -3 -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+# Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan
 python -m pytest tests/test_provider_system.py -q
-```
 ```
 
 ---
@@ -174,10 +174,10 @@ Checklist for reviewer:
 
 Local smoke-check:
 ```
-py -3 -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+# Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan
 python -m pytest tests/test_real_app_startup.py -q
-```
 ```
 
 ---
@@ -185,5 +185,3 @@ python -m pytest tests/test_real_app_startup.py -q
 ### How to use these payloads
 - Copy the corresponding Issue title and body into a new GitHub Issue and assign the module owner.
 - Ask the owner to update `docs/work/api_cleanup_candidates.csv` decisions and comment in the issue with the commit hash that updated the CSV.
-
-

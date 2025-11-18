@@ -32,7 +32,7 @@ def main():
     handlers = registry.get_handlers()
     app = tornado.web.Application(handlers=handlers)
     server = tornado.httpserver.HTTPServer(app)
-    port = 8888
+    port = 4080
     server.listen(port)
 
     ioloop = tornado.ioloop.IOLoop.current()

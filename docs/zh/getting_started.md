@@ -23,16 +23,51 @@ pr_links: []
 
 ## 安装（PowerShell）
 
-python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -U pip; pip install -e .
+确保你已经有可用的 Python 环境（Python 3.8+）和 pip。然后运行：
+
+```powershell
+pip install -U pip
+pip install cullinan
+```
 
 ## 快速开始
-1. 确保你在仓库根目录。
-2. 激活虚拟环境（见上文命令）。
-3. 运行示例服务器：
+1. 在你希望放置项目的目录创建一个新项目目录并进入：
 
-python examples\hello_http.py
+```powershell
+mkdir my_cullinan_project; cd my_cullinan_project
+```
 
-预期：服务器启动并监听配置的端口。打开 http://localhost:8888 查看响应。
+2. 确保你已有一个 Python 环境（virtualenv、conda、系统 Python 等均可）。然后安装发布版本的包：
+
+```powershell
+pip install -U pip
+pip install cullinan
+```
+
+3. 在项目根目录创建一个最小应用文件 `minimal_app.py`，内容如下：
+
+```python
+# minimal_app.py
+from cullinan.app import create_app
+from cullinan.controller import controller
+
+@controller(path='/hello')
+def hello_handler(request):
+    """简单的 HTTP 处理器。"""
+    return {'message': 'Hello from Cullinan!'}
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run()
+```
+
+4. 运行你的应用：
+
+```powershell
+python minimal_app.py
+```
+
+在浏览器中打开 `http://localhost:4080/hello` 验证服务器是否启动。
 
 ## 已验证的示例（本地运行）
 
@@ -40,7 +75,7 @@ python examples\hello_http.py
 
 ```
 INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:8888/hello
+INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
 INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
 INFO:__main__:Response status: 200
 INFO:__main__:Response body: Hello Cullinan
@@ -55,7 +90,7 @@ INFO:__main__:IOLoop stopped, exiting
 
 ```python
 # minimal_app.py
-from cullinan.app import create_app
+from cullinan import application
 from cullinan.controller import controller
 
 @controller(path='/hello')
@@ -64,20 +99,18 @@ def hello_handler(request):
     return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    app = create_app()
-    # 控制器通过自动发现或显式注册
-    app.run()  # 在默认端口启动 Tornado IOLoop
+    # Start the framework application (no instantiation required)
+    application.run()
 ```
 
 运行此示例：
 
 ```powershell
 # 将上述代码保存为 minimal_app.py
-.\\.venv\\Scripts\\Activate.ps1
 python minimal_app.py
 ```
 
-然后在浏览器中访问 `http://localhost:8888/hello`。
+然后在浏览器中访问 `http://localhost:4080/hello`。
 
 ## 理解基础知识
 
@@ -288,7 +321,8 @@ config.set('server.port', 8080)
 ```
 
 ## 故障排查
-- 如果 `Activate.ps1` 失败，请确保 PowerShell 执行策略允许脚本执行：`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
+- 如果安装包时出现错误，请确保 Python 和 pip 已更新，并且能访问 PyPI（网络或代理设置）。
+- 如果在运行 PowerShell 命令时遇到权限问题，请检查 PowerShell 的执行策略或以管理员权限运行命令。
 
 ## 下一步
 - 阅读 `docs/wiki/injection.md` 了解 IoC/DI 细节。

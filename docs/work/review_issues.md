@@ -66,13 +66,12 @@ Below are markdown templates you can paste into GitHub Issues or a project board
 ---
 
 ## How to run a local smoke check
-1. Create and activate a virtualenv:
+1. Ensure you have a working Python environment and required tools installed. Example (install dependencies via pip):
 
 ```powershell
-py -3 -m venv .venv; .\.venv\Scripts\Activate.ps1
 pip install -U pip
-pip install -e .
-pip install tornado mkdocs mkdocs-material mkdocs-mermaid2-plugin
+pip install -U pip setuptools
+pip install cullinan tornado mkdocs mkdocs-material mkdocs-mermaid2-plugin
 ```
 
 2. Run example smoke tests (e.g., `examples/middleware_demo.py`) to validate behavior.
@@ -80,4 +79,3 @@ pip install tornado mkdocs mkdocs-material mkdocs-mermaid2-plugin
 3. Edit `docs/work/api_cleanup_candidates.csv` and set `decision` column values.
 
 4. Comment on the review issue with "CSV updated: see commit <hash>" or attach a brief rationale for removes.
-

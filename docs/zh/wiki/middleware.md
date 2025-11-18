@@ -90,11 +90,12 @@ class AuditMiddleware(MiddlewareBase):
 
 ## 运行示例（Windows PowerShell）
 
-在 Windows PowerShell v5.1 中，本地运行中间件示例的步骤（单行使用 `;`）：
+确保你已经有一个可用的 Python 环境（virtualenv、conda、系统 Python 等均可）。安装依赖并运行示例如下：
 
 ```powershell
-py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1; pip install -U pip; pip install -e .; pip install tornado
-.\\.venv\\Scripts\\Activate.ps1; python examples\\middleware_demo.py
+pip install -U pip
+pip install cullinan tornado
+python examples\middleware_demo.py
 ```
 
 示例运行观察到的输出：
