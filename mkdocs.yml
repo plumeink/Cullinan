@@ -1,7 +1,6 @@
 site_name: Cullinan Documentation
 site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework"
 site_author: Plumeink
-site_url: https://plumeink.github.io/Cullinan/
 
 use_directory_urls: true
 
@@ -42,9 +41,11 @@ plugins:
           name: English
           default: true
           build: true
+          site_url: /
         - locale: zh
           name: 中文
           build: true
+          site_url: /zh/
           nav_translations:
             Home: 首页
             Getting Started: 快速开始
