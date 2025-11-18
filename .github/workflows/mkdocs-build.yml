@@ -12,6 +12,11 @@ on:
       - '.github/workflows/**'
       - 'mkdocs.yml'
 
+# Give this workflow permission to write Pages so it can deploy
+permissions:
+  contents: read
+  pages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,8 +41,9 @@ jobs:
       - name: Build site
         run: |
           mkdocs build --strict
-      - name: Upload site artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: mkdocs-site
-          path: site/
+          path: './site'
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
