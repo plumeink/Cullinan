@@ -1035,6 +1035,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前置条件
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        克隆仓库
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        创建并激活虚拟环境（可选但推荐）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        以可编辑模式安装依赖
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行测试
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行示例应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="运行示例应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hello-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hello HTTP 示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        中间件演示示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1051,7 +1153,56 @@
 
 
 <h1 id="_1">本地构建与运行<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>占位：在 Windows（PowerShell）与 Unix 下的本地构建与运行说明。</p>
+<p>本文说明如何在本地搭建 Cullinan 开发环境、以可编辑模式安装项目、运行测试以及启动示例应用，覆盖 Windows（PowerShell）、Linux 和 macOS。</p>
+<h2 id="_2">前置条件<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python 3.8 或更高版本</li>
+<li>Git</li>
+</ul>
+<h2 id="_3">克隆仓库<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>在所有平台上均可使用以下命令：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/plumeink/Cullinan.git
+<span class="nb">cd</span><span class="w"> </span>Cullinan
+</code></pre></div>
+<h2 id="_4">创建并激活虚拟环境（可选但推荐）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">venv</span> <span class="p">.</span><span class="n">venv</span>
+<span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">Activate</span><span class="p">.</span><span class="n">ps1</span>
+</code></pre></div>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</code></pre></div>
+<h2 id="_5">以可编辑模式安装依赖<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>在所有平台上：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>如果在 <code>setup.py</code> 或 <code>pyproject.toml</code> 中定义了开发额外依赖，可按需安装，例如：</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</code></pre></div>
+<h2 id="_6">运行测试<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>在所有平台上：</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-q
+</code></pre></div>
+<p>如项目使用不同的测试运行方式，可根据实际情况调整命令（例如使用 <code>python -m pytest</code>）。</p>
+<h2 id="_7">运行示例应用<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="hello-http">Hello HTTP 示例<a class="headerlink" href="#hello-http" title="Permanent link">&para;</a></h3>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/hello_http.py
+</code></pre></div>
+<p>然后在浏览器中访问 <code>http://localhost:4080/hello</code>，验证服务已成功启动。</p>
+<h3 id="_8">中间件演示示例<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">middleware_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/middleware_demo.py
+</code></pre></div>
+<p>关于该示例的日志输出和行为说明，请参考中间件相关文档。</p>
 
 
 

@@ -1035,6 +1035,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前置条件
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行测试集
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行单个测试模块
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        添加新测试
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用示例进行烟雾测试
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用示例进行烟雾测试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hello-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例：Hello HTTP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例：中间件演示
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        在 CI 中集成测试
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1051,7 +1153,76 @@
 
 
 <h1 id="_1">测试与验证<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>占位：如何运行测试、添加测试、运行示例烟雾测试与 CI 校验步骤（含 PowerShell 命令）。</p>
+<p>本文说明如何运行现有测试集、添加新的测试、使用示例进行烟雾测试，以及在 CI 中集成测试执行。示例命令覆盖 Windows（PowerShell）、Linux 和 macOS。</p>
+<h2 id="_2">前置条件<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python 3.8 或更高版本</li>
+<li>Git</li>
+<li>已克隆并可用的 Cullinan 仓库（环境准备可参考 <code>docs/build_run.md</code>）</li>
+</ul>
+<h2 id="_3">运行测试集<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>在以可编辑模式安装 Cullinan 之后（参见 <code>docs/build_run.md</code>），可以使用 <code>pytest</code> 运行测试。</p>
+<p>在所有平台上：</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-q
+</code></pre></div>
+<p>如果倾向于通过 Python 模块方式调用，也可以使用：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>-q
+</code></pre></div>
+<p>在 Windows 上，常见的做法是使用 <code>py</code> 启动器：</p>
+<div class="highlight"><pre><span></span><code><span class="n">py</span> <span class="p">-</span><span class="n">3</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">-q</span>
+</code></pre></div>
+<h2 id="_4">运行单个测试模块<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>要运行单个测试文件（例如 <code>tests/test_core_injection.py</code>）：</p>
+<p>在所有平台上：</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/test_core_injection.py<span class="w"> </span>-q
+</code></pre></div>
+<p>或使用 Python 模块方式：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_core_injection.py<span class="w"> </span>-q
+</code></pre></div>
+<h2 id="_5">添加新测试<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>在为新特性或缺陷修复添加测试时，建议遵循以下原则：</p>
+<ol>
+<li>将测试文件放置在 <code>tests/</code> 目录下。</li>
+<li>使用具有描述性的测试名称，并将相关测试组织在同一模块中。</li>
+<li>优先采用 <code>pytest</code> 风格的测试（函数或测试类），与现有测试集保持一致。</li>
+<li>确保测试具有确定性，不依赖外部服务，除非明确标注。</li>
+</ol>
+<h2 id="_6">使用示例进行烟雾测试<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>Cullinan 在 <code>examples/</code> 目录下提供了可运行示例，可作为烟雾测试使用。</p>
+<h3 id="hello-http">示例：Hello HTTP<a class="headerlink" href="#hello-http" title="Permanent link">&para;</a></h3>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/hello_http.py
+</code></pre></div>
+<p>然后在浏览器中访问 <code>http://localhost:4080/hello</code>，验证服务是否正常响应。</p>
+<h3 id="_7">示例：中间件演示<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">middleware_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/middleware_demo.py
+</code></pre></div>
+<p>日志输出将展示中间件和注入的服务如何参与请求处理。具体时间戳和 ID 会因运行环境不同而有所差异。</p>
+<h2 id="ci">在 CI 中集成测试<a class="headerlink" href="#ci" title="Permanent link">&para;</a></h2>
+<p>在 CI 流水线中，通常需要执行以下步骤：</p>
+<ol>
+<li>准备 Python 运行环境。</li>
+<li>以可编辑模式安装依赖（可选安装开发额外依赖）。</li>
+<li>使用 <code>pytest</code> 运行测试集。</li>
+</ol>
+<p>bash 风格的典型命令序列（可根据 CI 系统进行调整）：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+pytest<span class="w"> </span>-q
+</code></pre></div>
+<p>在基于 Windows 的 CI 环境中使用 PowerShell 时，可使用类似命令：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">-e</span> <span class="p">.</span><span class="no">[dev]</span>
+<span class="n">py</span> <span class="p">-</span><span class="n">3</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">-q</span>
+</code></pre></div>
+<p>可根据 CI 提供商与具体环境调整命令与选项。</p>
 
 
 

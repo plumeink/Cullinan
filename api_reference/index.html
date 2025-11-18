@@ -863,6 +863,31 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -886,6 +911,58 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#module-index-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module index (example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-symbols-and-signatures-recommended-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public symbols and signatures (recommended structure)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regenerating-api-documentation-example-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating API documentation (example workflow)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1049,6 +1126,47 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#module-index-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module index (example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-symbols-and-signatures-recommended-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public symbols and signatures (recommended structure)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regenerating-api-documentation-example-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating API documentation (example workflow)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1065,11 +1183,37 @@
 
 
 <h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<p>This page links to the generated API modules index and will be expanded into per-module API pages.</p>
+<p>This page provides an overview of the public API surface of Cullinan and acts as an entry point for generated or manually maintained per-module API pages. The recommended structure includes: a module index, the public symbols and signatures for each module, and a brief description of how to regenerate API documentation.</p>
+<h2 id="module-index-example">Module index (example)<a class="headerlink" href="#module-index-example" title="Permanent link">&para;</a></h2>
+<p>The following module list is for illustration only. The concrete index should be derived from the actual code structure and/or automated generation results:</p>
 <ul>
-<li>See the generated module index: <code>docs/work/api_modules.md</code></li>
+<li><code>cullinan.app</code> — Application creation and run entrypoints</li>
+<li><code>cullinan.application</code> — Application lifecycle and startup flow</li>
+<li><code>cullinan.core</code> — IoC/DI core (providers, registries, scopes, injection APIs)</li>
+<li><code>cullinan.controller</code> — Controllers and RESTful API decorators</li>
+<li><code>cullinan.service</code> — Service base class and the <code>@service</code> decorator</li>
+<li><code>cullinan.middleware</code> — Middleware base classes and extension points</li>
 </ul>
-<p>Placeholder for: per-module public symbols, signatures, and examples.</p>
+<h2 id="public-symbols-and-signatures-recommended-structure">Public symbols and signatures (recommended structure)<a class="headerlink" href="#public-symbols-and-signatures-recommended-structure" title="Permanent link">&para;</a></h2>
+<p>For each module, the API reference is recommended to follow this structure:</p>
+<ul>
+<li>Module path, for example: <code>cullinan.controller</code></li>
+<li>Short description: primary responsibility and typical usage scenarios</li>
+<li>List of public classes and functions (example):</li>
+<li><code>@controller(...)</code> — Controller decorator, responsible for auto-registering controllers and their routes</li>
+<li><code>@get_api(url=..., query_params=..., body_params=..., headers=...)</code> — GET endpoint decorator</li>
+<li><code>@post_api(url=..., body_params=..., headers=...)</code> — POST endpoint decorator</li>
+<li><code>Inject</code>, <code>InjectByName</code> — Property/constructor injection markers</li>
+</ul>
+<p>A complete API reference can be populated using this structure, either via automated generation or by manual curation.</p>
+<h2 id="regenerating-api-documentation-example-workflow">Regenerating API documentation (example workflow)<a class="headerlink" href="#regenerating-api-documentation-example-workflow" title="Permanent link">&para;</a></h2>
+<p>When adding automation later, a static analysis script can be used to generate the API index and keep this page in sync with the source. A typical workflow might be:</p>
+<ol>
+<li>Maintain a script under <code>docs/work/</code> (for example <code>generate_api_reference.py</code>) that scans modules and emits Markdown fragments.</li>
+<li>Have the script produce a per-module API list (classes, functions, signatures, short descriptions) into <code>docs/work/api_modules.md</code> or update this page directly.</li>
+<li>Run the script periodically in CI or as part of local documentation build steps to ensure the API reference reflects the current codebase.</li>
+</ol>
+<p>The exact tooling and script implementation can be refined based on project conventions and the chosen documentation toolchain.</p>
 
 
 

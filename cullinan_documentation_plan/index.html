@@ -1045,7 +1045,7 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        任务收悉与高层计划
+        任务收敛与高层计划
       
     </span>
   </a>
@@ -1205,18 +1205,18 @@
 <blockquote>
 <p>说明：本计划基于 Cullinan 源码（仅以源码实现为准，忽略注释）进行设计，目标是为项目建立完整的中英双语文档体系（<code>docs/</code> 与 <code>docs/zh/</code> 1:1 对应）。</p>
 </blockquote>
-<h2 id="_1">任务收悉与高层计划<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>我将把此前子代理生成的多阶段任务计划写入 <code>docs/cullinan_documentation_plan.md</code>，并在仓库中保留该计划供团队审阅与分配。下一步操作：</p>
+<h2 id="_1">任务收敛与高层计划<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>本计划文档用于收纳多阶段任务规划，便于在仓库中保留规划内容，供团队审阅与分配。后续操作示例：</p>
 <ul>
-<li>创建并提交 Markdown 计划文件到 <code>docs/</code>。</li>
-<li>运行静态检查以确保文件没有语法/格式错误（文档文件通常不会产生代码编译错误，但我们仍会进行基本检查）。</li>
+<li>创建并提交 Markdown 计划文件到 <code>docs/</code> 目录。</li>
+<li>运行静态检查以确保文件没有语法/格式错误（文档文件通常不会产生代码编译错误，但仍建议进行基本检查）。</li>
 </ul>
 <p>简要验收清单（在提交前）：
 - [x] 文件以 UTF-8 编码、Markdown 格式保存。
-- [x] 包含目标、范围、任务拆分、时间估算、质量门与 PowerShell 示例命令。
+- [x] 包含目标、范围、任务拆分、时间预估、质量门与示例命令说明。
 - [x] 明确要求 <code>docs/</code> 与 <code>docs/zh/</code> 必须 1:1 对应。</p>
 <hr />
-<p>TL;DR：为 Cullinan (基于 Tornado 的 IoC/DI 框架) 编写中英双语文档（<code>docs/</code> 与 <code>docs/zh/</code> 1:1 对应），包括入门、示例、Wiki（架构/组件/生命周期/注入/中间件/扩展）、API 参考、迁移指南、贡献指南、测试与本地运行说明；采用源码驱动（忽略注释）研究策略，保持现有 IoC/DI 设计不变，提供分工、里程碑、质量门与 PowerShell 下的运行/验证命令示例。</p>
+<p>TL;DR：为 Cullinan（基于 Tornado 的 IoC/DI 框架）编写中英双语文档（<code>docs/</code> 与 <code>docs/zh/</code> 1:1 对应），包括入门、示例、Wiki（架构/组件/生命周期/注入/中间件/扩展）、API 参考、迁移指南、贡献指南、测试与本地运行说明；采用源码驱动（忽略注释）研究策略，保持现有 IoC/DI 设计不变，提供分工、里程碑、质量门与 PowerShell 等环境下的运行/验证命令示例。</p>
 <h2 id="1">1. 目标与受众<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
 <ul>
 <li>目标：为 Cullinan 提供清晰、可执行、双语（英文/中文）文档套件，帮助新用户快速上手，帮助贡献者理解内部设计与注入机制，提供可运行的示例与测试验证步骤。</li>
@@ -1395,7 +1395,7 @@
 <li>发布文档版本（tag）并在 <code>README.MD</code> 中更新到版本链接。</li>
 </ul>
 <hr />
-<p>如需我将本计划拆分为具体的 <code>docs/</code> 文件模板并为每个文件生成初始占位内容（英文 + 中文占位），我可以继续执行并创建这些文件。请告知是否需要自动创建这些模板文件以及你对 API 文档的偏好（自动化工具 vs 手工维护）。</p>
+<p>如需将本计划拆分为具体的 <code>docs/</code> 文件模板并为每个文件生成初始占位内容（英文 + 中文占位），可继续执行并创建这些文件。请告知是否需要自动创建这些模板文件以及对 API 文档的偏好（自动化工具 vs 手工维护）。</p>
 
 
 

@@ -829,6 +829,31 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -852,6 +877,81 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hello-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hello HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hello HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controller-di-middleware-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controller + DI + Middleware demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controller + DI + Middleware demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1049,6 +1149,70 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hello-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hello HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hello HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controller-di-middleware-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controller + DI + Middleware demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controller + DI + Middleware demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1065,10 +1229,42 @@
 
 
 <h1 id="examples-and-demos">Examples and Demos<a class="headerlink" href="#examples-and-demos" title="Permanent link">&para;</a></h1>
-<p>Index of canonical examples in the repository. For each example include: path, one-line description, PowerShell run command, expected output.</p>
-<p>Suggested examples:
-- <code>examples/hello_http.py</code> — Minimal HTTP server. Run: <code>python examples\\hello_http.py</code>
-- <code>examples/controller_di_middleware.py</code> — Controller + DI + middleware example</p>
+<p>This page lists canonical runnable examples shipped with Cullinan. Each entry includes the example path, a short description, and how to run it on common platforms.</p>
+<h2 id="hello-http">Hello HTTP<a class="headerlink" href="#hello-http" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Path</strong>: <code>examples/hello_http.py</code></li>
+<li><strong>Description</strong>: Minimal HTTP server returning a greeting.</li>
+</ul>
+<h3 id="how-to-run">How to run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h3>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/hello_http.py
+</code></pre></div>
+<p>Expected behavior:</p>
+<ul>
+<li>Starts an HTTP server.</li>
+<li>Serves a response on <code>http://localhost:4080/hello</code>.</li>
+</ul>
+<h2 id="controller-di-middleware-demo">Controller + DI + Middleware demo<a class="headerlink" href="#controller-di-middleware-demo" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Path</strong>: <code>examples/controller_di_middleware.py</code></li>
+<li><strong>Description</strong>: Demonstrates integration between controllers, dependency injection, and middleware.</li>
+</ul>
+<h3 id="how-to-run_1">How to run<a class="headerlink" href="#how-to-run_1" title="Permanent link">&para;</a></h3>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">controller_di_middleware</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/controller_di_middleware.py
+</code></pre></div>
+<p>Expected behavior:</p>
+<ul>
+<li>Logs request handling through middleware.</li>
+<li>Shows how injected services participate in the request pipeline.</li>
+</ul>
+<!-- ...you can extend this list with additional examples as they are added to the repository... -->
 
 
 

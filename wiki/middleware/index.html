@@ -562,10 +562,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#running-the-demo-windows-powershell" class="md-nav__link">
+  <a href="#running-the-demo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running the demo (Windows PowerShell)
+        Running the demo
       
     </span>
   </a>
@@ -1113,10 +1113,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#running-the-demo-windows-powershell" class="md-nav__link">
+  <a href="#running-the-demo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running the demo (Windows PowerShell)
+        Running the demo
       
     </span>
   </a>
@@ -1209,16 +1209,22 @@
 </ul>
 <p>Next steps</p>
 <ul>
-<li>Extract a minimal runnable example from <code>examples/controller_di_middleware.py</code> into <code>examples/</code> (I can create and verify it locally on request).</li>
+<li>Extract a minimal runnable example from <code>examples/controller_di_middleware.py</code> into <code>examples/</code> and ensure it is covered by at least one automated test.</li>
 <li>Formalize a middleware base contract (if not present) and document the required methods and expected behaviors.</li>
 </ul>
-<h2 id="running-the-demo-windows-powershell">Running the demo (Windows PowerShell)<a class="headerlink" href="#running-the-demo-windows-powershell" title="Permanent link">&para;</a></h2>
-<p>Ensure you have a working Python environment (virtualenv, conda, or system Python). Install dependencies and run the example:</p>
-<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<h2 id="running-the-demo">Running the demo<a class="headerlink" href="#running-the-demo" title="Permanent link">&para;</a></h2>
+<p>Ensure you have a working Python environment (virtualenv, conda, or system Python).</p>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span> <span class="n">tornado</span>
 <span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">middleware_demo</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
-<p>Observed output (example run):</p>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="w"> </span>tornado
+python<span class="w"> </span>examples/middleware_demo.py
+</code></pre></div>
+<p>Typical output (example run):</p>
 <div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop for middleware demo
 INFO:__main__:Performing request 1
 INFO:__main__:Entered request context

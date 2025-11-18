@@ -1035,6 +1035,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clone-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clone the repository
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-and-activate-a-virtual-environment-optional-but-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create and activate a virtual environment (optional but recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-dependencies-in-editable-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install dependencies in editable mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run the test suite
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-an-example-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run an example application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run an example application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hello-http-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hello HTTP example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#middleware-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middleware demo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1051,7 +1153,56 @@
 
 
 <h1 id="local-build-run">Local Build &amp; Run<a class="headerlink" href="#local-build-run" title="Permanent link">&para;</a></h1>
-<p>Placeholder: instructions for building and running locally on Windows (PowerShell) and Unix.</p>
+<p>This page describes how to set up a local environment, install Cullinan in editable mode, run tests, and start example applications on Windows (PowerShell), Linux, and macOS.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python 3.8 or newer</li>
+<li>Git</li>
+</ul>
+<h2 id="clone-the-repository">Clone the repository<a class="headerlink" href="#clone-the-repository" title="Permanent link">&para;</a></h2>
+<p>On all platforms:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/plumeink/Cullinan.git
+<span class="nb">cd</span><span class="w"> </span>Cullinan
+</code></pre></div>
+<h2 id="create-and-activate-a-virtual-environment-optional-but-recommended">Create and activate a virtual environment (optional but recommended)<a class="headerlink" href="#create-and-activate-a-virtual-environment-optional-but-recommended" title="Permanent link">&para;</a></h2>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">venv</span> <span class="p">.</span><span class="n">venv</span>
+<span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">Activate</span><span class="p">.</span><span class="n">ps1</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</code></pre></div>
+<h2 id="install-dependencies-in-editable-mode">Install dependencies in editable mode<a class="headerlink" href="#install-dependencies-in-editable-mode" title="Permanent link">&para;</a></h2>
+<p>On all platforms:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>If you have additional development extras configured in <code>setup.py</code> or <code>pyproject.toml</code>, you can install them as needed, for example:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</code></pre></div>
+<h2 id="run-the-test-suite">Run the test suite<a class="headerlink" href="#run-the-test-suite" title="Permanent link">&para;</a></h2>
+<p>On all platforms:</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>-q
+</code></pre></div>
+<p>If your environment uses a different test runner, adapt the command accordingly (e.g. <code>python -m pytest</code>).</p>
+<h2 id="run-an-example-application">Run an example application<a class="headerlink" href="#run-an-example-application" title="Permanent link">&para;</a></h2>
+<h3 id="hello-http-example">Hello HTTP example<a class="headerlink" href="#hello-http-example" title="Permanent link">&para;</a></h3>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/hello_http.py
+</code></pre></div>
+<p>Then open <code>http://localhost:4080/hello</code> in a browser to verify the server is running.</p>
+<h3 id="middleware-demo">Middleware demo<a class="headerlink" href="#middleware-demo" title="Permanent link">&para;</a></h3>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">middleware_demo</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/middleware_demo.py
+</code></pre></div>
+<p>Refer to the middleware documentation for a description of the expected log output and behavior.</p>
 
 
 

@@ -351,10 +351,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-powershell" class="md-nav__link">
+  <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install (PowerShell)
+        Install
       
     </span>
   </a>
@@ -373,10 +373,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verified-example-local-run" class="md-nav__link">
+  <a href="#sample-run-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verified example (local run)
+        Sample run output
       
     </span>
   </a>
@@ -1316,10 +1316,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-powershell" class="md-nav__link">
+  <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install (PowerShell)
+        Install
       
     </span>
   </a>
@@ -1338,10 +1338,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verified-example-local-run" class="md-nav__link">
+  <a href="#sample-run-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verified example (local run)
+        Sample run output
       
     </span>
   </a>
@@ -1533,22 +1533,29 @@
 <li>Python 3.8+</li>
 <li>Git</li>
 </ul>
-<h2 id="install-powershell">Install (PowerShell)<a class="headerlink" href="#install-powershell" title="Permanent link">&para;</a></h2>
-<p>Ensure you have a working Python environment (Python 3.8+) and pip available. Then run:</p>
-<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
+<p>Before you start, make sure Python 3.8+ is installed and that <code>python</code> and <code>pip</code> are available on your PATH.</p>
+<p>On most systems, you can upgrade pip and install Cullinan with the following commands (valid on Windows, Linux, and macOS):</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>cullinan
 </code></pre></div>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Create a new project directory and change into it:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="n">mkdir</span> <span class="n">my_cullinan_project</span><span class="p">;</span> <span class="nb">cd </span><span class="n">my_cullinan_project</span>
+<p>On Windows (PowerShell):</p>
+<div class="highlight"><pre><span></span><code><span class="n">mkdir</span> <span class="n">my_cullinan_project</span>
+<span class="nb">cd </span><span class="n">my_cullinan_project</span>
+</code></pre></div>
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>my_cullinan_project
+<span class="nb">cd</span><span class="w"> </span>my_cullinan_project
 </code></pre></div>
 <ol>
 <li>Ensure you have a Python environment (virtualenv, conda, system Python, etc.). Install the published package:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>cullinan
 </code></pre></div>
 <ol>
 <li>Create a minimal application file <code>minimal_app.py</code> in your project with the following content:</li>
@@ -1569,18 +1576,23 @@
 <ol>
 <li>Run your app:</li>
 </ol>
+<p>On Windows (PowerShell):</p>
 <div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">minimal_app</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
-<p>Open <code>http://localhost:4080/hello</code> in your browser to verify the server is running.</p>
-<h2 id="verified-example-local-run">Verified example (local run)<a class="headerlink" href="#verified-example-local-run" title="Permanent link">&para;</a></h2>
-<p>I ran the example locally in a Windows PowerShell session using the above commands. Observed log output (truncated):</p>
-<p>INFO:<strong>main</strong>:Starting IOLoop... (will stop after one verification request)
-INFO:<strong>main</strong>:Async Requesting http://127.0.0.1:4080/hello
+<p>On Linux / macOS:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>minimal_app.py
+</code></pre></div>
+<p>Then open <code>http://localhost:4080/hello</code> in your browser to verify the server is running.</p>
+<h2 id="sample-run-output">Sample run output<a class="headerlink" href="#sample-run-output" title="Permanent link">&para;</a></h2>
+<p>The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:</p>
+<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
+INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
 INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:<strong>main</strong>:Response status: 200
-INFO:<strong>main</strong>:Response body: Hello Cullinan
-INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
-<p>Note: The example uses <code>cullinan.handler.registry.get_handler_registry()</code> to register a simple Tornado handler and performs a single verification request, then exits. This makes it suitable for smoke-testing in documentation.</p>
+INFO:__main__:Response status: 200
+INFO:__main__:Response body: Hello Cullinan
+INFO:__main__:IOLoop stopped, exiting
+</code></pre></div>
+<p>This example uses <code>cullinan.handler.registry.get_handler_registry()</code> to register a simple Tornado handler, perform a single verification request, and then stop the IOLoop. This pattern is suitable for smoke tests in documentation.</p>
 <h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
 <p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>

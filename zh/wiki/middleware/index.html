@@ -562,10 +562,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#windows-powershell" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        运行示例（Windows PowerShell）
+        运行示例
       
     </span>
   </a>
@@ -1113,10 +1113,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#windows-powershell" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        运行示例（Windows PowerShell）
+        运行示例
       
     </span>
   </a>
@@ -1209,21 +1209,27 @@
 <p>最佳实践与建议</p>
 <ul>
 <li>将中间件保持为轻量函数/类，核心逻辑委托给注入的服务。</li>
-<li>在中间件中使用日志（框架 logger）而不是打印，以便在生产环境调整日志级别与收集。</li>
-<li>为中间件写独立单元测试并在 CI 中运行（可以模拟请求对象与注入 registry）。</li>
+<li>在中间件中使用框架提供的日志记录器（logger）而不是直接打印，便于在生产环境中调整日志级别和收集方式。</li>
+<li>为中间件编写独立单元测试并在 CI 中运行（可以模拟请求对象与注入 registry）。</li>
 </ul>
 <p>下一步</p>
 <ul>
-<li>从 <code>examples/controller_di_middleware.py</code> 提取一个最小可运行的示例并放入 <code>examples/</code>（如需我可以自动创建并在本地验证）。</li>
-<li>将中间件契约文档化为代码接口（若项目中尚未有基础类），并在文档中引用实现样例。</li>
+<li>从 <code>examples/controller_di_middleware.py</code> 提取一个最小可运行的示例并放入 <code>examples/</code> 目录，并确保至少由一个自动化测试覆盖。</li>
+<li>将中间件契约文档化为代码接口（若项目中尚未有基础类），并在文档中引用实现示例。</li>
 </ul>
-<h2 id="windows-powershell">运行示例（Windows PowerShell）<a class="headerlink" href="#windows-powershell" title="Permanent link">&para;</a></h2>
-<p>确保你已经有一个可用的 Python 环境（virtualenv、conda、系统 Python 等均可）。安装依赖并运行示例如下：</p>
-<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<h2 id="_2">运行示例<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>确保已经准备好可用的 Python 环境（virtualenv、conda、系统 Python 等均可）。</p>
+<p>在 Windows（PowerShell）中：</p>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">-m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span> <span class="n">tornado</span>
 <span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">middleware_demo</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
-<p>示例运行观察到的输出：</p>
+<p>在 Linux / macOS 中：</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="w"> </span>tornado
+python<span class="w"> </span>examples/middleware_demo.py
+</code></pre></div>
+<p>典型输出（示例运行）：</p>
 <div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop for middleware demo
 INFO:__main__:Performing request 1
 INFO:__main__:Entered request context
@@ -1239,7 +1245,7 @@ INFO:__main__:Exited request context
 INFO:__main__:Response2: Hello from UserService (084297)  request_count=1
 INFO:__main__:IOLoop stopped, exiting
 </code></pre></div>
-<p>说明：<code>RequestCounter</code> 为请求作用域类型，每次请求重置；<code>UserService</code> 为单例，其实例 id 在请求间保持不变。</p>
+<p>说明：<code>RequestCounter</code> 为请求作用域类型，每次请求都会重置；<code>UserService</code> 为单例，其实例 id 在不同请求间保持不变。</p>
 
 
 
