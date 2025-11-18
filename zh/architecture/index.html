@@ -9,7 +9,7 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
       
       
-        <meta name="author" content=""TBD"">
+        <meta name="author" content="Plumeink">
       
       
       
@@ -31,7 +31,7 @@
     
     
       
-        <title>"Architecture Overview" - Cullinan Documentation</title>
+        <title>架构概述 - Cullinan Documentation</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture-overview" class="md-skip">
+        <a href="#_1" class="md-skip">
           跳转至
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "Architecture Overview"
+              架构概述
             
           </span>
         </div>
@@ -237,7 +237,7 @@
   <span class="md-ellipsis">
     
   
-    Home
+    首页
   
 
     
@@ -271,7 +271,7 @@
   <span class="md-ellipsis">
     
   
-    Getting Started
+    快速开始
   
 
     
@@ -314,7 +314,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    架构设计
   
 
     
@@ -339,7 +339,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    架构设计
   
 
     
@@ -372,10 +372,65 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#startup-sequence-diagram" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Startup Sequence (diagram)
+        关键组件（职责速查表）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块交互（简要说明）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        启动 / 请求 / 关闭 序列（概要）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构交互图（制表符对齐的代码块）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见注意点与排错建议
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        工件与后续工作
       
     </span>
   </a>
@@ -415,7 +470,7 @@
   <span class="md-ellipsis">
     
   
-    Wiki
+    维基
   
 
     
@@ -431,7 +486,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Wiki
+    维基
   
 
           </label>
@@ -451,7 +506,7 @@
   <span class="md-ellipsis">
     
   
-    Components
+    组件
   
 
     
@@ -486,7 +541,7 @@
   <span class="md-ellipsis">
     
   
-    Injection
+    注入
   
 
     
@@ -521,7 +576,7 @@
   <span class="md-ellipsis">
     
   
-    Lifecycle
+    生命周期
   
 
     
@@ -556,7 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Middleware
+    中间件
   
 
     
@@ -591,7 +646,7 @@
   <span class="md-ellipsis">
     
   
-    Extensions
+    扩展
   
 
     
@@ -644,7 +699,7 @@
   <span class="md-ellipsis">
     
   
-    Modules
+    模块
   
 
     
@@ -660,7 +715,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Modules
+    模块
   
 
           </label>
@@ -680,7 +735,7 @@
   <span class="md-ellipsis">
     
   
-    app
+    应用
   
 
     
@@ -715,7 +770,7 @@
   <span class="md-ellipsis">
     
   
-    application
+    应用程序
   
 
     
@@ -750,7 +805,7 @@
   <span class="md-ellipsis">
     
   
-    core
+    核心
   
 
     
@@ -785,7 +840,7 @@
   <span class="md-ellipsis">
     
   
-    controller
+    控制器
   
 
     
@@ -820,7 +875,7 @@
   <span class="md-ellipsis">
     
   
-    service
+    服务
   
 
     
@@ -862,7 +917,7 @@
   <span class="md-ellipsis">
     
   
-    Examples
+    示例
   
 
     
@@ -896,7 +951,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    API 参考
   
 
     
@@ -941,7 +996,7 @@
   <span class="md-ellipsis">
     
   
-    Work
+    工作区
   
 
     
@@ -957,7 +1012,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Work
+    工作区
   
 
           </label>
@@ -977,7 +1032,7 @@
   <span class="md-ellipsis">
     
   
-    Progress Tracker
+    进度追踪
   
 
     
@@ -1005,7 +1060,7 @@
   <span class="md-ellipsis">
     
   
-    Review Tasks
+    审查任务
   
 
     
@@ -1033,7 +1088,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
+    清单
   
 
     
@@ -1081,10 +1136,65 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#startup-sequence-diagram" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Startup Sequence (diagram)
+        关键组件（职责速查表）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块交互（简要说明）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        启动 / 请求 / 关闭 序列（概要）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构交互图（制表符对齐的代码块）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见注意点与排错建议
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        工件与后续工作
       
     </span>
   </a>
@@ -1108,68 +1218,72 @@
 
 
 
-<h1 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h1>
-<p>This document presents a source-driven overview of Cullinan's architecture. It is based on implementation facts (source-first): component responsibilities, module interactions, and the startup/request/shutdown sequences. Diagrams are referenced as assets under <code>docs/work/architecture_assets/</code> (placeholder).</p>
-<p>High-level components</p>
+<h1 id="_1">架构概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>本文档基于源码实现（以代码为事实）记录 Cullinan 的高层架构：组件职责、模块交互、启动/请求/关闭序列，以及简单的架构示意图（便于在无渲染器环境中查看）。</p>
+<h2 id="_2">关键组件（职责速查表）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>代码位置（示例）</th>
+<th>主要职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core (IoC/DI)</td>
+<td><code>cullinan/core/*</code></td>
+<td>实现注入原语（Provider、Registry、Scope）、生命周期 hook（on_init/on_shutdown）和上下文管理（RequestScope）。</td>
+</tr>
+<tr>
+<td>Service 层</td>
+<td><code>cullinan/service/*</code></td>
+<td>定义长期运行的服务（通常为单例），提供初始化/销毁钩子，并作为应用业务能力的载体。</td>
+</tr>
+<tr>
+<td>Controller / Handler</td>
+<td><code>cullinan/controller/*</code>, <code>cullinan/handler/*</code></td>
+<td>路由绑定、请求解析、响应构建与访问日志。支持通过注入获取 service 实例。</td>
+</tr>
+<tr>
+<td>Application</td>
+<td><code>cullinan/app.py</code>, <code>cullinan/application.py</code></td>
+<td>协调启动/关闭流程：注册 providers、发现服务/控制器、初始化服务、启动 Tornado IOLoop 并注册信号处理。</td>
+</tr>
+<tr>
+<td>Middleware</td>
+<td><code>cullinan/middleware/*</code></td>
+<td>插件式请求/响应处理链，用于统一处理（日志、鉴权、监控等）。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">模块交互（简要说明）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Core (IoC / DI / lifecycle)</li>
-<li>Files: <code>cullinan/core/*</code> (injection, provider, registry, scope, lifecycle)</li>
-<li>
-<p>Responsibility: provide provider abstractions, registries, scopes, and lifecycle orchestration used by services/handlers.</p>
-</li>
-<li>
-<p>Service layer</p>
-</li>
-<li>Files: <code>cullinan/service/*</code></li>
-<li>
-<p>Responsibility: long-lived application services registered by <code>@service</code> and orchestrated during startup.</p>
-</li>
-<li>
-<p>Controller &amp; Handler</p>
-</li>
-<li>Files: <code>cullinan/controller/*</code>, <code>cullinan/handler/*</code></li>
-<li>
-<p>Responsibility: HTTP handlers, controller decorators, request/response abstractions, and access logging utilities.</p>
-</li>
-<li>
-<p>Application &amp; Startup</p>
-</li>
-<li>Files: <code>cullinan/app.py</code>, <code>cullinan/application.py</code></li>
-<li>
-<p>Responsibility: application lifecycle management, service discovery/initialization, IOLoop management and signal handling.</p>
-</li>
-<li>
-<p>Middleware &amp; Extensions</p>
-</li>
-<li>Files: <code>cullinan/middleware/*</code>, <code>cullinan/*extensions*</code></li>
-<li>Responsibility: pluggable request/response processing and plugin registration points.</li>
+<li>应用（Application）负责协调：它触发模块扫描（ModuleScanner），把发现的 Provider 注册到 <code>ProviderRegistry</code>，并把 ProviderRegistry 关联到 <code>InjectionRegistry</code>，使所有注入点可解析。</li>
+<li><code>ServiceRegistry</code> 负责管理服务的依赖顺序并依次调用 <code>on_init()</code>，启动时将准备就绪的服务置于可用状态。</li>
+<li>在请求级别，框架在进入请求时创建 RequestContext（<code>create_context()</code>），使 <code>RequestScope</code> 生效；处理器在该上下文中通过 <code>Inject</code> 或构造器注入获得 request-scoped 或单例实例。</li>
 </ul>
-<p>Module interaction and dependency flows</p>
-<ul>
-<li>The <code>app</code>/<code>application</code> module coordinates system startup. It queries registries (service, provider, controller) and initializes components in dependency order.</li>
-<li>Providers and registries are the glue between service definitions and injection points: <code>ProviderRegistry</code> supplies instances; <code>InjectionRegistry</code> resolves <code>Inject</code> markers and constructor injection.</li>
-<li>Controllers/handlers rely on InjectionRegistry to get service instances (either singleton or request-scoped via <code>RequestScope</code>).</li>
-</ul>
-<p>Startup sequence (summary)</p>
+<h2 id="_4">启动 / 请求 / 关闭 序列（概要）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Application construction: <code>create_app()</code> or <code>CullinanApplication()</code> builds basic application object.</li>
-<li><code>startup()</code> execution:</li>
-<li>Configure injection: obtain/get InjectionRegistry and prepare provider registries.</li>
-<li>Discover services and controllers (module scanning or explicit registration).</li>
-<li>Initialize providers/services in dependency order (call <code>initialize_all()</code> / <code>on_init</code>).</li>
-<li>Register signal handlers (SIGINT/SIGTERM) to trigger graceful shutdown.</li>
-<li>Start the Tornado IOLoop (<code>IOLoop.start()</code>), accept requests.</li>
+<li>应用被创建：<code>create_app()</code> 或 <code>CullinanApplication()</code>。</li>
+<li>模块扫描：发现 controllers、services、providers（或由显式注册提供）。</li>
+<li>注入配置：注册 <code>ProviderRegistry</code> 并把其添加到 <code>InjectionRegistry</code>。</li>
+<li>服务初始化：<code>ServiceRegistry</code> 按依赖顺序实例化服务并执行 <code>on_init</code>。失败时记录并可选择停止启动。</li>
+<li>启动 IOLoop：调用 <code>IOLoop.start()</code> 开始接受请求。</li>
+<li>请求处理：每次请求创建 RequestContext -&gt; 解析注入 -&gt; 执行 Handler -&gt; 中间件后处理 -&gt; 清理 RequestContext。</li>
+<li>触发关闭：接收到 SIGINT/SIGTERM 或手动调用 <code>shutdown()</code>，按照注册顺序调用 shutdown handlers 与 service <code>on_shutdown</code>，停止 IOLoop 并退出。</li>
 </ol>
-<h2 id="startup-sequence-diagram">Startup Sequence (diagram)<a class="headerlink" href="#startup-sequence-diagram" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>Application ModuleScanner   ProviderRegistry    InjectionRegistry   ServiceRegistry Tornado IOLoop
------------ -------------   ----------------    -----------------   --------------  ---------------
-create_app() --&gt;    scan() ----&gt;    register() ----&gt;    add_registry() --&gt;  register_services() --&gt; start()
-                                                        |
-                                                        |--dispatch--&gt; Handler (controller/handler)
-                                                        |               |
-                                                        |               |--uses--&gt; Inject/ProviderRegistry -&gt; provides instances
+<h2 id="_5">架构交互图（制表符对齐的代码块）<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>下面的图使用制表符在代码块中对齐，便于纯文本环境查看。制表符在不同编辑器中显示略有差异，但在等宽字体/代码块中可保持对齐。你可以把它复制到 Markdown 文档或 README 中查看。</p>
+<div class="highlight"><pre><span></span><code>Application     ModuleScanner       ProviderRegistry    InjectionRegistry   ServiceRegistry Tornado IOLoop
+-----------     ------------        ----------------    -----------------   --------------  ---------------
+create_app() --&gt;     scan() ----&gt;    register() ----&gt;    add_registry() --&gt;  register_services() --&gt; start()
+                                                    |
+                                                    |--dispatch--&gt; Handler (controller/handler)
+                                                    |               |
+                                                    |               |--uses--&gt; Inject/ProviderRegistry -&gt; provides instances
 
-Request Flow (summary):
+Request Flow (per request):
 IOLoop -&gt; create_context() -&gt; resolve request-scoped providers -&gt; Handler executes -&gt; response -&gt; context cleanup
 
 Legend:
@@ -1177,88 +1291,19 @@ Legend:
 - add_registry(): injection registry gets provider registries to resolve inject markers
 - register_services(): service discovery and on_init sequence
 </code></pre></div>
-<!--
-<div class="highlight"><pre><span></span><code>sequenceDiagram
-    autonumber
-    participant Dev as Developer
-    participant App as CullinanApplication
-    participant Config as Config
-    participant MS as ModuleScanner
-    participant PV as ProviderRegistry
-    participant IR as InjectionRegistry
-    participant SR as ServiceRegistry
-    participant IO as Tornado IOLoop
-    participant Log as Logger
-
-    Note over Dev,App: Application creation &amp; configuration
-    Dev-&gt;&gt;App: create_app()/configure(Config)
-    App-&gt;&gt;MS: scan modules (controllers/services/providers)
-    MS--&gt;&gt;App: discovered modules
-
-    Note over App,PV: Provider &amp; Injection setup
-    App-&gt;&gt;PV: register providers from modules
-    PV-&gt;&gt;IR: expose provider metadata
-    IR--&gt;&gt;App: injection registry prepared
-
-    Note over App,SR: Service discovery and initialization
-    App-&gt;&gt;SR: register discovered services
-    SR-&gt;&gt;SR: resolve dependencies &amp; order
-    SR-&gt;&gt;SR: instantiate services (on_init)
-    SR-&gt;&gt;Log: emit &#39;service ready&#39; logs
-
-    Note over App,IO: Start I/O loop and accept requests
-    App-&gt;&gt;IO: start IOLoop
-    IO-&gt;&gt;App: route incoming requests to handlers
-
-    Note over App,SR: Shutdown
-    App-&gt;&gt;SR: call on_shutdown for services
-    App-&gt;&gt;IO: stop IOLoop
-    App-&gt;&gt;Log: emit &#39;shutdown complete&#39;
-</code></pre></div>
-
-<div class="highlight"><pre><span></span><code>flowchart LR
-  subgraph Core
-    IR[InjectionRegistry]
-    PV[ProviderRegistry]
-    SR[ServiceRegistry]
-    SC[Scope (Request/Singleton)]
-  end
-  App[CullinanApplication] --&gt;|uses| IR
-  App --&gt;|registers| PV
-  App --&gt;|discovers| SR
-  SR --&gt;|depends on| PV
-  PV --&gt;|creates instances in| SC
-  Controller[Controller/Handler] --&gt;|injects via| IR
-  Middleware --&gt;|observes| Controller
-  App --&gt;|starts| IOLoop[Tornado IOLoop]
-  IOLoop --&gt;|dispatches| Controller
-</code></pre></div>
--->
-
-<p>Request flow (summary)</p>
-<ol>
-<li>Incoming request -&gt; Tornado HTTP server -&gt; registered handler lookup via controller registry.</li>
-<li>Request context created (<code>create_context()</code>) to provide <code>RequestScope</code> semantics.</li>
-<li>Injection into handler (property or constructor) resolves via <code>InjectionRegistry</code>/<code>ProviderRegistry</code>.</li>
-<li>Handler executes and returns response; response may be processed by middleware.</li>
-<li>Exit request context and cleanup request-scoped objects.</li>
-</ol>
-<p>Key design notes and constraints</p>
+<h2 id="_6">常见注意点与排错建议<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The framework centers IoC/DI in <code>cullinan/core</code>; all provider/registry/Scope interactions depend on file-level implementation details — documentation must reflect actual code behavior (not comments).</li>
-<li>Circular dependencies are detected and signaled via <code>CircularDependencyError</code> (see <code>cullinan/core/errors</code> / exceptions).</li>
-<li>The <code>ProviderRegistry</code> and <code>ServiceRegistry</code> implement ordering/duplicate policies; consult <code>docs/work/module_api_summary.json</code> for generated API summaries.</li>
+<li>注入失败（None）通常是因为 provider 尚未注册到 ProviderRegistry，或 <code>InjectionRegistry</code> 未包含该 registry。</li>
+<li>循环依赖会抛出 <code>CircularDependencyError</code>，请检查服务依赖顺序并考虑重构为接口/事件回调模式以打破循环。</li>
+<li>在测试中请使用 <code>reset_injection_registry()</code> 和明确的 ProviderRegistry 配置以保证隔离性。</li>
 </ul>
-<p>Where to find artifacts and diagrams</p>
+<h2 id="_7">工件与后续工作<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Diagram assets (placeholder): <code>docs/work/architecture_assets/</code> — add sequence and component diagrams here.</li>
-<li>Generated API summaries and candidates: <code>docs/work/module_api_summary.json</code>, <code>docs/work/api_cleanup_candidates.csv</code>.</li>
+<li>图示占位：<code>docs/work/architecture_assets/</code>（可放 Mermaid PNG/SVG 或其它格式）。</li>
+<li>建议：基于上面的交互图补充一张 Mermaid/PlantUML 图，并将其置于 <code>docs/work/architecture_assets/</code> 以便在 MkDocs site 中渲染。</li>
 </ul>
-<p>Next steps (docs work)</p>
-<ul>
-<li>Add sequence diagrams (Mermaid or PNG) illustrating startup and shutdown flows.</li>
-<li>Expand component pages with code references and short call graphs (using static analysis or grep results).</li>
-</ul>
+<hr />
+<p>如需我把此 ASCII/制表图也生成 PNG（使用 mermaid-cli 或其它工具），或把它转为更高保真度的 Mermaid 图并插入 EN 文件 <code>docs/wiki/architecture.md</code>，我可以继续执行（需要确认是否生成图片文件）。</p>
 
 
 
@@ -1308,7 +1353,7 @@ Legend:
       
       
     
-    <a href="https://github.com/your-org/cullinan" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+    <a href="https://github.com/plumeink/cullinan" target="_blank" rel="noopener" title="github.com" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
     </a>
   
