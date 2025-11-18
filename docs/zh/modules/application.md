@@ -27,7 +27,9 @@ pr_links: []
 
 ### Hello HTTP（烟雾测试示例）
 
-仓库包含一个最小示例 `examples/hello_http.py`，用于文档中的烟雾测试。该示例通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。
+仓库包含一个最小示例 `examples/hello_http.py`，用于文档中的烟雾测试。该示例**不使用 `application.run()`**，而是直接通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。
+
+> **注意**：此示例的输出与使用 `application.run()` 启动的常规应用不同。`application.run()` 会显示 Cullinan 框架 banner、扫描服务和控制器，并保持服务器运行直到手动停止（Ctrl+C）。
 
 PowerShell（Windows）运行命令：
 
@@ -48,4 +50,4 @@ INFO:__main__:Response body: Hello Cullinan
 INFO:__main__:IOLoop stopped, exiting
 ```
 
-说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出）。
+说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出），但**不代表 `application.run()` 的实际行为**。

@@ -87,15 +87,37 @@ Then open `http://localhost:4080/hello` in your browser to verify the server is 
 The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:
 
 ```
-INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+|||||||||||||||||||||||||||||||||||||||||||||||||
+|||                                           |||
+|||    _____      _ _ _                       |||
+|||   / ____|    | | (_)                      |||
+|||  | |    _   _| | |_ _ __   __ _ _ __      |||
+|||  | |   | | | | | | | '_ \ / _` | '_ \     |||
+|||  | |___| |_| | | | | | | | (_| | | | |    |||
+|||   \_____\__,_|_|_|_|_| |_|\__,_|_| |_|    |||
+|||                                           |||
+|||||||||||||||||||||||||||||||||||||||||||||||||
+	|||
+
+2025-11-19 04:18:50,209 INFO cullinan.application: loading env...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---configuring dependency injection...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---dependency injection configured
+2025-11-19 04:18:50,210 INFO cullinan.application: └---scanning services...
+2025-11-19 04:18:50,210 INFO cullinan.application: ...
+2025-11-19 04:18:50,223 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,228 INFO cullinan.application: └---scanning controllers...
+2025-11-19 04:18:50,260 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,261 INFO cullinan.application: └---initializing services...
+2025-11-19 04:18:50,261 INFO cullinan.application: └---no services registered
+2025-11-19 04:18:50,261 INFO cullinan.application: └---loading controller finish
+
+2025-11-19 04:18:50,261 INFO cullinan.application: loading env finish
+
+2025-11-19 04:18:50,262 INFO cullinan.application: server is starting
+2025-11-19 04:18:50,262 INFO cullinan.application: port is 4080
 ```
 
-This example uses `cullinan.handler.registry.get_handler_registry()` to register a simple Tornado handler, perform a single verification request, and then stop the IOLoop. This pattern is suitable for smoke tests in documentation.
+At this point, the server is running and listening on `http://localhost:4080`. Use Ctrl+C to gracefully stop the server.
 
 ## Minimal application example
 
