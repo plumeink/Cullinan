@@ -17,34 +17,33 @@
 
 # Cullinan
 
-**A lightweight, modular Python web framework with enhanced architecture**
+**A lightweight, modular Python web framework with built-in IoC/DI**
 
-Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build production-ready web applications with modern patterns like dependency injection, lifecycle management, and unified registry.
+Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
+- A unified registry model for controllers, services, handlers
+- Built-in IoC/DI with request scope and service lifecycle hooks
+- Production-friendly startup/shutdown flow on a default port **4080**
 
 ---
 
 ## ✨ Features
 
 ### Core Framework
-- 🚀 **Easy to Use** - Simple decorator-based routing and intuitive API
-- 🏗️ **Modular Architecture** - Core module with registry, DI, and lifecycle management
-- 🔌 **Dependency Injection** - Optional DI system for complex applications
-- ♻️ **Lifecycle Hooks** - Proper initialization and cleanup with `on_init`/`on_destroy`
-- 🧪 **Test-Friendly** - Built-in testing utilities with mocks and test registries
+- Simple decorator-based routing (`@controller`, `@get_api`, `@post_api`, ...)
+- Modular architecture with registry, DI, and lifecycle management
+- Built-in IoC/DI with `InjectByName` and `Inject` support
+- Lifecycle hooks (e.g. `on_init`, `on_destroy`) on services
+- Designed for tests: resettable registries and request-scoped dependencies
 
 ### Services & WebSocket
-- 🎯 **Enhanced Service Layer** - Service registry with dependency resolution
-- 🌐 **WebSocket Support** - Full WebSocket integration with registry pattern
-- 📋 **Unified Registry** - Consistent registration across services, handlers, and WebSockets
-- 🔄 **Request Context** - Thread-safe request-scoped data management
+- Service registry with dependency resolution
+- WebSocket support via `@websocket_handler` and registry pattern
+- Request context / request scope for per-request objects
 
 ### Deployment & Production
-- 📦 **Packaging Ready** - Full Nuitka & PyInstaller support
-- ⚙️ **Flexible Configuration** - Multiple configuration options
-- 🌍 **Cross-Platform** - Windows, Linux, macOS
-- 🏭 **Production Ready** - Built on battle-tested Tornado
-- 🗄️ **SQLAlchemy Integration** - Built-in ORM support
-- 🔧 **Smart Module Loading** - Auto-discovery for development, configurable for packaging
+- Packaging-friendly (Nuitka, PyInstaller)
+- Cross-platform: Windows, Linux, macOS
+- Based on production-tested Tornado
 
 ---
 
@@ -52,46 +51,52 @@ Cullinan is built on Tornado and SQLAlchemy, designed to help you quickly build 
 
 ### Language / 语言
 
-- **[English Documentation](docs/README.md)** - Complete English documentation
-- **[中文文档](docs/zh/README.md)** - 完整中文文档
+- **[English Documentation](https://plumeink.github.io/Cullinan/)** – complete English docs
+  - [Quick start](https://plumeink.github.io/Cullinan/getting_started/)
+  - [Architecture](https://plumeink.github.io/Cullinan/architecture/) · [Lifecycle](https://plumeink.github.io/Cullinan/wiki/lifecycle/)
+  - [IoC/DI details](https://plumeink.github.io/Cullinan/wiki/injection/)
+  - [RESTful routing](https://plumeink.github.io/Cullinan/wiki/restful_api/)
+- **[中文文档](https://plumeink.github.io/Cullinan/zh/)** – 完整中文文档
+  - [快速开始](https://plumeink.github.io/Cullinan/zh/getting_started/)
+  - [架构](https://plumeink.github.io/Cullinan/zh/architecture/) · [生命周期](https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/)
+  - [IoC/DI 说明](https://plumeink.github.io/Cullinan/zh/wiki/injection/)
+  - [RESTful 路由](https://plumeink.github.io/Cullinan/zh/wiki/restful_api/)
 
-### Current Version
+### Version Notes
 
-- **v0.7x** - Enhanced architecture with modern features
-  - Core module with registry, DI, and lifecycle management
+- Current series: **v0.7x**
+  - Core module with registry, DI, lifecycle management
   - Enhanced service layer with dependency injection
   - WebSocket support with unified registry
   - Request context management
 
-### ⚠️ Important Notice (v0.7x)
+- Deprecated modules removed:
+  - `cullinan.registry` → use `cullinan.handler` and `cullinan.controller`
+  - `cullinan.websocket` → use `cullinan.websocket_registry`
 
-**Deprecated modules have been removed:**
-- `cullinan.registry` → Use `cullinan.handler` and `cullinan.controller`
-- `cullinan.websocket` → Use `cullinan.websocket_registry`
-
-**Migration required:** See [API Migration Guide](docs/API_MIGRATION_GUIDE.md) for details.
+For older code, see the **API Migration Guide** in the docs.
 
 ---
 
 ## 🚀 Quick Start
 
-## 📦 Installation
+### Install
 
-### From PyPI (Stable Release)
+Use pip from PyPI:
 
 ```bash
+pip install -U pip
 pip install cullinan
 ```
 
-### Basic Application
+Ensure you have a working Python 3.8+ environment (virtualenv/conda/system Python are all fine).
+
+### Minimal Application
 
 ```python
 # app.py
-from cullinan import configure, application
+from cullinan import application
 from cullinan.controller import controller, get_api
-
-# Configure for packaging (optional in development)
-configure(user_packages=['your_app'])
 
 @controller(url='/api')
 class HelloController:
@@ -99,113 +104,76 @@ class HelloController:
     def hello(self, query_params):
         name = query_params.get('name', 'World')
         return self.response_build(
-            status=200, 
+            status=200,
             message=f"Hello, {name}!"
         )
 
 if __name__ == '__main__':
+    # Framework-level entrypoint, no manual app instantiation required
     application.run()
 ```
 
-### Run
+Run:
 
 ```bash
 python app.py
 # Visit: http://localhost:4080/api/hello?name=Cullinan
 ```
 
+For a more detailed onboarding, follow `docs/getting_started.md` (or `docs/zh/getting_started.md`).
+
 ---
 
-## 💡 Full Example with Services
+## 💡 Dependency Injection Patterns
 
-### Project Structure
+Cullinan ships with a core IoC/DI system. Recommended patterns:
 
-```
-my_app/
-├── main.py              # Entry point
-├── controllers/         # Controllers
-│   ├── __init__.py
-│   └── api.py
-├── services/            # Services
-│   ├── __init__.py
-│   ├── user.py
-│   └── email.py
-└── models/              # Models
-    ├── __init__.py
-    └── user.py
-```
-
-### Service Layer (`services/email.py`)
-
-```python
-from cullinan import service, Service
-
-@service
-class EmailService(Service):
-    """Service for sending emails."""
-    
-    def on_init(self):
-        """Lifecycle hook - called when service is registered."""
-        print("EmailService initialized")
-    
-    def send_email(self, to, subject, body):
-        print(f"Sending email to {to}: {subject}")
-        # Your email logic here
-        return True
-```
-
-### Service with Dependencies (`services/user.py`)
+### 1. InjectByName (recommended default)
 
 ```python
 from cullinan import service, Service
 from cullinan.core import InjectByName
 
 @service
+class EmailService(Service):
+    def send_email(self, to, subject, body):
+        print(f"Sending email to {to}: {subject}")
+        return True
+
+@service
 class UserService(Service):
     """Service for user management with email dependency."""
-    
-    # Modern dependency injection using InjectByName
+
+    # Name-based injection, no direct import needed
     email_service = InjectByName('EmailService')
-    
-    def on_init(self):
-        """Initialization hook - dependencies are already injected."""
-        print("UserService initialized")
-    
+
     def create_user(self, name, email):
         user = {'name': name, 'email': email}
-        # Use injected service directly - no need for self.dependencies
         self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
         return user
-    
-    def on_destroy(self):
-        """Cleanup hook - called on shutdown."""
-        print("UserService shutting down")
 ```
 
-**Alternative: Type-based Injection with IDE Support**
+### 2. Inject + TYPE_CHECKING (IDE autocomplete)
 
 ```python
+from typing import TYPE_CHECKING
 from cullinan import service, Service
 from cullinan.core import Inject
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from services.email import EmailService
 
 @service
 class UserService(Service):
-    """Service with type hints for better IDE support."""
-    
-    # Type-based injection with IDE autocomplete
+    # Type-hinted injection for better IDE support
     email_service: 'EmailService' = Inject()
-    
+
     def create_user(self, name, email):
-        # IDE now provides autocomplete for email_service methods
         self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
         return {"name": name, "email": email}
 ```
 
-### Controller (`controllers/api.py`)
+### Controllers and RESTful decorators
 
 ```python
 from cullinan.controller import controller, get_api, post_api
@@ -213,104 +181,58 @@ from cullinan.core import InjectByName
 
 @controller(url='/api')
 class UserController:
-    """Controller with automatic service injection."""
-    
-    # Inject UserService using InjectByName
+    # Inject the UserService by name
     user_service = InjectByName('UserService')
-    
+
     @get_api(url='/users', query_params=['id'])
     def get_user(self, query_params):
         user_id = query_params.get('id')
         return self.response_build(
-            status=200, 
+            status=200,
             message="User fetched successfully",
-            data={"user_id": user_id}
+            data={"user_id": user_id},
         )
-    
+
     @post_api(url='/users', body_params=['name', 'email'])
     def create_user(self, body_params):
-        # Use injected service directly - it's the actual UserService instance
         user = self.user_service.create_user(
             body_params['name'],
-            body_params['email']
+            body_params['email'],
         )
         return self.response_build(
-            status=201, 
+            status=201,
             message="User created successfully",
-            data=user
+            data=user,
         )
 ```
 
-**Note:** With InjectByName, `self.user_service` is the actual UserService instance, not a proxy. You can call all methods directly.
+> Note: RESTful decorators are defined as `def get_api(**kwargs)` etc. Only **keyword arguments** are supported. Use `@get_api(url='/users')`, not `@get_api('/users')`.
 
-### WebSocket Support (`controllers/chat.py`)
+More DI patterns and controller examples are documented in `docs/wiki/injection.md` and `docs/wiki/restful_api.md` (and their Chinese counterparts).
 
-```python
-from cullinan import websocket_handler
-from cullinan.core import InjectByName
+---
 
-@websocket_handler(url='/ws/chat')
-class ChatHandler:
-    """WebSocket handler with dependency injection support."""
-    
-    # Optional: Inject services if needed
-    # user_service = InjectByName('UserService')
-    
-    def on_open(self):
-        """Called when WebSocket connection opens."""
-        self.clients = getattr(ChatHandler, 'clients', set())
-        if not hasattr(ChatHandler, 'clients'):
-            ChatHandler.clients = set()
-        self.clients.add(self)
-        print(f"Client connected: {len(self.clients)} total")
-    
-    def on_message(self, message):
-        """Handle incoming WebSocket message."""
-        # Broadcast to all clients
-        for client in self.clients:
-            try:
-                client.write_message(f"Broadcast: {message}")
-            except:
-                pass
-    
-    def on_close(self):
-        """Called when WebSocket connection closes."""
-        if hasattr(self, 'clients'):
-            self.clients.discard(self)
-            print(f"Client disconnected: {len(self.clients)} remaining")
-```
+## 📖 More Examples
 
-### Application (`main.py`)
+The `examples/` folder contains additional runnable demos (HTTP, middleware, DI). Refer to:
 
-```python
-from cullinan import configure, application
+- `examples/hello_http.py` – minimal HTTP example using the handler registry
+- `examples/controller_di_middleware.py` – controller + DI + middleware integration
 
-# Configure for packaging
-configure(
-    user_packages=['my_app'],
-    verbose=True  # Enable logging
-)
-
-def main():
-    application.run()
-
-if __name__ == '__main__':
-    main()
-```
+Each example is referenced from the docs so you can cross-check behavior with tests (`tests/` directory).
 
 ---
 
 ## 📖 Additional Documentation
 
-For detailed guides on advanced features, configuration, and deployment, please refer to the [complete documentation](docs/README.md).
+For advanced topics, see the docs:
 
-Key topics include:
-- **Configuration** - Environment setup and configuration options
-- **Packaging** - Building standalone executables with Nuitka/PyInstaller
-- **Service Layer** - Advanced service patterns and dependency injection
-- **Registry Pattern** - Understanding the unified registry system
-- **Testing** - Writing tests with mock services and test registries
-- **Troubleshooting** - Common issues and solutions
+- **Configuration** – environment and config options
+- **Packaging** – building executables with Nuitka/PyInstaller
+- **Service Layer** – service patterns and DI
+- **Registry Pattern** – unified registry behavior
+- **Testing** – running tests and using test registries
+- **Troubleshooting** – common issues and diagnostics
 
 ---
 
@@ -326,18 +248,12 @@ Key topics include:
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-- Built on [Tornado](https://www.tornadoweb.org/)
-- ORM powered by [SQLAlchemy](https://www.sqlalchemy.org/)
-- Packaging powered by [Nuitka](https://nuitka.net/) and [PyInstaller](https://pyinstaller.org/)
+MIT License – see [LICENSE](LICENSE) for details.
 
 ---
 
 ## 💻 Maintainer
+
+Plumeink
 
 [<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
