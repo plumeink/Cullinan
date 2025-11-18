@@ -89,25 +89,35 @@ class AuditMiddleware(MiddlewareBase):
 最佳实践与建议
 
 - 将中间件保持为轻量函数/类，核心逻辑委托给注入的服务。
-- 在中间件中使用日志（框架 logger）而不是打印，以便在生产环境调整日志级别与收集。
-- 为中间件写独立单元测试并在 CI 中运行（可以模拟请求对象与注入 registry）。
+- 在中间件中使用框架提供的日志记录器（logger）而不是直接打印，便于在生产环境中调整日志级别和收集方式。
+- 为中间件编写独立单元测试并在 CI 中运行（可以模拟请求对象与注入 registry）。
 
 下一步
 
-- 从 `examples/controller_di_middleware.py` 提取一个最小可运行的示例并放入 `examples/`（如需我可以自动创建并在本地验证）。
-- 将中间件契约文档化为代码接口（若项目中尚未有基础类），并在文档中引用实现样例。
+- 从 `examples/controller_di_middleware.py` 提取一个最小可运行的示例并放入 `examples/` 目录，并确保至少由一个自动化测试覆盖。
+- 将中间件契约文档化为代码接口（若项目中尚未有基础类），并在文档中引用实现示例。
 
-## 运行示例（Windows PowerShell）
+## 运行示例
 
-确保你已经有一个可用的 Python 环境（virtualenv、conda、系统 Python 等均可）。安装依赖并运行示例如下：
+确保已经准备好可用的 Python 环境（virtualenv、conda、系统 Python 等均可）。
+
+在 Windows（PowerShell）中：
 
 ```powershell
-pip install -U pip
+python -m pip install -U pip
 pip install cullinan tornado
 python examples\middleware_demo.py
 ```
 
-示例运行观察到的输出：
+在 Linux / macOS 中：
+
+```bash
+python -m pip install -U pip
+pip install cullinan tornado
+python examples/middleware_demo.py
+```
+
+典型输出（示例运行）：
 
 ```
 INFO:__main__:Starting IOLoop for middleware demo
@@ -126,4 +136,4 @@ INFO:__main__:Response2: Hello from UserService (084297)  request_count=1
 INFO:__main__:IOLoop stopped, exiting
 ```
 
-说明：`RequestCounter` 为请求作用域类型，每次请求重置；`UserService` 为单例，其实例 id 在请求间保持不变。
+说明：`RequestCounter` 为请求作用域类型，每次请求都会重置；`UserService` 为单例，其实例 id 在不同请求间保持不变。

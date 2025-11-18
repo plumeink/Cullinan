@@ -21,27 +21,39 @@ This page provides a minimal quick-start to install and run a small Cullinan app
 - Python 3.8+
 - Git
 
-## Install (PowerShell)
+## Install
 
-Ensure you have a working Python environment (Python 3.8+) and pip available. Then run:
+Before you start, make sure Python 3.8+ is installed and that `python` and `pip` are available on your PATH.
 
-```powershell
-pip install -U pip
-pip install cullinan
+On most systems, you can upgrade pip and install Cullinan with the following commands (valid on Windows, Linux, and macOS):
+
+```bash
+python -m pip install -U pip
+python -m pip install cullinan
 ```
 
 ## Quick start
 1. Create a new project directory and change into it:
 
+On Windows (PowerShell):
+
 ```powershell
-mkdir my_cullinan_project; cd my_cullinan_project
+mkdir my_cullinan_project
+cd my_cullinan_project
+```
+
+On Linux / macOS:
+
+```bash
+mkdir my_cullinan_project
+cd my_cullinan_project
 ```
 
 2. Ensure you have a Python environment (virtualenv, conda, system Python, etc.). Install the published package:
 
-```powershell
-pip install -U pip
-pip install cullinan
+```bash
+python -m pip install -U pip
+python -m pip install cullinan
 ```
 
 3. Create a minimal application file `minimal_app.py` in your project with the following content:
@@ -63,24 +75,34 @@ if __name__ == '__main__':
 
 4. Run your app:
 
+On Windows (PowerShell):
+
 ```powershell
 python minimal_app.py
 ```
 
-Open `http://localhost:4080/hello` in your browser to verify the server is running.
+On Linux / macOS:
 
-## Verified example (local run)
+```bash
+python minimal_app.py
+```
 
-I ran the example locally in a Windows PowerShell session using the above commands. Observed log output (truncated):
+Then open `http://localhost:4080/hello` in your browser to verify the server is running.
 
+## Sample run output
+
+The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:
+
+```
 INFO:__main__:Starting IOLoop... (will stop after one verification request)
 INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
 INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
 INFO:__main__:Response status: 200
 INFO:__main__:Response body: Hello Cullinan
 INFO:__main__:IOLoop stopped, exiting
+```
 
-Note: The example uses `cullinan.handler.registry.get_handler_registry()` to register a simple Tornado handler and performs a single verification request, then exits. This makes it suitable for smoke-testing in documentation.
+This example uses `cullinan.handler.registry.get_handler_registry()` to register a simple Tornado handler, perform a single verification request, and then stop the IOLoop. This pattern is suitable for smoke tests in documentation.
 
 ## Minimal application example
 

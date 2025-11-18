@@ -81,8 +81,8 @@ Legend:
 ## 工件与后续工作
 
 - 图示占位：`docs/work/architecture_assets/`（可放 Mermaid PNG/SVG 或其它格式）。
-- 建议：基于上面的交互图补充一张 Mermaid/PlantUML 图，并将其置于 `docs/work/architecture_assets/` 以便在 MkDocs site 中渲染。
+- 建议：基于上面的交互图补充一张 Mermaid/PlantUML 图，并将其置于 `docs/work/architecture_assets/` 以便在 MkDocs site 中渲染；如需在 wiki 中展示，可在 `docs/wiki/architecture.md` 中引用该图或对应的 Mermaid 源码。
 
 ---
 
-如需我把此 ASCII/制表图也生成 PNG（使用 mermaid-cli 或其它工具），或把它转为更高保真度的 Mermaid 图并插入 EN 文件 `docs/wiki/architecture.md`，我可以继续执行（需要确认是否生成图片文件）。
+后续可根据需要，将当前 ASCII/制表图转换为 Mermaid 图或生成 PNG/SVG 资源文件，并在文档与站点构建流程中统一管理。

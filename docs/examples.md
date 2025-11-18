@@ -15,8 +15,54 @@ pr_links: []
 
 # Examples and Demos
 
-Index of canonical examples in the repository. For each example include: path, one-line description, PowerShell run command, expected output.
+This page lists canonical runnable examples shipped with Cullinan. Each entry includes the example path, a short description, and how to run it on common platforms.
 
-Suggested examples:
-- `examples/hello_http.py` — Minimal HTTP server. Run: `python examples\\hello_http.py`
-- `examples/controller_di_middleware.py` — Controller + DI + middleware example
+## Hello HTTP
+
+- **Path**: `examples/hello_http.py`
+- **Description**: Minimal HTTP server returning a greeting.
+
+### How to run
+
+On Windows (PowerShell):
+
+```powershell
+python examples\hello_http.py
+```
+
+On Linux / macOS:
+
+```bash
+python examples/hello_http.py
+```
+
+Expected behavior:
+
+- Starts an HTTP server.
+- Serves a response on `http://localhost:4080/hello`.
+
+## Controller + DI + Middleware demo
+
+- **Path**: `examples/controller_di_middleware.py`
+- **Description**: Demonstrates integration between controllers, dependency injection, and middleware.
+
+### How to run
+
+On Windows (PowerShell):
+
+```powershell
+python examples\controller_di_middleware.py
+```
+
+On Linux / macOS:
+
+```bash
+python examples/controller_di_middleware.py
+```
+
+Expected behavior:
+
+- Logs request handling through middleware.
+- Shows how injected services participate in the request pipeline.
+
+<!-- ...you can extend this list with additional examples as they are added to the repository... -->

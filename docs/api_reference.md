@@ -15,8 +15,39 @@ pr_links: []
 
 # API Reference
 
-This page links to the generated API modules index and will be expanded into per-module API pages.
+This page provides an overview of the public API surface of Cullinan and acts as an entry point for generated or manually maintained per-module API pages. The recommended structure includes: a module index, the public symbols and signatures for each module, and a brief description of how to regenerate API documentation.
 
-- See the generated module index: `docs/work/api_modules.md`
+## Module index (example)
 
-Placeholder for: per-module public symbols, signatures, and examples.
+The following module list is for illustration only. The concrete index should be derived from the actual code structure and/or automated generation results:
+
+- `cullinan.app` — Application creation and run entrypoints
+- `cullinan.application` — Application lifecycle and startup flow
+- `cullinan.core` — IoC/DI core (providers, registries, scopes, injection APIs)
+- `cullinan.controller` — Controllers and RESTful API decorators
+- `cullinan.service` — Service base class and the `@service` decorator
+- `cullinan.middleware` — Middleware base classes and extension points
+
+## Public symbols and signatures (recommended structure)
+
+For each module, the API reference is recommended to follow this structure:
+
+- Module path, for example: `cullinan.controller`
+- Short description: primary responsibility and typical usage scenarios
+- List of public classes and functions (example):
+  - `@controller(...)` — Controller decorator, responsible for auto-registering controllers and their routes
+  - `@get_api(url=..., query_params=..., body_params=..., headers=...)` — GET endpoint decorator
+  - `@post_api(url=..., body_params=..., headers=...)` — POST endpoint decorator
+  - `Inject`, `InjectByName` — Property/constructor injection markers
+
+A complete API reference can be populated using this structure, either via automated generation or by manual curation.
+
+## Regenerating API documentation (example workflow)
+
+When adding automation later, a static analysis script can be used to generate the API index and keep this page in sync with the source. A typical workflow might be:
+
+1. Maintain a script under `docs/work/` (for example `generate_api_reference.py`) that scans modules and emits Markdown fragments.
+2. Have the script produce a per-module API list (classes, functions, signatures, short descriptions) into `docs/work/api_modules.md` or update this page directly.
+3. Run the script periodically in CI or as part of local documentation build steps to ensure the API reference reflects the current codebase.
+
+The exact tooling and script implementation can be refined based on project conventions and the chosen documentation toolchain.

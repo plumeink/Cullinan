@@ -88,20 +88,30 @@ Best practices
 
 Next steps
 
-- Extract a minimal runnable example from `examples/controller_di_middleware.py` into `examples/` (I can create and verify it locally on request).
+- Extract a minimal runnable example from `examples/controller_di_middleware.py` into `examples/` and ensure it is covered by at least one automated test.
 - Formalize a middleware base contract (if not present) and document the required methods and expected behaviors.
 
-## Running the demo (Windows PowerShell)
+## Running the demo
 
-Ensure you have a working Python environment (virtualenv, conda, or system Python). Install dependencies and run the example:
+Ensure you have a working Python environment (virtualenv, conda, or system Python).
+
+On Windows (PowerShell):
 
 ```powershell
-pip install -U pip
+python -m pip install -U pip
 pip install cullinan tornado
 python examples\middleware_demo.py
 ```
 
-Observed output (example run):
+On Linux / macOS:
+
+```bash
+python -m pip install -U pip
+pip install cullinan tornado
+python examples/middleware_demo.py
+```
+
+Typical output (example run):
 
 ```
 INFO:__main__:Starting IOLoop for middleware demo

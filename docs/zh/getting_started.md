@@ -21,27 +21,39 @@ pr_links: []
 - Python 3.8+
 - Git
 
-## 安装（PowerShell）
+## 安装
 
-确保你已经有可用的 Python 环境（Python 3.8+）和 pip。然后运行：
+在继续之前，请确保已经安装 Python 3.8+ 并可以在命令行中使用 `python` 和 `pip`。
 
-```powershell
-pip install -U pip
-pip install cullinan
+在大多数环境中，可以使用以下命令升级 pip 并安装 Cullinan（适用于 Windows、Linux、macOS）：
+
+```bash
+python -m pip install -U pip
+python -m pip install cullinan
 ```
 
 ## 快速开始
 1. 在你希望放置项目的目录创建一个新项目目录并进入：
 
+在 Windows（PowerShell）中：
+
 ```powershell
-mkdir my_cullinan_project; cd my_cullinan_project
+mkdir my_cullinan_project
+cd my_cullinan_project
+```
+
+在 Linux / macOS 中：
+
+```bash
+mkdir my_cullinan_project
+cd my_cullinan_project
 ```
 
 2. 确保你已有一个 Python 环境（virtualenv、conda、系统 Python 等均可）。然后安装发布版本的包：
 
-```powershell
-pip install -U pip
-pip install cullinan
+```bash
+python -m pip install -U pip
+python -m pip install cullinan
 ```
 
 3. 在项目根目录创建一个最小应用文件 `minimal_app.py`，内容如下：
@@ -63,15 +75,23 @@ if __name__ == '__main__':
 
 4. 运行你的应用：
 
+在 Windows（PowerShell）中：
+
 ```powershell
+python minimal_app.py
+```
+
+在 Linux / macOS 中：
+
+```bash
 python minimal_app.py
 ```
 
 在浏览器中打开 `http://localhost:4080/hello` 验证服务器是否启动。
 
-## 已验证的示例（本地运行）
+## 示例运行输出
 
-我在 Windows PowerShell 会话中使用上述命令本地运行了该示例。观察到的日志输出（节选）：
+下方日志展示了在本地环境（Windows PowerShell 会话）中成功运行上述示例时的典型输出，实际时间戳和执行耗时可能因环境不同而有所变化：
 
 ```
 INFO:__main__:Starting IOLoop... (will stop after one verification request)
@@ -82,7 +102,7 @@ INFO:__main__:Response body: Hello Cullinan
 INFO:__main__:IOLoop stopped, exiting
 ```
 
-说明：该示例使用 `cullinan.handler.registry.get_handler_registry()` 注册一个简单的 Tornado 处理器，并发起一次验证请求后退出。它适合作为文档中的烟雾测试示例。
+该示例使用 `cullinan.handler.registry.get_handler_registry()` 注册一个简单的 Tornado 处理器，发起一次验证请求后停止 IOLoop，适合作为文档中的烟雾测试示例。
 
 ## 最小应用示例
 
