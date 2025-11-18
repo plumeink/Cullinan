@@ -15,11 +15,16 @@ pr_links: []
 
 # Cullinan 文档
 
-此目录包含项目文档。请参阅 `getting_started.md` 以获取快速入门。
+欢迎查阅 Cullinan 框架文档。
 
-结构：
-- docs/getting_started.md — 快速开始指南
-- docs/wiki/ — 架构与核心指南
-- docs/examples.md — 示例索引
+请使用左侧导航栏快速访问以下主要内容：
 
-工作文件位于 `docs/work/`，请勿将其混入公开文档。
+- **快速开始** — 快速入门和最小应用示例
+- **架构设计** — 系统概览和架构图
+- **维基** — 注入、生命周期、中间件、扩展
+- **模块** — 各模块的 API 和示例
+- **示例** — `examples/` 目录下的可运行示例
+- **API 参考** — 详细的 API 文档
+
+了解更多信息，请访问我们的 [GitHub 仓库](https://github.com/plumeink/Cullinan)。
+
