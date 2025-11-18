@@ -12,6 +12,8 @@
         <meta name="author" content=""Plumeink"">
       
       
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/getting_started/">
+      
       
         <link rel="prev" href="..">
       
@@ -423,6 +425,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Dependency Injection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decorators-explained-injectable-vs-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decorators Explained: @injectable vs @controller()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-dependency-injection-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Dependency Injection Approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1333,6 +1363,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Dependency Injection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decorators-explained-injectable-vs-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decorators Explained: @injectable vs @controller()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-dependency-injection-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Dependency Injection Approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1497,9 +1555,100 @@ INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
 <li><strong>Shutdown</strong>: Graceful shutdown on SIGINT/SIGTERM</li>
 </ol>
 <h3 id="dependency-injection">Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permanent link">&para;</a></h3>
-<p>Cullinan provides built-in IoC/DI support. Example with service injection:</p>
+<p>Cullinan provides built-in IoC/DI support. </p>
+<h4 id="decorators-explained-injectable-vs-controller">Decorators Explained: <code>@injectable</code> vs <code>@controller()</code><a class="headerlink" href="#decorators-explained-injectable-vs-controller" title="Permanent link">&para;</a></h4>
+<p><strong><code>@injectable</code></strong> - General-purpose dependency injection decorator
+- Applicable to any class that needs dependency injection (Service, Repository, utility classes, etc.)
+- Must be manually applied, does not auto-register to any registry
+- Automatically injects marked dependencies after class instantiation
+- Use cases: Service layer, Repository layer, utility classes, etc.</p>
+<p><strong><code>@controller()</code></strong> - Controller-specific auto-registration decorator
+- Specifically for HTTP Controller classes
+- <strong>Automatically applies <code>@injectable</code></strong>, no need to add manually
+- Auto-registers Controller and its routes to ControllerRegistry
+- Auto-scans methods decorated with <code>@get_api</code>, <code>@post_api</code>, etc.
+- Use cases: HTTP Controllers only</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">InjectByName</span>
+
+<span class="c1"># Service uses @service (inherits from Service base class)</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">}</span>
+
+<span class="c1"># Repository uses @injectable</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
+
+<span class="c1"># Controller uses @controller() - automatically includes @injectable</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># Dependency injection in Controller</span>
+    <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+<span class="o">**</span><span class="n">Important</span><span class="p">:</span><span class="o">**</span> <span class="n">Do</span> <span class="o">**</span><span class="ow">not</span><span class="o">**</span> <span class="n">use</span> <span class="err">`</span><span class="nd">@injectable</span><span class="err">`</span> <span class="n">on</span> <span class="n">Controllers</span><span class="p">,</span> <span class="k">as</span> <span class="err">`</span><span class="nd">@controller</span><span class="p">()</span><span class="err">`</span> <span class="n">already</span> <span class="n">includes</span> <span class="n">it</span> <span class="n">automatically</span><span class="o">.</span>
+
+<span class="o">---</span>
+
+<span class="c1">#### RESTful API decorators (quick overview)</span>
+
+<span class="n">Cullinan</span> <span class="n">provides</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">REST</span><span class="o">-</span><span class="n">style</span> <span class="n">decorators</span> <span class="n">that</span> <span class="n">bind</span> <span class="n">controller</span> <span class="n">methods</span> <span class="n">to</span> <span class="n">HTTP</span> <span class="n">routes</span><span class="p">:</span>
+
+<span class="o">-</span> <span class="err">`</span><span class="n">get_api</span><span class="err">`</span>
+<span class="o">-</span> <span class="err">`</span><span class="n">post_api</span><span class="err">`</span>
+<span class="o">-</span> <span class="err">`</span><span class="n">patch_api</span><span class="err">`</span>
+<span class="o">-</span> <span class="err">`</span><span class="n">delete_api</span><span class="err">`</span>
+<span class="o">-</span> <span class="err">`</span><span class="n">put_api</span><span class="err">`</span>
+
+<span class="n">Key</span> <span class="n">points</span><span class="p">:</span>
+
+<span class="o">-</span> <span class="n">These</span> <span class="n">decorators</span> <span class="o">**</span><span class="n">only</span> <span class="n">accept</span> <span class="n">keyword</span> <span class="n">arguments</span><span class="o">**</span> <span class="p">(</span><span class="n">they</span> <span class="n">are</span> <span class="n">defined</span> <span class="k">as</span> <span class="err">`</span><span class="k">def</span><span class="w"> </span><span class="nf">get_api</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="err">`</span> <span class="n">etc</span><span class="o">.</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="err">`</span><span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">)</span><span class="err">`</span> <span class="ow">is</span> <span class="o">**</span><span class="n">invalid</span><span class="o">**</span> <span class="ow">and</span> <span class="n">will</span> <span class="k">raise</span> <span class="n">a</span> <span class="err">`</span><span class="ne">TypeError</span><span class="err">`</span> <span class="n">at</span> <span class="kn">import</span><span class="w"> </span><span class="nn">time.</span>
+  <span class="o">-</span> <span class="n">Always</span> <span class="n">use</span> <span class="n">the</span> <span class="n">keyword</span> <span class="n">form</span><span class="p">:</span> <span class="err">`</span><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/user&#39;</span><span class="p">)</span><span class="err">`</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">The</span> <span class="err">`</span><span class="n">url</span><span class="err">`</span> <span class="n">argument</span> <span class="n">uses</span> <span class="n">a</span> <span class="n">lightweight</span> <span class="n">template</span> <span class="n">syntax</span> <span class="k">with</span> <span class="err">`</span><span class="p">{</span><span class="n">param</span><span class="p">}</span><span class="err">`</span> <span class="n">placeholders</span><span class="p">,</span> <span class="n">which</span> <span class="n">are</span> <span class="n">mapped</span> <span class="n">to</span> <span class="n">your</span> <span class="n">method</span> <span class="n">parameters</span><span class="p">:</span>
+
+<span class="err">```</span><span class="n">python</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="o">...</span>
+</code></pre></div>
+<p>Common options:</p>
+<ul>
+<li><code>url</code>: Route pattern (string). Supports <code>{param}</code> placeholders, e.g. <code>'/users/{user_id}'</code>.</li>
+<li><code>query_params</code>: Iterable of query parameter names, e.g. <code>('page', 'size')</code>.</li>
+<li><code>body_params</code> (POST/PATCH only): Iterable of body field names for JSON/form parsing.</li>
+<li><code>file_params</code>: Iterable of file field names for file uploads.</li>
+<li><code>headers</code>: Iterable of required HTTP header names.</li>
+<li><code>get_request_body</code> (POST/PATCH only): If <code>True</code>, passes the raw request body to your method.</li>
+</ul>
+<p>Example combinations:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">body_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="o">...</span>
+</code></pre></div>
+<p>For a deeper dive into URL patterns and all decorator options, see <code>docs/wiki/restful_api.md</code>.</p>
+<hr />
+<h4 id="recommended-dependency-injection-approaches">Recommended Dependency Injection Approaches<a class="headerlink" href="#recommended-dependency-injection-approaches" title="Permanent link">&para;</a></h4>
+<p><strong>Approach 1: InjectByName (Recommended, Simplest)</strong></p>
+<p>Inject by name without importing dependencies, avoiding circular import issues:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">InjectByName</span>
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
@@ -1507,12 +1656,53 @@ INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="nd">@injectable</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">db</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="c1"># Recommended: InjectByName doesn&#39;t need type annotation, just use string name</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;DatabaseService&#39;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
 </code></pre></div>
+<p><strong>Approach 2: Inject + TYPE_CHECKING (IDE autocomplete support)</strong></p>
+<p>If you need IDE autocomplete and type checking, use <code>Inject</code> with TYPE_CHECKING:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
+
+<span class="c1"># TYPE_CHECKING imports are not executed at runtime, avoiding circular imports</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseService</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="c1"># With TYPE_CHECKING import, you get IDE autocomplete support</span>
+    <span class="n">db</span><span class="p">:</span> <span class="s1">&#39;DatabaseService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># IDE can suggest db.query method</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Approach 3: Inject + Pure String Annotation (No IDE autocomplete)</strong></p>
+<p>If you don't need IDE autocomplete, use string annotations directly:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="c1"># Pure string annotation, no import needed, but no IDE autocomplete</span>
+    <span class="n">db</span><span class="p">:</span> <span class="s1">&#39;DatabaseService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Summary:</strong>
+- <strong>InjectByName</strong>: Recommended for most cases, simple and straightforward, no type annotation needed
+- <strong>Inject + TYPE_CHECKING</strong>: Best for development experience, provides IDE autocomplete
+- <strong>Inject + String annotation</strong>: Simplest but no IDE support</p>
 <p>For detailed information on injection patterns, see <code>docs/wiki/injection.md</code>.</p>
 <h2 id="common-patterns">Common patterns<a class="headerlink" href="#common-patterns" title="Permanent link">&para;</a></h2>
 <h3 id="adding-middleware">Adding middleware<a class="headerlink" href="#adding-middleware" title="Permanent link">&para;</a></h3>

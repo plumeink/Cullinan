@@ -1,633 +1,633 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>None./</loc>
+        <loc>https://plumeink.github.io/Cullinan/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="None"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/"/>
     </url>
     <url>
-        <loc>Noneapi_reference/</loc>
+        <loc>https://plumeink.github.io/Cullinan/api_reference/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Noneapi_reference/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/api_reference/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/api_reference/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/api_reference/"/>
     </url>
     <url>
-        <loc>Nonearchitecture/</loc>
+        <loc>https://plumeink.github.io/Cullinan/architecture/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonearchitecture/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/architecture/"/>
     </url>
     <url>
-        <loc>Nonebuild_run/</loc>
+        <loc>https://plumeink.github.io/Cullinan/build_run/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonebuild_run/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/build_run/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/build_run/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/build_run/"/>
     </url>
     <url>
-        <loc>Nonecontributing/</loc>
+        <loc>https://plumeink.github.io/Cullinan/contributing/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonecontributing/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/contributing/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/contributing/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/contributing/"/>
     </url>
     <url>
-        <loc>Nonecullinan_documentation_plan/</loc>
+        <loc>https://plumeink.github.io/Cullinan/cullinan_documentation_plan/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonecullinan_documentation_plan/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/cullinan_documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/cullinan_documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/cullinan_documentation_plan/"/>
     </url>
     <url>
-        <loc>Noneexamples/</loc>
+        <loc>https://plumeink.github.io/Cullinan/examples/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Noneexamples/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/examples/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/examples/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/examples/"/>
     </url>
     <url>
-        <loc>Nonegetting_started/</loc>
+        <loc>https://plumeink.github.io/Cullinan/getting_started/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting_started/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/getting_started/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/getting_started/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/getting_started/"/>
     </url>
     <url>
-        <loc>Nonemigration_guide/</loc>
+        <loc>https://plumeink.github.io/Cullinan/migration_guide/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemigration_guide/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/migration_guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/migration_guide/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/migration_guide/"/>
     </url>
     <url>
-        <loc>Nonetesting/</loc>
+        <loc>https://plumeink.github.io/Cullinan/testing/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonetesting/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/testing/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/testing/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/testing/"/>
     </url>
     <url>
-        <loc>Nonemodules/app/</loc>
+        <loc>https://plumeink.github.io/Cullinan/modules/app/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/app/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/app/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/app/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/app/"/>
     </url>
     <url>
-        <loc>Nonemodules/application/</loc>
+        <loc>https://plumeink.github.io/Cullinan/modules/application/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/application/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/application/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/application/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/application/"/>
     </url>
     <url>
-        <loc>Nonemodules/controller/</loc>
+        <loc>https://plumeink.github.io/Cullinan/modules/controller/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/controller/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/controller/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/controller/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/controller/"/>
     </url>
     <url>
-        <loc>Nonemodules/core/</loc>
+        <loc>https://plumeink.github.io/Cullinan/modules/core/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/core/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/core/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/core/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/core/"/>
     </url>
     <url>
-        <loc>Nonemodules/service/</loc>
+        <loc>https://plumeink.github.io/Cullinan/modules/service/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/service/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/service/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/service/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/service/"/>
     </url>
     <url>
-        <loc>Nonewiki/architecture/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/architecture/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/architecture/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/architecture/"/>
     </url>
     <url>
-        <loc>Nonewiki/components/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/components/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/components/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/components/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/components/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/components/"/>
     </url>
     <url>
-        <loc>Nonewiki/extensions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/extensions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/extensions/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/extensions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/extensions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/extensions/"/>
     </url>
     <url>
-        <loc>Nonewiki/injection/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/injection/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/injection/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/injection/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/injection/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/injection/"/>
     </url>
     <url>
-        <loc>Nonewiki/lifecycle/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/lifecycle/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/lifecycle/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/lifecycle/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/lifecycle/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/"/>
     </url>
     <url>
-        <loc>Nonewiki/middleware/</loc>
+        <loc>https://plumeink.github.io/Cullinan/wiki/middleware/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/middleware/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/middleware/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/middleware/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/middleware/"/>
     </url>
     <url>
-        <loc>Nonework/COMPLETION_SUMMARY/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/COMPLETION_SUMMARY/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/COMPLETION_SUMMARY/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/COMPLETION_SUMMARY/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/COMPLETION_SUMMARY/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/COMPLETION_SUMMARY/"/>
     </url>
     <url>
-        <loc>Nonework/api_cleanup_suggestions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/api_cleanup_suggestions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/api_cleanup_suggestions/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/api_cleanup_suggestions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/api_cleanup_suggestions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/api_cleanup_suggestions/"/>
     </url>
     <url>
-        <loc>Nonework/api_modules/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/api_modules/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/api_modules/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/api_modules/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/api_modules/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/api_modules/"/>
     </url>
     <url>
-        <loc>Nonework/backlog/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/backlog/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/backlog/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/backlog/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/backlog/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/backlog/"/>
     </url>
     <url>
-        <loc>Nonework/core_concepts_draft/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/core_concepts_draft/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/core_concepts_draft/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/core_concepts_draft/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/core_concepts_draft/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/core_concepts_draft/"/>
     </url>
     <url>
-        <loc>Nonework/doc_conventions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/doc_conventions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/doc_conventions/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/doc_conventions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/doc_conventions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/doc_conventions/"/>
     </url>
     <url>
-        <loc>Nonework/documentation_plan/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/documentation_plan/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/documentation_plan/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/documentation_plan/"/>
     </url>
     <url>
-        <loc>Nonework/front_matter_template/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/front_matter_template/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/front_matter_template/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/front_matter_template/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/front_matter_template/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/front_matter_template/"/>
     </url>
     <url>
-        <loc>Nonework/inventory/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/inventory/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/inventory/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/inventory/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/inventory/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/inventory/"/>
     </url>
     <url>
-        <loc>Nonework/linked_map/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/linked_map/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/linked_map/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/linked_map/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/linked_map/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/linked_map/"/>
     </url>
     <url>
-        <loc>Nonework/module_api_summary/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/module_api_summary/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/module_api_summary/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/module_api_summary/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/module_api_summary/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/module_api_summary/"/>
     </url>
     <url>
-        <loc>Nonework/pr_description/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/pr_description/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/pr_description/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/pr_description/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/pr_description/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/pr_description/"/>
     </url>
     <url>
-        <loc>Nonework/progress_tracker/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/progress_tracker/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/progress_tracker/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/progress_tracker/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/progress_tracker/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/progress_tracker/"/>
     </url>
     <url>
-        <loc>Nonework/review_issues/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/review_issues/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_issues/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_issues/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_issues/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_issues/"/>
     </url>
     <url>
-        <loc>Nonework/review_payloads/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/review_payloads/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_payloads/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_payloads/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_payloads/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_payloads/"/>
     </url>
     <url>
-        <loc>Nonework/review_tasks/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/review_tasks/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_tasks/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_tasks/"/>
     </url>
     <url>
-        <loc>Nonework/site_navigation/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/site_navigation/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/site_navigation/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/site_navigation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/site_navigation/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/site_navigation/"/>
     </url>
     <url>
-        <loc>Nonework/architecture_assets/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/architecture_assets/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/architecture_assets/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/architecture_assets/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/architecture_assets/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/architecture_assets/"/>
     </url>
     <url>
-        <loc>Nonework/generated_modules/cullinan_app/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_app/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_app/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_app/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_app/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_app/"/>
     </url>
     <url>
-        <loc>Nonework/generated_modules/cullinan_application/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_application/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_application/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_application/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_application/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_application/"/>
     </url>
     <url>
-        <loc>Nonework/generated_modules/cullinan_controller/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_controller/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_controller/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_controller/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_controller/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_controller/"/>
     </url>
     <url>
-        <loc>Nonework/generated_modules/cullinan_core/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_core/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_core/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_core/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_core/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_core/"/>
     </url>
     <url>
-        <loc>Nonework/generated_modules/cullinan_service/</loc>
+        <loc>https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_service/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_service/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_service/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_service/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_service/"/>
     </url>
     <url>
-        <loc>Nonezh/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="None"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/"/>
     </url>
     <url>
-        <loc>Nonezh/api_reference/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/api_reference/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/api_reference/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Noneapi_reference/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/api_reference/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/api_reference/"/>
     </url>
     <url>
-        <loc>Nonezh/architecture/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/architecture/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/architecture/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonearchitecture/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/architecture/"/>
     </url>
     <url>
-        <loc>Nonezh/build_run/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/build_run/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/build_run/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonebuild_run/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/build_run/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/build_run/"/>
     </url>
     <url>
-        <loc>Nonezh/contributing/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/contributing/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/contributing/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonecontributing/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/contributing/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/contributing/"/>
     </url>
     <url>
-        <loc>Nonezh/cullinan_documentation_plan/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/cullinan_documentation_plan/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/cullinan_documentation_plan/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonecullinan_documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/cullinan_documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/cullinan_documentation_plan/"/>
     </url>
     <url>
-        <loc>Nonezh/examples/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/examples/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/examples/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Noneexamples/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/examples/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/examples/"/>
     </url>
     <url>
-        <loc>Nonezh/getting_started/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/getting_started/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/getting_started/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonegetting_started/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/getting_started/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/getting_started/"/>
     </url>
     <url>
-        <loc>Nonezh/migration_guide/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/migration_guide/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/migration_guide/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemigration_guide/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/migration_guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/migration_guide/"/>
     </url>
     <url>
-        <loc>Nonezh/testing/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/testing/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/testing/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonetesting/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/testing/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/testing/"/>
     </url>
     <url>
-        <loc>Nonezh/modules/app/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/modules/app/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/app/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/app/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/app/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/app/"/>
     </url>
     <url>
-        <loc>Nonezh/modules/application/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/modules/application/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/application/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/application/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/application/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/application/"/>
     </url>
     <url>
-        <loc>Nonezh/modules/controller/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/modules/controller/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/controller/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/controller/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/controller/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/controller/"/>
     </url>
     <url>
-        <loc>Nonezh/modules/core/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/modules/core/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/core/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/core/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/core/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/core/"/>
     </url>
     <url>
-        <loc>Nonezh/modules/service/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/modules/service/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/modules/service/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonemodules/service/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/modules/service/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/modules/service/"/>
     </url>
     <url>
-        <loc>Nonezh/templates/front_matter_example/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/templates/front_matter_example/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/templates/front_matter_example/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonetemplates/front_matter_example/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/templates/front_matter_example/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/templates/front_matter_example/"/>
     </url>
     <url>
-        <loc>Nonezh/templates/page_template/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/templates/page_template/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/templates/page_template/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonetemplates/page_template/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/templates/page_template/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/templates/page_template/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/architecture/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/architecture/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/architecture/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/architecture/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/components/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/components/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/components/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/components/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/components/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/components/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/extensions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/extensions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/extensions/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/extensions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/extensions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/extensions/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/injection/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/injection/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/injection/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/injection/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/injection/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/injection/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/lifecycle/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/lifecycle/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/lifecycle/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/lifecycle/"/>
     </url>
     <url>
-        <loc>Nonezh/wiki/middleware/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/middleware/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/wiki/middleware/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonewiki/middleware/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/middleware/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/middleware/"/>
     </url>
     <url>
-        <loc>Nonezh/work/COMPLETION_SUMMARY/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/COMPLETION_SUMMARY/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/COMPLETION_SUMMARY/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/COMPLETION_SUMMARY/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/COMPLETION_SUMMARY/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/COMPLETION_SUMMARY/"/>
     </url>
     <url>
-        <loc>Nonezh/work/api_cleanup_suggestions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/api_cleanup_suggestions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/api_cleanup_suggestions/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/api_cleanup_suggestions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/api_cleanup_suggestions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/api_cleanup_suggestions/"/>
     </url>
     <url>
-        <loc>Nonezh/work/api_modules/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/api_modules/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/api_modules/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/api_modules/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/api_modules/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/api_modules/"/>
     </url>
     <url>
-        <loc>Nonezh/work/backlog/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/backlog/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/backlog/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/backlog/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/backlog/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/backlog/"/>
     </url>
     <url>
-        <loc>Nonezh/work/core_concepts_draft/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/core_concepts_draft/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/core_concepts_draft/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/core_concepts_draft/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/core_concepts_draft/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/core_concepts_draft/"/>
     </url>
     <url>
-        <loc>Nonezh/work/doc_conventions/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/doc_conventions/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/doc_conventions/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/doc_conventions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/doc_conventions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/doc_conventions/"/>
     </url>
     <url>
-        <loc>Nonezh/work/documentation_plan/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/documentation_plan/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/documentation_plan/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/documentation_plan/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/documentation_plan/"/>
     </url>
     <url>
-        <loc>Nonezh/work/front_matter_template/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/front_matter_template/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/front_matter_template/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/front_matter_template/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/front_matter_template/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/front_matter_template/"/>
     </url>
     <url>
-        <loc>Nonezh/work/inventory/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/inventory/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/inventory/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/inventory/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/inventory/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/inventory/"/>
     </url>
     <url>
-        <loc>Nonezh/work/linked_map/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/linked_map/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/linked_map/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/linked_map/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/linked_map/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/linked_map/"/>
     </url>
     <url>
-        <loc>Nonezh/work/module_api_summary/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/module_api_summary/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/module_api_summary/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/module_api_summary/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/module_api_summary/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/module_api_summary/"/>
     </url>
     <url>
-        <loc>Nonezh/work/pr_description/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/pr_description/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/pr_description/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/pr_description/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/pr_description/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/pr_description/"/>
     </url>
     <url>
-        <loc>Nonezh/work/progress_tracker/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/progress_tracker/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/progress_tracker/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/progress_tracker/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/progress_tracker/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/progress_tracker/"/>
     </url>
     <url>
-        <loc>Nonezh/work/review_issues/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/review_issues/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_issues/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_issues/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_issues/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_issues/"/>
     </url>
     <url>
-        <loc>Nonezh/work/review_payloads/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/review_payloads/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_payloads/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_payloads/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_payloads/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_payloads/"/>
     </url>
     <url>
-        <loc>Nonezh/work/review_tasks/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/review_tasks/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/review_tasks/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/review_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/review_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/review_tasks/"/>
     </url>
     <url>
-        <loc>Nonezh/work/site_navigation/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/site_navigation/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/site_navigation/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/site_navigation/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/site_navigation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/site_navigation/"/>
     </url>
     <url>
-        <loc>Nonezh/work/architecture_assets/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/architecture_assets/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/architecture_assets/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/architecture_assets/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/architecture_assets/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/architecture_assets/"/>
     </url>
     <url>
-        <loc>Nonezh/work/generated_modules/cullinan_app/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_app/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_app/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_app/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_app/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_app/"/>
     </url>
     <url>
-        <loc>Nonezh/work/generated_modules/cullinan_application/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_application/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_application/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_application/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_application/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_application/"/>
     </url>
     <url>
-        <loc>Nonezh/work/generated_modules/cullinan_controller/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_controller/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_controller/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_controller/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_controller/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_controller/"/>
     </url>
     <url>
-        <loc>Nonezh/work/generated_modules/cullinan_core/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_core/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_core/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_core/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_core/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_core/"/>
     </url>
     <url>
-        <loc>Nonezh/work/generated_modules/cullinan_service/</loc>
+        <loc>https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_service/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="Nonezh/work/generated_modules/cullinan_service/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="Nonework/generated_modules/cullinan_service/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/work/generated_modules/cullinan_service/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/work/generated_modules/cullinan_service/"/>
     </url>
 </urlset>
