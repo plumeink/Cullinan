@@ -29,37 +29,18 @@ nav:
 plugins:
   - search
   - i18n:
-      default_language: en
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
       languages:
-        - code: en
+        - locale: en
           name: English
-          locale: en_US
-        - code: zh
+          default: true
+          build: true
+        - locale: zh
           name: 中文
-          locale: zh_CN
-      nav_translations:
-        zh:
-          - Home: zh/README.md
-          - Getting Started: zh/getting_started.md
-          - Architecture: zh/architecture.md
-          - Wiki:
-            - Components: zh/wiki/components.md
-            - Injection: zh/wiki/injection.md
-            - Lifecycle: zh/wiki/lifecycle.md
-            - Middleware: zh/wiki/middleware.md
-            - Extensions: zh/wiki/extensions.md
-          - Modules:
-            - app: zh/modules/app.md
-            - application: zh/modules/application.md
-            - core: zh/modules/core.md
-            - controller: zh/modules/controller.md
-            - service: zh/modules/service.md
-          - Examples: zh/examples.md
-          - API Reference: zh/api_reference.md
-          - Work:
-            - Progress Tracker: zh/work/progress_tracker.md
-            - Review Tasks: zh/work/review_tasks.md
-            - Inventory: zh/work/inventory.md
+          build: true
 
 markdown_extensions:
   - admonition

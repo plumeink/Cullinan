@@ -10,5 +10,5 @@
 - 保持章节结构与英文版一致。
 - 在翻译完成后移除本段提示。
 
-[查看英文原文](../progress_tracker.md)
+[查看英文原文](../../work/progress_tracker.md)
 
