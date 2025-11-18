@@ -31,8 +31,8 @@ plugins:
   - i18n:
       default_language: en
       languages:
-        en: English
-        zh: 中文
+        - en
+        - zh
       nav_translations:
         zh:
           - Home: zh/README.md
