@@ -808,6 +808,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1506,28 +1534,27 @@
 <li>Git</li>
 </ul>
 <h2 id="install-powershell">Install (PowerShell)<a class="headerlink" href="#install-powershell" title="Permanent link">&para;</a></h2>
-<p>python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -U pip; pip install -e .</p>
+<p>Ensure you have a working Python environment (Python 3.8+) and pip available. Then run:</p>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+</code></pre></div>
 <h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Ensure you are in the repository root.</li>
-<li>Activate the virtualenv (see above command).</li>
-<li>Run the example server:</li>
+<li>Create a new project directory and change into it:</li>
 </ol>
-<p>python examples\hello_http.py</p>
-<p>Expected: Server starts and listens on the configured port. Open http://localhost:8888 to see a response.</p>
-<h2 id="verified-example-local-run">Verified example (local run)<a class="headerlink" href="#verified-example-local-run" title="Permanent link">&para;</a></h2>
-<p>I ran the example locally in a Windows PowerShell session using the above commands. Observed log output (truncated):</p>
-<p>INFO:<strong>main</strong>:Starting IOLoop... (will stop after one verification request)
-INFO:<strong>main</strong>:Async Requesting http://127.0.0.1:8888/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:<strong>main</strong>:Response status: 200
-INFO:<strong>main</strong>:Response body: Hello Cullinan
-INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
-<p>Note: The example uses <code>cullinan.handler.registry.get_handler_registry()</code> to register a simple Tornado handler and performs a single verification request, then exits. This makes it suitable for smoke-testing in documentation.</p>
-<h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
-<p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
+<div class="highlight"><pre><span></span><code><span class="n">mkdir</span> <span class="n">my_cullinan_project</span><span class="p">;</span> <span class="nb">cd </span><span class="n">my_cullinan_project</span>
+</code></pre></div>
+<ol>
+<li>Ensure you have a Python environment (virtualenv, conda, system Python, etc.). Install the published package:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+</code></pre></div>
+<ol>
+<li>Create a minimal application file <code>minimal_app.py</code> in your project with the following content:</li>
+</ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
@@ -1536,16 +1563,44 @@ INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-    <span class="c1"># Controllers are auto-discovered or explicitly registered</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># Starts Tornado IOLoop on default port</span>
+    <span class="c1"># Start the framework application (no instantiation required)</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre></div>
+<ol>
+<li>Run your app:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">minimal_app</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>Open <code>http://localhost:4080/hello</code> in your browser to verify the server is running.</p>
+<h2 id="verified-example-local-run">Verified example (local run)<a class="headerlink" href="#verified-example-local-run" title="Permanent link">&para;</a></h2>
+<p>I ran the example locally in a Windows PowerShell session using the above commands. Observed log output (truncated):</p>
+<p>INFO:<strong>main</strong>:Starting IOLoop... (will stop after one verification request)
+INFO:<strong>main</strong>:Async Requesting http://127.0.0.1:4080/hello
+INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
+INFO:<strong>main</strong>:Response status: 200
+INFO:<strong>main</strong>:Response body: Hello Cullinan
+INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
+<p>Note: The example uses <code>cullinan.handler.registry.get_handler_registry()</code> to register a simple Tornado handler and performs a single verification request, then exits. This makes it suitable for smoke-testing in documentation.</p>
+<h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
+<p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP handler.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Start the framework application (no instantiation required)</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div>
 <p>To run this example:</p>
 <div class="highlight"><pre><span></span><code><span class="c"># Save the above code as minimal_app.py</span>
-<span class="p">.\\.</span><span class="n">venv</span><span class="p">\\</span><span class="n">Scripts</span><span class="p">\\</span><span class="n">Activate</span><span class="p">.</span><span class="n">ps1</span>
 <span class="n">python</span> <span class="n">minimal_app</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
-<p>Then visit <code>http://localhost:8888/hello</code> in your browser.</p>
+<p>Then visit <code>http://localhost:4080/hello</code> in your browser.</p>
 <h2 id="understanding-the-basics">Understanding the basics<a class="headerlink" href="#understanding-the-basics" title="Permanent link">&para;</a></h2>
 <h3 id="application-lifecycle">Application lifecycle<a class="headerlink" href="#application-lifecycle" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1724,7 +1779,7 @@ INFO:<strong>main</strong>:IOLoop stopped, exiting</p>
 </code></pre></div>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <ul>
-<li>If <code>Activate.ps1</code> fails, ensure PowerShell execution policy allows script execution: <code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process</code></li>
+<li>If you encounter errors installing packages, ensure your Python and pip are up to date and that you have network access to PyPI.</li>
 </ul>
 <h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>

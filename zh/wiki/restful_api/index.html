@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -9,35 +9,35 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
       
       
-        <meta name="author" content=""TBD"">
+        <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/wiki/lifecycle/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/wiki/restful_api/">
       
       
-        <link rel="prev" href="../injection/">
+        <link rel="prev" href="../extensions/">
       
       
-        <link rel="next" href="../middleware/">
+        <link rel="next" href="../../modules/app/">
       
       
         
-          <link rel="alternate" href="./" hreflang="en">
+          <link rel="alternate" href="../../../wiki/restful_api/" hreflang="en">
         
-          <link rel="alternate" href="../../zh/wiki/lifecycle/" hreflang="zh">
+          <link rel="alternate" href="./" hreflang="zh">
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>"Application Lifecycle" - Cullinan Documentation</title>
+        <title>"RESTful API 装饰器" - Cullinan Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
       
       
 
@@ -56,7 +56,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,8 +74,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#application-lifecycle" class="md-skip">
-          Skip to content
+        <a href="#restful-api" class="md-skip">
+          跳转至
         </a>
       
     </div>
@@ -89,8 +89,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "Application Lifecycle"
+              "RESTful API 装饰器"
             
           </span>
         </div>
@@ -124,20 +124,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="Select language">
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="./" hreflang="en" class="md-select__link">
+            <a href="../../../wiki/restful_api/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="../../zh/wiki/lifecycle/" hreflang="zh" class="md-select__link">
+            <a href="./" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -158,16 +158,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="查找">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -178,7 +178,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            正在初始化搜索引擎
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -212,9 +212,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -232,14 +232,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Home
+    首页
   
 
     
@@ -273,7 +273,7 @@
   <span class="md-ellipsis">
     
   
-    Getting Started
+    快速开始
   
 
     
@@ -307,7 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    架构设计
   
 
     
@@ -354,7 +354,7 @@
   <span class="md-ellipsis">
     
   
-    Wiki
+    维基
   
 
     
@@ -370,7 +370,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Wiki
+    维基
   
 
           </label>
@@ -390,7 +390,7 @@
   <span class="md-ellipsis">
     
   
-    Components
+    组件
   
 
     
@@ -425,7 +425,112 @@
   <span class="md-ellipsis">
     
   
-    Injection
+    注入
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    生命周期
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../middleware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中间件
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    扩展
   
 
     
@@ -462,168 +567,7 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Lifecycle
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Lifecycle
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#lifecycle-sequence-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle Sequence (diagram)
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../middleware/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Middleware
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../extensions/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Extensions
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../restful_api/" class="md-nav__link">
         
   
   
@@ -639,6 +583,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -676,7 +621,7 @@
   <span class="md-ellipsis">
     
   
-    Modules
+    模块
   
 
     
@@ -692,7 +637,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Modules
+    模块
   
 
           </label>
@@ -712,7 +657,7 @@
   <span class="md-ellipsis">
     
   
-    app
+    应用
   
 
     
@@ -747,7 +692,7 @@
   <span class="md-ellipsis">
     
   
-    application
+    应用程序
   
 
     
@@ -782,7 +727,7 @@
   <span class="md-ellipsis">
     
   
-    core
+    核心
   
 
     
@@ -817,7 +762,7 @@
   <span class="md-ellipsis">
     
   
-    controller
+    控制器
   
 
     
@@ -852,7 +797,7 @@
   <span class="md-ellipsis">
     
   
-    service
+    服务
   
 
     
@@ -894,7 +839,7 @@
   <span class="md-ellipsis">
     
   
-    Examples
+    示例
   
 
     
@@ -928,7 +873,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    API 参考
   
 
     
@@ -973,7 +918,7 @@
   <span class="md-ellipsis">
     
   
-    Work
+    工作区
   
 
     
@@ -989,7 +934,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Work
+    工作区
   
 
           </label>
@@ -1009,7 +954,7 @@
   <span class="md-ellipsis">
     
   
-    Progress Tracker
+    进度追踪
   
 
     
@@ -1037,7 +982,7 @@
   <span class="md-ellipsis">
     
   
-    Review Tasks
+    审查任务
   
 
     
@@ -1065,7 +1010,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
+    清单
   
 
     
@@ -1099,31 +1044,12 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目录">
   
   
   
     
   
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#lifecycle-sequence-diagram" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle Sequence (diagram)
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1140,143 +1066,68 @@
 
 
 
-<h1 id="application-lifecycle">Application Lifecycle<a class="headerlink" href="#application-lifecycle" title="Permanent link">&para;</a></h1>
-<p>This document describes the Cullinan application lifecycle: startup, service initialization, request handling, and graceful shutdown hooks and events. The content is derived from the implementation (source-first) and references <code>cullinan/app.py</code>, <code>cullinan/application.py</code> and <code>cullinan/core/lifecycle</code> related files.</p>
-<p>Main phases</p>
-<ol>
-<li>Startup</li>
-<li>Entry point: <code>CullinanApplication.run()</code> or using <code>create_app()</code> then calling <code>app.run()</code>.</li>
-<li>
-<p>Behavior (see <code>cullinan/app.py</code>):</p>
-<ul>
-<li>Calls <code>startup()</code> to perform the startup sequence: configure injection (InjectionRegistry), discover services (ServiceRegistry), and initialize services in dependency order.</li>
-<li>Registers signal handlers (SIGINT / SIGTERM) to trigger graceful shutdown on signals.</li>
-<li>Starts Tornado's IOLoop: <code>IOLoop.start()</code> (blocking until stop event).</li>
-</ul>
-</li>
-<li>
-<p>Service initialization</p>
-</li>
-<li>Services register via <code>@service</code> or during module scanning into <code>ServiceRegistry</code>.</li>
-<li><code>ProviderRegistry</code> / <code>ServiceRegistry</code> instantiate services in dependency order and invoke init hooks (e.g., <code>on_init</code>).</li>
-<li>
-<p>If no services registered, initialization step is skipped.</p>
-</li>
-<li>
-<p>Request handling &amp; request scope</p>
-</li>
-<li>On request arrival, a request context is created (via <code>create_context()</code>) to support <code>RequestScope</code>.</li>
-<li>Within the same request context, the RequestScope ensures instances are reused for the lifetime of the request.</li>
-<li>
-<p>Handlers (Handler / controller) can obtain request-scoped dependencies via property or constructor injection.</p>
-</li>
-<li>
-<p>Shutdown</p>
-</li>
-<li>When the app receives termination signals or a manual shutdown, <code>shutdown()</code> is invoked:<ul>
-<li>Executes registered shutdown handlers in order (sync or async); errors are controlled by the <code>force</code> flag.</li>
-<li>Sets <code>_running</code> to False and stops the IOLoop.</li>
-<li>Calls lifecycle hooks (e.g., <code>on_shutdown</code>) on services to clean up resources.</li>
-</ul>
-</li>
-</ol>
-<p>Common hooks &amp; extension points</p>
-<ul>
-<li><code>CullinanApplication.add_shutdown_handler(handler)</code> — register custom shutdown handlers (async or sync).</li>
-<li><code>LifecycleAware</code> and <code>LifecycleManager</code> (in <code>cullinan/core</code>) — services implementing lifecycle interfaces will be called at appropriate times.</li>
-<li>Provider/service <code>on_init</code> / <code>on_shutdown</code> hooks (if present) — invoked during init and shutdown phases.</li>
-</ul>
-<p>Minimal example: registering shutdown handlers</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">cleanup_sync</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running sync cleanup&#39;</span><span class="p">)</span>
-
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_async</span><span class="p">():</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running async cleanup&#39;</span><span class="p">)</span>
-
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_sync</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_async</span><span class="p">)</span>
-
-<span class="c1"># call app.run() in the actual process entrypoint</span>
+<h1 id="restful-api">RESTful API 装饰器（详细）<a class="headerlink" href="#restful-api" title="Permanent link">&para;</a></h1>
+<p>本页面记录 Cullinan 控制器中用于路由绑定的 HTTP 动词装饰器：<code>get_api</code>、<code>post_api</code>、<code>patch_api</code>、<code>delete_api</code>、<code>put_api</code>。</p>
+<p>摘要
+- 所有装饰器在源码中定义为 <code>def get_api(**kwargs)</code>（其它动词同理），因此<strong>仅接受关键字参数</strong>。使用位置参数写法如 <code>@get_api('/user')</code> 是不合法的，会在导入时抛出 TypeError。请始终使用 <code>@get_api(url='/users/{user_id}')</code>。
+- URL 模板使用 <code>{name}</code> 占位符，由 <code>url_resolver</code> 解析，按顺序映射到控制器方法参数。</p>
+<p>支持关键字参数（通用）
+- url：路由模板字符串，例如 <code>'/users/{user_id}'</code>。
+- query_params：查询参数名的可迭代对象（由 <code>request_resolver</code> 的 query 部分解析）。
+- file_params：用于文件上传的字段名集合。
+- headers：要求存在的 HTTP 请求头，缺失时会触发缺失头处理器。</p>
+<p>POST/PATCH 特有
+- body_params：需要从 JSON/form body 中解析的字段名集合。
+- get_request_body：布尔值；为 True 时，原始请求体会传入处理器。</p>
+<p>URL 模板如何工作
+- 使用 <code>{param}</code> 占位符，例如 <code>'/users/{user_id}/posts/{post_id}'</code>。
+- <code>url_resolver</code> 将模板解析为匹配路径并返回参数名顺序列表（例如 <code>['user_id','post_id']</code>）。
+- 被装饰的方法将按该顺序接收到路径参数值（或结合控制器级别的 url 参数键列表）。
+- 占位符允许的字符由解析器限制（例如 <code>[a-zA-Z0-9-]+</code>），并允许可选的尾随 <code>/</code>。</p>
+<p>装饰器行为与请求处理流程
+- 装饰器会包装原始函数并通过 <code>EncapsulationHandler.add_func(url=local_url, type='get')</code> 注册为 Tornado 处理器（或其它动词）。
+- 请求时，框架调用 <code>request_resolver</code> 与 <code>header_resolver</code> 构建 <code>(url_dict, query_dict, body_dict, file_dict)</code>，并将解析的数据传入 <code>request_handler</code>，最终由其调用你的控制器方法。
+- <code>get_api</code>/<code>delete_api</code>/<code>put_api</code> 通常不处理 body（除非显式配置），而 <code>post_api</code>/<code>patch_api</code> 支持 <code>body_params</code> 与 <code>get_request_body</code>。</p>
+<p>示例</p>
+<p>1) 简单 GET（带路径参数）</p>
+<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
+class UserController:
+    @get_api(url=&#39;/{user_id}&#39;)
+    def get_user(self, user_id):
+        return {&#39;id&#39;: user_id}
 </code></pre></div>
-<p>Request scope example (pseudocode)</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_context</span><span class="p">,</span> <span class="n">RequestScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span>
-
-<span class="n">provider_registry</span> <span class="o">=</span> <span class="n">ProviderRegistry</span><span class="p">()</span>
-<span class="n">provider_registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;RequestHandler&#39;</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">RequestHandler</span><span class="p">(),</span> <span class="n">RequestScope</span><span class="p">(),</span> <span class="s1">&#39;RequestHandler&#39;</span><span class="p">))</span>
-
-<span class="k">with</span> <span class="n">create_context</span><span class="p">():</span>
-    <span class="n">handler1</span> <span class="o">=</span> <span class="n">provider_registry</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;RequestHandler&#39;</span><span class="p">)</span>
-    <span class="n">handler2</span> <span class="o">=</span> <span class="n">provider_registry</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;RequestHandler&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">handler1</span> <span class="ow">is</span> <span class="n">handler2</span>
-
-<span class="c1"># leaving the context isolates RequestScope instances; next request gets new instances</span>
+<p>2) GET 带查询参数</p>
+<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
+class UserController:
+    @get_api(url=&#39;/&#39;, query_params=(&#39;page&#39;,&#39;size&#39;))
+    def list_users(self, page, size):
+        return {&#39;page&#39;: page, &#39;size&#39;: size}
 </code></pre></div>
-<p>Troubleshooting</p>
-<ul>
-<li>Startup failures: inspect <code>startup()</code> error logs (<code>Application startup failed</code>) and check service registration/provider initialization stacks.</li>
-<li>Injection/dependency missing: ensure provider is registered in the <code>ProviderRegistry</code> and the registry is added to the <code>InjectionRegistry</code>.</li>
-<li>Graceful shutdown issues: if a shutdown handler blocks or raises, consider catching errors or using <code>force=True</code> during shutdown.</li>
-</ul>
-<p>References &amp; next steps</p>
-<ul>
-<li>Source: <code>cullinan/app.py</code>, <code>cullinan/application.py</code>, <code>cullinan/core/*</code> (provider/registry/scope/lifecycle).</li>
-<li>Suggestion: add sequence diagrams illustrating startup and shutdown flows to <code>docs/wiki/lifecycle.md</code> for review.</li>
-</ul>
-<h2 id="lifecycle-sequence-diagram">Lifecycle Sequence (diagram)<a class="headerlink" href="#lifecycle-sequence-diagram" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>CullinanApplication    ProviderRegistry    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
--------------------    ----------------    ---------------    ---------------    --------------    -------
-startup() -&gt; register providers -&gt; discover &amp; init services -&gt; start IOLoop
-                                                        |
-                                                        |-&gt; IOLoop receives request -&gt; create RequestContext
-                                                        |                             -&gt; resolve request-scoped providers
-                                                        |                             -&gt; dispatch to Handler (injection resolves)
-                                                        |                             -&gt; Handler returns response
-                                                        |                             -&gt; RequestContext cleanup
-shutdown() -&gt; call on_shutdown on services -&gt; stop IOLoop
+<p>3) POST（body + 文件）</p>
+<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/upload&#39;)
+class UploadController:
+    @post_api(url=&#39;/&#39;, body_params=(&#39;title&#39;,), file_params=(&#39;file&#39;,))
+    def upload(self, body_params, files):
+        title = body_params.get(&#39;title&#39;) if body_params else None
+        file_obj = files.get(&#39;file&#39;) if files else None
+        return {&#39;uploaded&#39;: bool(file_obj)}
 </code></pre></div>
-<!--
-<div class="highlight"><pre><span></span><code>sequenceDiagram
-    autonumber
-    participant App as CullinanApplication
-    participant PV as ProviderRegistry
-    participant SR as ServiceRegistry
-    participant IO as Tornado IOLoop
-    participant Req as RequestContext
-    participant Hand as Handler
-
-    Note over App: Startup
-    App-&gt;&gt;PV: register providers
-    App-&gt;&gt;SR: discover &amp; register services
-    SR-&gt;&gt;SR: resolve deps &amp; instantiate (on_init)
-    App-&gt;&gt;IO: start IOLoop
-
-    Note over IO,Req: Request handling
-    IO-&gt;&gt;Req: create request context
-    Req-&gt;&gt;PV: resolve request-scoped providers
-    IO-&gt;&gt;Hand: dispatch to handler (injection resolves)
-    Hand--&gt;&gt;IO: return response
-    Req--&gt;&gt;IO: cleanup request context
-
-    Note over App: Shutdown
-    App-&gt;&gt;SR: call on_shutdown on services
-    App-&gt;&gt;IO: stop IOLoop
-</code></pre></div>
-
-<div class="highlight"><pre><span></span><code>stateDiagram-v2
-  [*] --&gt; Initialized
-  Initialized --&gt; Running: startup()
-  Running --&gt; HandlingRequest: request arrives
-  HandlingRequest --&gt; Running: request handled
-  Running --&gt; ShuttingDown: shutdown()
-  ShuttingDown --&gt; [*]
-</code></pre></div>
--->
+<p>常见错误与陷阱
+- 使用位置参数：<code>@get_api('/user')</code> 是错误的。请使用 <code>@get_api(url='/user')</code>。
+- 模板与方法参数不匹配：若 URL 模板含 <code>{user_id}</code> 而方法签名缺少对应参数，框架会传入 None 或导致异常；请保持命名与顺序一致。
+- 缺少必须头部：若指定 <code>headers</code>，请求未包含时会触发缺失头处理器，可能导致错误响应。
+- body 解析失败：当 Content-Type 为 <code>application/json</code> 时框架会尝试解析 JSON；解析失败会导致 body 字段为 None。</p>
+<p>使用建议
+- <code>get_api</code>：用于幂等的读取操作。
+- <code>post_api</code>：用于创建/上传，支持 body 与文件处理。
+- <code>patch_api</code>：用于部分更新。
+- <code>put_api</code>：用于完整替换（与 POST 在 body 参数处理上类似）。</p>
+<p>源码参考
+- 关键实现位于 <code>cullinan/controller/core.py</code>（<code>get_api</code>, <code>post_api</code>, <code>url_resolver</code>, <code>request_resolver</code>, <code>request_handler</code>）。
+- 可以在 <code>tests/</code> 中通过搜索 <code>@get_api(url=</code> 找到实战测试样例。</p>
+<p>另见
+- <code>docs/getting_started.md</code>（快速说明）
+- <code>docs/wiki/injection.md</code>（注入模式说明）</p>
 
 
 
@@ -1345,10 +1196,10 @@ shutdown() -&gt; call on_shutdown on services -&gt; stop IOLoop
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
   </body>

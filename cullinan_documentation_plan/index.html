@@ -545,6 +545,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1301,7 +1329,7 @@
 - 文档审校：每篇文档至少 1 次技术审阅与 1 次语言校对（中文）。
 - 发布前：CI 通过、文档链接完整性检查、示例在 Windows PowerShell 测试通过。</p>
 <p>关键校验命令（PowerShell 表示法，单行示例使用 <code>;</code> 分隔）：
-- 创建虚拟环境并激活：<code>py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1</code>
+- 创建虚拟环境并激活（可选）：请确保你有一个可用的 Python 环境（virtualenv/conda/system Python 等均可），无需在文档中硬性规定激活命令。
 - 安装开发依赖并安装本包（可选 extras）：<code>pip install -U pip; pip install -e .[dev]</code> 或 <code>pip install -e .</code>
 - 运行测试：<code>py -3 -m pytest -q</code>（或 <code>pytest -q</code>）
 - 运行单个示例（在 <code>examples/</code> 目录）：<code>py example_script.py</code> 或 <code>python -m examples.demo</code>（取决于示例实现）
@@ -1354,7 +1382,7 @@
 <h2 id="11-powershell-v51">11. 必要的命令与工具（PowerShell v5.1 示例说明）<a class="headerlink" href="#11-powershell-v51" title="Permanent link">&para;</a></h2>
 <ul>
 <li>建议开发环境工具：Python 3.8+（项目当前要求请核对 <code>setup.py</code>）、pytest、mkdocs/sphinx、markdownlint、typora/VSCode（用于校对）、可选：graphviz（画依赖图）。</li>
-<li>虚拟环境（示例步骤，单行用 <code>;</code> 分隔）：<code>py -3 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1</code></li>
+<li>虚拟环境（示例说明）：如需在本地创建虚拟环境，请参考你的平台和偏好；文档示例统一使用 <code>pip</code> 命令假定已可用的 Python 环境。</li>
 <li>安装开发依赖：<code>pip install -U pip; pip install -e .[dev]</code>（或 <code>pip install -e .</code>）</li>
 <li>运行测试：<code>py -3 -m pytest -q</code></li>
 <li>运行单个示例（示例位于 <code>examples/hello.py</code>）：<code>py examples\\hello.py</code></li>

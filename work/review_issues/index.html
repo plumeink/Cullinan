@@ -545,6 +545,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1135,12 +1163,11 @@
 <hr />
 <h2 id="how-to-run-a-local-smoke-check">How to run a local smoke check<a class="headerlink" href="#how-to-run-a-local-smoke-check" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Create and activate a virtualenv:</li>
+<li>Ensure you have a working Python environment and required tools installed. Example (install dependencies via pip):</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="n">py</span> <span class="p">-</span><span class="n">3</span> <span class="n">-m</span> <span class="n">venv</span> <span class="p">.</span><span class="n">venv</span><span class="p">;</span> <span class="p">.\.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">Activate</span><span class="p">.</span><span class="n">ps1</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">-e</span> <span class="p">.</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">tornado</span> <span class="n">mkdocs</span> <span class="n">mkdocs-material</span> <span class="n">mkdocs-mermaid2-plugin</span>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span> <span class="n">setuptools</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span> <span class="n">tornado</span> <span class="n">mkdocs</span> <span class="n">mkdocs-material</span> <span class="n">mkdocs-mermaid2-plugin</span>
 </code></pre></div>
 <ol>
 <li>

@@ -148,6 +148,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/middleware/"/>
     </url>
     <url>
+        <loc>https://plumeink.github.io/Cullinan/wiki/restful_api/</loc>
+        <lastmod>2025-11-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/restful_api/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/restful_api/"/>
+    </url>
+    <url>
         <loc>https://plumeink.github.io/Cullinan/work/COMPLETION_SUMMARY/</loc>
         <lastmod>2025-11-18</lastmod>
         <changefreq>daily</changefreq>
@@ -468,6 +475,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/middleware/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/middleware/"/>
+    </url>
+    <url>
+        <loc>https://plumeink.github.io/Cullinan/zh/wiki/restful_api/</loc>
+        <lastmod>2025-11-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://plumeink.github.io/Cullinan/zh/wiki/restful_api/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://plumeink.github.io/Cullinan/wiki/restful_api/"/>
     </url>
     <url>
         <loc>https://plumeink.github.io/Cullinan/zh/work/COMPLETION_SUMMARY/</loc>

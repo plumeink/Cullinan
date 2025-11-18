@@ -819,6 +819,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1528,27 +1556,25 @@
 <li>Git</li>
 </ul>
 <h2 id="powershell">安装（PowerShell）<a class="headerlink" href="#powershell" title="Permanent link">&para;</a></h2>
-<p>python -m venv .venv; ..venv\Scripts\Activate.ps1; pip install -U pip; pip install -e .</p>
+<p>确保你已经有可用的 Python 环境（Python 3.8+）和 pip。然后运行：</p>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+</code></pre></div>
 <h2 id="_2">快速开始<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <ol>
-<li>确保你在仓库根目录。</li>
-<li>激活虚拟环境（见上文命令）。</li>
-<li>运行示例服务器：</li>
+<li>在你希望放置项目的目录创建一个新项目目录并进入：</li>
 </ol>
-<p>python examples\hello_http.py</p>
-<p>预期：服务器启动并监听配置的端口。打开 http://localhost:8888 查看响应。</p>
-<h2 id="_3">已验证的示例（本地运行）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>我在 Windows PowerShell 会话中使用上述命令本地运行了该示例。观察到的日志输出（节选）：</p>
-<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:8888/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+<div class="highlight"><pre><span></span><code><span class="n">mkdir</span> <span class="n">my_cullinan_project</span><span class="p">;</span> <span class="nb">cd </span><span class="n">my_cullinan_project</span>
 </code></pre></div>
-<p>说明：该示例使用 <code>cullinan.handler.registry.get_handler_registry()</code> 注册一个简单的 Tornado 处理器，并发起一次验证请求后退出。它适合作为文档中的烟雾测试示例。</p>
-<h2 id="_4">最小应用示例<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<p>这是一个演示 Cullinan 核心功能的最小应用：</p>
+<ol>
+<li>确保你已有一个 Python 环境（virtualenv、conda、系统 Python 等均可）。然后安装发布版本的包：</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+</code></pre></div>
+<ol>
+<li>在项目根目录创建一个最小应用文件 <code>minimal_app.py</code>，内容如下：</li>
+</ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
@@ -1560,15 +1586,44 @@ INFO:__main__:IOLoop stopped, exiting
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-    <span class="c1"># 控制器通过自动发现或显式注册</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># 在默认端口启动 Tornado IOLoop</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre></div>
+<ol>
+<li>运行你的应用：</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">minimal_app</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+<p>在浏览器中打开 <code>http://localhost:4080/hello</code> 验证服务器是否启动。</p>
+<h2 id="_3">已验证的示例（本地运行）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>我在 Windows PowerShell 会话中使用上述命令本地运行了该示例。观察到的日志输出（节选）：</p>
+<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
+INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
+INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
+INFO:__main__:Response status: 200
+INFO:__main__:Response body: Hello Cullinan
+INFO:__main__:IOLoop stopped, exiting
+</code></pre></div>
+<p>说明：该示例使用 <code>cullinan.handler.registry.get_handler_registry()</code> 注册一个简单的 Tornado 处理器，并发起一次验证请求后退出。它适合作为文档中的烟雾测试示例。</p>
+<h2 id="_4">最小应用示例<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>这是一个演示 Cullinan 核心功能的最小应用：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;简单的 HTTP 处理器。&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Start the framework application (no instantiation required)</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div>
 <p>运行此示例：</p>
 <div class="highlight"><pre><span></span><code><span class="c"># 将上述代码保存为 minimal_app.py</span>
-<span class="p">.\\.</span><span class="n">venv</span><span class="p">\\</span><span class="n">Scripts</span><span class="p">\\</span><span class="n">Activate</span><span class="p">.</span><span class="n">ps1</span>
 <span class="n">python</span> <span class="n">minimal_app</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
-<p>然后在浏览器中访问 <code>http://localhost:8888/hello</code>。</p>
+<p>然后在浏览器中访问 <code>http://localhost:4080/hello</code>。</p>
 <h2 id="_5">理解基础知识<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <h3 id="_6">应用生命周期<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1743,7 +1798,8 @@ INFO:__main__:IOLoop stopped, exiting
 </code></pre></div>
 <h2 id="_12">故障排查<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
 <ul>
-<li>如果 <code>Activate.ps1</code> 失败，请确保 PowerShell 执行策略允许脚本执行：<code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process</code></li>
+<li>如果安装包时出现错误，请确保 Python 和 pip 已更新，并且能访问 PyPI（网络或代理设置）。</li>
+<li>如果在运行 PowerShell 命令时遇到权限问题，请检查 PowerShell 的执行策略或以管理员权限运行命令。</li>
 </ul>
 <h2 id="_13">下一步<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
 <ul>

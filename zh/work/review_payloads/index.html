@@ -545,6 +545,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1050,7 +1078,7 @@
 <div class="highlight"><pre><span></span><code>[Review] cullinan.core docs &amp; API candidates
 </code></pre></div></p>
 <p>Issue body (paste as issue description):</p>
-<p><div class="highlight"><pre><span></span><code>Please review the `cullinan.core` documentation and the API cleanup candidates below.
+<div class="highlight"><pre><span></span><code>Please review the `cullinan.core` documentation and the API cleanup candidates below.
 
 Files to review:
 - docs/modules/core.md
@@ -1087,45 +1115,42 @@ Checklist for reviewer:
 
 Local smoke-check commands (PowerShell):
 </code></pre></div>
-py -3 -m venv .venv; ..venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .</p>
+<h1 id="ensure-you-have-a-python-environment-and-install-dependencies-via-pip">Ensure you have a Python environment and install dependencies via pip<a class="headerlink" href="#ensure-you-have-a-python-environment-and-install-dependencies-via-pip" title="Permanent link">&para;</a></h1>
+<p>pip install -U pip
+pip install cullinan tornado mkdocs mkdocs-material</p>
 <h1 id="run-examples-or-tests-that-exercise-core-eg">Run examples or tests that exercise core, e.g.:<a class="headerlink" href="#run-examples-or-tests-that-exercise-core-eg" title="Permanent link">&para;</a></h1>
 <p>python -m pytest tests/test_core_injection.py -q
-<div class="highlight"><pre><span></span><code>
-</code></pre></div></p>
-<hr />
-<h2 id="module-cullinancontroller">Module: cullinan.controller<a class="headerlink" href="#module-cullinancontroller" title="Permanent link">&para;</a></h2>
-<p><strong>Owner:</strong> @controller-eng</p>
-<p>Issue title:
-<div class="highlight"><pre><span></span><code>[Review] cullinan.controller docs &amp; API candidates
-</code></pre></div></p>
-<p>Issue body:</p>
-<p><div class="highlight"><pre><span></span><code>Please review the `cullinan.controller` documentation and the API cleanup candidates below.
+<div class="highlight"><pre><span></span><code>---
 
-Files to review:
+## Module: cullinan.controller
+**Owner:** @controller-eng
+
+Issue title:
+</code></pre></div>
+[Review] cullinan.controller docs &amp; API candidates
+<div class="highlight"><pre><span></span><code>Issue body:
+</code></pre></div>
+Please review the <code>cullinan.controller</code> documentation and the API cleanup candidates below.</p>
+<p>Files to review:
 - docs/modules/controller.md
 - docs/zh/modules/controller.md
-- docs/work/api_cleanup_candidates.csv (filter: module == cullinan.controller)
-
-Candidates (module,name,kind,signature,decision):
-- cullinan.controller,controller,function,controller(**kwargs) -&gt; Callable,keep
+- docs/work/api_cleanup_candidates.csv (filter: module == cullinan.controller)</p>
+<p>Candidates (module,name,kind,signature,decision):
+- cullinan.controller,controller,function,controller(<strong>kwargs) -&gt; Callable,keep
 - cullinan.controller,get_controller_registry,function,get_controller_registry() -&gt; cullinan.controller.registry.ControllerRegistry,keep
 - cullinan.controller,get_header_registry,function,get_header_registry() -&gt; cullinan.controller.core.HeaderRegistry,keep
 - cullinan.controller,request_resolver,function,request_resolver(self, url_param_key_list: Optional[Sequence] = None, url_param_value_list: Optional[Sequence] = None, query_param_names: Optional[Sequence] = None, body_param_names: Optional[Sequence] = None, file_param_key_list: Optional[Sequence] = None) -&gt; Tuple[Optional[dict], Optional[dict], Optional[dict], Optional[dict]],keep
 - cullinan.controller,reset_controller_registry,function,reset_controller_registry() -&gt; None,keep
-- cullinan.controller,response_build,function,response_build(**kwargs) -&gt; cullinan.controller.core.StatusResponse,keep
-
-Checklist for reviewer:
-- [ ] Verify controller decorator signatures and example usage in `docs/modules/controller.md`.
+- cullinan.controller,response_build,function,response_build(</strong>kwargs) -&gt; cullinan.controller.core.StatusResponse,keep</p>
+<p>Checklist for reviewer:
+- [ ] Verify controller decorator signatures and example usage in <code>docs/modules/controller.md</code>.
 - [ ] Update CSV decisions where necessary and add rationale.
-- [ ] Run controller-related tests or examples.
-
-Local smoke-check:
-</code></pre></div>
-py -3 -m venv .venv; ..venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+- [ ] Run controller-related tests or examples.</p>
+<p>Local smoke-check:
+<div class="highlight"><pre><span></span><code># Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan
 python examples\controller_di_middleware.py
-<div class="highlight"><pre><span></span><code>
 </code></pre></div></p>
 <hr />
 <h2 id="module-cullinanservice">Module: cullinan.service<a class="headerlink" href="#module-cullinanservice" title="Permanent link">&para;</a></h2>
@@ -1134,7 +1159,7 @@ python examples\controller_di_middleware.py
 <div class="highlight"><pre><span></span><code>[Review] cullinan.service docs &amp; API candidates
 </code></pre></div></p>
 <p>Issue body:</p>
-<p><div class="highlight"><pre><span></span><code>Please review the `cullinan.service` documentation and the API cleanup candidates below.
+<div class="highlight"><pre><span></span><code>Please review the `cullinan.service` documentation and the API cleanup candidates below.
 
 Files to review:
 - docs/modules/service.md
@@ -1155,43 +1180,40 @@ Checklist for reviewer:
 
 Local smoke-check:
 </code></pre></div>
-py -3 -m venv .venv; ..venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+<h1 id="ensure-you-have-a-python-environment-and-install-dependencies-via-pip_1">Ensure you have a Python environment and install dependencies via pip<a class="headerlink" href="#ensure-you-have-a-python-environment-and-install-dependencies-via-pip_1" title="Permanent link">&para;</a></h1>
+<p>pip install -U pip
+pip install cullinan
 python -m pytest tests/test_provider_system.py -q
-<div class="highlight"><pre><span></span><code>
-</code></pre></div></p>
-<hr />
-<h2 id="module-cullinanapp-cullinanapplication">Module: cullinan.app / cullinan.application<a class="headerlink" href="#module-cullinanapp-cullinanapplication" title="Permanent link">&para;</a></h2>
-<p><strong>Owner:</strong> @writer/dev</p>
-<p>Issue title:
-<div class="highlight"><pre><span></span><code>[Review] cullinan.app &amp; cullinan.application docs
-</code></pre></div></p>
-<p>Issue body:</p>
-<p><div class="highlight"><pre><span></span><code>Please review the `cullinan.app` and `cullinan.application` documentation and confirm startup/shutdown examples.
+<div class="highlight"><pre><span></span><code>---
 
-Files to review:
+## Module: cullinan.app / cullinan.application
+**Owner:** @writer/dev
+
+Issue title:
+</code></pre></div>
+[Review] cullinan.app &amp; cullinan.application docs
+<div class="highlight"><pre><span></span><code>Issue body:
+</code></pre></div>
+Please review the <code>cullinan.app</code> and <code>cullinan.application</code> documentation and confirm startup/shutdown examples.</p>
+<p>Files to review:
 - docs/modules/app.md
 - docs/modules/application.md
 - docs/zh/modules/app.md
 - docs/zh/modules/application.md
-- docs/work/api_cleanup_candidates.csv (filter: module in [cullinan.app, cullinan.application])
-
-Candidates (module,name,kind,signature,decision):
+- docs/work/api_cleanup_candidates.csv (filter: module in [cullinan.app, cullinan.application])</p>
+<p>Candidates (module,name,kind,signature,decision):
 - cullinan.application,run,function,run(handlers=None),keep
 - cullinan.app,CullinanApplication,class,CullinanApplication(shutdown_timeout: int = 30),keep
-- cullinan.app,create_app,function,create_app(shutdown_timeout: int = 30) -&gt; cullinan.app.CullinanApplication,keep
-
-Checklist for reviewer:
-- [ ] Verify startup sequence steps and sample code in `docs/getting_started.md` and `docs/modules/application.md`.
+- cullinan.app,create_app,function,create_app(shutdown_timeout: int = 30) -&gt; cullinan.app.CullinanApplication,keep</p>
+<p>Checklist for reviewer:
+- [ ] Verify startup sequence steps and sample code in <code>docs/getting_started.md</code> and <code>docs/modules/application.md</code>.
 - [ ] Update CSV decisions if needed.
-- [ ] Run `tests/test_real_app_startup.py` locally to validate behavior.
-
-Local smoke-check:
-</code></pre></div>
-py -3 -m venv .venv; ..venv\Scripts\Activate.ps1
-pip install -U pip; pip install -e .
+- [ ] Run <code>tests/test_real_app_startup.py</code> locally to validate behavior.</p>
+<p>Local smoke-check:
+<div class="highlight"><pre><span></span><code># Ensure you have a Python environment and install dependencies via pip
+pip install -U pip
+pip install cullinan
 python -m pytest tests/test_real_app_startup.py -q
-<div class="highlight"><pre><span></span><code>
 </code></pre></div></p>
 <hr />
 <h3 id="how-to-use-these-payloads">How to use these payloads<a class="headerlink" href="#how-to-use-these-payloads" title="Permanent link">&para;</a></h3>

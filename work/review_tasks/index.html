@@ -549,6 +549,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1058,18 +1086,15 @@
 </li>
 <li>操作：在 Windows PowerShell 中逐条执行示例命令（每行一个命令，禁止使用 <code>&amp;&amp;</code> 串联）。</li>
 <li>建议流程：<ul>
-<li>创建虚拟环境：
-   powershell
-   python -m venv .venv</li>
-<li>激活虚拟环境：
-   powershell
-   ..venv\Scripts\Activate.ps1</li>
-<li>安装依赖（如有 requirements）：
-   powershell
-   python -m pip install -r requirements.txt</li>
+<li>确保已准备好 Python 环境（virtualenv/conda/system Python 等任一环境均可）。</li>
+<li>安装依赖（如有 requirements 或需要安装包）：
+   <div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">-r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>  <span class="c"># if present</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span>
+</code></pre></div></li>
 <li>运行示例脚本（示例由 AI 放在 <code>examples/</code> 或 <code>docs/examples.md</code>）：
-   powershell
-   python examples\hello_http.py</li>
+   <div class="highlight"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div></li>
 </ul>
 </li>
 <li>
