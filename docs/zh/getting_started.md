@@ -35,14 +35,7 @@ python -m pip install cullinan
 ## 快速开始
 1. 在你希望放置项目的目录创建一个新项目目录并进入：
 
-在 Windows（PowerShell）中：
-
-```powershell
-mkdir my_cullinan_project
-cd my_cullinan_project
-```
-
-在 Linux / macOS 中：
+在所有平台上：
 
 ```bash
 mkdir my_cullinan_project

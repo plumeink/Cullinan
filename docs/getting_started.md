@@ -35,14 +35,7 @@ python -m pip install cullinan
 ## Quick start
 1. Create a new project directory and change into it:
 
-On Windows (PowerShell):
-
-```powershell
-mkdir my_cullinan_project
-cd my_cullinan_project
-```
-
-On Linux / macOS:
+On all platforms:
 
 ```bash
 mkdir my_cullinan_project
