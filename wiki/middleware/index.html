@@ -1153,12 +1153,20 @@
 <li>Programmatic registration (recommended): register middleware during application startup.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="c1"># register middleware (pseudocode)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyMiddleware</span>
+
+<span class="c1"># Quick start: run framework entrypoint (recommended)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># Advanced (optional): programmatic registration</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">my_middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyMiddleware</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">MyMiddleware</span><span class="p">())</span>
-<span class="c1"># or register a list of middleware in application configuration</span>
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">MyMiddleware</span><span class="p">())</span>
+<span class="c1"># application_instance.run()</span>
 </code></pre></div>
 <ul>
 <li>DI integration: middleware may depend on services provided through the provider/registry system. Register services via provider registries and use injection in middleware classes.</li>

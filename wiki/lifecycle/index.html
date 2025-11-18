@@ -1187,10 +1187,17 @@
 <li>Provider/service <code>on_init</code> / <code>on_shutdown</code> hooks (if present) — invoked during init and shutdown phases.</li>
 </ul>
 <p>Minimal example: registering shutdown handlers</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Quick (recommended): simple entrypoint using the framework module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># Advanced (optional): programmatic usage when you need to add shutdown handlers or fine-grained control</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_sync</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running sync cleanup&#39;</span><span class="p">)</span>
@@ -1199,10 +1206,11 @@
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running async cleanup&#39;</span><span class="p">)</span>
 
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_sync</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_async</span><span class="p">)</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_sync</span><span class="p">)</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_async</span><span class="p">)</span>
 
-<span class="c1"># call app.run() in the actual process entrypoint</span>
+<span class="c1"># In process entrypoint call:</span>
+<span class="c1"># application_instance.run()</span>
 </code></pre></div>
 <p>Request scope example (pseudocode)</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_context</span><span class="p">,</span> <span class="n">RequestScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span>

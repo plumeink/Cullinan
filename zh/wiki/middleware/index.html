@@ -1154,12 +1154,21 @@
 <li>示例（伪代码）:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="c1"># 注册中间件（伪代码）</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyMiddleware</span>
+
+<span class="c1"># 快速启动并运行（推荐）</span>
+<span class="c1"># 在入口脚本中导入模块以触发装饰器/自动注册，然后调用 application.run()</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># 高级（可选）：以编程方式注册中间件并运行（需要 create_app）</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">my_middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyMiddleware</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">MyMiddleware</span><span class="p">())</span>
-<span class="c1"># 或者在应用配置处注册中间件列表</span>
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">MyMiddleware</span><span class="p">())</span>
+<span class="c1"># application_instance.run()</span>
 </code></pre></div>
 <ul>
 <li>依赖注入集成: 中间件可以依赖于框架的 provider/registry 系统。建议通过提供者注册需要的 service，并在中间件内部通过注入使用它们。</li>

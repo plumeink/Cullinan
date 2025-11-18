@@ -1255,10 +1255,18 @@ shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
 最小示例：注册自定义关闭处理器
 
 <span class="sb">```python</span>
+<span class="c1"># 快速（推荐）: 简单运行框架入口（无需实例化）</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+
+<span class="c1"># 在 CLI 或入口处启动框架</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># 高级（可选）: 如果需要以编程方式添加关闭处理器或细粒度控制，请使用 create_app()</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_sync</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running sync cleanup&#39;</span><span class="p">)</span>
@@ -1267,11 +1275,11 @@ shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running async cleanup&#39;</span><span class="p">)</span>
 
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_sync</span><span class="p">)</span>
-<span class="n">app</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_async</span><span class="p">)</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_sync</span><span class="p">)</span>
+<span class="n">application_instance</span><span class="o">.</span><span class="n">add_shutdown_handler</span><span class="p">(</span><span class="n">cleanup_async</span><span class="p">)</span>
 
 <span class="c1"># 在程序入口调用：</span>
-<span class="c1"># app.run()</span>
+<span class="c1"># application_instance.run()</span>
 <span class="sb">```</span>
 
 请求作用域示例（伪代码，基于 <span class="sb">`create_context()`</span>）

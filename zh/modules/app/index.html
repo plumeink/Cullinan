@@ -1225,18 +1225,18 @@
 </tbody>
 </table>
 <h2 id="_1">示例：创建并运行应用<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># 示例：创建并运行最小 Cullinan 应用</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># 快速（推荐）: 在入口脚本使用 framework 入口函数</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># 高级（可选）: 编程化控制（例如在测试或需要添加关闭处理器时）</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
-<span class="c1"># 注意：app.run() 会启动 IOLoop 并阻塞直到接收到关闭信号</span>
-<span class="c1"># 在实际的 CLI 入口中使用它（不要在库的单元测试中直接调用）</span>
-<span class="c1"># app.run()</span>
-
-<span class="c1"># 若需编程化控制，可以使用 startup/shutdown:</span>
-<span class="c1"># import asyncio</span>
-<span class="c1"># asyncio.run(app.startup())</span>
-<span class="c1"># asyncio.run(app.shutdown())</span>
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="c1"># 现在可以以编程方式调用 application_instance.startup()/application_instance.shutdown() 或 application_instance.add_shutdown_handler(...)</span>
+<span class="c1"># application_instance.run()  # 在 CLI 入口调用</span>
 </code></pre></div>
 <p>说明：<code>CullinanApplication.run()</code> 会注册信号处理器并启动 Tornado 的 IOLoop；在 CLI 入口调用。测试或程序化控制请用 <code>create_app()</code> 创建实例。</p>
 

@@ -741,6 +741,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#example-create-and-run-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: create and run an application
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1157,6 +1168,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#example-create-and-run-an-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: create and run an application
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1202,6 +1224,20 @@
 </tr>
 </tbody>
 </table>
+<h2 id="example-create-and-run-an-application">Example: create and run an application<a class="headerlink" href="#example-create-and-run-an-application" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Quick (recommended): use the framework entrypoint in the process entry script</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># Advanced (optional): programmatic control (e.g., tests or adding shutdown handlers)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="n">application_instance</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="c1"># application_instance.startup()/application_instance.shutdown() or application_instance.add_shutdown_handler(...)</span>
+<span class="c1"># application_instance.run()  # call at the process entrypoint</span>
+</code></pre></div>
 
 
 
