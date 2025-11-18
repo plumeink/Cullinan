@@ -100,7 +100,8 @@ from cullinan.controller import controller, get_api
 
 @controller(url='/api')
 class HelloController:
-    @get_api(url='/hello')
+    # Explicitly declare all query parameters used by this handler
+    @get_api(url='/hello', query_params=['name'])
     def hello(self, query_params):
         name = query_params.get('name', 'World')
         return self.response_build(
