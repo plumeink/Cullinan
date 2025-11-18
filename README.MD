@@ -64,7 +64,7 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 
 ### Version Notes
 
-- Current series: **v0.7x**
+- Current series: **v0.7x+**
   - Core module with registry, DI, lifecycle management
   - Enhanced service layer with dependency injection
   - WebSocket support with unified registry
