@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -9,12 +9,20 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
       
       
-        <meta name="author" content=""Plumeink"">
+        <meta name="author" content=""TBD"">
       
       
       
+        <link rel="prev" href="../../architecture/">
       
       
+        <link rel="next" href="../injection/">
+      
+      
+        
+          <link rel="alternate" href="../../../wiki/components/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
         
       
       
@@ -23,7 +31,7 @@
     
     
       
-        <title>"组件" - Cullinan Documentation</title>
+        <title>"Components" - Cullinan Documentation</title>
       
     
     
@@ -64,8 +72,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
-          Skip to content
+        <a href="#components" class="md-skip">
+          跳转至
         </a>
       
     </div>
@@ -79,8 +87,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "组件"
+              "Components"
             
           </span>
         </div>
@@ -110,6 +118,32 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../wiki/components/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -122,16 +156,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="查找">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -142,7 +176,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            正在初始化搜索引擎
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -176,9 +210,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -196,7 +230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
@@ -230,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting_started/" class="md-nav__link">
+      <a href="../../getting_started/" class="md-nav__link">
         
   
   
@@ -264,7 +298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -295,18 +329,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -327,7 +363,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -342,10 +378,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../wiki/components/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -368,6 +413,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -380,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../wiki/injection/" class="md-nav__link">
+      <a href="../injection/" class="md-nav__link">
         
   
   
@@ -415,7 +461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../wiki/lifecycle/" class="md-nav__link">
+      <a href="../lifecycle/" class="md-nav__link">
         
   
   
@@ -450,7 +496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../wiki/middleware/" class="md-nav__link">
+      <a href="../middleware/" class="md-nav__link">
         
   
   
@@ -485,7 +531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../wiki/extensions/" class="md-nav__link">
+      <a href="../extensions/" class="md-nav__link">
         
   
   
@@ -574,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../modules/app/" class="md-nav__link">
+      <a href="../../modules/app/" class="md-nav__link">
         
   
   
@@ -609,7 +655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../modules/application/" class="md-nav__link">
+      <a href="../../modules/application/" class="md-nav__link">
         
   
   
@@ -644,7 +690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../modules/core/" class="md-nav__link">
+      <a href="../../modules/core/" class="md-nav__link">
         
   
   
@@ -679,7 +725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../modules/controller/" class="md-nav__link">
+      <a href="../../modules/controller/" class="md-nav__link">
         
   
   
@@ -714,7 +760,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../modules/service/" class="md-nav__link">
+      <a href="../../modules/service/" class="md-nav__link">
         
   
   
@@ -756,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../examples/" class="md-nav__link">
+      <a href="../../examples/" class="md-nav__link">
         
   
   
@@ -790,7 +836,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api_reference/" class="md-nav__link">
+      <a href="../../api_reference/" class="md-nav__link">
         
   
   
@@ -871,7 +917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../work/progress_tracker/" class="md-nav__link">
+      <a href="../../work/progress_tracker/" class="md-nav__link">
         
   
   
@@ -899,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../work/review_tasks/" class="md-nav__link">
+      <a href="../../work/review_tasks/" class="md-nav__link">
         
   
   
@@ -927,7 +973,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../work/inventory/" class="md-nav__link">
+      <a href="../../work/inventory/" class="md-nav__link">
         
   
   
@@ -968,7 +1014,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目录">
   
   
   
@@ -990,92 +1036,92 @@
 
 
 
-<h1 id="_1">组件<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>本文介绍 Cullinan 的主要组件及其职责，并给出实现代码的指向（<code>cullinan/</code> 包）。目标是为贡献者与使用者提供一个简明索引，方便定位源码子系统。</p>
-<p>组件概览</p>
+<h1 id="components">Components<a class="headerlink" href="#components" title="Permanent link">&para;</a></h1>
+<p>This page describes the primary components of Cullinan and their responsibilities, with pointers to the implementation in the <code>cullinan/</code> package. The goal is a concise reference that helps contributors and users understand where to look in the source for each subsystem.</p>
+<p>Components overview</p>
 <ul>
-<li>路由 / URL 解析器</li>
-<li>职责：将 URL 模式解析为控制器处理函数并分发请求。</li>
-<li>关键文件：<code>cullinan/controller/core.py</code>、<code>cullinan/controller/registry.py</code>、<code>cullinan/controller/__init__.py</code>。</li>
+<li>Router / URL resolver</li>
+<li>Responsibility: resolve URL patterns to controller handlers and dispatch requests.</li>
+<li>Key files: <code>cullinan/controller/core.py</code>, <code>cullinan/controller/registry.py</code>, <code>cullinan/controller/__init__.py</code>.</li>
 <li>
-<p>公有符号：<code>controller</code>（装饰器）、<code>get_controller_registry</code>、<code>url_resolver</code>。</p>
+<p>Public symbols: <code>controller</code> (decorator), <code>get_controller_registry</code>, <code>url_resolver</code>.</p>
 </li>
 <li>
-<p>控制器层</p>
+<p>Controller layer</p>
 </li>
-<li>职责：定义控制器类与处理器方法；提供请求/响应抽象与响应池工具。</li>
-<li>关键文件：<code>cullinan/controller/core.py</code>、<code>cullinan/controller/registry.py</code>、<code>cullinan/controller/stateless_validator.py</code>。</li>
+<li>Responsibility: define controller classes and handler methods; provide request/response abstractions and response pooling utilities.</li>
+<li>Key files: <code>cullinan/controller/core.py</code>, <code>cullinan/controller/registry.py</code>, <code>cullinan/controller/stateless_validator.py</code>.</li>
 <li>
-<p>公有符号：<code>Handler</code>、<code>ControllerRegistry</code>、<code>response_build</code>、<code>request_resolver</code>。</p>
-</li>
-<li>
-<p>请求处理与 HTTP 集成</p>
-</li>
-<li>职责：把 Tornado 的 <code>HTTPServerRequest</code> 适配为控制器处理器，管理请求解析与头部解析。</li>
-<li>关键文件：<code>cullinan/handler/*</code>、<code>cullinan/controller/core.py</code>。</li>
-<li>
-<p>公有符号：<code>get_handler_registry</code>、<code>request_handler</code>。</p>
+<p>Public symbols: <code>Handler</code>, <code>ControllerRegistry</code>, <code>response_build</code>, <code>request_resolver</code>.</p>
 </li>
 <li>
-<p>中间件</p>
+<p>Request handler &amp; HTTP integration</p>
 </li>
-<li>职责：提供请求/响应处理的拦截点，如认证、日志或变换。</li>
-<li>关键文件：<code>cullinan/middleware/*</code>。</li>
+<li>Responsibility: adapt Tornado HTTPServerRequest to controller handlers, manage request parsing and header resolution.</li>
+<li>Key files: <code>cullinan/handler/*</code>, <code>cullinan/controller/core.py</code>.</li>
 <li>
-<p>说明：中间件按流水线应用；详见 <code>middleware</code> 目录中的样例与顺序语义。</p>
-</li>
-<li>
-<p>服务（业务层）</p>
-</li>
-<li>职责：为控制器提供长期运行的服务（数据库访问、缓存、后台任务等）。</li>
-<li>关键文件：<code>cullinan/service/*</code>（base、decorators、registry）。</li>
-<li>
-<p>公有符号：<code>Service</code>、<code>ServiceRegistry</code>、<code>service</code>（装饰器）、<code>get_service_registry</code>。</p>
+<p>Public symbols: <code>get_handler_registry</code>, <code>request_handler</code>.</p>
 </li>
 <li>
-<p>核心（IoC / DI / 生命周期 / provider / scope）</p>
+<p>Middleware</p>
 </li>
-<li>职责：依赖注入、提供者注册、作用域（singleton/transient/request）、生命周期管理。</li>
-<li>关键文件：<code>cullinan/core/*</code>（<code>injection.py</code>、<code>provider.py</code>、<code>registry.py</code>、<code>scope.py</code>、<code>lifecycle*.py</code>）。</li>
+<li>Responsibility: provide interception points for request/response processing, such as auth, logging, or transformation.</li>
+<li>Key files: <code>cullinan/middleware/*</code>.</li>
 <li>
-<p>公有符号：<code>Inject</code>、<code>injectable</code>、<code>inject_constructor</code>、<code>InjectionRegistry</code>、<code>ProviderRegistry</code>、<code>SingletonScope</code>、<code>RequestScope</code>、<code>create_context</code>。</p>
+<p>Notes: middleware is applied in a pipeline; see <code>middleware</code> folder for examples and ordering semantics.</p>
 </li>
 <li>
-<p>应用 / 启动</p>
+<p>Service (business/service layer)</p>
 </li>
-<li>职责：应用生命周期、服务发现与初始化、有序的启动/关闭与信号处理。</li>
-<li>关键文件：<code>cullinan/app.py</code>、<code>cullinan/application.py</code>。</li>
-<li>公有符号：<code>create_app</code>、<code>CullinanApplication</code>、<code>run</code>（应用入口）。</li>
+<li>Responsibility: long-lived services that provide functionality to controllers (database access, caching, background jobs).</li>
+<li>Key files: <code>cullinan/service/*</code> (base, decorators, registry).</li>
+<li>
+<p>Public symbols: <code>Service</code>, <code>ServiceRegistry</code>, <code>service</code> (decorator), <code>get_service_registry</code>.</p>
+</li>
+<li>
+<p>Core (IoC / DI / lifecycle / providers / scopes)</p>
+</li>
+<li>Responsibility: dependency injection, provider registry, scopes (singleton/transient/request), lifecycle management.</li>
+<li>Key files: <code>cullinan/core/*</code> (<code>injection.py</code>, <code>provider.py</code>, <code>registry.py</code>, <code>scope.py</code>, <code>lifecycle*.py</code>).</li>
+<li>
+<p>Public symbols: <code>Inject</code>, <code>injectable</code>, <code>inject_constructor</code>, <code>InjectionRegistry</code>, <code>ProviderRegistry</code>, <code>SingletonScope</code>, <code>RequestScope</code>, <code>create_context</code>.</p>
+</li>
+<li>
+<p>Application / Startup</p>
+</li>
+<li>Responsibility: application lifecycle, service discovery and initialization, orderly startup/shutdown and signal handling.</li>
+<li>Key files: <code>cullinan/app.py</code>, <code>cullinan/application.py</code>.</li>
+<li>Public symbols: <code>create_app</code>, <code>CullinanApplication</code>, <code>run</code> (application entry points).</li>
 </ul>
-<p>示例 — 快速参考</p>
-<p>最小的控制器注册示例（概念性）：</p>
+<p>Examples — quick reference</p>
+<p>Minimal controller registration example (conceptual):</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_controller_registry</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello Cullinan&#39;</span><span class="p">}</span>
 
-<span class="c1"># 控制器被扫描或注册；应用会将 /hello 路由到 hello_handler</span>
+<span class="c1"># controllers are discovered or registered; the app will route /hello to hello_handler</span>
 </code></pre></div>
-<p>最小的服务示例（概念性）：</p>
+<p>Minimal service example (conceptual):</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span><span class="p">,</span> <span class="n">get_service_registry</span>
 
 <span class="nd">@service</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">MySvc</span><span class="p">():</span>
-    <span class="c1"># 注册服务</span>
+    <span class="c1"># register service</span>
     <span class="k">pass</span>
 
 <span class="n">svc_registry</span> <span class="o">=</span> <span class="n">get_service_registry</span><span class="p">()</span>
 </code></pre></div>
-<p>接下来应查看的地方</p>
+<p>Where to look next</p>
 <ul>
-<li>阅读 <code>tests/</code> 下的测试以获取真实用法与期望行为：推荐起点 <code>tests/test_core_injection.py</code>、<code>tests/test_controller_injection_fix.py</code>、<code>tests/test_provider_system.py</code>。</li>
-<li>阅读 <code>docs/wiki/injection.md</code> 以获取 IoC/DI 的详细示例与可运行片段。</li>
+<li>Walk the tests in <code>tests/</code> (for real usage examples and expected behavior). Recommended starting points: <code>tests/test_core_injection.py</code>, <code>tests/test_controller_injection_fix.py</code>, <code>tests/test_provider_system.py</code>.</li>
+<li>Read <code>docs/wiki/injection.md</code> for detailed IoC/DI examples and runnable snippets.</li>
 </ul>
-<p>文档下一步</p>
+<p>Next steps for documentation</p>
 <ul>
-<li>扩展每个组件小节，加入时序图与从测试中提取的具体代码样例。</li>
-<li>增加一个公有符号到文件路径的映射表，便于快速导航源码。</li>
+<li>Expand each component subsection with sequence diagrams and concrete code samples extracted from tests.</li>
+<li>Add a small reference table mapping public symbols to file paths (for faster navigation).</li>
 </ul>
 
 
@@ -1145,7 +1191,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>

@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -9,12 +9,20 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
       
       
-        <meta name="author" content="Plumeink">
+        <meta name="author" content=""TBD"">
       
       
       
+        <link rel="prev" href="../getting_started/">
       
       
+        <link rel="next" href="../wiki/components/">
+      
+      
+        
+          <link rel="alternate" href="../../architecture/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
         
       
       
@@ -23,7 +31,7 @@
     
     
       
-        <title>架构概述 - Cullinan Documentation</title>
+        <title>"Architecture Overview" - Cullinan Documentation</title>
       
     
     
@@ -64,8 +72,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
-          Skip to content
+        <a href="#architecture-overview" class="md-skip">
+          跳转至
         </a>
       
     </div>
@@ -79,8 +87,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              架构概述
+              "Architecture Overview"
             
           </span>
         </div>
@@ -110,6 +118,32 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../architecture/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -122,16 +156,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="查找">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -142,7 +176,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            正在初始化搜索引擎
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -176,9 +210,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -196,7 +230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -230,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting_started/" class="md-nav__link">
+      <a href="../getting_started/" class="md-nav__link">
         
   
   
@@ -261,10 +295,44 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../architecture/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -287,6 +355,37 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#startup-sequence-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup Sequence (diagram)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -345,7 +444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wiki/components/" class="md-nav__link">
+      <a href="../wiki/components/" class="md-nav__link">
         
   
   
@@ -380,7 +479,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wiki/injection/" class="md-nav__link">
+      <a href="../wiki/injection/" class="md-nav__link">
         
   
   
@@ -415,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wiki/lifecycle/" class="md-nav__link">
+      <a href="../wiki/lifecycle/" class="md-nav__link">
         
   
   
@@ -450,7 +549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wiki/middleware/" class="md-nav__link">
+      <a href="../wiki/middleware/" class="md-nav__link">
         
   
   
@@ -485,7 +584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wiki/extensions/" class="md-nav__link">
+      <a href="../wiki/extensions/" class="md-nav__link">
         
   
   
@@ -574,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/app/" class="md-nav__link">
+      <a href="../modules/app/" class="md-nav__link">
         
   
   
@@ -609,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/application/" class="md-nav__link">
+      <a href="../modules/application/" class="md-nav__link">
         
   
   
@@ -644,7 +743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/core/" class="md-nav__link">
+      <a href="../modules/core/" class="md-nav__link">
         
   
   
@@ -679,7 +778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/controller/" class="md-nav__link">
+      <a href="../modules/controller/" class="md-nav__link">
         
   
   
@@ -714,7 +813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modules/service/" class="md-nav__link">
+      <a href="../modules/service/" class="md-nav__link">
         
   
   
@@ -756,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/" class="md-nav__link">
+      <a href="../examples/" class="md-nav__link">
         
   
   
@@ -790,7 +889,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/" class="md-nav__link">
+      <a href="../api_reference/" class="md-nav__link">
         
   
   
@@ -871,7 +970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../work/progress_tracker/" class="md-nav__link">
+      <a href="../work/progress_tracker/" class="md-nav__link">
         
   
   
@@ -899,7 +998,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../work/review_tasks/" class="md-nav__link">
+      <a href="../work/review_tasks/" class="md-nav__link">
         
   
   
@@ -927,7 +1026,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../work/inventory/" class="md-nav__link">
+      <a href="../work/inventory/" class="md-nav__link">
         
   
   
@@ -968,7 +1067,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目录">
   
   
   
@@ -977,70 +1076,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      目录
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#startup-sequence-diagram" class="md-nav__link">
     <span class="md-ellipsis">
       
-        关键组件（职责速查表）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模块交互（简要说明）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        启动 / 请求 / 关闭 序列（概要）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        架构交互图（制表符对齐的代码块）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        常见注意点与排错建议
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        工件与后续工作
+        Startup Sequence (diagram)
       
     </span>
   </a>
@@ -1064,72 +1108,68 @@
 
 
 
-<h1 id="_1">架构概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>本文档基于源码实现（以代码为事实）记录 Cullinan 的高层架构：组件职责、模块交互、启动/请求/关闭序列，以及简单的架构示意图（便于在无渲染器环境中查看）。</p>
-<h2 id="_2">关键组件（职责速查表）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>组件</th>
-<th>代码位置（示例）</th>
-<th>主要职责</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Core (IoC/DI)</td>
-<td><code>cullinan/core/*</code></td>
-<td>实现注入原语（Provider、Registry、Scope）、生命周期 hook（on_init/on_shutdown）和上下文管理（RequestScope）。</td>
-</tr>
-<tr>
-<td>Service 层</td>
-<td><code>cullinan/service/*</code></td>
-<td>定义长期运行的服务（通常为单例），提供初始化/销毁钩子，并作为应用业务能力的载体。</td>
-</tr>
-<tr>
-<td>Controller / Handler</td>
-<td><code>cullinan/controller/*</code>, <code>cullinan/handler/*</code></td>
-<td>路由绑定、请求解析、响应构建与访问日志。支持通过注入获取 service 实例。</td>
-</tr>
-<tr>
-<td>Application</td>
-<td><code>cullinan/app.py</code>, <code>cullinan/application.py</code></td>
-<td>协调启动/关闭流程：注册 providers、发现服务/控制器、初始化服务、启动 Tornado IOLoop 并注册信号处理。</td>
-</tr>
-<tr>
-<td>Middleware</td>
-<td><code>cullinan/middleware/*</code></td>
-<td>插件式请求/响应处理链，用于统一处理（日志、鉴权、监控等）。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="_3">模块交互（简要说明）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h1 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h1>
+<p>This document presents a source-driven overview of Cullinan's architecture. It is based on implementation facts (source-first): component responsibilities, module interactions, and the startup/request/shutdown sequences. Diagrams are referenced as assets under <code>docs/work/architecture_assets/</code> (placeholder).</p>
+<p>High-level components</p>
 <ul>
-<li>应用（Application）负责协调：它触发模块扫描（ModuleScanner），把发现的 Provider 注册到 <code>ProviderRegistry</code>，并把 ProviderRegistry 关联到 <code>InjectionRegistry</code>，使所有注入点可解析。</li>
-<li><code>ServiceRegistry</code> 负责管理服务的依赖顺序并依次调用 <code>on_init()</code>，启动时将准备就绪的服务置于可用状态。</li>
-<li>在请求级别，框架在进入请求时创建 RequestContext（<code>create_context()</code>），使 <code>RequestScope</code> 生效；处理器在该上下文中通过 <code>Inject</code> 或构造器注入获得 request-scoped 或单例实例。</li>
+<li>Core (IoC / DI / lifecycle)</li>
+<li>Files: <code>cullinan/core/*</code> (injection, provider, registry, scope, lifecycle)</li>
+<li>
+<p>Responsibility: provide provider abstractions, registries, scopes, and lifecycle orchestration used by services/handlers.</p>
+</li>
+<li>
+<p>Service layer</p>
+</li>
+<li>Files: <code>cullinan/service/*</code></li>
+<li>
+<p>Responsibility: long-lived application services registered by <code>@service</code> and orchestrated during startup.</p>
+</li>
+<li>
+<p>Controller &amp; Handler</p>
+</li>
+<li>Files: <code>cullinan/controller/*</code>, <code>cullinan/handler/*</code></li>
+<li>
+<p>Responsibility: HTTP handlers, controller decorators, request/response abstractions, and access logging utilities.</p>
+</li>
+<li>
+<p>Application &amp; Startup</p>
+</li>
+<li>Files: <code>cullinan/app.py</code>, <code>cullinan/application.py</code></li>
+<li>
+<p>Responsibility: application lifecycle management, service discovery/initialization, IOLoop management and signal handling.</p>
+</li>
+<li>
+<p>Middleware &amp; Extensions</p>
+</li>
+<li>Files: <code>cullinan/middleware/*</code>, <code>cullinan/*extensions*</code></li>
+<li>Responsibility: pluggable request/response processing and plugin registration points.</li>
 </ul>
-<h2 id="_4">启动 / 请求 / 关闭 序列（概要）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>Module interaction and dependency flows</p>
+<ul>
+<li>The <code>app</code>/<code>application</code> module coordinates system startup. It queries registries (service, provider, controller) and initializes components in dependency order.</li>
+<li>Providers and registries are the glue between service definitions and injection points: <code>ProviderRegistry</code> supplies instances; <code>InjectionRegistry</code> resolves <code>Inject</code> markers and constructor injection.</li>
+<li>Controllers/handlers rely on InjectionRegistry to get service instances (either singleton or request-scoped via <code>RequestScope</code>).</li>
+</ul>
+<p>Startup sequence (summary)</p>
 <ol>
-<li>应用被创建：<code>create_app()</code> 或 <code>CullinanApplication()</code>。</li>
-<li>模块扫描：发现 controllers、services、providers（或由显式注册提供）。</li>
-<li>注入配置：注册 <code>ProviderRegistry</code> 并把其添加到 <code>InjectionRegistry</code>。</li>
-<li>服务初始化：<code>ServiceRegistry</code> 按依赖顺序实例化服务并执行 <code>on_init</code>。失败时记录并可选择停止启动。</li>
-<li>启动 IOLoop：调用 <code>IOLoop.start()</code> 开始接受请求。</li>
-<li>请求处理：每次请求创建 RequestContext -&gt; 解析注入 -&gt; 执行 Handler -&gt; 中间件后处理 -&gt; 清理 RequestContext。</li>
-<li>触发关闭：接收到 SIGINT/SIGTERM 或手动调用 <code>shutdown()</code>，按照注册顺序调用 shutdown handlers 与 service <code>on_shutdown</code>，停止 IOLoop 并退出。</li>
+<li>Application construction: <code>create_app()</code> or <code>CullinanApplication()</code> builds basic application object.</li>
+<li><code>startup()</code> execution:</li>
+<li>Configure injection: obtain/get InjectionRegistry and prepare provider registries.</li>
+<li>Discover services and controllers (module scanning or explicit registration).</li>
+<li>Initialize providers/services in dependency order (call <code>initialize_all()</code> / <code>on_init</code>).</li>
+<li>Register signal handlers (SIGINT/SIGTERM) to trigger graceful shutdown.</li>
+<li>Start the Tornado IOLoop (<code>IOLoop.start()</code>), accept requests.</li>
 </ol>
-<h2 id="_5">架构交互图（制表符对齐的代码块）<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>下面的图使用制表符在代码块中对齐，便于纯文本环境查看。制表符在不同编辑器中显示略有差异，但在等宽字体/代码块中可保持对齐。你可以把它复制到 Markdown 文档或 README 中查看。</p>
-<div class="highlight"><pre><span></span><code>Application     ModuleScanner       ProviderRegistry    InjectionRegistry   ServiceRegistry Tornado IOLoop
------------     ------------        ----------------    -----------------   --------------  ---------------
-create_app() --&gt;     scan() ----&gt;    register() ----&gt;    add_registry() --&gt;  register_services() --&gt; start()
-                                                    |
-                                                    |--dispatch--&gt; Handler (controller/handler)
-                                                    |               |
-                                                    |               |--uses--&gt; Inject/ProviderRegistry -&gt; provides instances
+<h2 id="startup-sequence-diagram">Startup Sequence (diagram)<a class="headerlink" href="#startup-sequence-diagram" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Application ModuleScanner   ProviderRegistry    InjectionRegistry   ServiceRegistry Tornado IOLoop
+----------- -------------   ----------------    -----------------   --------------  ---------------
+create_app() --&gt;    scan() ----&gt;    register() ----&gt;    add_registry() --&gt;  register_services() --&gt; start()
+                                                        |
+                                                        |--dispatch--&gt; Handler (controller/handler)
+                                                        |               |
+                                                        |               |--uses--&gt; Inject/ProviderRegistry -&gt; provides instances
 
-Request Flow (per request):
+Request Flow (summary):
 IOLoop -&gt; create_context() -&gt; resolve request-scoped providers -&gt; Handler executes -&gt; response -&gt; context cleanup
 
 Legend:
@@ -1137,19 +1177,88 @@ Legend:
 - add_registry(): injection registry gets provider registries to resolve inject markers
 - register_services(): service discovery and on_init sequence
 </code></pre></div>
-<h2 id="_6">常见注意点与排错建议<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<!--
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    autonumber
+    participant Dev as Developer
+    participant App as CullinanApplication
+    participant Config as Config
+    participant MS as ModuleScanner
+    participant PV as ProviderRegistry
+    participant IR as InjectionRegistry
+    participant SR as ServiceRegistry
+    participant IO as Tornado IOLoop
+    participant Log as Logger
+
+    Note over Dev,App: Application creation &amp; configuration
+    Dev-&gt;&gt;App: create_app()/configure(Config)
+    App-&gt;&gt;MS: scan modules (controllers/services/providers)
+    MS--&gt;&gt;App: discovered modules
+
+    Note over App,PV: Provider &amp; Injection setup
+    App-&gt;&gt;PV: register providers from modules
+    PV-&gt;&gt;IR: expose provider metadata
+    IR--&gt;&gt;App: injection registry prepared
+
+    Note over App,SR: Service discovery and initialization
+    App-&gt;&gt;SR: register discovered services
+    SR-&gt;&gt;SR: resolve dependencies &amp; order
+    SR-&gt;&gt;SR: instantiate services (on_init)
+    SR-&gt;&gt;Log: emit &#39;service ready&#39; logs
+
+    Note over App,IO: Start I/O loop and accept requests
+    App-&gt;&gt;IO: start IOLoop
+    IO-&gt;&gt;App: route incoming requests to handlers
+
+    Note over App,SR: Shutdown
+    App-&gt;&gt;SR: call on_shutdown for services
+    App-&gt;&gt;IO: stop IOLoop
+    App-&gt;&gt;Log: emit &#39;shutdown complete&#39;
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>flowchart LR
+  subgraph Core
+    IR[InjectionRegistry]
+    PV[ProviderRegistry]
+    SR[ServiceRegistry]
+    SC[Scope (Request/Singleton)]
+  end
+  App[CullinanApplication] --&gt;|uses| IR
+  App --&gt;|registers| PV
+  App --&gt;|discovers| SR
+  SR --&gt;|depends on| PV
+  PV --&gt;|creates instances in| SC
+  Controller[Controller/Handler] --&gt;|injects via| IR
+  Middleware --&gt;|observes| Controller
+  App --&gt;|starts| IOLoop[Tornado IOLoop]
+  IOLoop --&gt;|dispatches| Controller
+</code></pre></div>
+-->
+
+<p>Request flow (summary)</p>
+<ol>
+<li>Incoming request -&gt; Tornado HTTP server -&gt; registered handler lookup via controller registry.</li>
+<li>Request context created (<code>create_context()</code>) to provide <code>RequestScope</code> semantics.</li>
+<li>Injection into handler (property or constructor) resolves via <code>InjectionRegistry</code>/<code>ProviderRegistry</code>.</li>
+<li>Handler executes and returns response; response may be processed by middleware.</li>
+<li>Exit request context and cleanup request-scoped objects.</li>
+</ol>
+<p>Key design notes and constraints</p>
 <ul>
-<li>注入失败（None）通常是因为 provider 尚未注册到 ProviderRegistry，或 <code>InjectionRegistry</code> 未包含该 registry。</li>
-<li>循环依赖会抛出 <code>CircularDependencyError</code>，请检查服务依赖顺序并考虑重构为接口/事件回调模式以打破循环。</li>
-<li>在测试中请使用 <code>reset_injection_registry()</code> 和明确的 ProviderRegistry 配置以保证隔离性。</li>
+<li>The framework centers IoC/DI in <code>cullinan/core</code>; all provider/registry/Scope interactions depend on file-level implementation details — documentation must reflect actual code behavior (not comments).</li>
+<li>Circular dependencies are detected and signaled via <code>CircularDependencyError</code> (see <code>cullinan/core/errors</code> / exceptions).</li>
+<li>The <code>ProviderRegistry</code> and <code>ServiceRegistry</code> implement ordering/duplicate policies; consult <code>docs/work/module_api_summary.json</code> for generated API summaries.</li>
 </ul>
-<h2 id="_7">工件与后续工作<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>Where to find artifacts and diagrams</p>
 <ul>
-<li>图示占位：<code>docs/work/architecture_assets/</code>（可放 Mermaid PNG/SVG 或其它格式）。</li>
-<li>建议：基于上面的交互图补充一张 Mermaid/PlantUML 图，并将其置于 <code>docs/work/architecture_assets/</code> 以便在 MkDocs site 中渲染。</li>
+<li>Diagram assets (placeholder): <code>docs/work/architecture_assets/</code> — add sequence and component diagrams here.</li>
+<li>Generated API summaries and candidates: <code>docs/work/module_api_summary.json</code>, <code>docs/work/api_cleanup_candidates.csv</code>.</li>
 </ul>
-<hr />
-<p>如需我把此 ASCII/制表图也生成 PNG（使用 mermaid-cli 或其它工具），或把它转为更高保真度的 Mermaid 图并插入 EN 文件 <code>docs/wiki/architecture.md</code>，我可以继续执行（需要确认是否生成图片文件）。</p>
+<p>Next steps (docs work)</p>
+<ul>
+<li>Add sequence diagrams (Mermaid or PNG) illustrating startup and shutdown flows.</li>
+<li>Expand component pages with code references and short call graphs (using static analysis or grep results).</li>
+</ul>
 
 
 
@@ -1218,7 +1327,7 @@ Legend:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
