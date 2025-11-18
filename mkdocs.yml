@@ -33,8 +33,10 @@ plugins:
       languages:
         - code: en
           name: English
+          locale: en_US
         - code: zh
           name: 中文
+          locale: zh_CN
       nav_translations:
         zh:
           - Home: zh/README.md
