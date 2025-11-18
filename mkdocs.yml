@@ -1,7 +1,8 @@
 site_name: Cullinan Documentation
 site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework"
 site_author: Plumeink
-site_url: https://plumeink.github.io/Cullinan/
+
+use_directory_urls: true
 
 nav:
   - Home: README.md
