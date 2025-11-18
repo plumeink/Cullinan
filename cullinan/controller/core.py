@@ -298,9 +298,15 @@ class response(metaclass=LazyResponseMeta):
 class EncapsulationHandler(object):
     @classmethod
     def set_fragment_method(cls, cls_obj: Any, func: Callable[[object, tuple, dict], None]):
-        @functools.wraps(func)
-        def dummy(self, *args, **kwargs):
-            func(self, *args, **kwargs)
+        # Check if the function is a coroutine function (async def)
+        if inspect.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def dummy(self, *args, **kwargs):
+                return await func(self, *args, **kwargs)
+        else:
+            @functools.wraps(func)
+            def dummy(self, *args, **kwargs):
+                return func(self, *args, **kwargs)
 
         setattr(cls_obj, func.__name__, dummy)
 
