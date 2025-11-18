@@ -29,7 +29,7 @@ nav:
 plugins:
   - search
   - i18n:
-      docs_structure: suffix
+      docs_structure: folder
       fallback_to_default: true
       reconfigure_material: true
       reconfigure_search: true
@@ -41,6 +41,28 @@ plugins:
         - locale: zh
           name: 中文
           build: true
+          nav_translations:
+            Home: 首页
+            Getting Started: 快速开始
+            Architecture: 架构设计
+            Wiki: 维基
+            Components: 组件
+            Injection: 注入
+            Lifecycle: 生命周期
+            Middleware: 中间件
+            Extensions: 扩展
+            Modules: 模块
+            app: 应用
+            application: 应用程序
+            core: 核心
+            controller: 控制器
+            service: 服务
+            Examples: 示例
+            API Reference: API 参考
+            Work: 工作区
+            Progress Tracker: 进度追踪
+            Review Tasks: 审查任务
+            Inventory: 清单
 
 markdown_extensions:
   - admonition
@@ -55,4 +77,4 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/your-org/cullinan
+      link: https://github.com/plumeink/cullinan
