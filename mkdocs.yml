@@ -25,8 +25,37 @@ nav:
     - Review Tasks: work/review_tasks.md
     - Inventory: work/inventory.md
 
+# Plugins: enable search and static-i18n for bilingual support
 plugins:
   - search
+  - i18n:
+      default_language: en
+      languages:
+        en: English
+        zh: 中文
+      nav_translations:
+        zh:
+          - Home: zh/README.md
+          - Getting Started: zh/getting_started.md
+          - Architecture: zh/architecture.md
+          - Wiki:
+            - Components: zh/wiki/components.md
+            - Injection: zh/wiki/injection.md
+            - Lifecycle: zh/wiki/lifecycle.md
+            - Middleware: zh/wiki/middleware.md
+            - Extensions: zh/wiki/extensions.md
+          - Modules:
+            - app: zh/modules/app.md
+            - application: zh/modules/application.md
+            - core: zh/modules/core.md
+            - controller: zh/modules/controller.md
+            - service: zh/modules/service.md
+          - Examples: zh/examples.md
+          - API Reference: zh/api_reference.md
+          - Work:
+            - Progress Tracker: zh/work/progress_tracker.md
+            - Review Tasks: zh/work/review_tasks.md
+            - Inventory: zh/work/inventory.md
 
 markdown_extensions:
   - admonition
