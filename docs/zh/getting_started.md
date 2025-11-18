@@ -48,7 +48,7 @@ pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan.app import create_app
+from cullinan import application
 from cullinan.controller import controller
 
 @controller(path='/hello')
@@ -57,8 +57,8 @@ def hello_handler(request):
     return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run()
+    # Start the framework application (no instantiation required)
+    application.run()
 ```
 
 4. 运行你的应用：

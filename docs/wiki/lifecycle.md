@@ -51,10 +51,17 @@ Common hooks & extension points
 Minimal example: registering shutdown handlers
 
 ```python
+# Quick (recommended): simple entrypoint using the framework module
+from cullinan import application
+
+if __name__ == '__main__':
+    application.run()
+
+# Advanced (optional): programmatic usage when you need to add shutdown handlers or fine-grained control
 from cullinan.app import create_app
 import asyncio
 
-app = create_app()
+application_instance = create_app()
 
 def cleanup_sync():
     print('Running sync cleanup')
@@ -63,10 +70,11 @@ async def cleanup_async():
     await asyncio.sleep(0.01)
     print('Running async cleanup')
 
-app.add_shutdown_handler(cleanup_sync)
-app.add_shutdown_handler(cleanup_async)
+application_instance.add_shutdown_handler(cleanup_sync)
+application_instance.add_shutdown_handler(cleanup_async)
 
-# call app.run() in the actual process entrypoint
+# In process entrypoint call:
+# application_instance.run()
 ```
 
 Request scope example (pseudocode)

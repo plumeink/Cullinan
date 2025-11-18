@@ -29,12 +29,20 @@ Registration & configuration
 
 ```python
 # register middleware (pseudocode)
+from cullinan import application
+from my_middleware import MyMiddleware
+
+# Quick start: run framework entrypoint (recommended)
+if __name__ == '__main__':
+    application.run()
+
+# Advanced (optional): programmatic registration
 from cullinan.app import create_app
 from my_middleware import MyMiddleware
 
-app = create_app()
-app.add_middleware(MyMiddleware())
-# or register a list of middleware in application configuration
+application_instance = create_app()
+application_instance.add_middleware(MyMiddleware())
+# application_instance.run()
 ```
 
 - DI integration: middleware may depend on services provided through the provider/registry system. Register services via provider registries and use injection in middleware classes.

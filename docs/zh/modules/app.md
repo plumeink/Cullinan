@@ -33,18 +33,18 @@ pr_links: []
 ## 示例：创建并运行应用
 
 ```python
-# 示例：创建并运行最小 Cullinan 应用
+# 快速（推荐）: 在入口脚本使用 framework 入口函数
+from cullinan import application
+
+if __name__ == '__main__':
+    application.run()
+
+# 高级（可选）: 编程化控制（例如在测试或需要添加关闭处理器时）
 from cullinan.app import create_app
 
-app = create_app()
-# 注意：app.run() 会启动 IOLoop 并阻塞直到接收到关闭信号
-# 在实际的 CLI 入口中使用它（不要在库的单元测试中直接调用）
-# app.run()
-
-# 若需编程化控制，可以使用 startup/shutdown:
-# import asyncio
-# asyncio.run(app.startup())
-# asyncio.run(app.shutdown())
+application_instance = create_app()
+# 现在可以以编程方式调用 application_instance.startup()/application_instance.shutdown() 或 application_instance.add_shutdown_handler(...)
+# application_instance.run()  # 在 CLI 入口调用
 ```
 
 说明：`CullinanApplication.run()` 会注册信号处理器并启动 Tornado 的 IOLoop；在 CLI 入口调用。测试或程序化控制请用 `create_app()` 创建实例。

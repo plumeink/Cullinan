@@ -30,12 +30,21 @@ pr_links: []
 
 ```python
 # 注册中间件（伪代码）
+from cullinan import application
+from my_middleware import MyMiddleware
+
+# 快速启动并运行（推荐）
+# 在入口脚本中导入模块以触发装饰器/自动注册，然后调用 application.run()
+if __name__ == '__main__':
+    application.run()
+
+# 高级（可选）：以编程方式注册中间件并运行（需要 create_app）
 from cullinan.app import create_app
 from my_middleware import MyMiddleware
 
-app = create_app()
-app.add_middleware(MyMiddleware())
-# 或者在应用配置处注册中间件列表
+application_instance = create_app()
+application_instance.add_middleware(MyMiddleware())
+# application_instance.run()
 ```
 
 - 依赖注入集成: 中间件可以依赖于框架的 provider/registry 系统。建议通过提供者注册需要的 service，并在中间件内部通过注入使用它们。

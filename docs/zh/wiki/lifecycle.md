@@ -124,10 +124,18 @@ stateDiagram-v2
 最小示例：注册自定义关闭处理器
 
 ```python
+# 快速（推荐）: 简单运行框架入口（无需实例化）
+from cullinan import application
+
+# 在 CLI 或入口处启动框架
+if __name__ == '__main__':
+    application.run()
+
+# 高级（可选）: 如果需要以编程方式添加关闭处理器或细粒度控制，请使用 create_app()
 from cullinan.app import create_app
 import asyncio
 
-app = create_app()
+application_instance = create_app()
 
 def cleanup_sync():
     print('Running sync cleanup')
@@ -136,11 +144,11 @@ async def cleanup_async():
     await asyncio.sleep(0.01)
     print('Running async cleanup')
 
-app.add_shutdown_handler(cleanup_sync)
-app.add_shutdown_handler(cleanup_async)
+application_instance.add_shutdown_handler(cleanup_sync)
+application_instance.add_shutdown_handler(cleanup_async)
 
 # 在程序入口调用：
-# app.run()
+# application_instance.run()
 ```
 
 请求作用域示例（伪代码，基于 `create_context()`）
