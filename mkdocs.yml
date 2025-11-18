@@ -1,6 +1,6 @@
 site_name: Cullinan Documentation
 site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework"
-site_author: Cullinan Team
+site_author: Plumeink
 
 nav:
   - Home: README.md
