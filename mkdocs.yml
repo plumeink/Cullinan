@@ -1,0 +1,44 @@
+site_name: Cullinan Documentation
+site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework"
+site_author: Cullinan Team
+
+nav:
+  - Home: README.md
+  - Getting Started: getting_started.md
+  - Architecture: architecture.md
+  - Wiki:
+    - Components: wiki/components.md
+    - Injection: wiki/injection.md
+    - Lifecycle: wiki/lifecycle.md
+    - Middleware: wiki/middleware.md
+    - Extensions: wiki/extensions.md
+  - Modules:
+    - app: modules/app.md
+    - application: modules/application.md
+    - core: modules/core.md
+    - controller: modules/controller.md
+    - service: modules/service.md
+  - Examples: examples.md
+  - API Reference: api_reference.md
+  - Work:
+    - Progress Tracker: work/progress_tracker.md
+    - Review Tasks: work/review_tasks.md
+    - Inventory: work/inventory.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - pymdownx.superfences
+
+theme:
+  name: material
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/cullinan
