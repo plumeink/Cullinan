@@ -1181,7 +1181,10 @@
 <p>（占位：展示典型 Application 使用的最小代码片段）</p>
 <h2 id="_1">示例<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <h3 id="hello-http">Hello HTTP（烟雾测试示例）<a class="headerlink" href="#hello-http" title="Permanent link">&para;</a></h3>
-<p>仓库包含一个最小示例 <code>examples/hello_http.py</code>，用于文档中的烟雾测试。该示例通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。</p>
+<p>仓库包含一个最小示例 <code>examples/hello_http.py</code>，用于文档中的烟雾测试。该示例<strong>不使用 <code>application.run()</code></strong>，而是直接通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。</p>
+<blockquote>
+<p><strong>注意</strong>：此示例的输出与使用 <code>application.run()</code> 启动的常规应用不同。<code>application.run()</code> 会显示 Cullinan 框架 banner、扫描服务和控制器，并保持服务器运行直到手动停止（Ctrl+C）。</p>
+</blockquote>
 <p>PowerShell（Windows）运行命令：</p>
 <div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span> <span class="n">tornado</span>
@@ -1195,7 +1198,7 @@ INFO:__main__:Response status: 200
 INFO:__main__:Response body: Hello Cullinan
 INFO:__main__:IOLoop stopped, exiting
 </code></pre></div>
-<p>说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出）。</p>
+<p>说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出），但<strong>不代表 <code>application.run()</code> 的实际行为</strong>。</p>
 
 
 

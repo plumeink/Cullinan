@@ -1603,14 +1603,36 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <p>在浏览器中打开 <code>http://localhost:4080/hello</code> 验证服务器是否启动。</p>
 <h2 id="_4">示例运行输出<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>下方日志展示了在本地环境（Windows PowerShell 会话）中成功运行上述示例时的典型输出，实际时间戳和执行耗时可能因环境不同而有所变化：</p>
-<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+<div class="highlight"><pre><span></span><code>|||||||||||||||||||||||||||||||||||||||||||||||||
+|||                                           |||
+|||    _____      _ _ _                       |||
+|||   / ____|    | | (_)                      |||
+|||  | |    _   _| | |_ _ __   __ _ _ __      |||
+|||  | |   | | | | | | | &#39;_ \ / _` | &#39;_ \     |||
+|||  | |___| |_| | | | | | | | (_| | | | |    |||
+|||   \_____\__,_|_|_|_|_| |_|\__,_|_| |_|    |||
+|||                                           |||
+|||||||||||||||||||||||||||||||||||||||||||||||||
+    |||
+
+2025-11-19 04:18:50,209 INFO cullinan.application: loading env...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---configuring dependency injection...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---dependency injection configured
+2025-11-19 04:18:50,210 INFO cullinan.application: └---scanning services...
+2025-11-19 04:18:50,210 INFO cullinan.application: ...
+2025-11-19 04:18:50,223 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,228 INFO cullinan.application: └---scanning controllers...
+2025-11-19 04:18:50,260 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,261 INFO cullinan.application: └---initializing services...
+2025-11-19 04:18:50,261 INFO cullinan.application: └---no services registered
+2025-11-19 04:18:50,261 INFO cullinan.application: └---loading controller finish
+
+2025-11-19 04:18:50,261 INFO cullinan.application: loading env finish
+
+2025-11-19 04:18:50,262 INFO cullinan.application: server is starting
+2025-11-19 04:18:50,262 INFO cullinan.application: port is 4080
 </code></pre></div>
-<p>该示例使用 <code>cullinan.handler.registry.get_handler_registry()</code> 注册一个简单的 Tornado 处理器，发起一次验证请求后停止 IOLoop，适合作为文档中的烟雾测试示例。</p>
+<p>此时服务器已启动并保持运行状态，监听在 <code>http://localhost:4080</code>。使用 Ctrl+C 可以优雅地停止服务器。</p>
 <h2 id="_5">最小应用示例<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>这是一个演示 Cullinan 核心功能的最小应用：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>

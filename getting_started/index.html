@@ -1581,14 +1581,36 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <p>Then open <code>http://localhost:4080/hello</code> in your browser to verify the server is running.</p>
 <h2 id="sample-run-output">Sample run output<a class="headerlink" href="#sample-run-output" title="Permanent link">&para;</a></h2>
 <p>The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:</p>
-<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+<div class="highlight"><pre><span></span><code>|||||||||||||||||||||||||||||||||||||||||||||||||
+|||                                           |||
+|||    _____      _ _ _                       |||
+|||   / ____|    | | (_)                      |||
+|||  | |    _   _| | |_ _ __   __ _ _ __      |||
+|||  | |   | | | | | | | &#39;_ \ / _` | &#39;_ \     |||
+|||  | |___| |_| | | | | | | | (_| | | | |    |||
+|||   \_____\__,_|_|_|_|_| |_|\__,_|_| |_|    |||
+|||                                           |||
+|||||||||||||||||||||||||||||||||||||||||||||||||
+    |||
+
+2025-11-19 04:18:50,209 INFO cullinan.application: loading env...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---configuring dependency injection...
+2025-11-19 04:18:50,210 INFO cullinan.application: └---dependency injection configured
+2025-11-19 04:18:50,210 INFO cullinan.application: └---scanning services...
+2025-11-19 04:18:50,210 INFO cullinan.application: ...
+2025-11-19 04:18:50,223 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,228 INFO cullinan.application: └---scanning controllers...
+2025-11-19 04:18:50,260 INFO cullinan.application: └---found 31 modules to scan
+2025-11-19 04:18:50,261 INFO cullinan.application: └---initializing services...
+2025-11-19 04:18:50,261 INFO cullinan.application: └---no services registered
+2025-11-19 04:18:50,261 INFO cullinan.application: └---loading controller finish
+
+2025-11-19 04:18:50,261 INFO cullinan.application: loading env finish
+
+2025-11-19 04:18:50,262 INFO cullinan.application: server is starting
+2025-11-19 04:18:50,262 INFO cullinan.application: port is 4080
 </code></pre></div>
-<p>This example uses <code>cullinan.handler.registry.get_handler_registry()</code> to register a simple Tornado handler, perform a single verification request, and then stop the IOLoop. This pattern is suitable for smoke tests in documentation.</p>
+<p>At this point, the server is running and listening on <code>http://localhost:4080</code>. Use Ctrl+C to gracefully stop the server.</p>
 <h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
 <p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
