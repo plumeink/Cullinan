@@ -39,17 +39,7 @@ jobs:
         run: |
           python -m pip show mkdocs mkdocs-static-i18n mkdocs-material || true
           mkdocs --version || true
-          python - <<'PY'
-import importlib, sys
-try:
-    mod = importlib.import_module('mkdocs_static_i18n')
-    print('mkdocs_static_i18n module:', getattr(mod, '__version__', 'unknown'))
-except Exception as e:
-    print('mkdocs_static_i18n import failed:', e)
-print('\n--- mkdocs.yml ---')
-with open('mkdocs.yml','r',encoding='utf-8') as f:
-    print(f.read())
-PY
+          cat mkdocs.yml || true
       - name: Lint markdown
         run: |
           markdownlint "docs/**/*.md" || true
