@@ -35,7 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install mkdocs==1.6.1 mkdocs-material==9.7.0 mkdocs-mermaid2-plugin==1.2.3 mkdocs-static-i18n
           npm install -g markdownlint-cli
-      - name: Debug: show mkdocs / i18n versions and config
+      - name: "Debug: show mkdocs / i18n versions and config"
         run: |
           python -m pip show mkdocs mkdocs-static-i18n mkdocs-material || true
           mkdocs --version || true
