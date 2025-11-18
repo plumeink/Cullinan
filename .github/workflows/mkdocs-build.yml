@@ -14,7 +14,7 @@ on:
 
 # Give this workflow permission to write Pages so it can deploy
 permissions:
-  contents: read
+  contents: write
   pages: write
 
 jobs:
@@ -41,9 +41,9 @@ jobs:
       - name: Build site
         run: |
           mkdocs build --strict
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: './site'
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          # publish_branch: gh-pages # uncomment to target a specific branch
