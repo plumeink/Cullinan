@@ -1093,23 +1093,27 @@
 <div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
 class UserController:
     @get_api(url=&#39;/{user_id}&#39;)
-    def get_user(self, user_id):
+    def get_user(self, url_param):
+        # extract the path parameter from the url_param dict
+        user_id = url_param.get(&#39;user_id&#39;) if url_param else None
         return {&#39;id&#39;: user_id}
 </code></pre></div>
 <p>2) GET with query params</p>
 <div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
 class UserController:
     @get_api(url=&#39;/&#39;, query_params=(&#39;page&#39;,&#39;size&#39;))
-    def list_users(self, page, size):
-        # page and size come from query string, may be None
+    def list_users(self, query_param):
+        # page and size come from query string and are accessed via query_param
+        page = query_param.get(&#39;page&#39;) if query_param else None
+        size = query_param.get(&#39;size&#39;) if query_param else None
         return {&#39;page&#39;: page, &#39;size&#39;: size}
 </code></pre></div>
 <p>3) POST with body params and files</p>
 <div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/upload&#39;)
 class UploadController:
     @post_api(url=&#39;/&#39;, body_params=(&#39;title&#39;,), file_params=(&#39;file&#39;,))
-    def upload(self, body_params, files):
-        title = body_params.get(&#39;title&#39;) if body_params else None
+    def upload(self, body_param, files):
+        title = body_param.get(&#39;title&#39;) if body_param else None
         file_obj = files.get(&#39;file&#39;) if files else None
         return {&#39;uploaded&#39;: bool(file_obj)}
 </code></pre></div>

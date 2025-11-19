@@ -1698,7 +1698,9 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
+        <span class="c1"># 从 url_param 字典中获取路径参数</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_param</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>重要：</strong> 在 Controller 中<strong>不要</strong>重复使用 <code>@injectable</code>，因为 <code>@controller()</code> 已经自动包含了它。</p>
@@ -1722,14 +1724,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_param</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 </code></pre></div>
 <p>常用参数：</p>
 <ul>
 <li><code>url</code>：路由路径（字符串），支持 <code>{param}</code> 占位符，例如 <code>'/users/{user_id}'</code>。</li>
-<li><code>query_params</code>：查询参数名称列表/元组，例如 <code>('page', 'size')</code>。</li>
-<li><code>body_params</code>（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。</li>
+<li><code>query_params</code>：查询参数名称列表/元组，例如 <code>('page', 'size')</code>。 在处理器中，这些查询参数通过单个 <code>query_param</code> 字典参数传入。</li>
+<li><code>body_params</code>（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。在处理器中，这些字段通过单个 <code>body_param</code> 字典参数传入。</li>
 <li><code>file_params</code>：上传文件字段名称列表。</li>
 <li><code>headers</code>：必须存在的 HTTP 请求头名称列表。</li>
 <li><code>get_request_body</code>（仅 POST/PATCH）：为 <code>True</code> 时，会将原始请求体作为参数传入方法。</li>
@@ -1738,11 +1741,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_param</span><span class="p">):</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">query_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_param</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">query_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;size&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_param</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 
     <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">body_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body_param</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">body_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_param</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">body_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_param</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 </code></pre></div>
 <p>如需了解 URL 模板与各装饰器参数的完整说明，请参考 <code>docs/zh/wiki/restful_api.md</code>。</p>
