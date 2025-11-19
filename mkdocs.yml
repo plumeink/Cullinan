@@ -23,10 +23,6 @@ nav:
     - service: modules/service.md
   - Examples: examples.md
   - API Reference: api_reference.md
-  - Work:
-    - Progress Tracker: work/progress_tracker.md
-    - Review Tasks: work/review_tasks.md
-    - Inventory: work/inventory.md
 
 # Plugins: enable search and static-i18n for bilingual support
 plugins:
@@ -65,10 +61,6 @@ plugins:
             service: 服务
             Examples: 示例
             API Reference: API 参考
-            Work: 工作区
-            Progress Tracker: 进度追踪
-            Review Tasks: 审查任务
-            Inventory: 清单
 
 markdown_extensions:
   - admonition
