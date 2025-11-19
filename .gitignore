@@ -33,7 +33,8 @@ env/
 Lib/
 Include/
 pyvenv.cfg
-
+docs/work
+docs/zh/work
 # IDE
 .idea/
 .vscode/
