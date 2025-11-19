@@ -39,7 +39,9 @@ URL 模板如何工作
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/{user_id}')
-    def get_user(self, user_id):
+    def get_user(self, url_param):
+        # 从 url_param 字典中获取路径参数
+        user_id = url_param.get('user_id') if url_param else None
         return {'id': user_id}
 ```
 
@@ -49,7 +51,10 @@ class UserController:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/', query_params=('page','size'))
-    def list_users(self, page, size):
+    def list_users(self, query_param):
+        # page 和 size 从查询字符串解析，通过 query_param 访问
+        page = query_param.get('page') if query_param else None
+        size = query_param.get('size') if query_param else None
         return {'page': page, 'size': size}
 ```
 
@@ -59,8 +64,8 @@ class UserController:
 @controller(url='/api/upload')
 class UploadController:
     @post_api(url='/', body_params=('title',), file_params=('file',))
-    def upload(self, body_params, files):
-        title = body_params.get('title') if body_params else None
+    def upload(self, body_param, files):
+        title = body_param.get('title') if body_param else None
         file_obj = files.get('file') if files else None
         return {'uploaded': bool(file_obj)}
 ```

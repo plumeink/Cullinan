@@ -39,7 +39,9 @@ Examples
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/{user_id}')
-    def get_user(self, user_id):
+    def get_user(self, url_param):
+        # extract the path parameter from the url_param dict
+        user_id = url_param.get('user_id') if url_param else None
         return {'id': user_id}
 ```
 
@@ -49,8 +51,10 @@ class UserController:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/', query_params=('page','size'))
-    def list_users(self, page, size):
-        # page and size come from query string, may be None
+    def list_users(self, query_param):
+        # page and size come from query string and are accessed via query_param
+        page = query_param.get('page') if query_param else None
+        size = query_param.get('size') if query_param else None
         return {'page': page, 'size': size}
 ```
 
@@ -60,8 +64,8 @@ class UserController:
 @controller(url='/api/upload')
 class UploadController:
     @post_api(url='/', body_params=('title',), file_params=('file',))
-    def upload(self, body_params, files):
-        title = body_params.get('title') if body_params else None
+    def upload(self, body_param, files):
+        title = body_param.get('title') if body_param else None
         file_obj = files.get('file') if files else None
         return {'uploaded': bool(file_obj)}
 ```

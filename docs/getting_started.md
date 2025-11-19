@@ -197,7 +197,9 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    def get_user(self, user_id):
+    def get_user(self, url_param):
+        # extract the path parameter from the url_param dict
+        user_id = url_param.get('user_id') if url_param else None
         return self.user_service.get_user(user_id)
 
 **Important:** Do **not** use `@injectable` on Controllers, as `@controller()` already includes it automatically.
@@ -219,21 +221,22 @@ Key points:
 - These decorators **only accept keyword arguments** (they are defined as `def get_api(**kwargs)` etc.).
   - `@get_api('/user')` is **invalid** and will raise a `TypeError` at import time.
   - Always use the keyword form: `@get_api(url='/user')`.
-- The `url` argument uses a lightweight template syntax with `{param}` placeholders, which are mapped to your method parameters:
+- The `url` argument uses a lightweight template syntax with `{param}` placeholders, which are mapped to your method parameters. Use the singular dict-style parameter names in your handler to access captured values:
 
 ```python
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/{user_id}')
-    def get_user(self, user_id):
+    def get_user(self, url_param):
+        user_id = url_param.get('user_id') if url_param else None
         ...
 ```
 
 Common options:
 
 - `url`: Route pattern (string). Supports `{param}` placeholders, e.g. `'/users/{user_id}'`.
-- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`.
-- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing.
+- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`. In handlers the query values are provided via a single `query_param` dict argument.
+- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single `body_param` dict argument.
 - `file_params`: Iterable of file field names for file uploads.
 - `headers`: Iterable of required HTTP header names.
 - `get_request_body` (POST/PATCH only): If `True`, passes the raw request body to your method.
@@ -244,11 +247,15 @@ Example combinations:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/', query_params=('page', 'size'))
-    def list_users(self, page, size):
+    def list_users(self, query_param):
+        page = query_param.get('page') if query_param else None
+        size = query_param.get('size') if query_param else None
         ...
 
     @post_api(url='/', body_params=('name', 'email'))
-    def create_user(self, name, email):
+    def create_user(self, body_param):
+        name = body_param.get('name') if body_param else None
+        email = body_param.get('email') if body_param else None
         ...
 ```
 
