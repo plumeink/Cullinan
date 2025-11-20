@@ -441,6 +441,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#restful-api-decorators-quick-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RESTful API decorators (quick overview)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#recommended-dependency-injection-approaches" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1268,6 +1279,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#restful-api-decorators-quick-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RESTful API decorators (quick overview)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#recommended-dependency-injection-approaches" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1538,45 +1560,41 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
-        <span class="c1"># extract the path parameter from the url_param dict</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_param</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
+        <span class="c1"># extract the path parameter from the url_params dict</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
-
-<span class="o">**</span><span class="n">Important</span><span class="p">:</span><span class="o">**</span> <span class="n">Do</span> <span class="o">**</span><span class="ow">not</span><span class="o">**</span> <span class="n">use</span> <span class="err">`</span><span class="nd">@injectable</span><span class="err">`</span> <span class="n">on</span> <span class="n">Controllers</span><span class="p">,</span> <span class="k">as</span> <span class="err">`</span><span class="nd">@controller</span><span class="p">()</span><span class="err">`</span> <span class="n">already</span> <span class="n">includes</span> <span class="n">it</span> <span class="n">automatically</span><span class="o">.</span>
-
-<span class="o">---</span>
-
-<span class="c1">#### RESTful API decorators (quick overview)</span>
-
-<span class="n">Cullinan</span> <span class="n">provides</span> <span class="n">a</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">REST</span><span class="o">-</span><span class="n">style</span> <span class="n">decorators</span> <span class="n">that</span> <span class="n">bind</span> <span class="n">controller</span> <span class="n">methods</span> <span class="n">to</span> <span class="n">HTTP</span> <span class="n">routes</span><span class="p">:</span>
-
-<span class="o">-</span> <span class="err">`</span><span class="n">get_api</span><span class="err">`</span>
-<span class="o">-</span> <span class="err">`</span><span class="n">post_api</span><span class="err">`</span>
-<span class="o">-</span> <span class="err">`</span><span class="n">patch_api</span><span class="err">`</span>
-<span class="o">-</span> <span class="err">`</span><span class="n">delete_api</span><span class="err">`</span>
-<span class="o">-</span> <span class="err">`</span><span class="n">put_api</span><span class="err">`</span>
-
-<span class="n">Key</span> <span class="n">points</span><span class="p">:</span>
-
-<span class="o">-</span> <span class="n">These</span> <span class="n">decorators</span> <span class="o">**</span><span class="n">only</span> <span class="n">accept</span> <span class="n">keyword</span> <span class="n">arguments</span><span class="o">**</span> <span class="p">(</span><span class="n">they</span> <span class="n">are</span> <span class="n">defined</span> <span class="k">as</span> <span class="err">`</span><span class="k">def</span><span class="w"> </span><span class="nf">get_api</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="err">`</span> <span class="n">etc</span><span class="o">.</span><span class="p">)</span><span class="o">.</span>
-  <span class="o">-</span> <span class="err">`</span><span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">)</span><span class="err">`</span> <span class="ow">is</span> <span class="o">**</span><span class="n">invalid</span><span class="o">**</span> <span class="ow">and</span> <span class="n">will</span> <span class="k">raise</span> <span class="n">a</span> <span class="err">`</span><span class="ne">TypeError</span><span class="err">`</span> <span class="n">at</span> <span class="kn">import</span><span class="w"> </span><span class="nn">time.</span>
-  <span class="o">-</span> <span class="n">Always</span> <span class="n">use</span> <span class="n">the</span> <span class="n">keyword</span> <span class="n">form</span><span class="p">:</span> <span class="err">`</span><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/user&#39;</span><span class="p">)</span><span class="err">`</span><span class="o">.</span>
-<span class="o">-</span> <span class="n">The</span> <span class="err">`</span><span class="n">url</span><span class="err">`</span> <span class="n">argument</span> <span class="n">uses</span> <span class="n">a</span> <span class="n">lightweight</span> <span class="n">template</span> <span class="n">syntax</span> <span class="k">with</span> <span class="err">`</span><span class="p">{</span><span class="n">param</span><span class="p">}</span><span class="err">`</span> <span class="n">placeholders</span><span class="p">,</span> <span class="n">which</span> <span class="n">are</span> <span class="n">mapped</span> <span class="n">to</span> <span class="n">your</span> <span class="n">method</span> <span class="n">parameters</span><span class="o">.</span> <span class="n">Use</span> <span class="n">the</span> <span class="n">singular</span> <span class="nb">dict</span><span class="o">-</span><span class="n">style</span> <span class="n">parameter</span> <span class="n">names</span> <span class="ow">in</span> <span class="n">your</span> <span class="n">handler</span> <span class="n">to</span> <span class="n">access</span> <span class="n">captured</span> <span class="n">values</span><span class="p">:</span>
-
-<span class="err">```</span><span class="n">python</span>
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Important:</strong> Do <strong>not</strong> use <code>@injectable</code> on Controllers, as <code>@controller()</code> already includes it automatically.</p>
+<hr />
+<h4 id="restful-api-decorators-quick-overview">RESTful API decorators (quick overview)<a class="headerlink" href="#restful-api-decorators-quick-overview" title="Permanent link">&para;</a></h4>
+<p>Cullinan provides a set of REST-style decorators that bind controller methods to HTTP routes:</p>
+<ul>
+<li><code>get_api</code></li>
+<li><code>post_api</code></li>
+<li><code>patch_api</code></li>
+<li><code>delete_api</code></li>
+<li><code>put_api</code></li>
+</ul>
+<p>Key points:</p>
+<ul>
+<li>These decorators <strong>only accept keyword arguments</strong> (they are defined as <code>def get_api(**kwargs)</code> etc.).</li>
+<li><code>@get_api('/user')</code> is <strong>invalid</strong> and will raise a <code>TypeError</code> at import time.</li>
+<li>Always use the keyword form: <code>@get_api(url='/user')</code>.</li>
+<li>The <code>url</code> argument uses a lightweight template syntax with <code>{param}</code> placeholders, which are mapped to your method parameters. Use the singular dict-style parameter names in your handler to access captured values:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_param</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 </code></pre></div>
 <p>Common options:</p>
 <ul>
 <li><code>url</code>: Route pattern (string). Supports <code>{param}</code> placeholders, e.g. <code>'/users/{user_id}'</code>.</li>
-<li><code>query_params</code>: Iterable of query parameter names, e.g. <code>('page', 'size')</code>. In handlers the query values are provided via a single <code>query_param</code> dict argument.</li>
-<li><code>body_params</code> (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single <code>body_param</code> dict argument.</li>
+<li><code>query_params</code>: Iterable of query parameter names, e.g. <code>('page', 'size')</code>. In handlers the query values are provided via a single <code>query_params</code> dict argument.</li>
+<li><code>body_params</code> (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single <code>body_params</code> dict argument.</li>
 <li><code>file_params</code>: Iterable of file field names for file uploads.</li>
 <li><code>headers</code>: Iterable of required HTTP header names.</li>
 <li><code>get_request_body</code> (POST/PATCH only): If <code>True</code>, passes the raw request body to your method.</li>
@@ -1585,15 +1603,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_param</span><span class="p">):</span>
-        <span class="n">page</span> <span class="o">=</span> <span class="n">query_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_param</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="n">query_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;size&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_param</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_params</span><span class="p">):</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_params</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;size&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 
     <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">body_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body_param</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">body_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_param</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">email</span> <span class="o">=</span> <span class="n">body_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_param</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body_params</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">body_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_params</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">body_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="o">...</span>
 </code></pre></div>
 <p>For a deeper dive into URL patterns and all decorator options, see <code>docs/wiki/restful_api.md</code>.</p>
