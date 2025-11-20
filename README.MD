@@ -104,7 +104,7 @@ class HelloController:
     @get_api(url='/hello', query_params=['name'])
     def hello(self, query_params):
         name = query_params.get('name', 'World')
-        return self.response_build(
+        return self.response_factory(
             status=200,
             message=f"Hello, {name}!"
         )
@@ -188,7 +188,7 @@ class UserController:
     @get_api(url='/users', query_params=['id'])
     def get_user(self, query_params):
         user_id = query_params.get('id')
-        return self.response_build(
+        return self.response_factory(
             status=200,
             message="User fetched successfully",
             data={"user_id": user_id},
@@ -200,7 +200,7 @@ class UserController:
             body_params['name'],
             body_params['email'],
         )
-        return self.response_build(
+        return self.response_factory(
             status=201,
             message="User created successfully",
             data=user,

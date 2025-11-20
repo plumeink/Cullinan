@@ -197,11 +197,12 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    def get_user(self, url_param):
-        # extract the path parameter from the url_param dict
-        user_id = url_param.get('user_id') if url_param else None
+    def get_user(self, url_params):
+        # extract the path parameter from the url_params dict
+        user_id = url_params.get('user_id') if url_params else None
         return self.user_service.get_user(user_id)
-
+```
+    
 **Important:** Do **not** use `@injectable` on Controllers, as `@controller()` already includes it automatically.
 
 ---
@@ -227,16 +228,16 @@ Key points:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/{user_id}')
-    def get_user(self, url_param):
-        user_id = url_param.get('user_id') if url_param else None
+    def get_user(self, url_params):
+        user_id = url_params.get('user_id') if url_params else None
         ...
 ```
 
 Common options:
 
 - `url`: Route pattern (string). Supports `{param}` placeholders, e.g. `'/users/{user_id}'`.
-- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`. In handlers the query values are provided via a single `query_param` dict argument.
-- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single `body_param` dict argument.
+- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`. In handlers the query values are provided via a single `query_params` dict argument.
+- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single `body_params` dict argument.
 - `file_params`: Iterable of file field names for file uploads.
 - `headers`: Iterable of required HTTP header names.
 - `get_request_body` (POST/PATCH only): If `True`, passes the raw request body to your method.
@@ -247,15 +248,15 @@ Example combinations:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/', query_params=('page', 'size'))
-    def list_users(self, query_param):
-        page = query_param.get('page') if query_param else None
-        size = query_param.get('size') if query_param else None
+    def list_users(self, query_params):
+        page = query_params.get('page') if query_params else None
+        size = query_params.get('size') if query_params else None
         ...
 
     @post_api(url='/', body_params=('name', 'email'))
-    def create_user(self, body_param):
-        name = body_param.get('name') if body_param else None
-        email = body_param.get('email') if body_param else None
+    def create_user(self, body_params):
+        name = body_params.get('name') if body_params else None
+        email = body_params.get('email') if body_params else None
         ...
 ```
 

@@ -197,9 +197,9 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    def get_user(self, url_param):
-        # 从 url_param 字典中获取路径参数
-        user_id = url_param.get('user_id') if url_param else None
+    def get_user(self, url_params):
+        # 从 url_params 字典中获取路径参数
+        user_id = url_params.get('user_id') if url_params else None
         return self.user_service.get_user(user_id)
 ```
 
@@ -228,16 +228,16 @@ Cullinan 提供一组 REST 风格的装饰器，用于将 Controller 方法绑�
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/{user_id}')
-    def get_user(self, url_param):
-        user_id = url_param.get('user_id') if url_param else None
+    def get_user(self, url_params):
+        user_id = url_params.get('user_id') if url_params else None
         ...
 ```
 
 常用参数：
 
 - `url`：路由路径（字符串），支持 `{param}` 占位符，例如 `'/users/{user_id}'`。
-- `query_params`：查询参数名称列表/元组，例如 `('page', 'size')`。 在处理器中，这些查询参数通过单个 `query_param` 字典参数传入。
-- `body_params`（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。在处理器中，这些字段通过单个 `body_param` 字典参数传入。
+- `query_params`：查询参数名称列表/元组，例如 `('page', 'size')`。 在处理器中，这些查询参数通过单个 `query_params` 字典参数传入。
+- `body_params`（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。在处理器中，这些字段通过单个 `body_params` 字典参数传入。
 - `file_params`：上传文件字段名称列表。
 - `headers`：必须存在的 HTTP 请求头名称列表。
 - `get_request_body`（仅 POST/PATCH）：为 `True` 时，会将原始请求体作为参数传入方法。
@@ -248,15 +248,15 @@ class UserController:
 @controller(url='/api/users')
 class UserController:
     @get_api(url='/', query_params=('page', 'size'))
-    def list_users(self, query_param):
-        page = query_param.get('page') if query_param else None
-        size = query_param.get('size') if query_param else None
+    def list_users(self, query_params):
+        page = query_params.get('page') if query_params else None
+        size = query_params.get('size') if query_params else None
         ...
 
     @post_api(url='/', body_params=('name', 'email'))
-    def create_user(self, body_param):
-        name = body_param.get('name') if body_param else None
-        email = body_param.get('email') if body_param else None
+    def create_user(self, body_params):
+        name = body_params.get('name') if body_params else None
+        email = body_params.get('email') if body_params else None
         ...
 ```
 
