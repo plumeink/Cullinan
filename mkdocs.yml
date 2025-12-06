@@ -7,7 +7,6 @@ use_directory_urls: true
 nav:
   - Home: README.md
   - Getting Started: getting_started.md
-  - Architecture: architecture.md
   - Wiki:
     - Architecture: wiki/architecture.md
     - Components: wiki/components.md
