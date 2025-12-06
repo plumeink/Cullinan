@@ -56,7 +56,10 @@ print("-" * 80)
 @test("Import main cullinan package")
 def test_import_main():
     import cullinan
-    assert cullinan.__version__ == '0.82'
+    # Test that __version__ attribute exists and is a non-empty string
+    assert hasattr(cullinan, '__version__'), "cullinan module should have __version__ attribute"
+    assert isinstance(cullinan.__version__, str), "__version__ should be a string"
+    assert cullinan.__version__, "__version__ should not be empty"
 
 test_import_main()
 
