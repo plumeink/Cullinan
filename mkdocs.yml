@@ -9,6 +9,7 @@ nav:
   - Getting Started: getting_started.md
   - Architecture: architecture.md
   - Wiki:
+    - Architecture: wiki/architecture.md
     - Components: wiki/components.md
     - Injection: wiki/injection.md
     - Lifecycle: wiki/lifecycle.md
@@ -23,6 +24,11 @@ nav:
     - service: modules/service.md
   - Examples: examples.md
   - API Reference: api_reference.md
+  - Development:
+    - Testing: testing.md
+    - Build & Run: build_run.md
+    - Contributing: contributing.md
+    - Migration Guide: migration_guide.md
 
 # Plugins: enable search and static-i18n for bilingual support
 plugins:
@@ -61,6 +67,11 @@ plugins:
             service: 服务
             Examples: 示例
             API Reference: API 参考
+            Development: 开发
+            Testing: 测试
+            Build & Run: 构建与运行
+            Contributing: 贡献指南
+            Migration Guide: 迁移指南
 
 markdown_extensions:
   - admonition
