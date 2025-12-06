@@ -56,10 +56,15 @@ print("-" * 80)
 @test("Import main cullinan package")
 def test_import_main():
     import cullinan
+    import re
     # Test that __version__ attribute exists and is a non-empty string
     assert hasattr(cullinan, '__version__'), "cullinan module should have __version__ attribute"
     assert isinstance(cullinan.__version__, str), "__version__ should be a string"
     assert cullinan.__version__, "__version__ should not be empty"
+    # Validate semantic versioning format (e.g., "0.82" or "0.82.0")
+    version_pattern = r'^\d+\.\d+(\.\d+)?$'
+    assert re.match(version_pattern, cullinan.__version__), \
+        f"__version__ '{cullinan.__version__}' should follow semantic versioning (e.g., '0.82' or '0.82.0')"
 
 test_import_main()
 
