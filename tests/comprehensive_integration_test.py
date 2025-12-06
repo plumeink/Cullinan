@@ -56,7 +56,7 @@ print("-" * 80)
 @test("Import main cullinan package")
 def test_import_main():
     import cullinan
-    assert cullinan.__version__ == '0.76'
+    assert cullinan.__version__ == '0.82'
 
 test_import_main()
 
