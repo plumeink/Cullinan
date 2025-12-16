@@ -66,6 +66,17 @@ from .scope import (
     get_request_scope
 )
 
+# IoC/DI Facade (Unified dependency resolution interface)
+from .facade import (
+    IoCFacade,
+    get_ioc_facade,
+    reset_ioc_facade,
+    resolve_dependency,
+    resolve_dependency_by_name,
+    has_dependency,
+    DependencyResolutionError as FacadeDependencyResolutionError
+)
+
 __version__ = "0.81"
 
 __all__ = [
@@ -123,4 +134,12 @@ __all__ = [
     'DependencyResolutionError',
     'CircularDependencyError',
     'LifecycleError',
+
+    # IoC/DI Facade
+    'IoCFacade',
+    'get_ioc_facade',
+    'reset_ioc_facade',
+    'resolve_dependency',
+    'resolve_dependency_by_name',
+    'has_dependency',
 ]

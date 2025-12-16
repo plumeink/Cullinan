@@ -299,6 +299,63 @@ BANNER = (
 )
 
 
+def _register_explicit_classes():
+    """Register explicit services and controllers if configured.
+
+    This allows users to skip module scanning and directly register classes,
+    which improves startup performance for large projects.
+    """
+    from cullinan.config import get_config
+
+    config = get_config()
+
+    # Register explicit services
+    if config.explicit_services:
+        logger.info(
+            "Registering %d explicit services (skipping scan)",
+            len(config.explicit_services)
+        )
+        for service_class in config.explicit_services:
+            try:
+                # Import the service's module to trigger decorator registration
+                module = inspect.getmodule(service_class)
+                if module:
+                    logger.debug(
+                        "Explicit service registered: %s from %s",
+                        service_class.__name__,
+                        module.__name__
+                    )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register explicit service %s: %s",
+                    service_class.__name__ if hasattr(service_class, '__name__') else service_class,
+                    str(e)
+                )
+
+    # Register explicit controllers
+    if config.explicit_controllers:
+        logger.info(
+            "Registering %d explicit controllers (skipping scan)",
+            len(config.explicit_controllers)
+        )
+        for controller_class in config.explicit_controllers:
+            try:
+                # Import the controller's module to trigger decorator registration
+                module = inspect.getmodule(controller_class)
+                if module:
+                    logger.debug(
+                        "Explicit controller registered: %s from %s",
+                        controller_class.__name__,
+                        module.__name__
+                    )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register explicit controller %s: %s",
+                    controller_class.__name__ if hasattr(controller_class, '__name__') else controller_class,
+                    str(e)
+                )
+
+
 def run(handlers=None):
     if handlers is None:
         handlers = []
@@ -342,6 +399,9 @@ def run(handlers=None):
     service_registry = get_service_registry()
 
     logger.info("└---dependency injection configured")
+
+    # Register explicit services and controllers (if configured)
+    _register_explicit_classes()
 
     # Now scan services and controllers
     logger.info("└---scanning services...")

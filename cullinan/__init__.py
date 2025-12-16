@@ -72,6 +72,20 @@ from cullinan.handler import (
 from cullinan.middleware import (
     Middleware,
     MiddlewareChain,
+    MiddlewareRegistry,
+    get_middleware_registry,
+    reset_middleware_registry,
+    middleware,
+)
+
+# Export extensions module
+from cullinan.extensions import (
+    ExtensionCategory,
+    ExtensionPoint,
+    ExtensionRegistry,
+    get_extension_registry,
+    reset_extension_registry,
+    list_extension_points,
 )
 
 # Export monitoring module
@@ -160,7 +174,19 @@ __all__ = [
     # Middleware
     'Middleware',
     'MiddlewareChain',
-    
+    'MiddlewareRegistry',
+    'get_middleware_registry',
+    'reset_middleware_registry',
+    'middleware',
+
+    # Extensions
+    'ExtensionCategory',
+    'ExtensionPoint',
+    'ExtensionRegistry',
+    'get_extension_registry',
+    'reset_extension_registry',
+    'list_extension_points',
+
     # Monitoring
     'MonitoringHook',
     'MonitoringManager',

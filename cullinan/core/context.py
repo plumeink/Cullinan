@@ -22,6 +22,13 @@ class RequestContext:
     This class holds data that is specific to a single request,
     such as user information, request metadata, and temporary state.
     
+    Features can be controlled via configuration (v0.81+):
+    - auto_request_id: Automatic request ID generation
+    - timing: Request timing tracking
+    - metadata: Metadata storage support
+    - cleanup_callbacks: Cleanup callback support
+    - debug_logging: Debug-level logging
+
     Example:
         # In a handler
         ctx = RequestContext()
@@ -32,12 +39,92 @@ class RequestContext:
         user_id = ctx.get('user_id')
     """
     
+    # Class-level feature flags (loaded from config)
+    _features: Optional[Dict[str, Any]] = None
+
+    @classmethod
+    def _get_features(cls) -> Dict[str, Any]:
+        """Get feature flags from configuration (cached)."""
+        if cls._features is None:
+            try:
+                from cullinan.config import get_config
+                config = get_config()
+                cls._features = config.context_features.copy()
+            except Exception:
+                # Fallback to defaults if config not available
+                cls._features = {
+                    'auto_request_id': True,
+                    'timing': True,
+                    'metadata': True,
+                    'cleanup_callbacks': True,
+                    'debug_logging': False,
+                    'request_id_format': 'uuid',
+                    'custom_request_id_generator': None,
+                }
+        return cls._features
+
+    @classmethod
+    def reset_features(cls):
+        """Reset feature flags cache (for testing)."""
+        cls._features = None
+
     def __init__(self):
         """Initialize a new request context."""
         self._data: Dict[str, Any] = {}
-        self._metadata: Dict[str, Any] = {}
-        self._cleanup_callbacks: list[Callable] = []
-    
+        self._metadata: Optional[Dict[str, Any]] = None  # Lazy initialization
+        self._cleanup_callbacks: Optional[list[Callable]] = None  # Lazy initialization
+
+        # Get feature flags
+        features = self._get_features()
+
+        # Initialize optional features based on flags
+        self._features_enabled = features
+
+        # Auto-generate request ID if enabled
+        if features.get('auto_request_id', True):
+            self._init_request_id()
+
+        # Initialize timing if enabled
+        if features.get('timing', True):
+            import time
+            self._start_time = time.perf_counter()
+        else:
+            self._start_time = None
+
+    def _init_request_id(self):
+        """Initialize request ID based on configuration."""
+        features = self._features_enabled
+        request_id_format = features.get('request_id_format', 'uuid')
+
+        if request_id_format == 'uuid':
+            import uuid
+            request_id = uuid.uuid4().hex[:16]
+        elif request_id_format == 'sequential':
+            # Sequential ID (thread-safe)
+            import threading
+            if not hasattr(RequestContext, '_id_counter'):
+                RequestContext._id_counter = 0
+                RequestContext._id_lock = threading.Lock()
+
+            with RequestContext._id_lock:
+                RequestContext._id_counter += 1
+                request_id = f"req_{RequestContext._id_counter:08d}"
+        elif request_id_format == 'custom':
+            # Use custom generator if provided
+            custom_gen = features.get('custom_request_id_generator')
+            if custom_gen and callable(custom_gen):
+                request_id = custom_gen()
+            else:
+                # Fallback to UUID
+                import uuid
+                request_id = uuid.uuid4().hex[:16]
+        else:
+            # Default to UUID
+            import uuid
+            request_id = uuid.uuid4().hex[:16]
+
+        self.set('request_id', request_id)
+
     def set(self, key: str, value: Any) -> None:
         """Set a value in the context.
         
@@ -46,8 +133,11 @@ class RequestContext:
             value: The value to store
         """
         self._data[key] = value
-        logger.debug(f"Context set: {key}")
-    
+        # Use lazy logging to avoid f-string evaluation when DEBUG is disabled
+        # Also check feature flag
+        if self._features_enabled.get('debug_logging', False) and logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Context set: %s", key)
+
     def get(self, key: str, default: Any = None) -> Any:
         """Get a value from the context.
         
@@ -79,13 +169,15 @@ class RequestContext:
         """
         if key in self._data:
             del self._data[key]
-            logger.debug(f"Context deleted: {key}")
-    
+            if self._features_enabled.get('debug_logging', False) and logger.isEnabledFor(logging.DEBUG):
+                logger.debug("Context deleted: %s", key)
+
     def clear(self) -> None:
         """Clear all data from the context."""
         self._data.clear()
-        logger.debug("Context cleared")
-    
+        if self._features_enabled.get('debug_logging', False) and logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Context cleared")
+
     def set_metadata(self, key: str, value: Any) -> None:
         """Set metadata for the context.
         
@@ -96,6 +188,13 @@ class RequestContext:
             key: The metadata key
             value: The metadata value
         """
+        # Check if metadata feature is enabled
+        if not self._features_enabled.get('metadata', True):
+            return
+
+        # Lazy initialization: create dict only when first used
+        if self._metadata is None:
+            self._metadata = {}
         self._metadata[key] = value
     
     def get_metadata(self, key: str, default: Any = None) -> Any:
@@ -108,6 +207,13 @@ class RequestContext:
         Returns:
             The metadata value or default
         """
+        # Return default if metadata feature is disabled
+        if not self._features_enabled.get('metadata', True):
+            return default
+
+        # Return default if metadata dict not yet initialized
+        if self._metadata is None:
+            return default
         return self._metadata.get(key, default)
     
     def register_cleanup(self, callback: Callable) -> None:
@@ -116,20 +222,52 @@ class RequestContext:
         Args:
             callback: Function to call during cleanup (no arguments)
         """
+        # Check if cleanup_callbacks feature is enabled
+        if not self._features_enabled.get('cleanup_callbacks', True):
+            return
+
+        # Lazy initialization: create list only when first callback is registered
+        if self._cleanup_callbacks is None:
+            self._cleanup_callbacks = []
         self._cleanup_callbacks.append(callback)
     
     def cleanup(self) -> None:
         """Run all registered cleanup callbacks."""
+        # Skip if cleanup_callbacks feature is disabled
+        if not self._features_enabled.get('cleanup_callbacks', True):
+            return
+
+        # Skip if no callbacks registered
+        if self._cleanup_callbacks is None:
+            return
+
         for callback in self._cleanup_callbacks:
             try:
                 callback()
             except Exception as e:
-                logger.error(f"Error in cleanup callback: {e}")
+                logger.error("Error in cleanup callback: %s", e)
         self._cleanup_callbacks.clear()
     
+    def elapsed_time(self) -> Optional[float]:
+        """Get elapsed time since context creation in seconds.
+
+        Returns:
+            Elapsed time in seconds, or None if timing feature is disabled
+        """
+        if not self._features_enabled.get('timing', True) or self._start_time is None:
+            return None
+
+        import time
+        return time.perf_counter() - self._start_time
+
     def to_dict(self) -> Dict[str, Any]:
         """Get a copy of all context data.
         
+        **Performance Warning**: This method creates a shallow copy of all data,
+        which can be expensive if the context contains many items. For better
+        performance, prefer accessing specific keys with get() instead of
+        copying the entire context.
+
         Returns:
             Dictionary of all stored data
         """
@@ -137,7 +275,8 @@ class RequestContext:
     
     def __repr__(self) -> str:
         """String representation of the context."""
-        return f"RequestContext(data={len(self._data)} items, metadata={len(self._metadata)} items)"
+        metadata_count = len(self._metadata) if self._metadata is not None else 0
+        return f"RequestContext(data={len(self._data)} items, metadata={metadata_count} items)"
 
 
 def get_current_context() -> Optional[RequestContext]:

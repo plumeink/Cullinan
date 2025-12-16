@@ -25,8 +25,27 @@ from cullinan.path_utils import (
     is_nuitka_compiled,
 )
 
+# Import scan statistics utilities
+from cullinan.scan_stats import (
+    get_scan_stats_collector,
+    log_scan_statistics,
+    ScanPhase,
+)
+
 logger = logging.getLogger(__name__)
 
+# Module scanning result cache (to avoid duplicate scanning)
+_module_list_cache: Optional[List[str]] = None
+_cache_lock = None
+
+
+def _get_cache_lock():
+    """Get or create the cache lock (lazy initialization for thread safety)."""
+    global _cache_lock
+    if _cache_lock is None:
+        import threading
+        _cache_lock = threading.Lock()
+    return _cache_lock
 
 
 def get_nuitka_standalone_mode() -> Optional[str]:
@@ -562,11 +581,94 @@ def file_list_func() -> List[str]:
     2. Try caller package scanning (development environment)
     3. Fallback to current working directory scan
     
+    Results are cached to avoid duplicate scanning overhead.
+
     Returns:
         List[str]: List of dotted module names
     """
-    logger.info("Starting module discovery...")
-    
+    import time
+
+    global _module_list_cache
+
+    # Check cache first (fast path)
+    if _module_list_cache is not None:
+        logger.debug("Using cached module list (%d modules)", len(_module_list_cache))
+        # Record cache hit
+        stats_collector = get_scan_stats_collector()
+        stats_collector.record_modules_cached(len(_module_list_cache))
+        return _module_list_cache
+
+    # Thread-safe cache check and population
+    lock = _get_cache_lock()
+    with lock:
+        # Double-check pattern: another thread might have populated the cache
+        if _module_list_cache is not None:
+            logger.debug("Using cached module list (%d modules)", len(_module_list_cache))
+            return _module_list_cache
+
+        # Determine packaging mode
+        from cullinan.path_utils import get_packaging_mode
+        packaging_mode = get_packaging_mode()
+
+        # Check for explicit registration mode (skip scanning)
+        from cullinan.config import get_config
+        config = get_config()
+
+        # Initialize statistics collection
+        stats_collector = get_scan_stats_collector()
+
+        if config.explicit_services or config.explicit_controllers:
+            stats_collector.start_scan(scan_mode="explicit", packaging_mode=packaging_mode)
+            logger.info(
+                "Explicit registration mode enabled: skipping module scanning. "
+                "Services: %d, Controllers: %d",
+                len(config.explicit_services) if config.explicit_services else 0,
+                len(config.explicit_controllers) if config.explicit_controllers else 0
+            )
+            # Return empty list to skip scanning
+            _module_list_cache = []
+            stats = stats_collector.end_scan(0.0)
+            log_scan_statistics(stats, level="info")
+            return _module_list_cache
+
+        # Perform actual scanning with performance measurement
+        logger.info("Starting module discovery...")
+        start_time = time.perf_counter()
+
+        # Start statistics collection
+        stats_collector.start_scan(scan_mode="auto", packaging_mode=packaging_mode)
+
+        # Discovery phase
+        stats_collector.start_phase(ScanPhase.DISCOVERY)
+        modules = _do_module_discovery()
+        stats_collector.end_phase(ScanPhase.DISCOVERY)
+
+        elapsed = time.perf_counter() - start_time
+        elapsed_ms = elapsed * 1000
+
+        # Cache the results
+        stats_collector.start_phase(ScanPhase.CACHING)
+        _module_list_cache = modules
+        stats_collector.end_phase(ScanPhase.CACHING)
+
+        # Record statistics
+        stats_collector.record_modules_found(len(modules))
+        stats = stats_collector.end_scan(elapsed_ms)
+
+        # Log performance metrics with statistics
+        log_scan_statistics(stats, level="info" if elapsed_ms < 1000 else "warning")
+
+        return modules
+
+
+def _do_module_discovery() -> List[str]:
+    """Internal function that performs the actual module discovery.
+
+    Separated from file_list_func() to enable caching.
+
+    Returns:
+        List[str]: List of dotted module names
+    """
     # Strategy 1: Detect packaging environment and use specialized scanning
     # Note: Nuitka detection first, as it may also set sys.frozen
     if is_nuitka_compiled():

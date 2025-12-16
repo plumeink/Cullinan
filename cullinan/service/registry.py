@@ -235,7 +235,13 @@ class ServiceRegistry(Registry[Type[Service]]):
         注意：
         - 对于异步方法，请使用 initialize_all_async()
         - 依赖顺序由 core.InjectionRegistry 自动处理
+        - 错误处理策略由 configure(startup_error_policy=...) 控制
         """
+        # 获取启动错误策略
+        from cullinan.config import get_config
+        config = get_config()
+        error_policy = config.startup_error_policy
+
         # 获取所有服务名称
         service_names = list(self._items.keys())
         
@@ -244,14 +250,25 @@ class ServiceRegistry(Registry[Type[Service]]):
             return
         
         # 按注册顺序初始化（core DI 系统会自动处理依赖顺序）
-        logger.info(f"Initializing {len(service_names)} services...")
+        logger.info(f"Initializing {len(service_names)} services (error_policy={error_policy})...")
+
+        failed_services = []  # 记录失败的服务
 
         for name in service_names:
             try:
                 # get_instance 会创建实例并调用 on_init
+                # 注意：get_instance 可能抛出 DependencyResolutionError
                 instance = self.get_instance(name)
                 if not instance:
-                    logger.warning(f"Failed to create instance for {name}")
+                    error_msg = f"Failed to create instance for {name}"
+                    logger.warning(error_msg)
+
+                    if error_policy == 'strict':
+                        raise RuntimeError(error_msg)
+                    elif error_policy == 'warn':
+                        failed_services.append(name)
+                        continue
+                    # 'ignore' 策略：继续
                     continue
 
                 # 调用 on_startup 钩子
@@ -266,18 +283,79 @@ class ServiceRegistry(Registry[Type[Service]]):
                                 f"Please use 'await initialize_all_async()' instead, or make 'on_startup()' synchronous."
                             )
                         logger.debug(f"Called on_startup for service: {name}")
-                    except RuntimeError:
-                        # 重新抛出我们的 RuntimeError
-                        raise
+                    except RuntimeError as e:
+                        # RuntimeError（包括我们的 async 检测错误）总是重新抛出
+                        if 'is async but' in str(e):
+                            raise
+                        # 其他 RuntimeError 根据策略处理
+                        logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
+                        if error_policy == 'strict':
+                            raise
+                        elif error_policy == 'warn':
+                            logger.warning(f"Service {name} on_startup failed, but continuing due to 'warn' policy")
+                            failed_services.append(name)
+                            continue
                     except Exception as e:
                         logger.error(f"Error in on_startup for {name}: {e}", exc_info=True)
-                        raise
+
+                        # 根据策略处理错误
+                        if error_policy == 'strict':
+                            raise
+                        elif error_policy == 'warn':
+                            logger.warning(f"Service {name} on_startup failed, but continuing due to 'warn' policy")
+                            failed_services.append(name)
+                            continue
+                        # 'ignore' 策略：继续
+
+            except DependencyResolutionError as e:
+                # get_instance 抛出的依赖解析错误
+                logger.error(f"Failed to resolve dependencies for {name}: {e}", exc_info=True)
+
+                if error_policy == 'strict':
+                    raise  # 立即退出
+                elif error_policy == 'warn':
+                    logger.warning(f"Service {name} dependency resolution failed, but continuing due to 'warn' policy")
+                    failed_services.append(name)
+                    continue
+                # 'ignore' 策略：继续
+
+            except RuntimeError as e:
+                # RuntimeError 需要特殊处理（包括 async 检测）
+                if 'is async but' in str(e):
+                    raise  # async 检测错误总是抛出
+
+                logger.error(f"Failed to initialize service {name}: {e}", exc_info=True)
+                if error_policy == 'strict':
+                    raise
+                elif error_policy == 'warn':
+                    logger.warning(f"Service {name} initialization failed, but continuing due to 'warn' policy")
+                    failed_services.append(name)
+                    continue
 
             except Exception as e:
                 logger.error(f"Failed to initialize service {name}: {e}", exc_info=True)
-                raise
 
-        logger.info(f"Successfully initialized {len(self._instances)} services")
+                # 根据策略处理错误
+                if error_policy == 'strict':
+                    raise  # 立即退出
+                elif error_policy == 'warn':
+                    logger.warning(f"Service {name} initialization failed, but continuing due to 'warn' policy")
+                    failed_services.append(name)
+                    continue
+                # 'ignore' 策略：继续
+
+        # 输出最终状态
+        successful_count = len(self._instances)
+        failed_count = len(failed_services)
+
+        if failed_count > 0:
+            logger.warning(
+                f"Initialized {successful_count} services, {failed_count} failed: {', '.join(failed_services)}"
+            )
+            if error_policy != 'strict':
+                logger.warning("Application running in degraded mode due to failed services")
+        else:
+            logger.info(f"Successfully initialized {successful_count} services")
 
     async def initialize_all_async(self) -> None:
         """初始化所有注册的服务（异步版本）
