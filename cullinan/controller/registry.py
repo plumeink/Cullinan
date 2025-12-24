@@ -22,11 +22,12 @@ import threading
 
 from cullinan.core import Registry
 from cullinan.core.exceptions import RegistryError, DependencyResolutionError
+from cullinan.core.provider_source import ProviderSource
 
 logger = logging.getLogger(__name__)
 
 
-class ControllerRegistry(Registry[Type[Any]]):
+class ControllerRegistry(Registry[Type[Any]], ProviderSource):
     """Controller 注册表 - cullinan.core DI 系统的 Controller Provider
 
     职责（类似 Spring MVC 的 RequestMappingHandlerMapping）：
@@ -71,11 +72,17 @@ class ControllerRegistry(Registry[Type[Any]]):
         self._instance_lock = threading.RLock()
 
         # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
-        # 这样其他组件也可以通过 Inject() 注入 Controller（如果需要）
+        # 使用 ProviderSource 接口（如果已实现）
         from cullinan.core import get_injection_registry
         injection_registry = get_injection_registry()
-        injection_registry.add_provider_registry(self, priority=5)
-        logger.debug("ControllerRegistry registered as core DI provider (priority=5)")
+        
+        # Check if this registry implements ProviderSource
+        from cullinan.core.provider_source import ProviderSource
+        if isinstance(self, ProviderSource):
+            injection_registry.add_provider_source(self)
+            logger.debug("ControllerRegistry registered as core DI provider (via ProviderSource)")
+        else:
+            logger.warning("ControllerRegistry does not implement ProviderSource interface")
 
     def register(self, name: str, controller_class: Type[Any],
                  url_prefix: str = '', **metadata) -> None:
@@ -339,6 +346,48 @@ class ControllerRegistry(Registry[Type[Any]]):
         if self._controller_methods is None:
             return {}
         return {name: methods.copy() for name, methods in self._controller_methods.items()}
+
+    # ========================================================================
+    # ProviderSource Interface Implementation
+    # ========================================================================
+
+    def can_provide(self, name: str) -> bool:
+        """Check if this registry can provide the given controller.
+
+        Args:
+            name: Controller name
+
+        Returns:
+            True if controller is registered
+        """
+        return name in self._items
+
+    def provide(self, name: str) -> Optional[Any]:
+        """Provide a controller instance.
+
+        Args:
+            name: Controller name
+
+        Returns:
+            Controller instance or None if not found
+        """
+        return self.get_instance(name)
+
+    def list_available(self) -> List[str]:
+        """List all available controller names.
+
+        Returns:
+            List of controller names
+        """
+        return list(self._items.keys())
+
+    def get_priority(self) -> int:
+        """Get the priority of this provider source.
+
+        Returns:
+            Priority value (5 for controllers, lower than services)
+        """
+        return 5
 
 
 # Global controller registry instance (singleton pattern)

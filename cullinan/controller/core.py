@@ -45,7 +45,9 @@ access_logger = logging.getLogger('cullinan.access')
 
 # Context variable for controller method collection during decoration (thread-safe)
 # This is used during controller class decoration to collect methods
-_controller_decoration_context: contextvars.ContextVar[List] = contextvars.ContextVar('_controller_decoration_context', default=None)
+_controller_decoration_context: contextvars.ContextVar[Optional[List]] = contextvars.ContextVar(
+    '_controller_decoration_context', default=None
+)
 
 KEY_NAME_INDEX = {
     "url_params": 0,
@@ -298,17 +300,26 @@ class response(metaclass=LazyResponseMeta):
 class EncapsulationHandler(object):
     @classmethod
     def set_fragment_method(cls, cls_obj: Any, func: Callable[[object, tuple, dict], None]):
-        # Check if the function is a coroutine function (async def)
-        if inspect.iscoroutinefunction(func):
-            @functools.wraps(func)
-            async def dummy(self, *args, **kwargs):
-                return await func(self, *args, **kwargs)
-        else:
-            @functools.wraps(func)
-            def dummy(self, *args, **kwargs):
-                return func(self, *args, **kwargs)
+        """将函数包装为异步方法并绑定到类上。
+
+        统一使用 async def wrapper，运行时检查结果是否需要 await。
+        这确保了无论原函数是同步还是异步，都能正确处理。
+
+        CRITICAL FIX: 使用统一的 async wrapper + inspect.isawaitable() 运行时检查
+        - 简化逻辑，避免分支判断
+        - 使用 isawaitable() 覆盖所有可等待对象类型
+        - Tornado 完全支持这种统一异步的方式
+        """
+        @functools.wraps(func)
+        async def dummy(self, *args, **kwargs):
+            result = func(self, *args, **kwargs)
+            # 检查结果是否为可等待对象（coroutine, generator-based coroutine, custom awaitable, Future）
+            if inspect.isawaitable(result):
+                result = await result
+            return result
 
         setattr(cls_obj, func.__name__, dummy)
+
 
     @staticmethod
     def add_func(url: str, type: str) -> Callable:
@@ -799,7 +810,8 @@ async def request_handler(self, func: Callable, params: Tuple, headers: Optional
         # [FIX CRITICAL] 检测并 await 异步协程
         # 如果 controller 方法是 async def，func() 返回 coroutine 对象
         # 必须 await 才能真正执行异步代码
-        if inspect.iscoroutine(response_ret):
+        # 使用 inspect.isawaitable 来覆盖所有可等待对象（coroutine, generator-based coroutine, awaitable）
+        if inspect.isawaitable(response_ret):
             response_ret = await response_ret
 
         # 返回值优先，否则使用 context 中绑定的实例
@@ -888,6 +900,10 @@ def get_api(**kwargs: Any) -> Callable:
                                   header_resolver(self, kwargs.get('headers')),
                                   'get')
 
+        # Task: attach route metadata for fallback scanning
+        setattr(get, '__cullinan_url__', local_url)
+        setattr(get, '__cullinan_method__', 'get')
+
         return get
 
     return inner
@@ -923,6 +939,9 @@ def post_api(**kwargs: Any) -> Callable:
                                   'post',
                                   kwargs.get('get_request_body', False))
 
+        setattr(post, '__cullinan_url__', local_url)
+        setattr(post, '__cullinan_method__', 'post')
+
         return post
 
     return inner
@@ -957,6 +976,9 @@ def patch_api(**kwargs: Any) -> Callable:
                                   'patch',
                                   kwargs.get('get_request_body', False))
 
+        setattr(patch, '__cullinan_url__', local_url)
+        setattr(patch, '__cullinan_method__', 'patch')
+
         return patch
 
     return inner
@@ -988,6 +1010,9 @@ def delete_api(**kwargs: Any) -> Callable:
                                   header_resolver(self, kwargs.get('headers')),
                                   'delete')
 
+        setattr(delete, '__cullinan_url__', local_url)
+        setattr(delete, '__cullinan_method__', 'delete')
+
         return delete
 
     return inner
@@ -1018,6 +1043,9 @@ def put_api(**kwargs: Any) -> Callable:
                                                    query_params, None, file_params),
                                   header_resolver(self, kwargs.get('headers')),
                                   'put')
+
+        setattr(put, '__cullinan_url__', local_url)
+        setattr(put, '__cullinan_method__', 'put')
 
         return put
 
@@ -1086,20 +1114,31 @@ def controller(**kwargs) -> Callable:
 
 
         # 2. 获取在类定义时收集的方法（通过 add_func）
+        # IMPORTANT: read-and-reset to avoid leaking methods across controllers
         func_list = _controller_decoration_context.get() or []
+        _controller_decoration_context.set([])
 
-        # 3. 扫描类的所有属性，查找被装饰的方法
-        # 这是备用方案，以防上下文丢失
+        # 3. 扫描类的所有属性，查找被装饰的方法（fallback）
         if not func_list:
-            # 尝试从类的属性中收集方法信息
             for attr_name in dir(cls):
                 if attr_name.startswith('_'):
                     continue
                 attr = getattr(cls, attr_name, None)
-                if callable(attr) and hasattr(attr, '__wrapped__'):
-                    # 这是一个被装饰的方法
-                    # 注意：这个备用方案可能不完整，但总比没有好
-                    pass
+                if not callable(attr):
+                    continue
+                # Tornado wrappers created by get_api/post_api/etc are named get/post/put/...
+                # and keep __wrapped__ to the original function. EncapsulationHandler.add_func
+                # attaches no metadata except that wrapper name indicates HTTP method.
+                wrapped = getattr(attr, '__wrapped__', None)
+                if wrapped is None:
+                    continue
+                # Try to retrieve route metadata if present
+                route_url = getattr(attr, '__cullinan_url__', None)
+                route_type = getattr(attr, '__cullinan_method__', None)
+                if route_url is not None and route_type is not None:
+                    # IMPORTANT: use the wrapper function (attr). Tornado dispatches based on
+                    # method name (get/post/put/...), and the wrapper is named accordingly.
+                    func_list.append((route_url, attr, route_type))
 
         try:
             # Get controller registry
@@ -1204,6 +1243,14 @@ class HttpResponse(object):
             value: Header value (e.g., 'application/json')
         """
         self.__headers__.append([name, value])
+
+    def set_header(self, name: str, value: str) -> None:
+        """Backward-compatible alias for add_header().
+
+        Some user code calls resp.set_header(...). Internally we store headers
+        as a list of [name, value] pairs, so set_header behaves like add_header.
+        """
+        self.add_header(name, value)
 
     def set_is_static(self, boolean: bool) -> None:
         """Mark whether this response is for a static file.
@@ -1436,3 +1483,4 @@ def get_response_pool_stats() -> Optional[dict]:
     if _response_pool is not None:
         return _response_pool.get_stats()
     return None
+

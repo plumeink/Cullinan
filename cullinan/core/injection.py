@@ -13,13 +13,15 @@
 - 缓存类型提示避免重复解析
 """
 
-from typing import Type, Any, Dict, Optional, get_type_hints, Set
+from typing import Type, Any, Dict, Optional, get_type_hints, Set, List, Tuple
 import logging
 import threading
 from contextvars import ContextVar
 
 from .registry import Registry
 from .exceptions import RegistryError, CircularDependencyError
+# Import ProviderSource interface (Task-1.3)
+from .provider_source import ProviderSource
 
 logger = logging.getLogger(__name__)
 
@@ -57,18 +59,59 @@ class Inject:
         required: 是否必需（True 时找不到依赖会抛出异常）
     """
 
-    __slots__ = ('name', 'required', '_attr_name', '_resolved_name')
+    __slots__ = ('name', 'required', '_attr_name', '_resolved_name', '_use_new_model')
 
     def __init__(self, name: Optional[str] = None, required: bool = True):
         self.name = name
         self.required = required
         self._attr_name = None
         self._resolved_name = None
+        # Task-3.3: 启用新的统一模型
+        self._use_new_model = True
 
     def __set_name__(self, owner, name):
         """当作为类属性时自动调用，获取属性名"""
         self._attr_name = name
         logger.debug(f"Registered Inject: {owner.__name__}.{name} -> {self.name or 'auto'}")
+
+        # Task-3.3: 如果启用新模型，向 InjectionRegistry 注册元信息
+        if self._use_new_model:
+            self._register_injection_point(owner, name)
+
+    def _register_injection_point(self, owner: Type, attr_name: str) -> None:
+        """向 InjectionRegistry 注册注入点元信息（Task-3.3）"""
+        try:
+            from .injection_model import InjectionPoint, infer_dependency_name
+
+            # 获取类型注解
+            attr_type = None
+            if hasattr(owner, '__annotations__'):
+                attr_type = owner.__annotations__.get(attr_name)
+
+            # 推断依赖名称
+            dependency_name = infer_dependency_name(
+                explicit_name=self.name,
+                attr_name=attr_name,
+                attr_type=attr_type
+            )
+
+            # 创建注入点
+            point = InjectionPoint(
+                attr_name=attr_name,
+                dependency_name=dependency_name,
+                required=self.required,
+                attr_type=attr_type
+            )
+
+            # 注册到 InjectionRegistry
+            registry = get_injection_registry()
+            if hasattr(registry, 'register_injection_point'):
+                registry.register_injection_point(owner, point)
+                logger.debug(f"Registered InjectionPoint: {owner.__name__}.{attr_name} -> {dependency_name}")
+        except ImportError:
+            # 如果新模型未导入（向后兼容），使用旧逻辑
+            logger.debug(f"New injection model not available, using legacy mode")
+            self._use_new_model = False
 
     def __get__(self, instance, owner):
         """获取注入的依赖实例（延迟加载）"""
@@ -81,37 +124,116 @@ class Inject:
             if attr_value is not None:
                 return attr_value
 
-        # 解析依赖名称（如果还没解析）
-        if self._resolved_name is None:
-            self._resolved_name = self._resolve_name(owner)
+        # Task-3.3: 使用统一执行器进行注入
+        if self._use_new_model:
+            value = self._inject_with_new_model(instance, owner)
+            if value is not None or not self.required:
+                return value
+        
+        # 如果新模型未启用或返回 None，抛出增强的错误信息
+        if self.required:
+            self._raise_detailed_error(instance, owner)
+        return None
 
-        # 从全局注入注册表解析依赖
-        registry = get_injection_registry()
-        dependency = registry._resolve_dependency(self._resolved_name)
+    def _raise_detailed_error(self, instance: Any, owner: Type) -> None:
+        """抛出详细的错误信息，帮助用户诊断问题"""
+        # 尝试解析依赖名称
+        dep_name = self._resolve_name(owner) if hasattr(self, '_resolve_name') else 'Unknown'
 
-        if dependency is None:
-            if self.required:
-                raise RegistryError(
-                    f"Required dependency '{self._resolved_name}' not found for "
-                    f"{owner.__name__}.{self._attr_name}. "
-                    f"Ensure it's registered with appropriate decorator."
-                )
-            else:
-                logger.debug(
-                    f"Optional dependency '{self._resolved_name}' not found, "
-                    f"returning None for {owner.__name__}.{self._attr_name}"
-                )
-                return None
+        # 尝试获取可用的服务列表
+        available_services = []
+        try:
+            from ..service import get_service_registry
+            service_registry = get_service_registry()
+            if hasattr(service_registry, 'list'):
+                available_services = list(service_registry.list())
+            elif hasattr(service_registry, '_items'):
+                available_services = list(service_registry._items.keys())
+        except Exception:
+            pass
 
-        # 缓存到实例字典（如果有属性名）
-        if self._attr_name:
-            instance.__dict__[self._attr_name] = dependency
-            logger.debug(
-                f"Injected {self._resolved_name} into "
-                f"{owner.__name__}.{self._attr_name}"
-            )
+        error_msg = (
+            f"Required dependency '{dep_name}' not found for "
+            f"{owner.__name__}.{self._attr_name}.\n"
+        )
 
-        return dependency
+        if available_services:
+            error_msg += f"Available services: {', '.join(available_services)}\n"
+        else:
+            error_msg += "No services registered.\n"
+
+        error_msg += (
+            "\nPossible causes:\n"
+            f"  1. Service '{dep_name}' not decorated with @service\n"
+            "  2. Service module not scanned (check module location)\n"
+            "  3. Service initialization failed (check logs)\n"
+            "  4. Module not included in packaged environment\n"
+            "\nSolutions:\n"
+            "  - For packaged apps: Use cullinan.configure(explicit_services=[...])\n"
+            "  - Check if service module is in correct location for scanning\n"
+            "  - Add diagnostic logging to verify service registration\n"
+        )
+
+        raise RegistryError(error_msg)
+
+    def _inject_with_new_model(self, instance: Any, owner: Type) -> Optional[Any]:
+        """使用新的统一模型进行注入（Task-3.3）
+
+        如果新模型失败，自动尝试回退到直接从 ServiceRegistry 获取。
+        """
+        try:
+            from .injection_executor import get_injection_executor
+
+            executor = get_injection_executor()
+            registry = get_injection_registry()
+
+            # 获取类的注入元数据
+            if hasattr(registry, 'get_injection_metadata'):
+                metadata = registry.get_injection_metadata(owner)
+                if metadata:
+                    # 只注入当前属性
+                    point = metadata.get_injection_point(self._attr_name)
+                    if point:
+                        # 使用执行器解析并注入
+                        value = executor.resolve_injection_point(instance, point)
+                        if value is not None:
+                            setattr(instance, self._attr_name, value)
+                            logger.debug(f"Injected {point.dependency_name} using new model")
+                        return value
+        except (ImportError, AttributeError, RuntimeError) as e:
+            # RuntimeError: InjectionExecutor not initialized - 回退到旧逻辑
+            logger.debug(f"Failed to use new injection model: {e}, falling back to legacy")
+
+        # 自动回退：直接从 ServiceRegistry 获取
+        return self._fallback_inject(instance, owner)
+
+    def _fallback_inject(self, instance: Any, owner: Type) -> Optional[Any]:
+        """回退注入：直接从 ServiceRegistry 获取服务
+
+        当新的注入模型失败时，尝试直接从 ServiceRegistry 获取服务实例。
+        这提供了更好的容错性，特别是在打包环境中。
+        """
+        try:
+            # 解析依赖名称
+            dep_name = self._resolve_name(owner)
+
+            from ..service import get_service_registry
+            service_registry = get_service_registry()
+
+            if service_registry.has(dep_name):
+                value = service_registry.get_instance(dep_name)
+                if value is not None:
+                    setattr(instance, self._attr_name, value)
+                    logger.info(
+                        f"Injected {dep_name} using fallback "
+                        f"(direct from ServiceRegistry) for "
+                        f"{owner.__name__}.{self._attr_name}"
+                    )
+                    return value
+        except Exception as fallback_error:
+            logger.debug(f"Fallback injection also failed: {fallback_error}")
+
+        return None
 
     def __set__(self, instance, value):
         """允许手动设置（用于测试 Mock）"""
@@ -119,7 +241,12 @@ class Inject:
             instance.__dict__[self._attr_name] = value
 
     def _resolve_name(self, owner_class: Type) -> str:
-        """解析依赖名称（从 name、类型注解或属性名）"""
+        """解析依赖名称（从 name、类型注解或属性名）
+
+        Task-3.4: 使用统一的工具函数
+        """
+        from .injection_utils import resolve_dependency_name_from_annotation
+
         # 优先使用明确指定的名称
         if self.name:
             return self.name
@@ -128,18 +255,12 @@ class Inject:
         if self._attr_name and hasattr(owner_class, '__annotations__'):
             anno = owner_class.__annotations__.get(self._attr_name)
             if anno:
-                # 支持字符串注解
-                if isinstance(anno, str):
-                    return anno
-                # 支持实际类型
-                if hasattr(anno, '__name__'):
-                    return anno.__name__
+                return resolve_dependency_name_from_annotation(None, self._attr_name, anno)
 
-        # 回退到属性名转换（snake_case -> PascalCase）
+        # 回退到属性名
         if self._attr_name:
-            if '_' in self._attr_name:
-                return ''.join(word.capitalize() for word in self._attr_name.split('_'))
-            return self._attr_name
+            from .injection_utils import convert_snake_to_pascal
+            return convert_snake_to_pascal(self._attr_name)
 
         return 'Unknown'
 
@@ -174,7 +295,7 @@ class InjectByName:
     - 支持测试 Mock
     """
 
-    __slots__ = ('service_name', '_attr_name', 'required')
+    __slots__ = ('service_name', '_attr_name', 'required', '_use_new_model')
 
     def __init__(self, service_name: Optional[str] = None, required: bool = True):
         """初始化注入描述符
@@ -186,9 +307,11 @@ class InjectByName:
         self.service_name = service_name
         self._attr_name = None
         self.required = required
+        # Task-3.3 Step 4: 启用新的统一模型
+        self._use_new_model = True
 
     def __set_name__(self, owner, name):
-        """当作为类属性时��动调用，获取属性名"""
+        """当作为类属性时自动调用，获取属性名"""
         self._attr_name = name
 
         # 如果没有指定 service_name，根据属性名自动推断
@@ -201,6 +324,34 @@ class InjectByName:
 
         logger.debug(f"Registered InjectByName: {owner.__name__}.{name} -> {self.service_name}")
 
+        # Task-3.3 Step 4: 如果启用新模型，向 InjectionRegistry 注册元信息
+        if self._use_new_model:
+            self._register_injection_point(owner, name)
+
+    def _register_injection_point(self, owner: Type, attr_name: str) -> None:
+        """向 InjectionRegistry 注册注入点元信息（Task-3.3 Step 4）"""
+        try:
+            from .injection_model import InjectionPoint, ResolveStrategy
+
+            # 创建注入点（使用 BY_NAME 策略）
+            point = InjectionPoint(
+                attr_name=attr_name,
+                dependency_name=self.service_name,
+                required=self.required,
+                attr_type=None,  # InjectByName 不使用类型
+                resolve_strategy=ResolveStrategy.BY_NAME
+            )
+
+            # 注册到 InjectionRegistry
+            registry = get_injection_registry()
+            if hasattr(registry, 'register_injection_point'):
+                registry.register_injection_point(owner, point)
+                logger.debug(f"Registered InjectionPoint (by name): {owner.__name__}.{attr_name} -> {self.service_name}")
+        except ImportError:
+            # 如果新模型未导入（向后兼容），使用旧逻辑
+            logger.debug(f"New injection model not available, using legacy mode")
+            self._use_new_model = False
+
     def __get__(self, instance, owner):
         """获取注入的依赖实例（延迟加载）"""
         if instance is None:
@@ -211,32 +362,110 @@ class InjectByName:
         if attr_value is not None:
             return attr_value
 
-        # 从全局注入注册表解析依赖
-        registry = get_injection_registry()
-        dependency = registry._resolve_dependency(self.service_name)
+        # Task-3.3 Step 4: 使用统一执行器进行注入
+        if self._use_new_model:
+            value = self._inject_with_new_model(instance, owner)
+            if value is not None or not self.required:
+                return value
+        
+        # 如果新模型未启用或返回 None，抛出增强的错误信息
+        if self.required:
+            self._raise_detailed_error(instance)
+        return None
 
-        if dependency is None:
-            if self.required:
-                raise RegistryError(
-                    f"Required dependency '{self.service_name}' not found for "
-                    f"{instance.__class__.__name__}.{self._attr_name}. "
-                    f"Ensure it's registered with appropriate decorator."
-                )
-            else:
-                logger.debug(
-                    f"Optional dependency '{self.service_name}' not found, "
-                    f"returning None for {instance.__class__.__name__}.{self._attr_name}"
-                )
-                return None
+    def _raise_detailed_error(self, instance: Any) -> None:
+        """抛出详细的错误信息，帮助用户诊断问题"""
+        # 尝试获取可用的服务列表
+        available_services = []
+        try:
+            from ..service import get_service_registry
+            service_registry = get_service_registry()
+            if hasattr(service_registry, 'list'):
+                available_services = list(service_registry.list())
+            elif hasattr(service_registry, '_items'):
+                available_services = list(service_registry._items.keys())
+        except Exception:
+            pass
 
-        # 缓存到实例字典，下次访问直接返回（O(1)）
-        instance.__dict__[self._attr_name] = dependency
-        logger.debug(
-            f"Injected {self.service_name} into "
-            f"{instance.__class__.__name__}.{self._attr_name}"
+        error_msg = (
+            f"Required dependency '{self.service_name}' not found for "
+            f"{instance.__class__.__name__}.{self._attr_name}.\n"
         )
 
-        return dependency
+        if available_services:
+            error_msg += f"Available services: {', '.join(available_services)}\n"
+        else:
+            error_msg += "No services registered.\n"
+
+        error_msg += (
+            "\nPossible causes:\n"
+            f"  1. Service '{self.service_name}' not decorated with @service\n"
+            "  2. Service module not scanned (check module location)\n"
+            "  3. Service initialization failed (check logs)\n"
+            "  4. Module not included in packaged environment\n"
+            "\nSolutions:\n"
+            "  - For packaged apps: Use cullinan.configure(explicit_services=[...])\n"
+            "  - Check if service module is in correct location for scanning\n"
+            "  - Add diagnostic logging to verify service registration\n"
+        )
+
+        raise RegistryError(error_msg)
+
+    def _inject_with_new_model(self, instance: Any, owner: Type) -> Optional[Any]:
+        """使用新的统一模型进行注入（Task-3.3 Step 4）
+
+        如果新模型失败，自动尝试回退到直接从 ServiceRegistry 获取。
+        """
+        try:
+            from .injection_executor import get_injection_executor
+
+            executor = get_injection_executor()
+            registry = get_injection_registry()
+
+            # 获取类的注入元数据
+            if hasattr(registry, 'get_injection_metadata'):
+                metadata = registry.get_injection_metadata(owner)
+                if metadata:
+                    # 只注入当前属性
+                    point = metadata.get_injection_point(self._attr_name)
+                    if point:
+                        # 使用执行器解析并注入
+                        value = executor.resolve_injection_point(instance, point)
+                        if value is not None:
+                            setattr(instance, self._attr_name, value)
+                            logger.debug(f"Injected {point.dependency_name} using new model (by name)")
+                        return value
+        except (ImportError, AttributeError, RuntimeError) as e:
+            # RuntimeError: InjectionExecutor not initialized - 回退到旧逻辑
+            logger.debug(f"Failed to use new injection model: {e}, falling back to legacy")
+
+        # 自动回退：直接从 ServiceRegistry 获取
+        return self._fallback_inject(instance)
+
+    def _fallback_inject(self, instance: Any) -> Optional[Any]:
+        """回退注入：直接从 ServiceRegistry 获取服务
+
+        当新的注入模型失败时，尝试直接从 ServiceRegistry 获取服务实例。
+        这提供了更好的容错性，特别是在打包环境中。
+        """
+        try:
+            from ..service import get_service_registry
+            service_registry = get_service_registry()
+
+            if service_registry.has(self.service_name):
+                value = service_registry.get_instance(self.service_name)
+                if value is not None:
+                    setattr(instance, self._attr_name, value)
+                    logger.info(
+                        f"Injected {self.service_name} using fallback "
+                        f"(direct from ServiceRegistry) for "
+                        f"{instance.__class__.__name__}.{self._attr_name}"
+                    )
+                    return value
+        except Exception as fallback_error:
+            logger.debug(f"Fallback injection also failed: {fallback_error}")
+
+        return None
 
     def __set__(self, instance, value):
         """允许手动设置（用于测试 Mock）"""
@@ -280,23 +509,41 @@ class InjectionRegistry:
     职责：
     1. 扫描类的类型注解，记录注入需求
     2. 在运行时解析并注入依赖
-    3. 支持多个依赖提供者（Registry）
+    3. 支持多个依赖提供者（ProviderSource）
+    4. 按优先级协调多个 ProviderSource
+
+    Task-1.3 改进：
+    - 使用 ProviderSource 接口而非具体的 Registry
+    - 统一的依赖解析路径
+    - 更清晰的层间职责
     """
 
-    __slots__ = ('_metadata', '_provider_registries', '_type_hint_cache', '_lock')
+    __slots__ = ('_metadata', '_provider_sources', '_type_hint_cache', '_lock', '_unified_metadata')
 
     def __init__(self):
         # {class: InjectionMetadata}
         self._metadata: Dict[Type, InjectionMetadata] = {}
-        # 依赖提供者注册表列表（按优先级查找）
-        self._provider_registries: list = []
+
+        # Task-1.3: 使用 ProviderSource 接口
+        # List of (priority, ProviderSource) tuples, sorted by priority (descending)
+        self._provider_sources: List[Tuple[int, ProviderSource]] = []
+
+
         # 类型提示缓存
         self._type_hint_cache: Dict[Type, Dict] = {}
         # 线程锁
         self._lock = threading.RLock()
 
+        # Task-3.3: 统一注入元数据
+        self._unified_metadata: Dict[Type, 'UnifiedInjectionMetadata'] = {}
+
     def scan_class(self, cls: Type) -> InjectionMetadata:
         """扫描类的类型注解，记录需要注入的属性
+
+        Task-3.3 Step 6: 优化性能
+        - 优先检查统一元数据缓存
+        - 减少重复扫描
+        - 批量处理注入点
 
         Args:
             cls: 要扫描的类
@@ -305,9 +552,21 @@ class InjectionRegistry:
             注入元数据对象
         """
         with self._lock:
+            # 检查是否已有旧格式元数据
             if cls in self._metadata:
                 return self._metadata[cls]
 
+            # Task-3.3 Step 6: 检查是否已有统一元数据，如果有则转换
+            if cls in self._unified_metadata:
+                unified_meta = self._unified_metadata[cls]
+                # 从统一元数据创建旧格式（向后兼容）
+                metadata = InjectionMetadata(cls)
+                for point in unified_meta.injection_points:  # 这是一个列表
+                    metadata.add_injection(point.attr_name, point.dependency_name, point.required)
+                self._metadata[cls] = metadata
+                return metadata
+
+            # 没有缓存，需要扫描
             metadata = InjectionMetadata(cls)
 
             try:
@@ -366,58 +625,52 @@ class InjectionRegistry:
 
     def _resolve_dependency_name(self, explicit_name: Optional[str],
                                   attr_name: str, attr_type: Type) -> str:
-        """解析依赖名称（支持字符串类型注解，像 SpringBoot 一样无需 import）
+        """解析依赖名称（Task-3.4: 使用统一工具函数）
 
         优先级：
         1. Inject(name='xxx') 明确指定的名称
         2. 从类型注解推断（支持字符串 'ServiceName' 和实际类型）
-        3. 使用属性名
-
-        示例：
-            # 方式1: 字符串注解（无需 import，推荐）
-            email_service: 'EmailService' = Inject()
-
-            # 方式2: 实际类型（需要 import）
-            email_service: EmailService = Inject()
-
-            # 方式3: 显式指定
-            email_service = Inject(name='EmailService')
+        3. 使用属性名转换
         """
-        if explicit_name:
-            return explicit_name
+        from .injection_utils import resolve_dependency_name_from_annotation
+        return resolve_dependency_name_from_annotation(explicit_name, attr_name, attr_type)
 
-        # 支持字符串类型注解（像 Spring 一样无需 import）
-        if isinstance(attr_type, str):
-            # 'EmailService' -> 'EmailService'
-            return attr_type
+    def add_provider_source(self, source: ProviderSource) -> None:
+        """添加依赖提供源 (Task-1.3 新方法)
 
-        # 尝试从类型推断
-        if attr_type is not Any and hasattr(attr_type, '__name__'):
-            return attr_type.__name__
-
-        # 回退到属性名（驼峰转类名）
-        # 例如: email_service -> EmailService
-        if '_' in attr_name:
-            # snake_case -> PascalCase
-            return ''.join(word.capitalize() for word in attr_name.split('_'))
-
-        return attr_name
-
-    def add_provider_registry(self, registry: Registry, priority: int = 0) -> None:
-        """添加依赖提供者注册表
+        使用 ProviderSource 接口，支持任何实现了该接口的依赖提供者。
+        优先级从 source.get_priority() 获取。
 
         Args:
-            registry: 提供依赖对象的注册表（如 ServiceRegistry）
-            priority: 优先级（数字越大优先级越高）
+            source: 实现 ProviderSource 接口的依赖提供源
+
+        Example:
+            from cullinan.core import get_injection_registry
+            from cullinan.service import get_service_registry
+
+            injection_registry = get_injection_registry()
+            service_registry = get_service_registry()
+
+            # ServiceRegistry 实现了 ProviderSource 接口
+            injection_registry.add_provider_source(service_registry)
         """
         with self._lock:
-            self._provider_registries.append((priority, registry))
+            priority = source.get_priority()
+            self._provider_sources.append((priority, source))
             # 按优先级排序（降序）
-            self._provider_registries.sort(key=lambda x: x[0], reverse=True)
-            logger.debug(f"Added provider: {registry.__class__.__name__} (priority={priority})")
+            self._provider_sources.sort(key=lambda x: x[0], reverse=True)
+            logger.debug(
+                f"Added ProviderSource: {source.__class__.__name__} "
+                f"(priority={priority})"
+            )
+
 
     def inject(self, instance: Any) -> None:
         """注入依赖到实例
+
+        .. deprecated:: 0.9
+            推荐使用 InjectionExecutor.inject_instance() 代替。
+            此方法将在 v1.0 移除。
 
         Args:
             instance: 要注入的实例
@@ -425,6 +678,16 @@ class InjectionRegistry:
         Raises:
             RegistryError: 当必需的依赖找不到时
         """
+        # Task-3.3 Step 6: 标记为废弃
+        import warnings
+        warnings.warn(
+            "InjectionRegistry.inject() is deprecated. "
+            "Use InjectionExecutor.inject_instance() instead. "
+            "This method will be removed in v1.0.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+
         cls = type(instance)
         metadata = self._metadata.get(cls)
 
@@ -438,8 +701,9 @@ class InjectionRegistry:
         if not metadata:
             return
 
-        if not self._provider_registries:
-            logger.warning(f"No provider registry set, cannot inject {cls.__name__}")
+        # Task-1.3: 检查 provider 源
+        if not self._provider_sources:
+            logger.warning(f"No provider source set, cannot inject {cls.__name__}")
             return
 
         for attr_name, (dep_name, required) in metadata.injections.items():
@@ -470,7 +734,9 @@ class InjectionRegistry:
                     raise
 
     def _resolve_dependency(self, name: str) -> Optional[Any]:
-        """从提供者注册表解析依赖（按优先级），带循环依赖检测
+        """从提供者解析依赖（按优先级），带循环依赖检测
+
+        Task-1.3: 使用 ProviderSource 接口
 
         Args:
             name: 依赖名称
@@ -497,23 +763,23 @@ class InjectionRegistry:
         # 将当前依赖加入解析栈
         resolving.add(name)
         try:
-            for priority, registry in self._provider_registries:
-                # 尝试从注册表获取实例
-                dep = None
-
-                if hasattr(registry, 'get_instance'):
-                    # 优先使用 get_instance（适用于 ServiceRegistry）
+            # Task-1.3: 使用 ProviderSource 接口
+            for priority, source in self._provider_sources:
+                if source.can_provide(name):
                     try:
-                        dep = registry.get_instance(name)
+                        dep = source.provide(name)
+                        if dep is not None:
+                            logger.debug(
+                                f"Resolved '{name}' from {source.__class__.__name__} "
+                                f"(priority={priority})"
+                            )
+                            return dep
                     except Exception as e:
-                        logger.debug(f"get_instance failed for {name}: {e}")
+                        logger.debug(
+                            f"ProviderSource {source.__class__.__name__} "
+                            f"failed to provide '{name}': {e}"
+                        )
 
-                if dep is None and hasattr(registry, 'get'):
-                    # 回退：直接从注册表获取
-                    dep = registry.get(name)
-
-                if dep is not None:
-                    return dep
 
             return None
         finally:
@@ -522,8 +788,78 @@ class InjectionRegistry:
             if not resolving:
                 _resolving_stack.set(None)
 
+    # ========================================================================
+    # Task-3.3: 新的统一注入模型支持
+    # ========================================================================
+
+    def register_injection_point(self, cls: Type, point: 'InjectionPoint') -> None:
+        """注册注入点到类（Task-3.3 新方法）
+
+        Args:
+            cls: 目标类
+            point: InjectionPoint 对象
+        """
+        try:
+            from .injection_model import UnifiedInjectionMetadata, InjectionPoint
+
+            # 获取或创建 UnifiedInjectionMetadata
+            if cls not in self._unified_metadata:
+                self._unified_metadata[cls] = UnifiedInjectionMetadata(cls)
+
+            self._unified_metadata[cls].add_injection_point(point)
+            logger.debug(
+                f"Registered InjectionPoint: {cls.__name__}.{point.attr_name} -> "
+                f"{point.dependency_name}"
+            )
+        except ImportError as e:
+            logger.debug(f"Unified injection model not available: {e}")
+
+    def get_injection_metadata(self, cls: Type) -> Optional['UnifiedInjectionMetadata']:
+        """获取类的统一注入元数据（Task-3.3 新方法）
+
+        Args:
+            cls: 目标类
+
+        Returns:
+            UnifiedInjectionMetadata 对象，或 None
+        """
+        return self._unified_metadata.get(cls)
+
+    def get_metadata(self, cls: Type, prefer_unified: bool = True) -> Optional[Any]:
+        """获取类的注入元数据（统一接口）
+
+        Task-3.3 Step 6: 统一元数据访问接口
+
+        Args:
+            cls: 目标类
+            prefer_unified: 是否优先返回统一元数据
+
+        Returns:
+            元数据对象（UnifiedInjectionMetadata 或 InjectionMetadata），或 None
+        """
+        if prefer_unified:
+            # 优先返回统一元数据
+            unified = self._unified_metadata.get(cls)
+            if unified:
+                return unified
+            # 如果没有，返回旧元数据
+            return self._metadata.get(cls)
+        else:
+            # 优先返回旧元数据
+            old = self._metadata.get(cls)
+            if old:
+                return old
+            # 如果没有，返回统一元数据
+            return self._unified_metadata.get(cls)
+
+    # ========================================================================
+    # END Task-3.3
+    # ========================================================================
+
     def has_injections(self, cls: Type) -> bool:
         """检查类是否需要依赖注入
+
+        Task-3.3 Step 6: 支持统一元数据
 
         Args:
             cls: 要检查的类
@@ -531,10 +867,13 @@ class InjectionRegistry:
         Returns:
             True 如果需要注入，否则 False
         """
-        return cls in self._metadata
+        # 检查两种元数据存储
+        return cls in self._metadata or cls in self._unified_metadata
 
     def get_injection_info(self, cls: Type) -> Optional[Dict[str, tuple]]:
         """获取类的注入信息（用于调试）
+
+        Task-3.3 Step 6: 支持统一元数据
 
         Args:
             cls: 要查询的类
@@ -542,15 +881,29 @@ class InjectionRegistry:
         Returns:
             注入信息字典，或 None
         """
+        # 优先返回旧格式元数据
         metadata = self._metadata.get(cls)
-        return metadata.injections if metadata else None
+        if metadata:
+            return metadata.injections
+
+        # 如果没有旧格式，尝试从统一元数据转换
+        unified_meta = self._unified_metadata.get(cls)
+        if unified_meta:
+            # 转换为旧格式: {attr_name: (dependency_name, required)}
+            return {
+                point.attr_name: (point.dependency_name, point.required)
+                for point in unified_meta.injection_points  # 这是一个列表
+            }
+
+        return None
 
     def clear(self) -> None:
         """清空所有注入元数据"""
         with self._lock:
             self._metadata.clear()
-            self._provider_registries.clear()
+            self._provider_sources.clear()
             self._type_hint_cache.clear()
+            self._unified_metadata.clear()
             logger.debug("Cleared injection registry")
 
 
@@ -611,12 +964,25 @@ def injectable(cls: Optional[Type] = None):
         def new_init(self, *args, **kwargs):
             # 调用原始 __init__
             original_init(self, *args, **kwargs)
-            # 自动注入依赖
+
+            # Task-3.3 Step 5: 使用统一的 InjectionExecutor 进行注入
             try:
-                registry.inject(self)
-            except Exception as e:
-                logger.error(f"Injection failed during {target_class.__name__}.__init__: {e}")
-                raise
+                from .injection_executor import get_injection_executor, has_injection_executor
+
+                if has_injection_executor():
+                    executor = get_injection_executor()
+                    metadata = registry.get_injection_metadata(target_class)
+
+                    if metadata and metadata.has_injections():
+                        executor.inject_instance(self, metadata)
+                        logger.debug(f"Injected dependencies for {target_class.__name__} using InjectionExecutor")
+                        return
+            except (ImportError, AttributeError, RuntimeError) as e:
+                logger.error(f"InjectionExecutor not available: {e}")
+                raise RegistryError(
+                    f"Failed to inject dependencies for {target_class.__name__}: "
+                    f"InjectionExecutor not properly initialized"
+                ) from e
 
         target_class.__init__ = new_init
 

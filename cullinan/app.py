@@ -54,25 +54,39 @@ class CullinanApplication:
 
         try:
             # Step 1: Configure dependency injection
-            logger.info("\n[1/3] Configuring dependency injection...")
+            logger.info("\n[1/4] Configuring dependency injection...")
             # Get registries (ServiceRegistry auto-registers itself as provider)
             injection_registry = get_injection_registry()
             service_registry = get_service_registry()
-            logger.info("  [OK] Dependency injection configured")
+
+            # Initialize InjectionExecutor with the registry
+            from cullinan.core.injection_executor import InjectionExecutor, set_injection_executor
+            executor = InjectionExecutor(injection_registry)
+            set_injection_executor(executor)
+            logger.info("  [OK] Dependency injection configured (InjectionExecutor initialized)")
 
             # Step 2: Discover services (they are registered by @service decorator)
-            logger.info("\n[2/3] Discovering services...")
+            logger.info("\n[2/4] Discovering services...")
             service_count = service_registry.count()
             logger.info(f"  [OK] Found {service_count} registered services")
 
             # Step 3: Initialize all services (按依赖顺序实例化 + 调用 on_init)
-            logger.info("\n[3/3] Initializing services...")
+            logger.info("\n[3/4] Initializing services...")
             if service_count > 0:
                 # 使用 initialize_all() 按依赖顺序初始化所有 Service
                 service_registry.initialize_all()
                 logger.info(f"  [OK] All {service_count} services initialized")
             else:
                 logger.info("  [INFO] No services to initialize")
+
+            # Step 4: Verify injection system
+            logger.info("\n[4/4] Verifying injection system...")
+            from cullinan.core.injection_executor import has_injection_executor
+            if has_injection_executor():
+                cache_stats = executor.get_cache_stats()
+                logger.info(f"  [OK] Injection system ready (cache: {cache_stats['hits']} hits, {cache_stats['misses']} misses)")
+            else:
+                logger.warning("  [WARN] InjectionExecutor not properly initialized")
 
             self._running = True
 

@@ -393,12 +393,17 @@ def run(handlers=None):
     logger.info("└---configuring dependency injection...")
     from cullinan.core.injection import get_injection_registry
     from cullinan.service.registry import get_service_registry
+    from cullinan.core.injection_executor import InjectionExecutor, set_injection_executor
 
     # Get registries (ServiceRegistry auto-registers itself as provider in __init__)
     injection_registry = get_injection_registry()
     service_registry = get_service_registry()
 
-    logger.info("└---dependency injection configured")
+    # Initialize InjectionExecutor with the registry
+    executor = InjectionExecutor(injection_registry)
+    set_injection_executor(executor)
+
+    logger.info("└---dependency injection configured (InjectionExecutor initialized)")
 
     # Register explicit services and controllers (if configured)
     _register_explicit_classes()

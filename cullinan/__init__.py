@@ -48,7 +48,6 @@ from cullinan.core import (
     injectable,
     get_injection_registry,
     reset_injection_registry,
-    DependencyInjector,  # Legacy injection support
 )
 
 # Export enhanced service layer
@@ -134,7 +133,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.81'
+__version__ = '0.83'
 
 __all__ = [
     # Configuration
@@ -145,7 +144,6 @@ __all__ = [
     # Core module
     'Registry',
     'SimpleRegistry',
-    'DependencyInjector',
     'LifecycleManager',
     'LifecycleState',
     'LifecycleAware',
@@ -234,11 +232,10 @@ __all__ = [
     'get_path_info',
     'log_path_info',
 
-    # Dependency Injection (legacy)
+    # Dependency Injection
     'Inject',
     'injectable',
     'get_injection_registry',
     'reset_injection_registry',
-    'DependencyInjector',
 ]
 

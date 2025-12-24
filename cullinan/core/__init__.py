@@ -31,8 +31,6 @@ from .exceptions import (
     LifecycleError
 )
 
-# Legacy dependency injector (for backward compatibility)
-from .legacy_injection import DependencyInjector
 
 # Type-based Dependency Injection System
 from .injection import (
@@ -42,7 +40,30 @@ from .injection import (
     inject_constructor,
     InjectionRegistry,
     get_injection_registry,
-    reset_injection_registry
+    reset_injection_registry,
+)
+
+# Task-3.4: Injection utilities
+from .injection_utils import (
+    resolve_dependency_name_from_annotation,
+    convert_snake_to_pascal,
+)
+
+# Unified Injection Model (Task-3.3)
+from .injection_model import (
+    InjectionPoint,
+    UnifiedInjectionMetadata,
+    ResolveStrategy,
+    infer_dependency_name
+)
+
+# Unified Injection Executor (Task-3.3)
+from .injection_executor import (
+    InjectionExecutor,
+    get_injection_executor,
+    set_injection_executor,
+    reset_injection_executor,
+    has_injection_executor
 )
 
 # Provider System
@@ -53,6 +74,12 @@ from .provider import (
     FactoryProvider,
     ScopedProvider,
     ProviderRegistry
+)
+
+# Provider Source Interface (Task-1.3)
+from .provider_source import (
+    ProviderSource,
+    SimpleProviderSource
 )
 
 # Scope System
@@ -77,15 +104,13 @@ from .facade import (
     DependencyResolutionError as FacadeDependencyResolutionError
 )
 
-__version__ = "0.81"
+__version__ = "0.83"
 
 __all__ = [
     # Registry
     'Registry',
     'SimpleRegistry',
-    
-    # Legacy Dependency Injector
-    'DependencyInjector',
+
     # Provider System
     'Provider',
     'InstanceProvider',
@@ -93,6 +118,10 @@ __all__ = [
     'FactoryProvider',
     'ScopedProvider',
     'ProviderRegistry',
+
+    # Provider Source Interface (Task-1.3)
+    'ProviderSource',
+    'SimpleProviderSource',
 
     # Scope System
     'Scope',
@@ -112,6 +141,17 @@ __all__ = [
     'InjectionRegistry',
     'get_injection_registry',
     'reset_injection_registry',
+
+    # Unified Injection Model (Task-3.3)
+    'InjectionPoint',
+    'UnifiedInjectionMetadata',
+    'ResolveStrategy',
+    'infer_dependency_name',
+    'InjectionExecutor',
+    'get_injection_executor',
+    'set_injection_executor',
+    'reset_injection_executor',
+    'has_injection_executor',
 
     # Lifecycle Management
     'LifecycleManager',

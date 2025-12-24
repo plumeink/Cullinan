@@ -11,9 +11,12 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, Callable, Optional, Any, Dict
+from typing import TypeVar, Generic, Callable, Optional, Any, Dict, List
 import threading
 import logging
+
+# Import ProviderSource interface (Task-1.3)
+from .provider_source import ProviderSource
 
 logger = logging.getLogger(__name__)
 
@@ -296,19 +299,29 @@ class ScopedProvider(Provider[T]):
         return f"ScopedProvider(scope={self._scope}, key='{self._key}')"
 
 
-class ProviderRegistry:
-    """Provider 注册表
+class ProviderRegistry(ProviderSource):
+    """Provider 注册表 (实现 ProviderSource 接口)
 
     管理 Provider 的注册和查找。
     支持通过名称或类型注册 Provider。
+
+    实现 ProviderSource 接口，可以作为 InjectionRegistry 的依赖提供源。
+    这样 InjectionRegistry 只需要依赖抽象接口，而不是具体的 ProviderRegistry。
+
+    优先级：默认为 5（低优先级）
     """
 
-    __slots__ = ('_providers', '_lock')
+    __slots__ = ('_providers', '_lock', '_priority')
 
-    def __init__(self):
-        """初始化 Provider 注册表"""
+    def __init__(self, priority: int = 5):
+        """初始化 Provider 注册表
+
+        Args:
+            priority: 优先级（默认 5，低优先级）
+        """
         self._providers: Dict[str, Provider] = {}
         self._lock = threading.RLock()
+        self._priority = priority
 
     def register_provider(self, name: str, provider: Provider) -> None:
         """注册 Provider
@@ -429,6 +442,48 @@ class ProviderRegistry:
             Provider 名称列表
         """
         return list(self._providers.keys())
+
+    # ========================================================================
+    # ProviderSource Interface Implementation (Task-1.3)
+    # ========================================================================
+
+    def can_provide(self, name: str) -> bool:
+        """检查是否能提供指定名称的依赖 (ProviderSource 接口)
+
+        Args:
+            name: 依赖名称
+
+        Returns:
+            True 表示可以提供，False 表示不能提供
+        """
+        return self.has_provider(name)
+
+    def provide(self, name: str) -> Optional[Any]:
+        """提供指定名称的依赖实例 (ProviderSource 接口)
+
+        Args:
+            name: 依赖名称
+
+        Returns:
+            依赖实例，如果无法提供则返回 None
+        """
+        return self.get_instance(name)
+
+    def list_available(self) -> List[str]:
+        """列出所有可用的依赖名称 (ProviderSource 接口)
+
+        Returns:
+            依赖名称列表
+        """
+        return self.list_names()
+
+    def get_priority(self) -> int:
+        """获取此 ProviderSource 的优先级 (ProviderSource 接口)
+
+        Returns:
+            优先级数值，越大越优先
+        """
+        return self._priority
 
 
 __all__ = [

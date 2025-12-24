@@ -22,24 +22,32 @@ import inspect
 
 from cullinan.core import Registry, LifecycleManager
 from cullinan.core.exceptions import RegistryError, DependencyResolutionError
+# Import ProviderSource interface (Task-1.3)
+from cullinan.core.provider_source import ProviderSource
 from .base import Service
 
 logger = logging.getLogger(__name__)
 
 
-class ServiceRegistry(Registry[Type[Service]]):
-    """服务注册表 - cullinan.core DI 系统的 Service Provider
+class ServiceRegistry(Registry[Type[Service]], ProviderSource):
+    """服务注册表 - cullinan.core DI 系统的 Service Provider (实现 ProviderSource 接口)
 
     职责（类似 Spring 的 BeanFactory）：
     1. 存储服务类定义
     2. 创建和缓存服务单例实例
-    3. 作为 provider 向 InjectionRegistry 提供服务实例
+    3. 作为 ProviderSource 向 InjectionRegistry 提供服务实例
     4. 管理服务生命周期（on_init/on_startup/on_shutdown/on_destroy）
 
+    实现 ProviderSource 接口（Task-1.3）：
+    - can_provide(name): 检查是否能提供服务
+    - provide(name): 提供服务实例
+    - list_available(): 列出所有可用服务
+    - get_priority(): 返回优先级（默认 10）
+
     与 core.InjectionRegistry 的关系：
-    - ServiceRegistry 在初始化时注册为 InjectionRegistry 的 provider
+    - ServiceRegistry 在初始化时注册为 InjectionRegistry 的 ProviderSource
     - 当 Controller/Service 使用 Inject() 或 InjectByName() 时
-    - InjectionRegistry 会调用 ServiceRegistry.get_instance() 获取实例
+    - InjectionRegistry 会调用 ServiceRegistry.provide() 获取实例
     - 形成完整的依赖注入链条
 
     Usage:
@@ -62,10 +70,15 @@ class ServiceRegistry(Registry[Type[Service]]):
         registry.destroy_all()
     """
     
-    __slots__ = ('_instances', '_initialized', '_instance_lock', '_lifecycle_manager')
+    __slots__ = ('_instances', '_initialized', '_instance_lock', '_lifecycle_manager', '_priority')
 
-    def __init__(self):
-        """初始化服务注册表，并注册为 core DI 系统的 provider"""
+    def __init__(self, priority: int = 10, auto_register: bool = True):
+        """初始化服务注册表
+
+        Args:
+            priority: ProviderSource 优先级（默认 10）
+            auto_register: 是否自动注册到 InjectionRegistry（默认 True，向后兼容）
+        """
         super().__init__()
 
         # 服务实例缓存 (O(1) lookup)
@@ -81,12 +94,15 @@ class ServiceRegistry(Registry[Type[Service]]):
         # 生命周期管理器
         self._lifecycle_manager = LifecycleManager()
 
-        # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
-        # 这样 Inject() 和 InjectByName() 就能通过 ServiceRegistry 获取服务实例
-        from cullinan.core import get_injection_registry
-        injection_registry = get_injection_registry()
-        injection_registry.add_provider_registry(self, priority=10)
-        logger.debug("ServiceRegistry registered as core DI provider (priority=10)")
+        # ProviderSource 优先级
+        self._priority = priority
+
+        # 始终注册到 InjectionRegistry (使用 ProviderSource 接口)
+        if auto_register:
+            from cullinan.core import get_injection_registry
+            injection_registry = get_injection_registry()
+            injection_registry.add_provider_source(self)
+            logger.debug(f"ServiceRegistry auto-registered as core DI provider (priority={self._priority})")
 
     def register(self, name: str, service_class: Type[Service], 
                  dependencies: Optional[List[str]] = None, **metadata) -> None:
@@ -602,7 +618,16 @@ class ServiceRegistry(Registry[Type[Service]]):
         self._instances.clear()
         self._initialized.clear()
         logger.debug("Cleared service registry")
-    
+
+        # 重新注册到 InjectionRegistry (使用 ProviderSource)
+        try:
+            from cullinan.core import get_injection_registry
+            injection_registry = get_injection_registry()
+            injection_registry.add_provider_source(self)
+            logger.debug(f"ServiceRegistry re-registered after clear (priority={self._priority})")
+        except Exception as e:
+            logger.debug(f"Failed to re-register ServiceRegistry: {e}")
+
     def list_instances(self) -> Dict[str, Service]:
         """Get all service instances that have been created.
         
@@ -621,6 +646,51 @@ class ServiceRegistry(Registry[Type[Service]]):
             True if instance exists, False otherwise
         """
         return name in self._instances
+
+    # ========================================================================
+    # ProviderSource Interface Implementation (Task-1.3)
+    # ========================================================================
+
+    def can_provide(self, name: str) -> bool:
+        """检查是否能提供指定名称的服务 (ProviderSource 接口)
+
+        Args:
+            name: 服务名称
+
+        Returns:
+            True 表示可以提供，False 表示不能提供
+        """
+        return self.has(name)
+
+    def provide(self, name: str) -> Optional[Service]:
+        """提供指定名称的服务实例 (ProviderSource 接口)
+
+        此方法是 ProviderSource 接口的实现，被 InjectionRegistry 调用。
+        内部调用 get_instance() 来获取服务实例。
+
+        Args:
+            name: 服务名称
+
+        Returns:
+            服务实例，如果无法提供则返回 None
+        """
+        return self.get_instance(name)
+
+    def list_available(self) -> List[str]:
+        """列出所有可用的服务名称 (ProviderSource 接口)
+
+        Returns:
+            服务名称列表
+        """
+        return list(self._items.keys())
+
+    def get_priority(self) -> int:
+        """获取此 ProviderSource 的优先级 (ProviderSource 接口)
+
+        Returns:
+            优先级数值，越大越优先（默认 10）
+        """
+        return self._priority
 
 
 # Global service registry instance (for backward compatibility)

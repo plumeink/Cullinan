@@ -85,6 +85,19 @@ class CullinanConfig:
             'custom_request_id_generator': None,
         }
 
+        # ====================================================================
+        # BACKWARD_COMPAT: v0.8 - 向后兼容开关
+        # 此选项将在 v1.0 移除，届时将不再支持旧 API
+        # ====================================================================
+
+        # 是否启用向后兼容模式（v1.0 将默认为 False）
+        # 禁用后，使用废弃的 API 将抛出错误而不是警告
+        self.enable_backward_compat: bool = True
+
+        # ====================================================================
+        # END BACKWARD_COMPAT
+        # ====================================================================
+
     def add_user_package(self, package: str):
         """添加用户包"""
         if package not in self.user_packages:
