@@ -1,0 +1,3193 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
+      
+      
+        <meta name="author" content="Plumeink">
+      
+      
+        <link rel="canonical" href="/zh/zh/dependency_injection_guide/">
+      
+      
+        <link rel="prev" href="../import_migration_090/">
+      
+      
+        <link rel="next" href="../DEPENDENCY_INJECTION_TROUBLESHOOTING/">
+      
+      
+        
+          <link rel="alternate" href="../../dependency_injection_guide/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>依赖注入指南 - Cullinan Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cullinan" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cullinan Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              依赖注入指南
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../dependency_injection_guide/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cullinan Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速开始
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构设计
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture_updated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构设计（更新版）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    维基
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    维基
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    组件
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    注入
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--deprecated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/ioc_di_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoC/DI 2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构设计
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    生命周期
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/middleware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中间件
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    扩展
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    模块
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用程序
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    控制器
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    服务
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    示例
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 参考
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    指南
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    指南
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    迁移指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    迁移指南 v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    0.90 导入迁移
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    依赖注入指南
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    依赖注入指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概述
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目录
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基础概念
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="基础概念">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是依赖注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么使用依赖注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三种注入方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三种注入方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Inject() - 类型注解注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-injectbyname-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. InjectByName() - 字符串名称注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @injectable - 装饰器批量注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        统一注入模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="统一注入模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        新架构概览
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解析策略
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="解析策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AUTO（自动推断）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_TYPE（按类型）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_NAME（按名称）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能特性
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高级特性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="高级特性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 嵌套依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 循环依赖检测
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 字符串注解支持
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 测试 Mock
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最佳实践
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="最佳实践">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ 推荐做法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ 推荐做法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 优先使用 Inject() + 类型注解
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 明确标记可选依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 使用 @injectable 简化注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 服务类使用 @service 装饰器
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 避免做法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❌ 避免做法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 避免在构造函数中访问依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 避免循环依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectbyname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 避免过度使用 InjectByName
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        迁移指南
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="迁移指南">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        从旧代码迁移
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="从旧代码迁移">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        旧代码继续工作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        向后兼容机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        升级建议
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见问题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="常见问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 三种注入方式应该用哪个？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 什么时候依赖会被注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 如何处理可选依赖？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 如何避免循环依赖？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 性能如何？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整示例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完整示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例 1：简单的三层架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例 2：带缓存的复杂场景
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考资料
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPENDENCY_INJECTION_TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI 故障排查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI 快速参考
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension_development_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    扩展开发
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start_extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    扩展快速入门
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    开发
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构建与运行
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    贡献指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概述
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        目录
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基础概念
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="基础概念">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是依赖注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么使用依赖注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三种注入方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三种注入方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Inject() - 类型注解注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-injectbyname-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. InjectByName() - 字符串名称注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @injectable - 装饰器批量注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        统一注入模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="统一注入模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        新架构概览
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解析策略
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="解析策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AUTO（自动推断）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_TYPE（按类型）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_NAME（按名称）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能特性
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高级特性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="高级特性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 嵌套依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 循环依赖检测
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 字符串注解支持
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 测试 Mock
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最佳实践
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="最佳实践">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ 推荐做法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ 推荐做法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 优先使用 Inject() + 类型注解
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 明确标记可选依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 使用 @injectable 简化注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 服务类使用 @service 装饰器
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 避免做法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❌ 避免做法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 避免在构造函数中访问依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 避免循环依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectbyname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 避免过度使用 InjectByName
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        迁移指南
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="迁移指南">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        从旧代码迁移
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="从旧代码迁移">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        旧代码继续工作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        向后兼容机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        升级建议
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见问题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="常见问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 三种注入方式应该用哪个？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 什么时候依赖会被注入？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 如何处理可选依赖？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 如何避免循环依赖？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: 性能如何？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完整示例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完整示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例 1：简单的三层架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        示例 2：带缓存的复杂场景
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考资料
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cullinan">Cullinan 依赖注入系统指南<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>版本</strong>: v0.9<br />
+<strong>作者</strong>: Plumeink<br />
+<strong>最后更新</strong>: 2025-12-24</p>
+</blockquote>
+<hr />
+<h2 id="_1">概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Cullinan 提供了一个强大的依赖注入（DI）系统，支持多种注入方式，并在 v0.9 中引入了统一的注入模型。本指南将帮助您理解和使用这些功能。</p>
+<h2 id="_2">目录<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#basics">基础概念</a></li>
+<li><a href="#three-injection-methods">三种注入方式</a></li>
+<li><a href="#unified-model">统一注入模型</a></li>
+<li><a href="#advanced-features">高级特性</a></li>
+<li><a href="#best-practices">最佳实践</a></li>
+<li><a href="#migration-guide">迁移指南</a></li>
+</ol>
+<hr />
+<h2 id="basics">基础概念<a class="headerlink" href="#basics" title="Permanent link">&para;</a></h2>
+<h3 id="_3">什么是依赖注入？<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>依赖注入是一种设计模式，用于实现控制反转（IoC）。简单来说，就是让框架自动为您的类注入所需的依赖，而不是在类内部手动创建。</p>
+<h3 id="_4">为什么使用依赖注入？<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>松耦合</strong>：类之间的依赖关系更清晰<br />
+✅ <strong>易测试</strong>：可以轻松替换依赖进行单元测试<br />
+✅ <strong>易维护</strong>：依赖关系集中管理<br />
+✅ <strong>可扩展</strong>：轻松添加新的服务和组件</p>
+<hr />
+<h2 id="three-injection-methods">三种注入方式<a class="headerlink" href="#three-injection-methods" title="Permanent link">&para;</a></h2>
+<p>Cullinan 支持三种依赖注入方式，它们都已统一到新的注入模型中。</p>
+<h3 id="1-inject-">1. Inject() - 类型注解注入<a class="headerlink" href="#1-inject-" title="Permanent link">&para;</a></h3>
+<p><strong>推荐指数</strong>: ⭐⭐⭐⭐⭐</p>
+<p>使用类型注解的方式，提供最佳的 IDE 支持和类型安全。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="c1"># 使用类型注解 + Inject()</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>特点</strong>：
+- ✅ IDE 自动补全
+- ✅ 类型检查
+- ✅ 自动推断依赖名称
+- ✅ 支持可选依赖</p>
+<p><strong>可选依赖</strong>：
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 可选依赖</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># cache 可能为 None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="2-injectbyname-">2. InjectByName() - 字符串名称注入<a class="headerlink" href="#2-injectbyname-" title="Permanent link">&para;</a></h3>
+<p><strong>推荐指数</strong>: ⭐⭐⭐⭐</p>
+<p>使用字符串名称的方式，完全无需 import 依赖类。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># 显式指定名称</span>
+    <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 自动推断名称（email_service → EmailService）</span>
+    <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>特点</strong>：
+- ✅ 无需 import 依赖类
+- ✅ 避免循环导入
+- ✅ 自动名称推断（snake_case → PascalCase）
+- ✅ 支持可选依赖</p>
+<p><strong>自动名称推断规则</strong>：
+<div class="highlight"><pre><span></span><code><span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → UserService</span>
+<span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → EmailService</span>
+<span class="n">cache_manager</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → CacheManager</span>
+</code></pre></div></p>
+<h3 id="3-injectable-">3. @injectable - 装饰器批量注入<a class="headerlink" href="#3-injectable-" title="Permanent link">&para;</a></h3>
+<p><strong>推荐指数</strong>: ⭐⭐⭐⭐⭐</p>
+<p>使用装饰器的方式，在类实例化时自动注入所有依赖。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;CacheService&#39;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;LogService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># __init__ 执行后，所有依赖自动注入</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># 此时 database、cache 已经可用</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<p><strong>特点</strong>：
+- ✅ 自动批量注入
+- ✅ 支持混合使用 Inject 和 InjectByName
+- ✅ 在 <strong>init</strong> 后立即注入
+- ✅ 与 @service、@controller 装饰器兼容</p>
+<hr />
+<h2 id="unified-model">统一注入模型<a class="headerlink" href="#unified-model" title="Permanent link">&para;</a></h2>
+<h3 id="_5">新架构概览<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>从 v0.9 开始，Cullinan 引入了统一的注入模型，所有注入方式都基于相同的底层架构：</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────┐
+│  应用层 (Inject / InjectByName / @injectable) │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  InjectionPoint (统一元信息模型)        │
+│  - attr_name: 属性名                    │
+│  - dependency_name: 依赖名称            │
+│  - required: 是否必需                   │
+│  - attr_type: 类型注解                  │
+│  - resolve_strategy: 解析策略           │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  InjectionExecutor (统一执行器)         │
+│  - resolve_injection_point()            │
+│  - inject_instance()                    │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  ServiceRegistry / ProviderRegistry     │
+│  (服务提供者)                           │
+└─────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="_6">解析策略<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>新模型支持三种解析策略：</p>
+<h4 id="auto">AUTO（自动推断）<a class="headerlink" href="#auto" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用 Inject() 时的默认策略</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># 策略：优先按类型（UserService），回退到名称（&#39;UserService&#39;）</span>
+</code></pre></div>
+<h4 id="by_type">BY_TYPE（按类型）<a class="headerlink" href="#by_type" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 强制按类型解析</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># 只会查找类型为 UserService 的服务</span>
+</code></pre></div>
+<h4 id="by_name">BY_NAME（按名称）<a class="headerlink" href="#by_name" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 使用 InjectByName 时的策略</span>
+<span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+<span class="c1"># 只会查找名称为 &#39;UserService&#39; 的服务</span>
+</code></pre></div>
+<h3 id="_7">性能特性<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>新的统一模型提供了出色的性能：</p>
+<ul>
+<li><strong>缓存机制</strong>：注入后的依赖会缓存到实例，避免重复解析</li>
+<li><strong>延迟注入</strong>：只在首次访问时才解析依赖</li>
+<li><strong>批量注入</strong>：@injectable 一次性注入所有依赖，减少开销</li>
+</ul>
+<hr />
+<h2 id="advanced-features">高级特性<a class="headerlink" href="#advanced-features" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. 嵌套依赖<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<p>服务可以依赖其他服务，形成依赖链：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheService</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataAccessLayer</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># 先查缓存</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="c1"># 再查数据库</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BusinessLogic</span><span class="p">:</span>
+    <span class="n">dal</span><span class="p">:</span> <span class="n">DataAccessLayer</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dal</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="2">2. 循环依赖检测<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>框架会自动检测并阻止循环依赖：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceA</span><span class="p">:</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">ServiceB</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceB</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">ServiceA</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># ❌ 会抛出 CircularDependencyError</span>
+</code></pre></div>
+<p><strong>解决方案</strong>：
+1. 重新设计依赖关系
+2. 使用延迟注入
+3. 引入中间层打破循环</p>
+<h3 id="3">3. 字符串注解支持<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>支持使用字符串类型注解（避免循环导入）：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># 使用字符串注解（Python 3.7+）</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="s1">&#39;UserService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="4-mock">4. 测试 Mock<a class="headerlink" href="#4-mock" title="Permanent link">&para;</a></h3>
+<p>所有注入方式都支持手动设置（便于测试）：</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_user_controller</span><span class="p">():</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">UserController</span><span class="p">()</span>
+
+    <span class="c1"># 手动注入 Mock 对象</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">MockUserService</span><span class="p">()</span>
+
+    <span class="c1"># 测试业务逻辑</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">expected_value</span>
+</code></pre></div>
+<hr />
+<h2 id="best-practices">最佳实践<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="_8">✅ 推荐做法<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<h4 id="1-inject">1. 优先使用 Inject() + 类型注解<a class="headerlink" href="#1-inject" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># ✅ 推荐</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="2_1">2. 明确标记可选依赖<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># 必需</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 可选</span>
+</code></pre></div>
+<h4 id="3-injectable">3. 使用 @injectable 简化注入<a class="headerlink" href="#3-injectable" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="c1"># 自动注入，无需手动调用</span>
+</code></pre></div>
+<h4 id="4-service">4. 服务类使用 @service 装饰器<a class="headerlink" href="#4-service" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>  <span class="c1"># 自动注册到 ServiceRegistry</span>
+<span class="nd">@injectable</span>  <span class="c1"># 支持依赖注入</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="_9">❌ 避免做法<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1. 避免在构造函数中访问依赖<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ❌ 此时 database 还未注入</span>
+        <span class="c1"># self.database.query(...)  </span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="c1"># ✅ 此时可以安全访问</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="2_2">2. 避免循环依赖<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ 错误：循环依赖</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceA</span><span class="p">:</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">ServiceB</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceB</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">ServiceA</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="3-injectbyname">3. 避免过度使用 InjectByName<a class="headerlink" href="#3-injectbyname" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ 不推荐：失去类型安全</span>
+<span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+<span class="c1"># ✅ 推荐：有类型检��</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="migration-guide">迁移指南<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
+<h3 id="_10">从旧代码迁移<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>如果您的代码使用了旧的注入方式，<strong>无需修改</strong>！新的统一模型完全向后兼容。</p>
+<h4 id="_11">旧代码继续工作<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 旧代码 - 仍然工作</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="c1"># 新代码 - 完全相同的语法</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="_12">向后兼容机制<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<p>框架内部使用了向后兼容机制：
+1. <strong>优先尝试新模型</strong>（InjectionExecutor）
+2. <strong>失败时自动回退</strong>到旧逻辑（registry.inject()）
+3. <strong>完全透明</strong>，用户无感知</p>
+<p>这些向后兼容代码在源码中标记为：
+<div class="highlight"><pre><span></span><code><span class="c1"># BACKWARD_COMPAT: v0.8 - 保留旧的注入逻辑</span>
+<span class="c1"># 计划移除版本：v1.0</span>
+</code></pre></div></p>
+<h3 id="_13">升级建议<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>虽然旧代码继续工作，但建议：</p>
+<ol>
+<li><strong>新项目</strong>：直接使用新的推荐模式</li>
+<li><strong>现有项目</strong>：逐步迁移，无需急于一次性改完</li>
+<li><strong>关注性能</strong>：新模型在大多数场景下性能更优</li>
+</ol>
+<hr />
+<h2 id="_14">常见问题<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="q">Q: 三种注入方式应该用哪个？<a class="headerlink" href="#q" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 推荐顺序：
+1. <strong>Inject() + 类型注解</strong>：最推荐，类型安全
+2. <strong>@injectable + 混合使用</strong>：简化代码
+3. <strong>InjectByName</strong>：避免循环导入时使用</p>
+<h3 id="q_1">Q: 什么时候依赖会被注入？<a class="headerlink" href="#q_1" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 
+- <strong>Inject/InjectByName</strong>：首次访问属性时（延迟注入）
+- <strong>@injectable</strong>：<strong>init</strong> 方法执行后（批量注入）</p>
+<h3 id="q_2">Q: 如何处理可选依赖？<a class="headerlink" href="#q_2" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 
+<div class="highlight"><pre><span></span><code><span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>  <span class="c1"># 检查是否为 None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="q_3">Q: 如何避免循环依赖？<a class="headerlink" href="#q_3" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>:
+1. 重新设计依赖关系
+2. 使用事件系统解耦
+3. 引入中间层/Facade</p>
+<h3 id="q_4">Q: 性能如何？<a class="headerlink" href="#q_4" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 新模型性能优异：
+- 缓存命中：&lt; 1 μs
+- 首次解析：10-50 μs
+- 与旧模型相当或更优</p>
+<hr />
+<h2 id="_15">完整示例<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<h3 id="1_2">示例 1：简单的三层架构<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">injectable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="c1"># 数据访问层</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Query result: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># 业务逻辑层</span>
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;INSERT INTO users (username) VALUES (&#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="p">)</span>
+
+<span class="c1"># 控制器层</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="2_3">示例 2：带缓存的复杂场景<a class="headerlink" href="#2_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">injectable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> <span class="k">pass</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;LogService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># 尝试从缓存获取</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache hit: user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cached</span>
+
+        <span class="c1"># 从数据库查询</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 写入缓存</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<hr />
+<h2 id="_16">参考资料<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../architecture_updated/">架构文档</a></li>
+<li><a href="../extension_development_guide/">扩展开发指南</a></li>
+<li><a href="../api_reference/">API 参考</a></li>
+</ul>
+<hr />
+<p><strong>更新日志</strong>:
+- 2025-12-24: 创建文档，覆盖 v0.9 统一注入模型
+- 未来：持续更新最佳实践和示例</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/plumeink/cullinan" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

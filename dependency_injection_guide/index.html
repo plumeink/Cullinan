@@ -1,0 +1,3193 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
+      
+      
+        <meta name="author" content="Plumeink">
+      
+      
+        <link rel="canonical" href="/dependency_injection_guide/">
+      
+      
+        <link rel="prev" href="../import_migration_090/">
+      
+      
+        <link rel="next" href="../DEPENDENCY_INJECTION_TROUBLESHOOTING/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/dependency_injection_guide/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Dependency Injection Guide - Cullinan Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cullinan-dependency-injection-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cullinan Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dependency Injection Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/dependency_injection_guide/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cullinan Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture_updated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (Updated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiki
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Wiki
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--deprecated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/ioc_di_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoC/DI 2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/middleware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Middleware
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    app
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    application
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    controller
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    service
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import Migration 0.90
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-dependency-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is Dependency Injection?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-use-dependency-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Use Dependency Injection?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Injection Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three Injection Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject-type-annotation-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Inject() - Type Annotation Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-injectbyname-string-name-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. InjectByName() - String Name Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable-decorator-batch-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @injectable - Decorator Batch Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-injection-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Injection Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Injection Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolution-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resolution Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-automatic-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AUTO (Automatic Inference)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_type-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_TYPE (By Type)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_name-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_NAME (By Name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-nested-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Nested Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-circular-dependency-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Circular Dependency Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-string-annotation-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. String Annotation Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-mocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Test Mocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Recommended Approaches
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ Recommended Approaches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-prefer-inject-type-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prefer Inject() + Type Annotations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-clearly-mark-optional-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Clearly Mark Optional Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-injectable-to-simplify-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Use @injectable to Simplify Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-service-classes-use-service-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Service Classes Use @service Decorator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#things-to-avoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Things to Avoid
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❌ Things to Avoid">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-avoid-accessing-dependencies-in-constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Avoid Accessing Dependencies in Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-avoid-circular-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Avoid Circular Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-avoid-overusing-injectbyname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Avoid Overusing InjectByName
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migrating-from-old-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migrating from Old Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrating from Old Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#old-code-still-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Old Code Still Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-compatibility-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Compatibility Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upgrade-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q-which-of-the-three-injection-methods-should-i-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: Which of the three injection methods should I use?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-when-are-dependencies-injected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: When are dependencies injected?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-how-to-handle-optional-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: How to handle optional dependencies?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-how-to-avoid-circular-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: How to avoid circular dependencies?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-what-about-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: What about performance?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-simple-three-tier-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Simple Three-Tier Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-complex-scenario-with-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Complex Scenario with Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPENDENCY_INJECTION_TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension_development_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start_extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Extensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build & Run
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-dependency-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is Dependency Injection?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-use-dependency-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Use Dependency Injection?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Injection Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three Injection Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-inject-type-annotation-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Inject() - Type Annotation Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-injectbyname-string-name-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. InjectByName() - String Name Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-injectable-decorator-batch-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. @injectable - Decorator Batch Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-injection-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Injection Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Injection Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolution-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resolution Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-automatic-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AUTO (Automatic Inference)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_type-by-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_TYPE (By Type)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by_name-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BY_NAME (By Name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-nested-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Nested Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-circular-dependency-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Circular Dependency Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-string-annotation-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. String Annotation Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-mocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Test Mocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Recommended Approaches
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ Recommended Approaches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-prefer-inject-type-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Prefer Inject() + Type Annotations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-clearly-mark-optional-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Clearly Mark Optional Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-injectable-to-simplify-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Use @injectable to Simplify Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-service-classes-use-service-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Service Classes Use @service Decorator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#things-to-avoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Things to Avoid
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❌ Things to Avoid">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-avoid-accessing-dependencies-in-constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Avoid Accessing Dependencies in Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-avoid-circular-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Avoid Circular Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-avoid-overusing-injectbyname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Avoid Overusing InjectByName
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migrating-from-old-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migrating from Old Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrating from Old Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#old-code-still-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Old Code Still Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-compatibility-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Compatibility Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upgrade-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q-which-of-the-three-injection-methods-should-i-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: Which of the three injection methods should I use?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-when-are-dependencies-injected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: When are dependencies injected?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-how-to-handle-optional-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: How to handle optional dependencies?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-how-to-avoid-circular-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: How to avoid circular dependencies?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q-what-about-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q: What about performance?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-simple-three-tier-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Simple Three-Tier Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-complex-scenario-with-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Complex Scenario with Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cullinan-dependency-injection-guide">Cullinan Dependency Injection Guide<a class="headerlink" href="#cullinan-dependency-injection-guide" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Version</strong>: v0.90<br />
+<strong>Author</strong>: Plumeink<br />
+<strong>Last Updated</strong>: 2025-12-25</p>
+</blockquote>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Cullinan provides a powerful Dependency Injection (DI) system that supports multiple injection methods. Version 0.90 introduces a unified injection model. This guide helps you understand and use these features.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#basic-concepts">Basic Concepts</a></li>
+<li><a href="#three-injection-methods">Three Injection Methods</a></li>
+<li><a href="#unified-injection-model">Unified Injection Model</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#migration-guide">Migration Guide</a></li>
+</ol>
+<hr />
+<h2 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="what-is-dependency-injection">What is Dependency Injection?<a class="headerlink" href="#what-is-dependency-injection" title="Permanent link">&para;</a></h3>
+<p>Dependency Injection is a design pattern that implements Inversion of Control (IoC). Simply put, it allows the framework to automatically inject required dependencies into your classes, rather than manually creating them inside the class.</p>
+<h3 id="why-use-dependency-injection">Why Use Dependency Injection?<a class="headerlink" href="#why-use-dependency-injection" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Loose Coupling</strong>: Clearer dependency relationships between classes<br />
+✅ <strong>Testable</strong>: Easy to replace dependencies for unit testing<br />
+✅ <strong>Maintainable</strong>: Centralized dependency management<br />
+✅ <strong>Extensible</strong>: Easy to add new services and components</p>
+<hr />
+<h2 id="three-injection-methods">Three Injection Methods<a class="headerlink" href="#three-injection-methods" title="Permanent link">&para;</a></h2>
+<p>Cullinan supports three dependency injection methods, all unified under the new injection model.</p>
+<h3 id="1-inject-type-annotation-injection">1. Inject() - Type Annotation Injection<a class="headerlink" href="#1-inject-type-annotation-injection" title="Permanent link">&para;</a></h3>
+<p><strong>Recommendation</strong>: ⭐⭐⭐⭐⭐</p>
+<p>Uses type annotations, providing the best IDE support and type safety.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="c1"># Use type annotation + Inject()</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Features</strong>:
+- ✅ IDE auto-completion
+- ✅ Type checking
+- ✅ Automatic dependency name inference
+- ✅ Support for optional dependencies</p>
+<p><strong>Optional Dependencies</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Optional</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># cache may be None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="2-injectbyname-string-name-injection">2. InjectByName() - String Name Injection<a class="headerlink" href="#2-injectbyname-string-name-injection" title="Permanent link">&para;</a></h3>
+<p><strong>Recommendation</strong>: ⭐⭐⭐⭐</p>
+<p>Uses string names, no need to import dependency classes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># Explicitly specify name</span>
+    <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Auto-infer name (email_service → EmailService)</span>
+    <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Features</strong>:
+- ✅ No need to import dependency classes
+- ✅ Avoid circular imports
+- ✅ Automatic name inference (snake_case → PascalCase)
+- ✅ Support for optional dependencies</p>
+<p><strong>Auto Name Inference Rules</strong>:
+<div class="highlight"><pre><span></span><code><span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → UserService</span>
+<span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → EmailService</span>
+<span class="n">cache_manager</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># → CacheManager</span>
+</code></pre></div></p>
+<h3 id="3-injectable-decorator-batch-injection">3. @injectable - Decorator Batch Injection<a class="headerlink" href="#3-injectable-decorator-batch-injection" title="Permanent link">&para;</a></h3>
+<p><strong>Recommendation</strong>: ⭐⭐⭐⭐⭐</p>
+<p>Uses decorator approach, automatically injects all dependencies when the class is instantiated.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;CacheService&#39;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;LogService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># After __init__, all dependencies are automatically injected</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># database and cache are now available</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<p><strong>Features</strong>:
+- ✅ Automatic batch injection
+- ✅ Mix Inject and InjectByName
+- ✅ Injection happens immediately after <strong>init</strong>
+- ✅ Compatible with @service and @controller decorators</p>
+<hr />
+<h2 id="unified-injection-model">Unified Injection Model<a class="headerlink" href="#unified-injection-model" title="Permanent link">&para;</a></h2>
+<h3 id="new-architecture-overview">New Architecture Overview<a class="headerlink" href="#new-architecture-overview" title="Permanent link">&para;</a></h3>
+<p>Starting from v0.90, Cullinan introduces a unified injection model where all injection methods are based on the same underlying architecture:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────┐
+│  Application Layer (Inject / InjectByName / @injectable) │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  InjectionPoint (Unified Metadata Model) │
+│  - attr_name: Attribute name             │
+│  - dependency_name: Dependency name      │
+│  - required: Is required                 │
+│  - attr_type: Type annotation            │
+│  - resolve_strategy: Resolution strategy │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  InjectionExecutor (Unified Executor)    │
+│  - resolve_injection_point()             │
+│  - inject_instance()                     │
+└──────────────────┬──────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────┐
+│  ServiceRegistry / ProviderRegistry      │
+│  (Service Providers)                     │
+└─────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="resolution-strategies">Resolution Strategies<a class="headerlink" href="#resolution-strategies" title="Permanent link">&para;</a></h3>
+<p>The new model supports three resolution strategies:</p>
+<h4 id="auto-automatic-inference">AUTO (Automatic Inference)<a class="headerlink" href="#auto-automatic-inference" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Default strategy when using Inject()</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># Strategy: Priority by type (UserService), fallback to name (&#39;UserService&#39;)</span>
+</code></pre></div>
+<h4 id="by_type-by-type">BY_TYPE (By Type)<a class="headerlink" href="#by_type-by-type" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Force resolution by type</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># Only look for services of type UserService</span>
+</code></pre></div>
+<h4 id="by_name-by-name">BY_NAME (By Name)<a class="headerlink" href="#by_name-by-name" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Strategy when using InjectByName</span>
+<span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+<span class="c1"># Only look for services named &#39;UserService&#39;</span>
+</code></pre></div>
+<h3 id="performance-features">Performance Features<a class="headerlink" href="#performance-features" title="Permanent link">&para;</a></h3>
+<p>The new unified model provides excellent performance:</p>
+<ul>
+<li><strong>Caching</strong>: Injected dependencies are cached in instances, avoiding repeated resolution</li>
+<li><strong>Lazy Injection</strong>: Dependencies are only resolved on first access</li>
+<li><strong>Batch Injection</strong>: @injectable injects all dependencies at once, reducing overhead</li>
+</ul>
+<hr />
+<h2 id="advanced-features">Advanced Features<a class="headerlink" href="#advanced-features" title="Permanent link">&para;</a></h2>
+<h3 id="1-nested-dependencies">1. Nested Dependencies<a class="headerlink" href="#1-nested-dependencies" title="Permanent link">&para;</a></h3>
+<p>Services can depend on other services, forming dependency chains:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheService</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataAccessLayer</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># Check cache first</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="c1"># Then query database</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BusinessLogic</span><span class="p">:</span>
+    <span class="n">dal</span><span class="p">:</span> <span class="n">DataAccessLayer</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dal</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="2-circular-dependency-detection">2. Circular Dependency Detection<a class="headerlink" href="#2-circular-dependency-detection" title="Permanent link">&para;</a></h3>
+<p>The framework automatically detects and prevents circular dependencies:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceA</span><span class="p">:</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">ServiceB</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceB</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">ServiceA</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># ❌ Raises CircularDependencyError</span>
+</code></pre></div>
+<p><strong>Solutions</strong>:
+1. Redesign dependency relationships
+2. Use lazy injection
+3. Introduce an intermediate layer to break the cycle</p>
+<h3 id="3-string-annotation-support">3. String Annotation Support<a class="headerlink" href="#3-string-annotation-support" title="Permanent link">&para;</a></h3>
+<p>Supports string type annotations (to avoid circular imports):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># Use string annotation (Python 3.7+)</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="s1">&#39;UserService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="4-test-mocking">4. Test Mocking<a class="headerlink" href="#4-test-mocking" title="Permanent link">&para;</a></h3>
+<p>All injection methods support manual setting (convenient for testing):</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_user_controller</span><span class="p">():</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">UserController</span><span class="p">()</span>
+
+    <span class="c1"># Manually inject mock object</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">MockUserService</span><span class="p">()</span>
+
+    <span class="c1"># Test business logic</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">expected_value</span>
+</code></pre></div>
+<hr />
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="recommended-approaches">✅ Recommended Approaches<a class="headerlink" href="#recommended-approaches" title="Permanent link">&para;</a></h3>
+<h4 id="1-prefer-inject-type-annotations">1. Prefer Inject() + Type Annotations<a class="headerlink" href="#1-prefer-inject-type-annotations" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># ✅ Recommended</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="2-clearly-mark-optional-dependencies">2. Clearly Mark Optional Dependencies<a class="headerlink" href="#2-clearly-mark-optional-dependencies" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># Required</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Optional</span>
+</code></pre></div>
+<h4 id="3-use-injectable-to-simplify-injection">3. Use @injectable to Simplify Injection<a class="headerlink" href="#3-use-injectable-to-simplify-injection" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="c1"># Automatically injected, no manual call needed</span>
+</code></pre></div>
+<h4 id="4-service-classes-use-service-decorator">4. Service Classes Use @service Decorator<a class="headerlink" href="#4-service-classes-use-service-decorator" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>  <span class="c1"># Auto-register to ServiceRegistry</span>
+<span class="nd">@injectable</span>  <span class="c1"># Support dependency injection</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="things-to-avoid">❌ Things to Avoid<a class="headerlink" href="#things-to-avoid" title="Permanent link">&para;</a></h3>
+<h4 id="1-avoid-accessing-dependencies-in-constructor">1. Avoid Accessing Dependencies in Constructor<a class="headerlink" href="#1-avoid-accessing-dependencies-in-constructor" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ❌ database not yet injected</span>
+        <span class="c1"># self.database.query(...)  </span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="c1"># ✅ Safe to access now</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="2-avoid-circular-dependencies">2. Avoid Circular Dependencies<a class="headerlink" href="#2-avoid-circular-dependencies" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Wrong: Circular dependency</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceA</span><span class="p">:</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">ServiceB</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceB</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">ServiceA</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="3-avoid-overusing-injectbyname">3. Avoid Overusing InjectByName<a class="headerlink" href="#3-avoid-overusing-injectbyname" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Not recommended: Lose type safety</span>
+<span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+<span class="c1"># ✅ Recommended: Type-safe</span>
+<span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
+<h3 id="migrating-from-old-code">Migrating from Old Code<a class="headerlink" href="#migrating-from-old-code" title="Permanent link">&para;</a></h3>
+<p>If your code uses the old injection approach, <strong>no changes needed</strong>! The new unified model is fully backward compatible.</p>
+<h4 id="old-code-still-works">Old Code Still Works<a class="headerlink" href="#old-code-still-works" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Old code - still works</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+<span class="c1"># New code - exactly the same syntax</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="backward-compatibility-mechanism">Backward Compatibility Mechanism<a class="headerlink" href="#backward-compatibility-mechanism" title="Permanent link">&para;</a></h4>
+<p>The framework internally uses a backward compatibility mechanism:
+1. <strong>Try new model first</strong> (InjectionExecutor)
+2. <strong>Auto-fallback on failure</strong> to old logic (registry.inject())
+3. <strong>Completely transparent</strong>, users unaware</p>
+<p>These backward compatibility codes are marked in the source:
+<div class="highlight"><pre><span></span><code><span class="c1"># BACKWARD_COMPAT: v0.8 - Keep old injection logic</span>
+<span class="c1"># Planned removal version: v1.0</span>
+</code></pre></div></p>
+<h3 id="upgrade-recommendations">Upgrade Recommendations<a class="headerlink" href="#upgrade-recommendations" title="Permanent link">&para;</a></h3>
+<p>Although old code continues to work, it's recommended to:</p>
+<ol>
+<li><strong>New projects</strong>: Use the new recommended patterns directly</li>
+<li><strong>Existing projects</strong>: Migrate gradually, no need to change everything at once</li>
+<li><strong>Monitor performance</strong>: New model performs better in most scenarios</li>
+</ol>
+<hr />
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="q-which-of-the-three-injection-methods-should-i-use">Q: Which of the three injection methods should I use?<a class="headerlink" href="#q-which-of-the-three-injection-methods-should-i-use" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: Recommended priority:
+1. <strong>Inject() + type annotations</strong>: Most recommended, type-safe
+2. <strong>@injectable + mixed use</strong>: Simplifies code
+3. <strong>InjectByName</strong>: Use when avoiding circular imports</p>
+<h3 id="q-when-are-dependencies-injected">Q: When are dependencies injected?<a class="headerlink" href="#q-when-are-dependencies-injected" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 
+- <strong>Inject/InjectByName</strong>: On first property access (lazy injection)
+- <strong>@injectable</strong>: After <strong>init</strong> method executes (batch injection)</p>
+<h3 id="q-how-to-handle-optional-dependencies">Q: How to handle optional dependencies?<a class="headerlink" href="#q-how-to-handle-optional-dependencies" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: 
+<div class="highlight"><pre><span></span><code><span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>  <span class="c1"># Check if None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="q-how-to-avoid-circular-dependencies">Q: How to avoid circular dependencies?<a class="headerlink" href="#q-how-to-avoid-circular-dependencies" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>:
+1. Redesign dependency relationships
+2. Use event system for decoupling
+3. Introduce intermediate layer/Facade</p>
+<h3 id="q-what-about-performance">Q: What about performance?<a class="headerlink" href="#q-what-about-performance" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: The new model performs excellently:
+- Cache hit: &lt; 1 μs
+- First resolution: 10-50 μs
+- On par with or better than old model</p>
+<hr />
+<h2 id="complete-examples">Complete Examples<a class="headerlink" href="#complete-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-simple-three-tier-architecture">Example 1: Simple Three-Tier Architecture<a class="headerlink" href="#example-1-simple-three-tier-architecture" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">injectable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="c1"># Data Access Layer</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Query result: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Business Logic Layer</span>
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;INSERT INTO users (username) VALUES (&#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="p">)</span>
+
+<span class="c1"># Controller Layer</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="example-2-complex-scenario-with-caching">Example 2: Complex Scenario with Caching<a class="headerlink" href="#example-2-complex-scenario-with-caching" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">injectable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> <span class="k">pass</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="nd">@service</span>
+<span class="nd">@injectable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;LogService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># Try to get from cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache hit: user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cached</span>
+
+        <span class="c1"># Query from database</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Write to cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../architecture_updated/">Architecture Documentation</a></li>
+<li><a href="../extension_development_guide/">Extension Development Guide</a></li>
+<li><a href="../api_reference/">API Reference</a></li>
+</ul>
+<hr />
+<p><strong>Changelog</strong>:
+- 2025-12-24: Document created, covering v0.9 unified injection model
+- Future: Continuous updates to best practices and examples</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/plumeink/cullinan" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

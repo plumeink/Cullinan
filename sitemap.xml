@@ -2,324 +2,456 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/"/>
     </url>
     <url>
+        <loc>/DEPENDENCY_INJECTION_TROUBLESHOOTING/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/DEPENDENCY_INJECTION_TROUBLESHOOTING/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/DEPENDENCY_INJECTION_TROUBLESHOOTING/"/>
+    </url>
+    <url>
         <loc>/api_reference/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/api_reference/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/api_reference/"/>
     </url>
     <url>
         <loc>/architecture/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/architecture/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/architecture/"/>
     </url>
     <url>
+        <loc>/architecture_updated/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/architecture_updated/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/architecture_updated/"/>
+    </url>
+    <url>
         <loc>/build_run/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/build_run/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/build_run/"/>
     </url>
     <url>
         <loc>/contributing/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/contributing/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/contributing/"/>
     </url>
     <url>
         <loc>/cullinan_documentation_plan/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/cullinan_documentation_plan/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/cullinan_documentation_plan/"/>
     </url>
     <url>
+        <loc>/dependency_injection_guide/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/dependency_injection_guide/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/dependency_injection_guide/"/>
+    </url>
+    <url>
         <loc>/examples/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/examples/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/examples/"/>
     </url>
     <url>
+        <loc>/extension_development_guide/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/extension_development_guide/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/extension_development_guide/"/>
+    </url>
+    <url>
         <loc>/getting_started/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/getting_started/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/getting_started/"/>
     </url>
     <url>
+        <loc>/import_migration_090/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/import_migration_090/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/import_migration_090/"/>
+    </url>
+    <url>
         <loc>/migration_guide/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/migration_guide/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration_guide/"/>
     </url>
     <url>
+        <loc>/migration_guide_v2/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/migration_guide_v2/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration_guide_v2/"/>
+    </url>
+    <url>
+        <loc>/quick_reference_di/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/quick_reference_di/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/quick_reference_di/"/>
+    </url>
+    <url>
+        <loc>/quick_start_extensions/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/quick_start_extensions/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/quick_start_extensions/"/>
+    </url>
+    <url>
         <loc>/testing/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/testing/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/testing/"/>
     </url>
     <url>
         <loc>/modules/app/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/app/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/app/"/>
     </url>
     <url>
         <loc>/modules/application/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/application/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/application/"/>
     </url>
     <url>
         <loc>/modules/controller/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/controller/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/controller/"/>
     </url>
     <url>
         <loc>/modules/core/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/core/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/core/"/>
     </url>
     <url>
         <loc>/modules/service/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/service/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/service/"/>
     </url>
     <url>
         <loc>/wiki/architecture/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/architecture/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/architecture/"/>
     </url>
     <url>
         <loc>/wiki/components/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/components/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/components/"/>
     </url>
     <url>
         <loc>/wiki/extensions/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/extensions/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/extensions/"/>
     </url>
     <url>
         <loc>/wiki/injection/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/injection/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/injection/"/>
     </url>
     <url>
+        <loc>/wiki/ioc_di_v2/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/wiki/ioc_di_v2/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/ioc_di_v2/"/>
+    </url>
+    <url>
         <loc>/wiki/lifecycle/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/lifecycle/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/lifecycle/"/>
     </url>
     <url>
         <loc>/wiki/middleware/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/middleware/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/middleware/"/>
     </url>
     <url>
         <loc>/wiki/restful_api/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/wiki/restful_api/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/restful_api/"/>
     </url>
     <url>
         <loc>/zh/zh/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/"/>
     </url>
     <url>
+        <loc>/zh/zh/DEPENDENCY_INJECTION_TROUBLESHOOTING/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/DEPENDENCY_INJECTION_TROUBLESHOOTING/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/DEPENDENCY_INJECTION_TROUBLESHOOTING/"/>
+    </url>
+    <url>
         <loc>/zh/zh/api_reference/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/api_reference/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/api_reference/"/>
     </url>
     <url>
         <loc>/zh/zh/architecture/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/architecture/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/architecture/"/>
     </url>
     <url>
+        <loc>/zh/zh/architecture_updated/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/architecture_updated/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/architecture_updated/"/>
+    </url>
+    <url>
         <loc>/zh/zh/build_run/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/build_run/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/build_run/"/>
     </url>
     <url>
         <loc>/zh/zh/contributing/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/contributing/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/contributing/"/>
     </url>
     <url>
         <loc>/zh/zh/cullinan_documentation_plan/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/cullinan_documentation_plan/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/cullinan_documentation_plan/"/>
     </url>
     <url>
+        <loc>/zh/zh/dependency_injection_guide/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/dependency_injection_guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/dependency_injection_guide/"/>
+    </url>
+    <url>
         <loc>/zh/zh/examples/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/examples/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/examples/"/>
     </url>
     <url>
+        <loc>/zh/zh/extension_development_guide/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/extension_development_guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/extension_development_guide/"/>
+    </url>
+    <url>
         <loc>/zh/zh/getting_started/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/getting_started/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/getting_started/"/>
     </url>
     <url>
+        <loc>/zh/zh/import_migration_090/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/import_migration_090/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/import_migration_090/"/>
+    </url>
+    <url>
         <loc>/zh/zh/migration_guide/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration_guide/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/migration_guide/"/>
     </url>
     <url>
+        <loc>/zh/zh/migration_guide_v2/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration_guide_v2/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/migration_guide_v2/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/quick_reference_di/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/quick_reference_di/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/quick_reference_di/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/quick_start_extensions/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/quick_start_extensions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/quick_start_extensions/"/>
+    </url>
+    <url>
         <loc>/zh/zh/testing/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/testing/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/testing/"/>
     </url>
     <url>
         <loc>/zh/zh/modules/app/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/app/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/app/"/>
     </url>
     <url>
         <loc>/zh/zh/modules/application/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/application/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/application/"/>
     </url>
     <url>
         <loc>/zh/zh/modules/controller/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/controller/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/controller/"/>
     </url>
     <url>
         <loc>/zh/zh/modules/core/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/core/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/core/"/>
     </url>
     <url>
         <loc>/zh/zh/modules/service/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/service/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/service/"/>
     </url>
     <url>
         <loc>/zh/zh/templates/front_matter_example/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/templates/front_matter_example/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/templates/front_matter_example/"/>
     </url>
     <url>
         <loc>/zh/zh/templates/page_template/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/templates/page_template/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/templates/page_template/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/architecture/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/architecture/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/architecture/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/components/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/components/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/components/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/extensions/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/extensions/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/extensions/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/injection/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/injection/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/injection/"/>
     </url>
     <url>
+        <loc>/zh/zh/wiki/ioc_di_v2/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/ioc_di_v2/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/ioc_di_v2/"/>
+    </url>
+    <url>
         <loc>/zh/zh/wiki/lifecycle/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/lifecycle/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/lifecycle/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/middleware/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/middleware/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/middleware/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/restful_api/</loc>
-        <lastmod>2025-12-06</lastmod>
+        <lastmod>2025-12-25</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/wiki/restful_api/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/wiki/restful_api/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/dependency_injection_troubleshooting/</loc>
+        <lastmod>2025-12-25</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/dependency_injection_troubleshooting/"/>
     </url>
 </urlset>

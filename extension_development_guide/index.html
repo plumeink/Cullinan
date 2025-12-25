@@ -1,0 +1,3236 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework">
+      
+      
+        <meta name="author" content="Plumeink">
+      
+      
+        <link rel="canonical" href="/extension_development_guide/">
+      
+      
+        <link rel="prev" href="../quick_reference_di/">
+      
+      
+        <link rel="next" href="../quick_start_extensions/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/extension_development_guide/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Extension Development - Cullinan Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cullinan-extension-development-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cullinan Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Extension Development
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/extension_development_guide/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cullinan Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture_updated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (Updated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiki
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Wiki
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--deprecated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/ioc_di_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IoC/DI 2.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/middleware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Middleware
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/restful_api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RESTful API
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    app
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    application
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    controller
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    service
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import Migration 0.90
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dependency_injection_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPENDENCY_INJECTION_TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Development
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extension-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-available-extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Available Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middleware Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating Middleware
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-decorator-registration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Decorator Registration (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-manual-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: Manual Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#short-circuiting-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Short-circuiting Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-injection-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency Injection Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Provider
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Provider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factory-pattern-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factory Pattern Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lazy-initialization-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy Initialization Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-custom-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Custom Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hook-execution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hook Execution Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#routing-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Routing Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Routing Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-tornado-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Tornado Handler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixed-use-with-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed Use with Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-middleware-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Middleware Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-priority-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Priority Planning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dependency-injection-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dependency Injection Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Lifecycle Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-logging-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Logging Standards
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-how-to-access-dependency-injected-services-in-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: How to access dependency-injected services in middleware?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-can-middleware-modify-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Can middleware modify responses?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-how-to-implement-conditional-middleware-only-apply-to-specific-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: How to implement conditional middleware (only apply to specific paths)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-what-is-the-middleware-execution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: What is the middleware execution order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-how-to-test-custom-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5: How to test custom extensions?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Help
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start_extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start Extensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build & Run
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extension-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-available-extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Available Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Middleware Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating Middleware
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-decorator-registration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Decorator Registration (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-manual-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: Manual Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#short-circuiting-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Short-circuiting Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-injection-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency Injection Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Provider
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Provider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factory-pattern-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factory Pattern Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lazy-initialization-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy Initialization Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-custom-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Custom Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hook-execution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hook Execution Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#routing-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Routing Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Routing Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-tornado-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Tornado Handler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixed-use-with-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed Use with Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-middleware-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Middleware Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-priority-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Priority Planning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dependency-injection-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dependency Injection Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Lifecycle Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-logging-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Logging Standards
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAQ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-how-to-access-dependency-injected-services-in-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: How to access dependency-injected services in middleware?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-can-middleware-modify-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Can middleware modify responses?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-how-to-implement-conditional-middleware-only-apply-to-specific-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: How to implement conditional middleware (only apply to specific paths)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-what-is-the-middleware-execution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: What is the middleware execution order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-how-to-test-custom-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5: How to test custom extensions?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Help
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cullinan-extension-development-guide">Cullinan Extension Development Guide<a class="headerlink" href="#cullinan-extension-development-guide" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Version</strong>: v0.81+<br />
+<strong>Author</strong>: Plumeink<br />
+<strong>Last Updated</strong>: 2025-12-16</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#extension-categories">Extension Categories</a></li>
+<li><a href="#middleware-extensions">Middleware Extensions</a></li>
+<li><a href="#dependency-injection-extensions">Dependency Injection Extensions</a></li>
+<li><a href="#lifecycle-extensions">Lifecycle Extensions</a></li>
+<li><a href="#routing-extensions">Routing Extensions</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The Cullinan framework provides rich extension points, allowing developers to customize functionality without modifying the framework code. This guide introduces how to develop various types of extensions.</p>
+<h3 id="extension-philosophy">Extension Philosophy<a class="headerlink" href="#extension-philosophy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Non-invasive</strong>: Extend through decorators, interface implementations, etc.</li>
+<li><strong>Unified Pattern</strong>: All extensions use consistent registration methods</li>
+<li><strong>Discoverability</strong>: Extension points are queryable via API</li>
+<li><strong>Backward Compatible</strong>: Maintain compatibility without breaking existing functionality</li>
+</ul>
+<h3 id="query-available-extension-points">Query Available Extension Points<a class="headerlink" href="#query-available-extension-points" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_extension_points</span>
+
+<span class="c1"># Query all extension points</span>
+<span class="n">all_points</span> <span class="o">=</span> <span class="n">list_extension_points</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">all_points</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Query specific category</span>
+<span class="n">middleware_points</span> <span class="o">=</span> <span class="n">list_extension_points</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;middleware&#39;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="extension-categories">Extension Categories<a class="headerlink" href="#extension-categories" title="Permanent link">&para;</a></h2>
+<p>Cullinan provides 6 major categories of extension points:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Description</th>
+<th>Typical Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Middleware</strong></td>
+<td>Request/Response interception</td>
+<td>Authentication, Logging, CORS</td>
+</tr>
+<tr>
+<td><strong>Lifecycle</strong></td>
+<td>Lifecycle hooks</td>
+<td>Initialization, Startup, Shutdown</td>
+</tr>
+<tr>
+<td><strong>Injection</strong></td>
+<td>Dependency Injection</td>
+<td>Custom Scope, Provider</td>
+</tr>
+<tr>
+<td><strong>Routing</strong></td>
+<td>Route handling</td>
+<td>Custom Handler</td>
+</tr>
+<tr>
+<td><strong>Configuration</strong></td>
+<td>Configuration management</td>
+<td>Config source, Environment adaptation</td>
+</tr>
+<tr>
+<td><strong>Handler</strong></td>
+<td>Request handler</td>
+<td>Custom request processing logic</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="middleware-extensions">Middleware Extensions<a class="headerlink" href="#middleware-extensions" title="Permanent link">&para;</a></h2>
+<h3 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link">&para;</a></h3>
+<p>Middleware are interceptors in the request processing pipeline that can:
+- Preprocess requests before they reach the Handler
+- Post-process responses before they are returned to the client
+- Short-circuit requests (e.g., return 401 on authentication failure)</p>
+<h3 id="creating-middleware">Creating Middleware<a class="headerlink" href="#creating-middleware" title="Permanent link">&para;</a></h3>
+<h4 id="method-1-decorator-registration-recommended">Method 1: Decorator Registration (Recommended)<a class="headerlink" href="#method-1-decorator-registration-recommended" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">middleware</span><span class="p">,</span> <span class="n">Middleware</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoggingMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logging Middleware&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="c1"># Request preprocessing</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request: </span><span class="si">{</span><span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span>  <span class="c1"># Return handler to continue processing</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c1"># Response post-processing</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+</code></pre></div>
+<h4 id="method-2-manual-registration">Method 2: Manual Registration<a class="headerlink" href="#method-2-manual-registration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">get_middleware_registry</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">handler</span>
+
+<span class="c1"># Manual registration</span>
+<span class="n">registry</span> <span class="o">=</span> <span class="n">get_middleware_registry</span><span class="p">()</span>
+<span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyMiddleware</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="priority-rules">Priority Rules<a class="headerlink" href="#priority-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Lower numbers execute first</strong></li>
+<li>Recommended ranges:</li>
+<li><code>0-50</code>: Critical middleware (CORS, security)</li>
+<li><code>51-100</code>: Standard middleware (logging, metrics)</li>
+<li><code>101-200</code>: Application-specific middleware</li>
+</ul>
+<h3 id="lifecycle-hooks">Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during initialization (application startup)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">create_connection_pool</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during destruction (application shutdown)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="c1"># Get connection for each request</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">handler</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c1"># Return connection</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">return_connection</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+</code></pre></div>
+<h3 id="short-circuiting-requests">Short-circuiting Requests<a class="headerlink" href="#short-circuiting-requests" title="Permanent link">&para;</a></h3>
+<p>Returning <code>None</code> indicates short-circuit - subsequent middleware and Handler will not execute:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Authorization&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+            <span class="c1"># Authentication failed, short-circuit</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">finish</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Unauthorized&#39;</span><span class="p">})</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Stop processing</span>
+
+        <span class="c1"># Authentication successful, continue</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">validate_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span>
+</code></pre></div>
+<h3 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h3>
+<p>Reference: <code>examples/custom_auth_middleware.py</code></p>
+<hr />
+<h2 id="dependency-injection-extensions">Dependency Injection Extensions<a class="headerlink" href="#dependency-injection-extensions" title="Permanent link">&para;</a></h2>
+<h3 id="custom-scope">Custom Scope<a class="headerlink" href="#custom-scope" title="Permanent link">&para;</a></h3>
+<p>Scope defines the lifecycle of dependencies (singleton, request-level, session-level, etc.).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.scope</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SessionScope</span><span class="p">(</span><span class="n">Scope</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Session-level scope&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># {session_id: {key: instance}}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get instance&quot;&quot;&quot;</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_session_id</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">session_id</span> <span class="ow">and</span> <span class="n">session_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">session_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set instance&quot;&quot;&quot;</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_session_id</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">session_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">session_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">session_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">session_id</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear current session&quot;&quot;&quot;</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_session_id</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">session_id</span> <span class="ow">and</span> <span class="n">session_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">session_id</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_current_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get session ID from request context&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_current_context</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">get_current_context</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;session_id&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<h3 id="custom-provider">Custom Provider<a class="headerlink" href="#custom-provider" title="Permanent link">&para;</a></h3>
+<p>Provider is responsible for creating and managing dependency instances.</p>
+<h4 id="factory-pattern-provider">Factory Pattern Provider<a class="headerlink" href="#factory-pattern-provider" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provider</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FactoryProvider</span><span class="p">(</span><span class="n">Provider</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create new instance every time&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h4 id="lazy-initialization-provider">Lazy Initialization Provider<a class="headerlink" href="#lazy-initialization-provider" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LazyProvider</span><span class="p">(</span><span class="n">Provider</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize only on first access&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+<h3 id="register-custom-provider">Register Custom Provider<a class="headerlink" href="#register-custom-provider" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.injection</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injection_registry</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProviderRegistryService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register custom Providers during service initialization&quot;&quot;&quot;</span>
+        <span class="n">registry</span> <span class="o">=</span> <span class="n">get_injection_registry</span><span class="p">()</span>
+
+        <span class="c1"># Register factory Provider</span>
+        <span class="n">factory_provider</span> <span class="o">=</span> <span class="n">FactoryProvider</span><span class="p">(</span>
+            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyClass</span><span class="p">(),</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MyClassFactory&#39;</span>
+        <span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;MyClass&#39;</span><span class="p">,</span> <span class="n">factory_provider</span><span class="p">)</span>
+
+        <span class="c1"># Register lazy Provider</span>
+        <span class="n">lazy_provider</span> <span class="o">=</span> <span class="n">LazyProvider</span><span class="p">(</span>
+            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">HeavyClass</span><span class="p">(),</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HeavyClassLazy&#39;</span>
+        <span class="p">)</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;HeavyClass&#39;</span><span class="p">,</span> <span class="n">lazy_provider</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="complete-example_1">Complete Example<a class="headerlink" href="#complete-example_1" title="Permanent link">&para;</a></h3>
+<p>Reference: <code>examples/custom_provider_demo.py</code></p>
+<hr />
+<h2 id="lifecycle-extensions">Lifecycle Extensions<a class="headerlink" href="#lifecycle-extensions" title="Permanent link">&para;</a></h2>
+<h3 id="service-lifecycle-hooks">Service Lifecycle Hooks<a class="headerlink" href="#service-lifecycle-hooks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize resources (after Service instantiation)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connect_to_database</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database connected&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute after all Services are ready&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT 1&quot;</span><span class="p">)</span>  <span class="c1"># Health check</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database ready&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during application shutdown&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database disconnected&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="async-hooks">Async Hooks<a class="headerlink" href="#async-hooks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Support async initialization&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_async_client</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Support async cleanup&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="hook-execution-order">Hook Execution Order<a class="headerlink" href="#hook-execution-order" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>on_init()</strong>: Execute immediately after Service instantiation</li>
+<li><strong>on_startup()</strong>: Execute after all Services are initialized</li>
+<li><strong>on_shutdown()</strong>: Execute during application shutdown (reverse order)</li>
+</ol>
+<hr />
+<h2 id="routing-extensions">Routing Extensions<a class="headerlink" href="#routing-extensions" title="Permanent link">&para;</a></h2>
+<h3 id="custom-tornado-handler">Custom Tornado Handler<a class="headerlink" href="#custom-tornado-handler" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tornado.web</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">run</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom request handler&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Custom handler&quot;</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_json_argument</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">({</span><span class="s2">&quot;received&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
+
+<span class="c1"># Register custom Handler</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">configure</span><span class="p">(</span>
+        <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom/(?P&lt;id&gt;[0-9]+)&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">run</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="mixed-use-with-controller">Mixed Use with Controller<a class="headerlink" href="#mixed-use-with-controller" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+<span class="c1"># CustomHandler and UserController can coexist</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">configure</span><span class="p">(</span>
+        <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/health&#39;</span><span class="p">,</span> <span class="n">HealthCheckHandler</span><span class="p">),</span>  <span class="c1"># Custom</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">run</span><span class="p">()</span>  <span class="c1"># UserController will be automatically registered</span>
+</code></pre></div>
+<hr />
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-middleware-design-principles">1. Middleware Design Principles<a class="headerlink" href="#1-middleware-design-principles" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Single Responsibility</strong>: Each middleware does one thing
+<div class="highlight"><pre><span></span><code><span class="c1"># Good design</span>
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>  <span class="c1"># Only handles authentication</span>
+    <span class="k">pass</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoleMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>  <span class="c1"># Only handles permission checks</span>
+    <span class="k">pass</span>
+</code></pre></div></p>
+<p>❌ <strong>Avoid Mixed Responsibilities</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Bad design</span>
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthAndLoggingMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>  <span class="c1"># Mixed responsibilities</span>
+    <span class="k">pass</span>
+</code></pre></div></p>
+<h3 id="2-priority-planning">2. Priority Planning<a class="headerlink" href="#2-priority-planning" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Sort by dependencies (later middleware depends on earlier results)</li>
+<li>Security-related middleware has highest priority</li>
+<li>Logging and monitoring middleware has moderate priority</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>   <span class="c1"># CORS (executes first)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CorsMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>   <span class="c1"># Rate limiting (before authentication)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RateLimitMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>   <span class="c1"># Authentication</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>   <span class="c1"># Permissions (depends on authentication result)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RoleMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Logging (executes last)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoggingMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<h3 id="3-dependency-injection-principles">3. Dependency Injection Principles<a class="headerlink" href="#3-dependency-injection-principles" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Prefer type injection</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># Recommended</span>
+</code></pre></div></p>
+<p>✅ <strong>Use name-based injection for special cases</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;EmailService&#39;</span><span class="p">)</span>  <span class="c1"># Avoid circular imports</span>
+</code></pre></div></p>
+<h3 id="4-lifecycle-management">4. Lifecycle Management<a class="headerlink" href="#4-lifecycle-management" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>on_init()</strong>: Initialize required resources</li>
+<li><strong>on_startup()</strong>: Execute logic that depends on other services</li>
+<li><strong>on_shutdown()</strong>: Always clean up resources</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResourceService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Initialize independent resources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Initialization depending on other services</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">get_cache_service</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Cleanup (must implement)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="5-error-handling">5. Error Handling<a class="headerlink" href="#5-error-handling" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Always provide clear error messages</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_token</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">user</span>
+            <span class="k">return</span> <span class="n">handler</span>
+        <span class="k">except</span> <span class="n">TokenExpiredError</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">finish</span><span class="p">({</span>
+                <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;TokenExpired&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Your token has expired. Please login again.&#39;</span>
+            <span class="p">})</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">InvalidTokenError</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">finish</span><span class="p">({</span>
+                <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;InvalidToken&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid authentication token.&#39;</span>
+            <span class="p">})</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></p>
+<h3 id="6-logging-standards">6. Logging Standards<a class="headerlink" href="#6-logging-standards" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use structured logging</li>
+<li><strong>No emoji allowed</strong></li>
+<li>Log critical operations and errors</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoggingMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Request started&quot;</span><span class="p">,</span>
+            <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+                <span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                <span class="s1">&#39;remote_ip&#39;</span><span class="p">:</span> <span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">remote_ip</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span>
+</code></pre></div>
+<hr />
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="q1-how-to-access-dependency-injected-services-in-middleware">Q1: How to access dependency-injected services in middleware?<a class="headerlink" href="#q1-how-to-access-dependency-injected-services-in-middleware" title="Permanent link">&para;</a></h3>
+<p>A: Middleware doesn't support automatic injection, but you can manually retrieve:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServiceAwareMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get service from ServiceRegistry</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service_registry</span>
+        <span class="n">registry</span> <span class="o">=</span> <span class="n">get_service_registry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="c1"># Use service</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handler</span>
+</code></pre></div>
+<h3 id="q2-can-middleware-modify-responses">Q2: Can middleware modify responses?<a class="headerlink" href="#q2-can-middleware-modify-responses" title="Permanent link">&para;</a></h3>
+<p>A: Yes, modify in <code>process_response</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResponseModifierMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c1"># Add response headers</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s1">&#39;X-Custom-Header&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Modify response body (if dict)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+</code></pre></div>
+<h3 id="q3-how-to-implement-conditional-middleware-only-apply-to-specific-paths">Q3: How to implement conditional middleware (only apply to specific paths)?<a class="headerlink" href="#q3-how-to-implement-conditional-middleware-only-apply-to-specific-paths" title="Permanent link">&para;</a></h3>
+<p>A: Check path in middleware:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConditionalMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="c1"># Only apply to /api/ paths</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">handler</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/api/&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">handler</span>  <span class="c1"># Skip</span>
+
+        <span class="c1"># Execute middleware logic</span>
+        <span class="c1"># ...</span>
+        <span class="k">return</span> <span class="n">handler</span>
+</code></pre></div>
+<h3 id="q4-what-is-the-middleware-execution-order">Q4: What is the middleware execution order?<a class="headerlink" href="#q4-what-is-the-middleware-execution-order" title="Permanent link">&para;</a></h3>
+<p>A: Request and response order are different:</p>
+<ul>
+<li><strong>Request Phase</strong>: By priority from small to large (10 → 50 → 100)</li>
+<li><strong>Response Phase</strong>: By priority from large to small (100 → 50 → 10, reverse)</li>
+</ul>
+<div class="highlight"><pre><span></span><code>Client Request
+  ↓
+Middleware A (priority=10)  →  process_request
+  ↓
+Middleware B (priority=50)  →  process_request
+  ↓
+Middleware C (priority=100) →  process_request
+  ↓
+Handler Processing
+  ↓
+Middleware C (priority=100) →  process_response
+  ↓
+Middleware B (priority=50)  →  process_response
+  ↓
+Middleware A (priority=10)  →  process_response
+  ↓
+Client Response
+</code></pre></div>
+<h3 id="q5-how-to-test-custom-extensions">Q5: How to test custom extensions?<a class="headerlink" href="#q5-how-to-test-custom-extensions" title="Permanent link">&para;</a></h3>
+<p>A: Use Cullinan's testing tools:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceTestCase</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestMyMiddleware</span><span class="p">(</span><span class="n">ServiceTestCase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">middleware</span> <span class="o">=</span> <span class="n">MyMiddleware</span><span class="p">()</span>
+
+        <span class="c1"># Mock handler</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">MockHandler</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">MockRequest</span><span class="p">()</span>
+
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">MockHandler</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">middleware</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../wiki/extensions/">Wiki Extensions</a> - Extension patterns and best practices</li>
+<li><a href="../wiki/ioc_di_v2/">IoC/DI 2.0 Architecture</a> - New container architecture</li>
+<li><a href="../quick_start_extensions/">Quick Start Extensions</a> - Quick start guide for extensions</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Example files can be found in the <code>examples/</code> directory of the repository:
+- <code>examples/custom_auth_middleware.py</code> - Middleware example
+- <code>examples/custom_provider_demo.py</code> - Provider example
+- <code>examples/extension_registration_demo.py</code> - Extension registration demo</p>
+</blockquote>
+<hr />
+<h2 id="get-help">Get Help<a class="headerlink" href="#get-help" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub Issues</strong>: https://github.com/yourusername/cullinan/issues</li>
+<li><strong>Example Code</strong>: <code>examples/</code> directory</li>
+<li><strong>API Documentation</strong>: <code>docs/api_reference.md</code></li>
+</ul>
+<hr />
+<p><strong>Version</strong>: v1.0<br />
+<strong>Author</strong>: Plumeink<br />
+<strong>Last Updated</strong>: 2025-12-16</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/plumeink/cullinan" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
