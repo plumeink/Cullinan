@@ -5,17 +5,21 @@ module: ["cullinan.core"]
 tags: ["architecture", "ioc", "design"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/architecture.md"
 related_tests: []
 related_examples: []
 estimate_pd: 2.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 ---
 
 # Architecture Overview
+
+> **Note (v0.90)**: The IoC/DI architecture has been redesigned in version 0.90.
+> For the new architecture, see [IoC/DI 2.0 Architecture](ioc_di_v2.md) and [Architecture Updated](../architecture_updated.md).
+> The new `ApplicationContext` from `cullinan.core.container` provides a unified container entry point.
 
 This document records Cullinan's high-level architecture based on the source implementation (facts from code). It covers component responsibilities, module interactions, the startup/request/shutdown sequence, and provides a plain-text ASCII architecture diagram for environments without diagram rendering.
 

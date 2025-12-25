@@ -1,7 +1,7 @@
 # Cullinan Framework Architecture (Updated)
 
-> **Version**: v0.81+  
-> **Last Updated**: 2025-12-16  
+> **Version**: v0.90  
+> **Last Updated**: 2025-12-25  
 > **Author**: Plumeink  
 > **Status**: Updated
 
@@ -11,12 +11,13 @@
 
 1. [Architecture Overview](#architecture-overview)
 2. [Core Components](#core-components)
-3. [IoC/DI System](#iocdi-system)
+3. [IoC/DI 2.0 System](#iocdi-20-system)
 4. [Extension Mechanism](#extension-mechanism)
 5. [Startup Flow](#startup-flow)
 6. [Request Processing Flow](#request-processing-flow)
 7. [Module Scanning](#module-scanning)
 8. [Performance Optimization](#performance-optimization)
+9. [Migration from 0.83](#migration-from-083)
 
 ---
 
@@ -48,11 +49,11 @@ Cullinan is a Tornado-based web framework that adopts the **IoC/DI** (Inversion 
 │  │  - Extension Points         │                     │
 │  └──────────────┬──────────────┘                     │
 │  ┌──────────────┴──────────────┐                     │
-│  │    IoC/DI Container         │                     │
-│  │  - IoCFacade (Unified API)  │                     │
-│  │  - InjectionRegistry        │                     │
-│  │  - ProviderRegistry         │                     │
-│  │  - ServiceRegistry          │                     │
+│  │  IoC/DI 2.0 Container       │                     │
+│  │  - ApplicationContext       │                     │
+│  │  - Definition + Factory     │                     │
+│  │  - ScopeManager             │                     │
+│  │  - Structured Diagnostics   │                     │
 │  └──────────────┬──────────────┘                     │
 │  ┌──────────────┴──────────────┐                     │
 │  │    Core Foundation          │                     │
@@ -80,35 +81,53 @@ Provides framework infrastructure.
 
 **Main Components**:
 
-#### 1.1 IoC/DI Container
+#### 1.1 IoC/DI 2.0 Container
 
 ```
-IoCFacade (Unified Entry Point)
-    ├── InjectionRegistry (Injection Registry)
-    ├── ProviderRegistry (Provider Registry)
-    └── ServiceRegistry (Service Registry)
+ApplicationContext (Single Entry Point)
+    ├── Definition Registry (Immutable definitions)
+    ├── Factory (Instance creation)
+    └── ScopeManager (Scope management)
+        ├── SingletonScope
+        ├── PrototypeScope
+        └── RequestScope
 ```
 
-**Responsibilities**:
-- **IoCFacade** (New in v0.81+): Unified dependency resolution interface
-  - `resolve(Type)` - Resolve by type
-  - `resolve_by_name(name)` - Resolve by name
-  - `has_dependency(Type)` - Check dependency
-  - Performance: 0.26 μs (cache hit)
+**Core Components (v0.90)**:
+- **ApplicationContext**: Single entry point for all container operations
+  - `register(Definition)` - Register dependency definition
+  - `get(name)` / `try_get(name)` - Resolve dependency
+  - `refresh()` - Freeze registry, initialize eager beans
+  - `shutdown()` - Clean up resources
 
-- **InjectionRegistry**: Dependency injection coordinator
-  - Scan type annotations (`Inject()`, `InjectByName()`)
-  - Coordinate multiple Provider Registries
-  - Circular dependency detection
+- **Definition**: Immutable dependency definition
+  - `name` - Unique identifier
+  - `factory` - Instance creation function
+  - `scope` - ScopeType (SINGLETON/PROTOTYPE/REQUEST)
+  - `source` - Source description for diagnostics
 
-- **ProviderRegistry**: Provider management
-  - Manage different Provider types (Instance, Class, Factory, Scoped)
-  - Support singleton and transient modes
+- **Factory**: Unified instance creation
+  - Creates instances via Definition.factory
+  - Delegates to ScopeManager for caching
 
-- **ServiceRegistry**: Service lifecycle management
-  - Register and initialize `@service` decorated classes
-  - Manage Service lifecycle hooks
-  - Dependency-ordered initialization
+- **ScopeManager**: Unified scope management
+  - `SINGLETON` - Application-level singleton (thread-safe)
+  - `PROTOTYPE` - New instance per resolution
+  - `REQUEST` - Request-scoped instances
+
+**New Directory Structure (v0.90)**:
+```
+cullinan/core/
+├── container/      # IoC/DI 2.0 API
+│   ├── context.py
+│   ├── definitions.py
+│   ├── factory.py
+│   └── scope.py
+├── diagnostics/    # Exceptions + rendering
+├── lifecycle/      # Lifecycle management
+├── request/        # Request context
+└── legacy/         # Deprecated 1.x components
+```
 
 #### 1.2 Lifecycle Management
 
@@ -203,7 +222,7 @@ class UserController:
 
 ---
 
-### 4. Extension Mechanism (New in v0.81+)
+### 4. Extension Mechanism
 
 #### 4.1 Middleware System
 
@@ -248,56 +267,75 @@ for point in points:
 
 ---
 
-## IoC/DI System
+## IoC/DI 2.0 System
 
-### Three-Tier Architecture + Facade
+### New Architecture (v0.90)
 
 ```
 ┌─────────────────────────────────────┐
-│     IoCFacade (Unified Entry)        │
-│  - resolve(Type)                    │
-│  - resolve_by_name(name)            │
-│  - has_dependency(Type)             │
-│  - Cache management                 │
+│   ApplicationContext (Entry Point)  │
+│  - register(Definition)             │
+│  - get(name) / try_get(name)        │
+│  - refresh() / shutdown()           │
 └───────────────┬─────────────────────┘
                 │
-      ┌─────────┼──────────┐
-      ▼         ▼          ▼
-┌──────────┐ ┌─────────┐ ┌──────────────┐
-│ Service  │ │Provider │ │  Injection   │
-│ Registry │ │Registry │ │  Registry    │
-└──────────┘ └─────────┘ └──────────────┘
+      ┌─────────┼─────────┐
+      ▼         ▼         ▼
+┌──────────┐ ┌─────────┐ ┌────────────┐
+│Definition│ │ Factory │ │ScopeManager│
+│ Registry │ │         │ │            │
+└──────────┘ └─────────┘ └────────────┘
 ```
 
-### Dependency Resolution Priority
+### Key Improvements
 
-1. **ServiceRegistry** - Highest priority (framework services)
-2. **ProviderRegistry** - Medium priority (configured Providers)
-3. **InjectionRegistry** - Fallback (uses provider registries)
+| Feature | 0.83 (Legacy) | 0.90 (2.0) |
+|---------|---------------|------------|
+| Entry Point | Multiple (IoCFacade, Registries) | Single (ApplicationContext) |
+| Definition | Mutable | Immutable (frozen) |
+| Registry | Modifiable at runtime | Frozen after refresh() |
+| Scopes | Implicit | Explicit ScopeType enum |
+| Diagnostics | String-based errors | Structured exceptions |
 
 ### Usage Patterns
 
-#### Pattern 1: Automatic Injection (Recommended)
+#### Pattern 1: Definition-Based Registration (Recommended)
 
 ```python
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
+ctx = ApplicationContext()
+
+# Register with explicit definition
+ctx.register(Definition(
+    name='UserService',
+    factory=lambda c: UserService(c.get('UserRepository')),
+    scope=ScopeType.SINGLETON,
+    source='service:UserService'
+))
+
+ctx.refresh()  # Freeze registry
+user_service = ctx.get('UserService')
+```
+
+#### Pattern 2: Automatic Injection (Decorator-based)
+
+```python
+from cullinan.service import service, Service
+from cullinan.core import Inject
+
 @service
 class UserService(Service):
     email_service: EmailService = Inject()  # Auto-inject
 ```
 
-#### Pattern 2: Manual Resolution
+#### Pattern 3: Legacy Resolution (Deprecated)
 
 ```python
+# Deprecated - will be removed in 1.0
 from cullinan.core.facade import resolve_dependency
 
-# Resolve by type
 user_service = resolve_dependency(UserService)
-
-# Resolve by name
-config = resolve_dependency_by_name('Config')
-
-# Optional dependency
-cache = resolve_dependency(CacheService, required=False)
 ```
 
 ---
@@ -615,7 +653,20 @@ class AuthAndLoggingMiddleware(Middleware):  # Mixed
 
 ---
 
-**Version**: v0.81+  
+## Migration from 0.83
+
+For migration from version 0.83 to 0.90, see the [Import Migration Guide](./import_migration_090.md).
+
+Key changes:
+- `cullinan.core.application_context` → `cullinan.core.container`
+- `cullinan.core.definitions` → `cullinan.core.container`
+- `cullinan.core.exceptions` → `cullinan.core.diagnostics`
+- `cullinan.core.context` → `cullinan.core.request`
+- Legacy components moved to `cullinan.core.legacy/`
+
+---
+
+**Version**: v0.90  
 **Author**: Plumeink  
-**Last Updated**: 2025-12-16
+**Last Updated**: 2025-12-25
 

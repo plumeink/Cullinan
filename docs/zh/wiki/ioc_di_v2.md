@@ -1,11 +1,14 @@
 # IoC/DI 2.0 架构
 
-> 本文档描述 Cullinan 2.0 引入的全新 IoC/DI 架构。
-> 从 1.x 迁移请参阅 [迁移指南](../migration_guide.md)。
+> **版本**：v0.90  
+> **作者**：Plumeink
+
+> 本文档描述 Cullinan 0.90 引入的全新 IoC/DI 架构。
+> 从之前版本迁移请参阅 [导入迁移指南](../import_migration_090.md)。
 
 ## 概述
 
-Cullinan 2.0 引入了完全重新设计的 IoC/DI 系统，主要改进包括：
+Cullinan 0.90 引入了完全重新设计的 IoC/DI 系统，主要改进包括：
 
 - **单一入口**：`ApplicationContext` 作为唯一容器入口
 - **定义/工厂分离**：清晰分离定义与实例创建
@@ -20,8 +23,7 @@ Cullinan 2.0 引入了完全重新设计的 IoC/DI 系统，主要改进包括�
 所有容器操作的单一入口：
 
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 # 创建上下文
 ctx = ApplicationContext()
@@ -63,7 +65,7 @@ ctx.shutdown()
 ### ScopeType
 
 ```python
-from cullinan.core.definitions import ScopeType
+from cullinan.core.container import ScopeType
 
 ScopeType.SINGLETON   # 应用级单例（线程安全）
 ScopeType.PROTOTYPE   # 每次解析创建新实例
@@ -103,8 +105,7 @@ ctx.register(Definition(...))  # 错误！
 请求作用域依赖需要活动的 `RequestContext`：
 
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 ctx = ApplicationContext()
 ctx.register(Definition(
@@ -158,6 +159,8 @@ CircularDependencyError: 检测到循环依赖: ServiceA -> ServiceB -> ServiceC
 ## 测试
 
 ```python
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
 def test_my_service():
     ctx = ApplicationContext()
     ctx.register(Definition(
@@ -180,7 +183,7 @@ def test_my_service():
 
 ## 相关文档
 
-- [迁移指南](../migration_guide.md)
+- [导入迁移指南](../import_migration_090.md)
 - [API 参考](../api_reference.md)
 - [架构概述](architecture.md)
 

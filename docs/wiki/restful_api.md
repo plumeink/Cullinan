@@ -1,6 +1,10 @@
 title: "RESTful API decorators"
 slug: "restful-api"
 author: "Plumeink"
+status: updated
+locale: en
+translation_pair: "docs/zh/wiki/restful_api.md"
+last_updated: "2025-12-25T00:00:00Z"
 
 # RESTful API decorators (detailed)
 

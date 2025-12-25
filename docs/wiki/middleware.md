@@ -2,18 +2,22 @@ title: "Middleware"
 slug: "middleware"
 module: ["cullinan.middleware"]
 tags: ["middleware"]
-author: "TBD"
+author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/middleware.md"
 related_tests: []
 related_examples: ["examples/controller_di_middleware.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # Middleware
+
+> **Note (v0.90)**: The DI integration in middleware has been updated in version 0.90.
+> For the new IoC/DI system, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> Middleware can now obtain dependencies via `ApplicationContext` instead of `InjectionRegistry`.
 
 This document explains Cullinan middleware: responsibilities, execution pipeline, registration, DI integration, examples, troubleshooting and best practices. Middleware is a pluggable stage in the request/response lifecycle for auth, logging, transformations, etc.
 

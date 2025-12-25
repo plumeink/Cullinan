@@ -1,82 +1,82 @@
-# Cullinan Extension Registration Quick Start
+# Cullinan 扩展注册快速指南
 
-> **Version**: v0.90  
-> **Feature**: Unified Extension Registration and Discovery Pattern  
-> **Author**: Plumeink
+> **版本**：v0.90  
+> **功能**：统一扩展注册与发现模式  
+> **作者**：Plumeink
 
 ---
 
-## Quick Start
+## 快速开始
 
-### 1. Middleware Registration (Recommended)
+### 1. 中间件注册（推荐方式）
 
-Use the `@middleware` decorator to automatically register middleware:
+使用 `@middleware` 装饰器自动注册中间件：
 
 ```python
 from cullinan.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
-    """Logging middleware - records all requests"""
+    """日志中间件 - 记录所有请求"""
     
     def process_request(self, handler):
         print(f"→ Request: {handler.request.uri}")
-        return handler  # Return handler to continue processing
+        return handler  # 返回 handler 继续处理
     
     def process_response(self, handler, response):
         print(f"← Response: {response}")
         return response
 ```
 
-### 2. Priority Control
+### 2. 优先级控制
 
-Lower priority numbers execute first:
+优先级数字越小，越先执行：
 
 ```python
-@middleware(priority=10)   # Executes first
+@middleware(priority=10)   # 第一个执行
 class CorsMiddleware(Middleware):
     pass
 
-@middleware(priority=50)   # Executes second
+@middleware(priority=50)   # 第二个执行
 class AuthMiddleware(Middleware):
     pass
 
-@middleware(priority=100)  # Executes third
+@middleware(priority=100)  # 第三个执行
 class LoggingMiddleware(Middleware):
     pass
 ```
 
-**Recommended Priority Ranges**:
-- `0-50`: Critical middleware (CORS, security checks)
-- `51-100`: Standard middleware (logging, metrics)
-- `101-200`: Application-specific middleware
+**推荐优先级范围**：
+- `0-50`：关键中间件（CORS、安全检查）
+- `51-100`：标准中间件（日志、指标收集）
+- `101-200`：应用特定中间件
 
-### 3. Extension Point Discovery
+### 3. 扩展点发现
 
-Query available extension points:
+查询框架提供的扩展点：
 
 ```python
 from cullinan.extensions import list_extension_points
 
-# Query all extension points
+# 查询所有扩展点
 all_points = list_extension_points()
 
-# Query extension points by category
+# 查询特定分类的扩展点
 middleware_points = list_extension_points(category='middleware')
 lifecycle_points = list_extension_points(category='lifecycle')
 
-# Display extension point info
+# 显示扩展点信息
 for point in middleware_points:
     print(f"{point['name']}: {point['description']}")
 ```
 
-Example output:
+输出示例：
 ```
 Middleware.process_request: Intercept and process requests before they reach handlers
 Middleware.process_response: Intercept and process responses before they are sent
 ```
 
-### 4. Query Registered Middleware
+### 4. 查询已注册中间件
 
 ```python
 from cullinan.middleware import get_middleware_registry
@@ -88,7 +88,7 @@ for mw in registered:
     print(f"{mw['priority']:3d}: {mw['name']}")
 ```
 
-Example output:
+输出示例：
 ```
  10: CorsMiddleware
  50: AuthMiddleware
@@ -97,9 +97,9 @@ Example output:
 
 ---
 
-## Complete Example
+## 完整示例
 
-### Scenario: Building an Authenticated API
+### 场景：构建一个带认证的 API
 
 ```python
 from cullinan import configure, run
@@ -108,11 +108,11 @@ from cullinan.controller import controller, get_api
 from cullinan.service import service, Service
 from cullinan.core import Inject
 
-# 1. Define middleware (auto-sorted by priority)
+# 1. 定义中间件（按优先级自动排序）
 
 @middleware(priority=10)
 class CorsMiddleware(Middleware):
-    """CORS middleware - executes first"""
+    """CORS 中间件 - 最先执行"""
     def process_response(self, handler, response):
         handler.set_header('Access-Control-Allow-Origin', '*')
         return response
@@ -120,25 +120,25 @@ class CorsMiddleware(Middleware):
 
 @middleware(priority=50)
 class AuthMiddleware(Middleware):
-    """Auth middleware - executes after CORS"""
+    """认证中间件 - CORS 之后执行"""
     def process_request(self, handler):
         token = handler.request.headers.get('Authorization')
         if not token and handler.request.path.startswith('/api/'):
             handler.set_status(401)
             handler.finish({"error": "Unauthorized"})
-            return None  # Short-circuit, stop processing
+            return None  # 短路，不继续处理
         return handler
 
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
-    """Logging middleware - executes last"""
+    """日志中间件 - 最后执行"""
     def process_request(self, handler):
         print(f"[{handler.request.method}] {handler.request.path}")
         return handler
 
 
-# 2. Define services
+# 2. 定义服务
 
 @service
 class UserService(Service):
@@ -146,7 +146,7 @@ class UserService(Service):
         return {"id": user_id, "name": "Alice"}
 
 
-# 3. Define controllers
+# 3. 定义控制器
 
 @controller('/api/users')
 class UserController:
@@ -157,7 +157,7 @@ class UserController:
         return self.user_service.get_user(user_id)
 
 
-# 4. Start application
+# 4. 启动应用
 
 if __name__ == '__main__':
     configure(
@@ -167,9 +167,9 @@ if __name__ == '__main__':
     run()
 ```
 
-**Execution Flow**:
+**执行流程**：
 ```
-Request arrives
+请求到达
   ↓
 CorsMiddleware (priority=10)
   ↓
@@ -179,20 +179,20 @@ LoggingMiddleware (priority=100)
   ↓
 UserController.get_user()
   ↓
-LoggingMiddleware (response, reverse order)
+LoggingMiddleware (响应，逆序)
   ↓
-AuthMiddleware (response, reverse order)
+AuthMiddleware (响应，逆序)
   ↓
-CorsMiddleware (response, reverse order)
+CorsMiddleware (响应，逆序)
   ↓
-Response sent
+响应返回
 ```
 
 ---
 
-## Backward Compatibility
+## 向后兼容
 
-Manual registration is still supported:
+手动注册方式仍然可用：
 
 ```python
 from cullinan.middleware import Middleware, get_middleware_registry
@@ -201,61 +201,61 @@ class MyMiddleware(Middleware):
     def process_request(self, handler):
         return handler
 
-# Manual registration
+# 手动注册
 registry = get_middleware_registry()
 registry.register(MyMiddleware, priority=100)
 ```
 
-**Both methods can be used together**, and the framework will automatically sort by priority.
+**新旧方式可以混用**，框架会自动按优先级排序。
 
 ---
 
-## Extension Point Categories
+## 扩展点分类
 
-The framework provides 6 major extension point categories:
+框架提供 6 大类扩展点：
 
-1. **Middleware**
+1. **Middleware（中间件）**
    - `Middleware.process_request`
    - `Middleware.process_response`
 
-2. **Lifecycle**
+2. **Lifecycle（生命周期）**
    - `Service.on_init`
    - `Service.on_startup`
    - `Service.on_shutdown`
 
-3. **Injection**
+3. **Injection（依赖注入）**
    - `custom_scope`
    - `custom_provider`
 
-4. **Routing**
+4. **Routing（路由）**
    - `custom_handler`
 
-5. **Configuration**
+5. **Configuration（配置）**
    - `config_provider`
 
-6. **Handler**
-   - Custom Tornado Handler
+6. **Handler（处理器）**
+   - 自定义 Tornado Handler
 
 ---
 
-## FAQ
+## 常见问题
 
-### Q1: What happens when middleware returns None?
+### Q1: 中间件返回 None 会怎样？
 
-A: Returning `None` short-circuits the chain, skipping subsequent middleware and handlers:
+A: 返回 `None` 表示短路，后续中间件和处理器不再执行：
 
 ```python
 def process_request(self, handler):
     if not_authorized:
         handler.set_status(401)
         handler.finish({"error": "Unauthorized"})
-        return None  # Short-circuit, stop processing
-    return handler  # Continue to next middleware
+        return None  # 短路，不继续
+    return handler  # 继续到下一个中间件
 ```
 
-### Q2: How to view middleware execution order?
+### Q2: 如何查看中间件执行顺序？
 
-A: Use the registry query:
+A: 使用注册表查询：
 
 ```python
 from cullinan.middleware import get_middleware_registry
@@ -265,36 +265,36 @@ for mw in registry.get_registered_middleware():
     print(f"{mw['priority']}: {mw['name']}")
 ```
 
-### Q3: Can middleware be registered dynamically?
+### Q3: 可以动态注册中间件吗？
 
-A: Yes, but it's recommended to complete registration before application startup:
+A: 可以，但建议在应用启动前完成注册：
 
 ```python
-# Register before startup
+# 启动前注册
 registry = get_middleware_registry()
 registry.register(DynamicMiddleware, priority=150)
 
-# Then start the application
+# 然后启动应用
 run()
 ```
 
-### Q4: Does middleware affect performance?
+### Q4: 中间件会影响性能吗？
 
-A: Decorator registration overhead is minimal (~1μs), with no runtime overhead. Middleware performance depends on your implementation logic.
-
----
-
-## Further Reading
-
-- **Example Code**: `examples/extension_registration_demo.py`
-- **Extension Development Guide**: `docs/extension_development_guide.md`
-- **Middleware Details**: `docs/wiki/middleware.md`
+A: 装饰器注册的开销极小（~1μs），运行时无额外开销。中间件的性能取决于你的实现逻辑。
 
 ---
 
-## Feedback & Support
+## 进一步阅读
 
-For questions or suggestions:
-1. Check example code: `examples/extension_registration_demo.py`
-2. Submit an Issue or PR to the project repository
+- **示例代码**：`examples/extension_registration_demo.py`
+- **扩展开发指南**：`docs/extension_development_guide.md`
+- **中间件详解**：`docs/wiki/middleware.md`
+
+---
+
+## 反馈与支持
+
+如有问题或建议，请：
+1. 查看示例代码：`examples/extension_registration_demo.py`
+2. 提交 Issue 或 PR 到项目仓库
 

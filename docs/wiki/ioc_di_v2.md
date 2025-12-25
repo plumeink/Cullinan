@@ -1,11 +1,14 @@
 # IoC/DI 2.0 Architecture
 
-> This document describes the new IoC/DI 2.0 architecture introduced in Cullinan 2.0.
-> For migration from 1.x, see [Migration Guide](../migration_guide.md).
+> **Version**: v0.90  
+> **Author**: Plumeink
+
+> This document describes the new IoC/DI 2.0 architecture introduced in Cullinan 0.90.
+> For migration from previous versions, see [Import Migration Guide](../import_migration_090.md).
 
 ## Overview
 
-Cullinan 2.0 introduces a completely redesigned IoC/DI system with the following key improvements:
+Cullinan 0.90 introduces a completely redesigned IoC/DI system with the following key improvements:
 
 - **Single Entry Point**: `ApplicationContext` as the only container entry point
 - **Definition/Factory Separation**: Clear separation between definition and instance creation
@@ -20,8 +23,7 @@ Cullinan 2.0 introduces a completely redesigned IoC/DI system with the following
 The single entry point for all container operations:
 
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 # Create context
 ctx = ApplicationContext()
@@ -63,7 +65,7 @@ Immutable dependency definition (frozen after creation):
 ### ScopeType
 
 ```python
-from cullinan.core.definitions import ScopeType
+from cullinan.core.container import ScopeType
 
 ScopeType.SINGLETON   # Application-level singleton (thread-safe)
 ScopeType.PROTOTYPE   # New instance per resolution
@@ -103,8 +105,7 @@ ctx.register(Definition(...))  # Error!
 Request-scoped dependencies require an active `RequestContext`:
 
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 ctx = ApplicationContext()
 ctx.register(Definition(
@@ -158,6 +159,8 @@ CircularDependencyError: Circular dependency detected: ServiceA -> ServiceB -> S
 ## Testing
 
 ```python
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
 def test_my_service():
     ctx = ApplicationContext()
     ctx.register(Definition(
@@ -180,7 +183,6 @@ def test_my_service():
 
 ## Related Documentation
 
-- [Migration Guide](../migration_guide.md)
+- [Import Migration Guide](../import_migration_090.md)
 - [API Reference](../api_reference.md)
 - [Architecture Overview](architecture.md)
-

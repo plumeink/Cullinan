@@ -4,16 +4,19 @@ module: ["cullinan.service"]
 tags: ["api", "module", "service"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/modules/service.md"
 related_tests: ["tests/test_provider_system.py"]
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.service
+
+> **Note (v0.90)**: Services can now be registered via `ApplicationContext`.
+> For the new IoC/DI 2.0 architecture, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
 
 Summary: Service registration and provider patterns. Document how services are provided, scoped, and injected.
 

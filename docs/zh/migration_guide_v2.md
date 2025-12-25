@@ -1,6 +1,9 @@
 # Cullinan 2.0 迁移指南
 
-本指南帮助您从 Cullinan 1.x 迁移到 2.0。
+> **版本**：v0.90  
+> **作者**：Plumeink
+
+本指南帮助您从 Cullinan 1.x 迁移到 2.0（0.90）。
 
 ## 破坏性变更
 
@@ -16,8 +19,7 @@ registry.add_provider_source(my_source)
 
 **之后（2.0）：**
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 ctx = ApplicationContext()
 ctx.register(Definition(
@@ -83,7 +85,7 @@ except Exception as e:
 
 **之后（2.0）：**
 ```python
-from cullinan.core.exceptions import DependencyNotFoundError
+from cullinan.core.diagnostics import DependencyNotFoundError
 
 try:
     ctx.get('Missing')
@@ -118,8 +120,7 @@ CircularDependencyError: 检测到循环依赖: A -> B -> C -> A
 from cullinan.core import get_injection_registry, Inject, InjectByName
 
 # 新导入（2.0）
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 ```
 
 ### 第 2 步：转换服务注册
@@ -148,7 +149,7 @@ app = CullinanApplication()
 app.run()
 
 # 新风格
-from cullinan.core.application_context import ApplicationContext
+from cullinan.core.container import ApplicationContext
 
 ctx = ApplicationContext()
 # ... 注册定义 ...
@@ -188,7 +189,7 @@ class MyHandler(RequestHandler):
 迁移期间，您可以启用兼容模式（已弃用，将被移除）：
 
 ```python
-from cullinan.core.application_context import ApplicationContext
+from cullinan.core.container import ApplicationContext
 
 ctx = ApplicationContext()
 ctx.set_strict_mode(False)  # 允许一些旧行为

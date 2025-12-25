@@ -2,18 +2,22 @@ title: "Extensions & Plugins"
 slug: "extensions"
 module: ["cullinan"]
 tags: ["extensions", "plugins"]
-author: "TBD"
+author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/extensions.md"
 related_tests: []
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # Extensions & Plugins
+
+> **Note (v0.90)**: Extension registration has been updated in version 0.90.
+> For the new extension system, see [Quick Start Extensions](../quick_start_extensions.md) and [Extension Development Guide](../extension_development_guide.md).
+> The new `ApplicationContext` from `cullinan.core.container` is now the recommended way to register extensions.
 
 This page explains how to extend Cullinan with custom plugins and extensions. It covers extension points, provider registration, typical plugin patterns, and a minimal example showing how to register a custom provider and hook it into the application lifecycle.
 

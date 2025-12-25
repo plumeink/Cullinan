@@ -4,16 +4,20 @@ module: ["cullinan"]
 tags: ["components", "architecture"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/wiki/components.md"
 related_tests: []
 related_examples: []
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # 组件
+
+> **说明（v0.90）**：核心（IoC/DI）组件已在 0.90 版本中重新设计。
+> 新架构请参阅 [IoC/DI 2.0 架构](ioc_di_v2.md)。
+> `cullinan.core.container` 中的新 `ApplicationContext` 是推荐的入口点。
 
 本文介绍 Cullinan 的主要组件及其职责，并给出实现代码的指向（`cullinan/` 包）。目标是为贡献者与使用者提供一个简明索引，方便定位源码子系统。
 

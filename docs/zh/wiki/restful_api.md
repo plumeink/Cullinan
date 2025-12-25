@@ -1,6 +1,10 @@
 title: "RESTful API 装饰器"
 slug: "restful-api"
 author: "Plumeink"
+status: updated
+locale: zh
+translation_pair: "docs/wiki/restful_api.md"
+last_updated: "2025-12-25T00:00:00Z"
 
 # RESTful API 装饰器（详细）
 

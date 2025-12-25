@@ -4,16 +4,19 @@ module: ["cullinan.controller"]
 tags: ["api", "module", "controller"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/modules/controller.md"
 related_tests: ["tests/test_controller_injection_fix.py","tests/test_controller_with_methods.py"]
 related_examples: ["examples/controller_di_middleware.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.controller
+
+> **说明（v0.90）**：控制器 DI 现在由 `ApplicationContext` 管理。
+> 新的 IoC/DI 2.0 架构请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
 
 摘要：控制器注册、生命周期与注入到控制器实例的机制。记录使用模式与常见陷阱。
 

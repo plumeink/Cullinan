@@ -1,6 +1,9 @@
 # Cullinan 2.0 Migration Guide
 
-This guide helps you migrate from Cullinan 1.x to 2.0.
+> **Version**: v0.90  
+> **Author**: Plumeink
+
+This guide helps you migrate from Cullinan 1.x to 2.0 (0.90).
 
 ## Breaking Changes
 
@@ -16,8 +19,7 @@ registry.add_provider_source(my_source)
 
 **After (2.0):**
 ```python
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
 ctx = ApplicationContext()
 ctx.register(Definition(
@@ -83,7 +85,7 @@ except Exception as e:
 
 **After (2.0):**
 ```python
-from cullinan.core.exceptions import DependencyNotFoundError
+from cullinan.core.diagnostics import DependencyNotFoundError
 
 try:
     ctx.get('Missing')
@@ -118,8 +120,7 @@ CircularDependencyError: Circular dependency detected: A -> B -> C -> A
 from cullinan.core import get_injection_registry, Inject, InjectByName
 
 # New imports (2.0)
-from cullinan.core.application_context import ApplicationContext
-from cullinan.core.definitions import Definition, ScopeType
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
 ```
 
 ### Step 2: Convert Service Registration
@@ -148,7 +149,7 @@ app = CullinanApplication()
 app.run()
 
 # New style
-from cullinan.core.application_context import ApplicationContext
+from cullinan.core.container import ApplicationContext
 
 ctx = ApplicationContext()
 # ... register definitions ...
@@ -188,7 +189,7 @@ The following APIs are deprecated in 2.0 and will be removed in 3.0:
 During migration, you can enable compatibility mode (deprecated, will be removed):
 
 ```python
-from cullinan.core.application_context import ApplicationContext
+from cullinan.core.container import ApplicationContext
 
 ctx = ApplicationContext()
 ctx.set_strict_mode(False)  # Allow some legacy behaviors

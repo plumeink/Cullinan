@@ -2,18 +2,22 @@ title: "Application Lifecycle"
 slug: "lifecycle"
 module: ["cullinan.application"]
 tags: ["lifecycle", "startup"]
-author: "TBD"
+author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/lifecycle.md"
 related_tests: ["tests/test_real_app_startup.py","tests/test_comprehensive_lifecycle.py"]
 related_examples: ["docs/work/core_examples.py","examples/hello_http.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T15:55:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # Application Lifecycle
+
+> **Note (v0.90)**: This document describes the legacy lifecycle management.
+> For the new IoC/DI 2.0 lifecycle, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> The new `ApplicationContext` provides unified lifecycle management via `refresh()` and `shutdown()`.
 
 This document describes the Cullinan application lifecycle: startup, service initialization, request handling, and graceful shutdown hooks and events. The content is derived from the implementation (source-first) and references `cullinan/app.py`, `cullinan/application.py` and `cullinan/core/lifecycle` related files.
 

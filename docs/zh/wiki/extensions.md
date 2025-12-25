@@ -4,16 +4,20 @@ module: ["cullinan"]
 tags: ["extensions", "plugins"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/wiki/extensions.md"
 related_tests: []
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # 扩展与插件
+
+> **说明（v0.90）**：扩展注册方式已在 0.90 版本中更新。
+> 新的扩展系统请参阅 [扩展快速入门](../quick_start_extensions.md) 和 [扩展开发指南](../extension_development_guide.md)。
+> `cullinan.core.container` 中的新 `ApplicationContext` 是注册扩展的推荐方式。
 
 本文档说明如何通过自定义插件扩展 Cullinan。内容包括扩展点、提供者注册、典型插件模式，以及一个最小示例（展示如何注册自定义 provider 并挂接到应用生命周期）。
 

@@ -1,14 +1,14 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: v0.9  
+> **Version**: v0.90  
 > **Author**: Plumeink  
-> **Last Updated**: 2025-12-24
+> **Last Updated**: 2025-12-25
 
 ---
 
 ## Overview
 
-Cullinan provides a powerful Dependency Injection (DI) system that supports multiple injection methods. Version 0.9 introduces a unified injection model. This guide helps you understand and use these features.
+Cullinan provides a powerful Dependency Injection (DI) system that supports multiple injection methods. Version 0.90 introduces a unified injection model. This guide helps you understand and use these features.
 
 ## Table of Contents
 
@@ -155,7 +155,7 @@ class UserController:
 
 ### New Architecture Overview
 
-Starting from v0.9, Cullinan introduces a unified injection model where all injection methods are based on the same underlying architecture:
+Starting from v0.90, Cullinan introduces a unified injection model where all injection methods are based on the same underlying architecture:
 
 ```
 ┌─────────────────────────────────────────┐

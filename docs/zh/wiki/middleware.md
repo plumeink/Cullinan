@@ -4,16 +4,20 @@ module: ["cullinan.middleware"]
 tags: ["middleware"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/wiki/middleware.md"
 related_tests: []
 related_examples: ["examples/middleware_demo.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # 中间件
+
+> **说明（v0.90）**：中间件的 DI 集成已在 0.90 版本中更新。
+> 新的 IoC/DI 系统请参阅 [IoC/DI 2.0 架构](ioc_di_v2.md)。
+> 中间件现在可以通过 `ApplicationContext` 获取依赖，而不是 `InjectionRegistry`。
 
 本文档说明 Cullinan 中间件的作用、链路执行顺序、注册方式、与 DI 的集成，并提供最小示例与故障排查建议。中间件是处理请求／响应生命周期中的可插拔阶段，用于认证、授权、日志、请求/响应变换等场景。
 

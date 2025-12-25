@@ -4,13 +4,13 @@ module: ["cullinan.application"]
 tags: ["getting-started", "tutorial"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/getting_started.md"
 related_tests: ["tests/test_real_app_startup.py"]
 related_examples: ["examples/hello_http.py"]
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # Getting Started with Cullinan

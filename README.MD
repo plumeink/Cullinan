@@ -54,27 +54,30 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 - **[English Documentation](https://plumeink.github.io/Cullinan/)** – complete English docs
   - [Quick start](https://plumeink.github.io/Cullinan/getting_started/)
   - [Architecture](https://plumeink.github.io/Cullinan/architecture/) · [Lifecycle](https://plumeink.github.io/Cullinan/wiki/lifecycle/)
-  - [IoC/DI details](https://plumeink.github.io/Cullinan/wiki/injection/)
+  - [IoC/DI 2.0](https://plumeink.github.io/Cullinan/wiki/ioc_di_v2/) · [Migration Guide](https://plumeink.github.io/Cullinan/import_migration_090/)
   - [RESTful routing](https://plumeink.github.io/Cullinan/wiki/restful_api/)
 - **[中文文档](https://plumeink.github.io/Cullinan/zh/)** – 完整中文文档
   - [快速开始](https://plumeink.github.io/Cullinan/zh/getting_started/)
   - [架构](https://plumeink.github.io/Cullinan/zh/architecture/) · [生命周期](https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/)
-  - [IoC/DI 说明](https://plumeink.github.io/Cullinan/zh/wiki/injection/)
+  - [IoC/DI 2.0](https://plumeink.github.io/Cullinan/zh/wiki/ioc_di_v2/) · [迁移指南](https://plumeink.github.io/Cullinan/zh/import_migration_090/)
   - [RESTful 路由](https://plumeink.github.io/Cullinan/zh/wiki/restful_api/)
 
 ### Version Notes
 
-- Current series: **v0.7x+**
+- Current series: **v0.90+**
+  - New IoC/DI 2.0 architecture with `ApplicationContext`
+  - Single container entry point with freeze-after-startup
+  - Definition/Factory separation for dependency management
+  - Structured diagnostics with stable dependency chains
   - Core module with registry, DI, lifecycle management
   - Enhanced service layer with dependency injection
   - WebSocket support with unified registry
   - Request context management
 
-- Deprecated modules removed:
-  - `cullinan.registry` → use `cullinan.handler` and `cullinan.controller`
-  - `cullinan.websocket` → use `cullinan.websocket_registry`
-
-For older code, see the **API Migration Guide** in the docs.
+- Migration from v0.83:
+  - See [Import Migration Guide](docs/import_migration_090.md) for detailed migration steps
+  - Legacy APIs are deprecated but still functional in v0.90
+  - Will be removed in v1.0
 
 ---
 

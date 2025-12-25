@@ -4,16 +4,26 @@ module: ["cullinan.core"]
 tags: ["api", "module", "core"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/modules/core.md"
 related_tests: ["tests/test_core_injection.py","tests/test_core.py"]
 related_examples: []
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.core
+
+> **Note (v0.90)**: The core module has been reorganized in version 0.90.
+> For the new IoC/DI 2.0 API, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> New projects should use `ApplicationContext` from `cullinan.core.container`.
+>
+> **New module structure**:
+> - `cullinan.core.container` - ApplicationContext, Definition, ScopeType
+> - `cullinan.core.diagnostics` - Exceptions and error rendering
+> - `cullinan.core.lifecycle` - Lifecycle management
+> - `cullinan.core.request` - Request context
 
 Summary: Core IoC/DI primitives, provider, scope, registry, and lifecycle helpers. This page should reference concrete files in `cullinan/core/` and include usage examples.
 

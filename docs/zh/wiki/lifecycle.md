@@ -2,18 +2,22 @@ title: "应用生命周期"
 slug: "lifecycle"
 module: ["cullinan.application"]
 tags: ["lifecycle", "startup"]
-author: "待定"
+author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/wiki/lifecycle.md"
 related_tests: ["tests/test_real_app_startup.py","tests/test_comprehensive_lifecycle.py"]
 related_examples: ["docs/work/core_examples.py","examples/hello_http.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T15:55:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # 应用生命周期
+
+> **说明（v0.90）**：本文档描述旧版生命周期管理。
+> 新的 IoC/DI 2.0 生命周期，请参阅 [IoC/DI 2.0 架构](ioc_di_v2.md)。
+> 新的 `ApplicationContext` 通过 `refresh()` 和 `shutdown()` 提供统一的生命周期管理。
 
 本文档描述 Cullinan 应用的生命周期：启动（startup）、初始化服务（initialize）、请求处理（request handling）、以及优雅关闭（shutdown）钩子与事件。内容基于源码（以实现为准），主要参考：`cullinan/app.py`、`cullinan/application.py` 与 `cullinan/core/lifecycle` 相关实现。
 

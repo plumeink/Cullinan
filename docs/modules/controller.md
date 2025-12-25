@@ -4,16 +4,19 @@ module: ["cullinan.controller"]
 tags: ["api", "module", "controller"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/modules/controller.md"
 related_tests: ["tests/test_controller_injection_fix.py","tests/test_controller_with_methods.py"]
 related_examples: ["examples/controller_di_middleware.py"]
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.controller
+
+> **Note (v0.90)**: Controller DI is now managed by `ApplicationContext`.
+> For the new IoC/DI 2.0 architecture, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
 
 Summary: Controller registration, lifecycle, and injection into controller instances. Document usage patterns and common pitfalls.
 

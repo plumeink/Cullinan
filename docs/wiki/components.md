@@ -2,18 +2,22 @@ title: "Components"
 slug: "components"
 module: ["cullinan"]
 tags: ["components", "architecture"]
-author: "TBD"
+author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/components.md"
 related_tests: []
 related_examples: []
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # Components
+
+> **Note (v0.90)**: The Core (IoC/DI) component has been redesigned in version 0.90.
+> For the new architecture, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> The new `ApplicationContext` from `cullinan.core.container` is now the recommended entry point.
 
 This page describes the primary components of Cullinan and their responsibilities, with pointers to the implementation in the `cullinan/` package. The goal is a concise reference that helps contributors and users understand where to look in the source for each subsystem.
 

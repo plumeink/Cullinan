@@ -4,16 +4,19 @@ module: ["cullinan.service"]
 tags: ["api", "module", "service"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/modules/service.md"
 related_tests: ["tests/test_provider_system.py"]
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.service
+
+> **说明（v0.90）**：服务现在可以通过 `ApplicationContext` 注册。
+> 新的 IoC/DI 2.0 架构请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
 
 摘要：服务注册与提供者模式。记录服务如何被提供、作用域及注入方式。
 

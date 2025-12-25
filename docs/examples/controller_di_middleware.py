@@ -1,5 +1,18 @@
 """Controller + DI + Middleware example (doc copy)
 
+**DEPRECATED (v0.90)**: This example uses the legacy 1.x DI API.
+For the new 2.0 API, see the ApplicationContext-based examples in:
+- docs/wiki/ioc_di_v2.md
+- docs/migration_guide_v2.md
+
+The legacy APIs used here (InjectionRegistry, ProviderRegistry, Inject)
+are deprecated and will be removed in version 1.0.
+
+This file is kept for reference only. For new projects, use:
+    from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
+---
+
 This file is copied into the documentation `docs/examples` so MkDocs can
 resolve links in `work/linked_map.md`. The original is located at
 `examples/controller_di_middleware.py` in the repository root.

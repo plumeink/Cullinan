@@ -4,16 +4,20 @@ module: ["cullinan.app"]
 tags: ["api", "module"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: en
 translation_pair: "docs/zh/modules/app.md"
 related_tests: []
 related_examples: []
 estimate_pd: 0.8
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.app
+
+> **Note (v0.90)**: The application lifecycle is now managed by `ApplicationContext`.
+> For the new IoC/DI 2.0 lifecycle, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> Use `ApplicationContext.refresh()` and `ApplicationContext.shutdown()` for lifecycle management.
 
 Summary: placeholder for `cullinan.app` module documentation. Describe entry-points and how to create app instances.
 

@@ -4,16 +4,26 @@ module: ["cullinan.core"]
 tags: ["api", "module", "core"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/modules/core.md"
 related_tests: ["tests/test_core_injection.py","tests/test_core.py"]
 related_examples: []
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.core
+
+> **说明（v0.90）**：核心模块已在 0.90 版本中重新组织。
+> 新的 IoC/DI 2.0 API 请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 新项目应使用 `cullinan.core.container` 中的 `ApplicationContext`。
+>
+> **新模块结构**：
+> - `cullinan.core.container` - ApplicationContext、Definition、ScopeType
+> - `cullinan.core.diagnostics` - 异常与错误渲染
+> - `cullinan.core.lifecycle` - 生命周期管理
+> - `cullinan.core.request` - 请求上下文
 
 摘要：核心 IoC/DI 原语，provider、scope、registry 与生命周期帮助器。本页应引用 `cullinan/core/` 下的具体文件并包含使用示例。
 

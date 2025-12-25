@@ -4,16 +4,20 @@ module: ["cullinan.app"]
 tags: ["api", "module"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: updated
 locale: zh
 translation_pair: "docs/modules/app.md"
 related_tests: []
 related_examples: []
 estimate_pd: 0.8
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # cullinan.app
+
+> **说明（v0.90）**：应用生命周期现在由 `ApplicationContext` 管理。
+> 新的 IoC/DI 2.0 生命周期请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 使用 `ApplicationContext.refresh()` 和 `ApplicationContext.shutdown()` 进行生命周期管理。
 
 摘要：`cullinan.app` 模块文档占位。描述入口点以及如何创建应用实例。
 
