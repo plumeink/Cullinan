@@ -1,15 +1,19 @@
 # Cullinan 依赖注入快速参考
 
+> **版本**: v0.90  
+> **作者**: Plumeink
+
 ## 基本用法
 
 ### 1. 定义服务
 
 ```python
-from cullinan.service import service
+from cullinan.service import service, Service
 
 @service
-class UserService:
+class UserService(Service):
     def __init__(self):
+        super().__init__()
         self.name = "UserService"
     
     def get_user(self, user_id):
@@ -19,7 +23,7 @@ class UserService:
 ### 2. 注入服务到 Controller
 
 ```python
-from cullinan.controller import controller
+from cullinan.controller import controller, get_api
 from cullinan.core import Inject, InjectByName
 
 @controller(url='/api')
@@ -37,13 +41,16 @@ class UserController:
 ### 3. 使用注入的服务
 
 ```python
+from cullinan.controller import controller, get_api
+from cullinan.core import Inject
+
 @controller(url='/api')
 class UserController:
     user_service: UserService = Inject()
     
-    @get_api(url='/users/{user_id}')
-    async def get_user(self, user_id):
-        # 直接使用注入的服务
+    @get_api('/users/<user_id>')
+    async def get_user(self, url_param):
+        user_id = url_param.get('user_id')
         user = self.user_service.get_user(user_id)
         return user
 ```
@@ -96,73 +103,15 @@ nuitka --include-package=my_app \
 
 ## 故障排查
 
-### 检查已注册的服务
+| 问题 | 解决方案 |
+|------|----------|
+| 依赖为 None | 确保服务使用 `@service` 装饰器 |
+| 找不到服务 | 检查服务名称是否匹配（区分大小写） |
+| 循环依赖 | 使用 `InjectByName()` 进行延迟解析 |
+| 注入不生效 | 确保类继承自 `Service` 或 `Controller` |
 
-```python
-from cullinan.service import get_service_registry
+## 另请参阅
 
-service_registry = get_service_registry()
-print(f"服务数量: {service_registry.count()}")
-print(f"服务列表: {list(service_registry._items.keys())}")
-```
-
-### 手动获取服务（回退方案）
-
-```python
-@controller(url='/api')
-class UserController:
-    user_service = InjectByName('UserService')
-    
-    @post_api(url='/users')
-    async def create_user(self, request_body):
-        # 尝试使用注入
-        try:
-            service = self.user_service
-        except:
-            # 回退：手动获取
-            from cullinan.service import get_service_registry
-            service_registry = get_service_registry()
-            service = service_registry.get_instance('UserService')
-        
-        return service.create_user(request_body)
-```
-
-## 常见错误
-
-### 错误 1: 服务未注册
-
-```
-RegistryError: Required dependency 'UserService' not found
-```
-
-**解决**: 确保服务使用了 `@service` 装饰器
-
-### 错误 2: 名称不匹配
-
-```
-Available services: user_service, auth_service
-```
-
-**解决**: 使用实际的服务名称（可能是小写）
-
-```python
-# ✗ 错误
-user_service = InjectByName('UserService')
-
-# ✓ 正确
-user_service = InjectByName('user_service')
-
-# 或使用类型注解（自动推断）
-user_service: UserService = Inject()
-```
-
-### 错误 3: 打包环境扫描失败
-
-**解决**: 使用显式注册（见上文）
-
-## 更多信息
-
-- 完整指南: `docs/dependency_injection_guide.md`
-- 故障排除: `docs/zh/dependency_injection_troubleshooting.md`
-- API 文档: `docs/api_reference.md`
-
+- [依赖注入指南](dependency_injection_guide.md) - 完整 DI 文档
+- [架构设计](architecture.md) - 系统架构概览
+- [迁移指南](migration_guide.md) - 从旧版本迁移

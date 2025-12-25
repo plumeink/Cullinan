@@ -8,13 +8,10 @@ nav:
   - Home: README.md
   - Getting Started: getting_started.md
   - Architecture: architecture.md
-  - Architecture (Updated): architecture_updated.md
   - Wiki:
     - Components: wiki/components.md
     - Decorators: wiki/decorators.md
     - Injection: wiki/injection.md
-    - IoC/DI 2.0: wiki/ioc_di_v2.md
-    - Architecture: wiki/architecture.md
     - Lifecycle: wiki/lifecycle.md
     - Middleware: wiki/middleware.md
     - Extensions: wiki/extensions.md
@@ -29,7 +26,6 @@ nav:
   - API Reference: api_reference.md
   - Guides:
     - Migration Guide: migration_guide.md
-    - Migration Guide v2: migration_guide_v2.md
     - Import Migration 0.90: import_migration_090.md
     - Dependency Injection Guide: dependency_injection_guide.md
     - DI Quick Reference: quick_reference_di.md
@@ -79,12 +75,10 @@ plugins:
             Home: 首页
             Getting Started: 快速开始
             Architecture: 架构设计
-            Architecture (Updated): 架构设计（更新版）
             Wiki: 维基
             Components: 组件
             Decorators: 装饰器
             Injection: 注入
-            IoC/DI 2.0: IoC/DI 2.0
             Lifecycle: 生命周期
             Middleware: 中间件
             Extensions: 扩展
@@ -99,7 +93,6 @@ plugins:
             API Reference: API 参考
             Guides: 指南
             Migration Guide: 迁移指南
-            Migration Guide v2: 迁移指南 v2
             Import Migration 0.90: 0.90 导入迁移
             Dependency Injection Guide: 依赖注入指南
             DI Quick Reference: DI 快速参考

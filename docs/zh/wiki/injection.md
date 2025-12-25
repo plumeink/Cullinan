@@ -4,114 +4,188 @@ module: ["cullinan.core"]
 tags: ["ioc", "di", "injection"]
 author: "Plumeink"
 reviewers: []
-status: deprecated
+status: updated
 locale: zh
 translation_pair: "docs/wiki/injection.md"
 related_tests: ["tests/test_core_injection.py"]
-related_examples: ["docs/work/core_examples.py"]
+related_examples: ["examples/ioc_facade_demo.py"]
 estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2025-12-26T00:00:00Z"
 pr_links: []
 
 # IoC 与 DI（注入）
 
-> **自 2.0 起已弃用**：本文档描述的是旧版 IoC/DI 系统。
-> 新项目请使用 [IoC/DI 2.0 架构](ioc_di_v2.md)。
-> 迁移指南请参阅 [迁移指南](../migration_guide_v2.md)。
+> **版本**: v0.90  
+> **作者**: Plumeink
 
-本文档基于 `cullinan/core` 源码（以源码实现为准）介绍 Cullinan 的 IoC（控制反转）与 DI（依赖注入）原语。目标：展示常见用法、provider/registry/scope 概念，并提供最小可运行示例。
+本文档介绍 Cullinan 的 IoC（控制反转）与 DI（依赖注入）系统。完整架构概览请参阅 [架构设计](../architecture.md)。从旧版本迁移请参阅 [迁移指南](../migration_guide.md)。
 
-关键概念与组件
+## 核心概念
 
-- Provider 与 ProviderRegistry：用于生成服务实例的提供者。提供者可以是类提供者、工厂提供者或实例提供者。`ProviderRegistry` 保存已注册的提供者，并常通过 `InjectionRegistry` 进行协调解析。
-- Scope：控制提供者的生命周期。常用的作用域包括 `SingletonScope`、`TransientScope` 与 `RequestScope`。
-- 注入标记与装饰器：
-  - 使用 `Inject` 与 `InjectByName` 进行属性注入标记。
-  - 使用 `@injectable` 标记类以启用属性注入。
-  - 使用 `@inject_constructor` 启用构造器注入（参数注入）。
-- InjectionRegistry：负责协调 provider registry 并解析注入点的中心注册表。
-- RequestContext：与 `create_context()` 配合使用的上下文管理器，用于请求范围的对象（配合 `RequestScope`）。
+### 控制反转 (IoC)
 
-源码位置建议阅读
+IoC 是一种设计原则，将对象创建和生命周期的控制权从应用程序代码转移给框架或容器。
 
-- `cullinan/core/injection.py` — 注入注册与解析实现。
-- `cullinan/core/provider.py` — 提供者实现（ClassProvider、FactoryProvider、InstanceProvider）。
-- `cullinan/core/registry.py` — ProviderRegistry 与通用 Registry 模式实现。
-- `cullinan/core/scope.py` — Scope 实现（SingletonScope、RequestScope、TransientScope）。
-- 测试示例：`tests/test_core_injection.py`, `tests/test_core_scope_integration.py`。
+### 依赖注入 (DI)
 
-最小可运行示例（可执行）
+DI 是实现 IoC 的一种技术。依赖项被"注入"到类中，而不是由类自己创建。
 
-属性注入：
+## 推荐用法（基于装饰器）
+
+### 1. 定义服务
 
 ```python
-from cullinan.core import (
-    SingletonScope, ScopedProvider, ProviderRegistry,
-    injectable, Inject, get_injection_registry, reset_injection_registry
-)
+from cullinan.service import service, Service
 
-class Database:
-    _instance_count = 0
+@service
+class DatabaseService(Service):
     def __init__(self):
-        Database._instance_count += 1
-        self.id = Database._instance_count
-
-reset_injection_registry()
-registry = ProviderRegistry()
-scope = SingletonScope()
-registry.register_provider('Database', ScopedProvider(lambda: Database(), scope, 'Database'))
-get_injection_registry().add_provider_registry(registry)
-
-@injectable
-class Service:
-    database: Database = Inject()
-
-s1 = Service()
-s2 = Service()
-assert s1.database is s2.database
+        super().__init__()
+        self.connection = None
+    
+    def on_init(self):
+        """服务初始化时调用"""
+        self.connection = create_connection()
+    
+    def on_shutdown(self):
+        """服务关闭时调用"""
+        if self.connection:
+            self.connection.close()
+    
+    def query(self, sql: str):
+        return self.connection.execute(sql)
 ```
 
-构造器注入：
+### 2. 注入依赖
 
 ```python
-from cullinan.core import (
-    SingletonScope, ScopedProvider, ProviderRegistry,
-    inject_constructor, get_injection_registry, reset_injection_registry
-)
+from cullinan.service import service, Service
+from cullinan.core import Inject
 
-class Database:
-    _instance_count = 0
-    def __init__(self):
-        Database._instance_count += 1
-        self.id = Database._instance_count
-
-reset_injection_registry()
-registry = ProviderRegistry()
-scope = SingletonScope()
-registry.register_provider('Database', ScopedProvider(lambda: Database(), scope, 'Database'))
-get_injection_registry().add_provider_registry(registry)
-
-@inject_constructor
-class Controller:
-    def __init__(self, database: Database):
-        self.database = database
-
-c1 = Controller()
-c2 = Controller()
-assert c1.database is c2.database
+@service
+class UserService(Service):
+    # 通过类型注解自动注入
+    database: DatabaseService = Inject()
+    
+    def get_user(self, user_id: int):
+        return self.database.query(f"SELECT * FROM users WHERE id={user_id}")
 ```
 
-常见模式与建议
+### 3. 在控制器中使用
 
-- 当类由使用者直接实例化时，优先使用 `@injectable` + `Inject()` 做属性注入；需要更显式的注入或更严格的控制时使用 `@inject_constructor`。
-- 将提供者注册进 `ProviderRegistry`，并在全局 `InjectionRegistry` 中注册 ProviderRegistry，以便注入点能够解析依赖。
-- 在需要请求范围生命周期时，使用 `RequestScope` 与 `create_context()`。
+```python
+from cullinan.controller import controller, get_api
+from cullinan.core import Inject
 
-故障排查
+@controller(url='/api/users')
+class UserController:
+    user_service: UserService = Inject()
+    
+    @get_api('/<user_id>')
+    async def get_user(self, url_param):
+        user_id = url_param.get('user_id')
+        return self.user_service.get_user(int(user_id))
+```
 
-- 若注入为 None，确保在测试设置中调用 `reset_injection_registry()` 并在注册 provider 之后实例化目标类。
-- 使用 `InjectByName` 时确认提供者名称与注入点名称匹配。
+## 注入方式
 
-下一步
+### Inject() - 类型注解注入（推荐）
 
-- 为该页添加注入解析时序图、循环依赖错误示例与生命周期 hook 的完整示例（on_init/on_shutdown）。
+最佳的 IDE 支持和类型安全。
+
+```python
+from cullinan.core import Inject
+
+@service
+class MyService(Service):
+    # 从类型注解推断依赖名称
+    database: DatabaseService = Inject()
+    
+    # 可选依赖
+    cache: CacheService = Inject(required=False)
+```
+
+### InjectByName() - 字符串名称注入
+
+无需导入依赖类，可避免循环导入。
+
+```python
+from cullinan.controller import controller
+from cullinan.core import InjectByName
+
+@controller(url='/api')
+class MyController:
+    # 显式指定名称
+    user_service = InjectByName('UserService')
+    
+    # 自动推断名称 (snake_case -> PascalCase)
+    email_service = InjectByName()  # -> EmailService
+```
+
+## 生命周期钩子
+
+服务支持用于初始化和清理的生命周期钩子：
+
+```python
+@service
+class MyService(Service):
+    def get_phase(self) -> int:
+        """初始化顺序（数值越小越早）"""
+        return 0
+    
+    def on_init(self):
+        """所有服务注册完成后调用"""
+        pass
+    
+    def on_startup(self):
+        """服务器开始接受请求之前调用"""
+        pass
+    
+    def on_shutdown(self):
+        """服务器关闭时调用"""
+        pass
+```
+
+## 高级用法：ApplicationContext（复杂场景）
+
+用于第三方集成或自定义工厂等高级用例：
+
+```python
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
+ctx = ApplicationContext()
+
+ctx.register(Definition(
+    name='CustomService',
+    factory=lambda c: CustomService(c.get('Dependency')),
+    scope=ScopeType.SINGLETON,
+    source='custom:CustomService'
+))
+
+ctx.refresh()  # 冻结注册表
+service = ctx.get('CustomService')
+```
+
+## 最佳实践
+
+1. **为服务和控制器使用装饰器** - 让框架处理注册
+2. **使用 `Inject()` 进行类型安全注入** - 更好的 IDE 支持和重构能力
+3. **使用 `InjectByName()` 避免循环导入** - 当无法导入类型时使用
+4. **正确实现生命周期钩子** - 干净的初始化和关闭
+5. **保持服务职责单一** - 单一职责原则
+
+## 故障排查
+
+| 问题 | 解决方案 |
+|------|----------|
+| 依赖为 None | 确保服务使用 `@service` 装饰器 |
+| 找不到服务 | 检查服务名称是否匹配（区分大小写） |
+| 循环依赖 | 使用 `InjectByName()` 进行延迟解析 |
+| 注入不生效 | 确保类继承自 `Service` 或 `Controller` |
+
+## 另请参阅
+
+- [架构设计](../architecture.md) - 系统架构概览
+- [装饰器](decorators.md) - 所有可用的装饰器
+- [生命周期](lifecycle.md) - 服务生命周期管理
+- [迁移指南](../migration_guide.md) - 从旧版本迁移

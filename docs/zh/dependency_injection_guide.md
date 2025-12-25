@@ -90,8 +90,10 @@ class UserService:
 使用字符串名称的方式，完全无需 import 依赖类。
 
 ```python
+from cullinan.controller import controller
 from cullinan.core import InjectByName
 
+@controller(url='/api')
 class UserController:
     # 显式指定名称
     user_service = InjectByName('UserService')
@@ -123,9 +125,11 @@ cache_manager = InjectByName()  # → CacheManager
 使用装饰器的方式，在类实例化时自动注入所有依赖。
 
 ```python
+from cullinan.controller import controller
 from cullinan.core import injectable, Inject, InjectByName
 
 @injectable
+@controller(url='/api')
 class UserController:
     database: DatabaseService = Inject()
     cache = InjectByName('CacheService')
@@ -557,7 +561,7 @@ class UserService:
 
 ## 参考资料
 
-- [架构文档](./architecture_updated.md)
+- [架构文档](./architecture.md)
 - [扩展开发指南](./extension_development_guide.md)
 - [API 参考](./api_reference.md)
 

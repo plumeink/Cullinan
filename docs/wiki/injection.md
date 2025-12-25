@@ -4,115 +4,188 @@ module: ["cullinan.core"]
 tags: ["ioc", "di", "injection"]
 author: "Plumeink"
 reviewers: []
-status: deprecated
+status: updated
 locale: en
 translation_pair: "docs/zh/wiki/injection.md"
 related_tests: ["tests/test_core_injection.py"]
-related_examples: ["docs/work/core_examples.py"]
+related_examples: ["examples/ioc_facade_demo.py"]
 estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2025-12-26T00:00:00Z"
 pr_links: []
 
 # IoC & DI (Injection)
 
-> **Deprecated since 2.0**: This document describes the legacy IoC/DI system. 
-> For new projects, please use the [IoC/DI 2.0 Architecture](ioc_di_v2.md).
-> For migration, see [Migration Guide](../migration_guide_v2.md).
+> **Version**: v0.90  
+> **Author**: Plumeink
 
-This page documents the IoC (Inversion of Control) and DI (Dependency Injection) primitives used by Cullinan, based on the source code in `cullinan/core`. The goal is to present concrete usage patterns, explain provider/registry/scope concepts, and show minimal runnable examples.
+This page documents the IoC (Inversion of Control) and DI (Dependency Injection) system used by Cullinan. For the complete architecture overview, see [Architecture](../architecture.md). For migration from previous versions, see [Migration Guide](../migration_guide.md).
 
-Key concepts and components
+## Key Concepts
 
-- Provider & ProviderRegistry: producers of service instances. Providers can be class-based, factory-based, or instance-based. The `ProviderRegistry` holds registered providers and is often bridged into the `InjectionRegistry` for application-wide resolution.
-- Scopes: control provider lifetimes. Common scopes include `SingletonScope`, `TransientScope`, and `RequestScope`.
-- Injection markers & decorators:
-  - `Inject` and `InjectByName` are used as markers for property injection.
-  - `@injectable` marks a class to receive property injection when instantiated.
-  - `@inject_constructor` enables constructor (parameter) injection.
-- InjectionRegistry: central registry that coordinates provider registries and resolves dependencies for injection points.
-- RequestContext: a context manager used with `create_context()` to scope request-local objects (used with `RequestScope`).
+### Inversion of Control (IoC)
 
-Where to look in the source
+IoC is a design principle where the control of object creation and lifecycle is transferred from the application code to a framework or container.
 
-- `cullinan/core/injection.py` — injection registration and resolution mechanics.
-- `cullinan/core/provider.py` — provider implementations (ClassProvider, FactoryProvider, InstanceProvider).
-- `cullinan/core/registry.py` — registry patterns used by ProviderRegistry and general Registry classes.
-- `cullinan/core/scope.py` — scope implementations (SingletonScope, RequestScope, TransientScope).
-- tests: `tests/test_core_injection.py`, `tests/test_core_scope_integration.py` — real usage examples and assertions.
+### Dependency Injection (DI)
 
-Minimal usage examples (runnable)
+DI is a technique for achieving IoC. Dependencies are "injected" into a class rather than being created by the class itself.
 
-Property injection (example):
+## Recommended Usage (Decorator-Based)
+
+### 1. Define a Service
 
 ```python
-from cullinan.core import (
-    SingletonScope, ScopedProvider, ProviderRegistry,
-    injectable, Inject, get_injection_registry, reset_injection_registry
-)
+from cullinan.service import service, Service
 
-class Database:
-    _instance_count = 0
+@service
+class DatabaseService(Service):
     def __init__(self):
-        Database._instance_count += 1
-        self.id = Database._instance_count
-
-reset_injection_registry()
-registry = ProviderRegistry()
-scope = SingletonScope()
-registry.register_provider('Database', ScopedProvider(lambda: Database(), scope, 'Database'))
-get_injection_registry().add_provider_registry(registry)
-
-@injectable
-class Service:
-    database: Database = Inject()
-
-s1 = Service()
-s2 = Service()
-assert s1.database is s2.database
+        super().__init__()
+        self.connection = None
+    
+    def on_init(self):
+        """Called during service initialization"""
+        self.connection = create_connection()
+    
+    def on_shutdown(self):
+        """Called during service shutdown"""
+        if self.connection:
+            self.connection.close()
+    
+    def query(self, sql: str):
+        return self.connection.execute(sql)
 ```
 
-Constructor injection (example):
+### 2. Inject Dependencies
 
 ```python
-from cullinan.core import (
-    SingletonScope, ScopedProvider, ProviderRegistry,
-    inject_constructor, get_injection_registry, reset_injection_registry
-)
+from cullinan.service import service, Service
+from cullinan.core import Inject
 
-class Database:
-    _instance_count = 0
-    def __init__(self):
-        Database._instance_count += 1
-        self.id = Database._instance_count
-
-reset_injection_registry()
-registry = ProviderRegistry()
-scope = SingletonScope()
-registry.register_provider('Database', ScopedProvider(lambda: Database(), scope, 'Database'))
-get_injection_registry().add_provider_registry(registry)
-
-@inject_constructor
-class Controller:
-    def __init__(self, database: Database):
-        self.database = database
-
-c1 = Controller()
-c2 = Controller()
-assert c1.database is c2.database
+@service
+class UserService(Service):
+    # Automatic injection via type annotation
+    database: DatabaseService = Inject()
+    
+    def get_user(self, user_id: int):
+        return self.database.query(f"SELECT * FROM users WHERE id={user_id}")
 ```
 
-Common patterns and tips
+### 3. Use in Controllers
 
-- Prefer `@injectable` + `Inject()` for property injection when classes are instantiated by user code; use `@inject_constructor` where constructor injection is more explicit or required.
-- Register providers into a `ProviderRegistry` and add that registry to the global `InjectionRegistry` so injection points can resolve dependencies.
-- Use `RequestScope` with `create_context()` when you need request-scoped lifetimes (HTTP handlers).
+```python
+from cullinan.controller import controller, get_api
+from cullinan.core import Inject
 
-Troubleshooting
+@controller(url='/api/users')
+class UserController:
+    user_service: UserService = Inject()
+    
+    @get_api('/<user_id>')
+    async def get_user(self, url_param):
+        user_id = url_param.get('user_id')
+        return self.user_service.get_user(int(user_id))
+```
 
-- If injections are None, ensure `reset_injection_registry()` is called before registering providers during test setup.
-- Verify provider keys (names) match the expected injection points (by type name or by explicit name when using `InjectByName`).
+## Injection Methods
 
-Next steps
+### Inject() - Type Annotation Injection (Recommended)
 
-- Expand this page with diagrams showing provider -> registry -> injection resolution flow and common error modes (circular dependency, missing provider).
-- Add more complex examples (provider ordering, lifecycle hooks `on_init`, `on_shutdown`).
+Best IDE support and type safety.
+
+```python
+from cullinan.core import Inject
+
+@service
+class MyService(Service):
+    # Infers dependency name from type annotation
+    database: DatabaseService = Inject()
+    
+    # Optional dependency
+    cache: CacheService = Inject(required=False)
+```
+
+### InjectByName() - String Name Injection
+
+No need to import dependency classes, avoids circular imports.
+
+```python
+from cullinan.controller import controller
+from cullinan.core import InjectByName
+
+@controller(url='/api')
+class MyController:
+    # Explicit name
+    user_service = InjectByName('UserService')
+    
+    # Auto-infer name (snake_case -> PascalCase)
+    email_service = InjectByName()  # -> EmailService
+```
+
+## Lifecycle Hooks
+
+Services support lifecycle hooks for initialization and cleanup:
+
+```python
+@service
+class MyService(Service):
+    def get_phase(self) -> int:
+        """Initialization order (lower = earlier)"""
+        return 0
+    
+    def on_init(self):
+        """Called after all services are registered"""
+        pass
+    
+    def on_startup(self):
+        """Called before the server starts accepting requests"""
+        pass
+    
+    def on_shutdown(self):
+        """Called when the server is shutting down"""
+        pass
+```
+
+## Advanced: ApplicationContext (For Complex Scenarios)
+
+For advanced use cases like third-party integration or custom factories:
+
+```python
+from cullinan.core.container import ApplicationContext, Definition, ScopeType
+
+ctx = ApplicationContext()
+
+ctx.register(Definition(
+    name='CustomService',
+    factory=lambda c: CustomService(c.get('Dependency')),
+    scope=ScopeType.SINGLETON,
+    source='custom:CustomService'
+))
+
+ctx.refresh()  # Freeze registry
+service = ctx.get('CustomService')
+```
+
+## Best Practices
+
+1. **Use decorators for services and controllers** - Let the framework handle registration
+2. **Use `Inject()` for type-safe injection** - Better IDE support and refactoring
+3. **Use `InjectByName()` to avoid circular imports** - When you can't import the type
+4. **Implement lifecycle hooks properly** - Clean initialization and shutdown
+5. **Keep services focused** - Single responsibility principle
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Dependency is None | Ensure the service is decorated with `@service` |
+| Service not found | Check the service name matches (case-sensitive) |
+| Circular dependency | Use `InjectByName()` with lazy resolution |
+| Injection not working | Ensure the class extends `Service` or `Controller` |
+
+## See Also
+
+- [Architecture](../architecture.md) - System architecture overview
+- [Decorators](decorators.md) - All available decorators
+- [Lifecycle](lifecycle.md) - Service lifecycle management
+- [Migration Guide](../migration_guide.md) - Migrating from older versions

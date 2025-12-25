@@ -90,8 +90,10 @@ class UserService:
 Uses string names, no need to import dependency classes.
 
 ```python
+from cullinan.controller import controller
 from cullinan.core import InjectByName
 
+@controller(url='/api')
 class UserController:
     # Explicitly specify name
     user_service = InjectByName('UserService')
@@ -123,9 +125,11 @@ cache_manager = InjectByName()  # → CacheManager
 Uses decorator approach, automatically injects all dependencies when the class is instantiated.
 
 ```python
+from cullinan.controller import controller
 from cullinan.core import injectable, Inject, InjectByName
 
 @injectable
+@controller(url='/api')
 class UserController:
     database: DatabaseService = Inject()
     cache = InjectByName('CacheService')
@@ -557,7 +561,7 @@ class UserService:
 
 ## References
 
-- [Architecture Documentation](./architecture_updated.md)
+- [Architecture Documentation](./architecture.md)
 - [Extension Development Guide](./extension_development_guide.md)
 - [API Reference](./api_reference.md)
 
