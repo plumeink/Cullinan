@@ -35,7 +35,6 @@ nav:
     - DI Quick Reference: quick_reference_di.md
     - Extension Development: extension_development_guide.md
     - Quick Start Extensions: quick_start_extensions.md
-    - Async Fix Guide: async_fix_guide.md
   - Development:
     - Build & Run: build_run.md
     - Testing: testing.md
@@ -47,6 +46,8 @@ not_in_nav: |
   /REFACTORING_VERIFICATION_REPORT.md
   /templates/**
   /work/**
+  /zh/cullinan_documentation_plan.md
+  /zh/dependency_injection_troubleshooting.md
   /zh/templates/**
   /zh/work/**
 
@@ -98,7 +99,6 @@ plugins:
             DI Quick Reference: DI 快速参考
             Extension Development: 扩展开发
             Quick Start Extensions: 扩展快速入门
-            Async Fix Guide: 异步修复指南
             Development: 开发
             Build & Run: 构建与运行
             Testing: 测试
@@ -106,6 +106,7 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - attr_list
   - toc:
       permalink: true
   - tables
