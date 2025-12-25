@@ -56,7 +56,7 @@ python -m pip install cullinan
 from cullinan import application
 from cullinan.controller import controller
 
-@controller(path='/hello')
+@controller(url='/hello')
 def hello_handler(request):
     """Simple HTTP handler."""
     return {'message': 'Hello from Cullinan!'}
@@ -128,7 +128,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 from cullinan import application
 from cullinan.controller import controller
 
-@controller(path='/hello')
+@controller(url='/hello')
 def hello_handler(request):
     """Simple HTTP handler."""
     return {'message': 'Hello from Cullinan!'}

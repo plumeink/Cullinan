@@ -56,7 +56,7 @@ python -m pip install cullinan
 from cullinan import application
 from cullinan.controller import controller
 
-@controller(path='/hello')
+@controller(url='/hello')
 def hello_handler(request):
     """简单的 HTTP 处理器。"""
     return {'message': 'Hello from Cullinan!'}
@@ -128,7 +128,7 @@ python minimal_app.py
 from cullinan import application
 from cullinan.controller import controller
 
-@controller(path='/hello')
+@controller(url='/hello')
 def hello_handler(request):
     """简单的 HTTP 处理器。"""
     return {'message': 'Hello from Cullinan!'}
