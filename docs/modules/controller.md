@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.controller
 
 > **Note (v0.90)**: Controller DI is now managed by `ApplicationContext`.
-> For the new IoC/DI 2.0 architecture, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
 
 Summary: Controller registration, lifecycle, and injection into controller instances. Document usage patterns and common pitfalls.
 

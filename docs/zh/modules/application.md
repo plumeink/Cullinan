@@ -15,7 +15,7 @@ pr_links: []
 
 # cullinan.application
 
-> **说明（v0.90）**：新的 IoC/DI 2.0 架构请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> **说明（v0.90）**：新的 IoC/DI 2.0 架构请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 
 摘要：`cullinan.application` 模块文档占位。包含公有类、典型用法，及相关测试/示例链接。
 

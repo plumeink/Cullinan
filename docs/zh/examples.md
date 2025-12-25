@@ -16,7 +16,7 @@ pr_links: []
 # 示例与演示
 
 > **说明（v0.90）**：以下部分示例使用旧版 1.x DI API。
-> 新的 2.0 API 示例请参阅 [IoC/DI 2.0 架构](wiki/ioc_di_v2.md)。
+> 新的 2.0 API 示例请参阅 [依赖注入指南](dependency_injection_guide.md)。
 > 新项目应使用 `cullinan.core.container` 中的 `ApplicationContext`。
 
 本文列出了 Cullinan 仓库中维护的可运行示例。每个示例包含：路径、简要说明，以及在常见平台上的运行方式。

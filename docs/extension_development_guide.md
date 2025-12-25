@@ -647,7 +647,7 @@ class TestMyMiddleware(ServiceTestCase):
 ## Further Reading
 
 - [Wiki Extensions](wiki/extensions.md) - Extension patterns and best practices
-- [IoC/DI 2.0 Architecture](wiki/ioc_di_v2.md) - New container architecture
+- [Dependency Injection Guide](dependency_injection_guide.md) - DI system documentation
 - [Quick Start Extensions](quick_start_extensions.md) - Quick start guide for extensions
 
 > **Note**: Example files can be found in the `examples/` directory of the repository:

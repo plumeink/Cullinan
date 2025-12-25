@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.core
 
 > **Note (v0.90)**: The core module has been reorganized in version 0.90.
-> For the new IoC/DI 2.0 API, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> For the new IoC/DI 2.0 API, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > New projects should use `ApplicationContext` from `cullinan.core.container`.
 >
 > **New module structure**:

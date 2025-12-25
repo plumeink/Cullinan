@@ -15,7 +15,7 @@ pr_links: []
 
 # API Reference
 
-> **Note (v0.90)**: The core module has been reorganized. For the new API structure, see [IoC/DI 2.0](wiki/ioc_di_v2.md) and [Import Migration Guide](import_migration_090.md).
+> **Note (v0.90)**: The core module has been reorganized. For the new API structure, see [Dependency Injection Guide](dependency_injection_guide.md) and [Import Migration Guide](import_migration_090.md).
 
 This page provides an overview of the public API surface of Cullinan and acts as an entry point for generated or manually maintained per-module API pages. The recommended structure includes: a module index, the public symbols and signatures for each module, and a brief description of how to regenerate API documentation.
 

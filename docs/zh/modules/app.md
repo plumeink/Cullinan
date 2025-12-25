@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.app
 
 > **说明（v0.90）**：应用生命周期现在由 `ApplicationContext` 管理。
-> 新的 IoC/DI 2.0 生命周期请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 新的 IoC/DI 2.0 生命周期请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 > 使用 `ApplicationContext.refresh()` 和 `ApplicationContext.shutdown()` 进行生命周期管理。
 
 摘要：`cullinan.app` 模块文档占位。描述入口点以及如何创建应用实例。

@@ -16,7 +16,7 @@ pr_links: []
 # Components
 
 > **Note (v0.90)**: The Core (IoC/DI) component has been redesigned in version 0.90.
-> For the new architecture, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> For the new architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > The new `ApplicationContext` from `cullinan.core.container` is now the recommended entry point.
 
 This page describes the primary components of Cullinan and their responsibilities, with pointers to the implementation in the `cullinan/` package. The goal is a concise reference that helps contributors and users understand where to look in the source for each subsystem.

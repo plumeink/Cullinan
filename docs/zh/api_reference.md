@@ -15,7 +15,7 @@ pr_links: []
 
 # API 参考
 
-> **说明（v0.90）**：核心模块已重新组织。新的 API 结构请参阅 [IoC/DI 2.0](wiki/ioc_di_v2.md) 和 [导入迁移指南](import_migration_090.md)。
+> **说明（v0.90）**：核心模块已重新组织。新的 API 结构请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [导入迁移指南](import_migration_090.md)。
 
 本文档用于汇总 Cullinan 的公共 API 概览，并为后续自动生成或手动维护的 API 页面提供入口。推荐的结构包括：模块索引、每个模块的公有符号与签名、以及重新生成 API 文档的步骤说明。
 

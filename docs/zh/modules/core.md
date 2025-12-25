@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.core
 
 > **说明（v0.90）**：核心模块已在 0.90 版本中重新组织。
-> 新的 IoC/DI 2.0 API 请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 新的 IoC/DI 2.0 API 请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 > 新项目应使用 `cullinan.core.container` 中的 `ApplicationContext`。
 >
 > **新模块结构**：

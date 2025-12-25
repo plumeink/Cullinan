@@ -16,7 +16,7 @@ pr_links: []
 # Examples and Demos
 
 > **Note (v0.90)**: Some examples below use the legacy 1.x DI API.
-> For the new 2.0 API examples, see [IoC/DI 2.0 Architecture](wiki/ioc_di_v2.md).
+> For the new 2.0 API examples, see [Dependency Injection Guide](dependency_injection_guide.md).
 > New projects should use `ApplicationContext` from `cullinan.core.container`.
 
 This page lists canonical runnable examples shipped with Cullinan. Each entry includes the example path, a short description, and how to run it on common platforms.

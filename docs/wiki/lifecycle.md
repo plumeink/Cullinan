@@ -16,7 +16,7 @@ pr_links: []
 # Application Lifecycle
 
 > **Note (v0.90)**: This document describes the legacy lifecycle management.
-> For the new IoC/DI 2.0 lifecycle, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> For the new IoC/DI 2.0 lifecycle, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > The new `ApplicationContext` provides unified lifecycle management via `refresh()` and `shutdown()`.
 
 This document describes the Cullinan application lifecycle: startup, service initialization, request handling, and graceful shutdown hooks and events. The content is derived from the implementation (source-first) and references `cullinan/app.py`, `cullinan/application.py` and `cullinan/core/lifecycle` related files.

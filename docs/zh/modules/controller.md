@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.controller
 
 > **说明（v0.90）**：控制器 DI 现在由 `ApplicationContext` 管理。
-> 新的 IoC/DI 2.0 架构请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 新的 IoC/DI 2.0 架构请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 
 摘要：控制器注册、生命周期与注入到控制器实例的机制。记录使用模式与常见陷阱。
 

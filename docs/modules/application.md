@@ -15,7 +15,7 @@ pr_links: []
 
 # cullinan.application
 
-> **Note (v0.90)**: For the new IoC/DI 2.0 architecture, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> **Note (v0.90)**: For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
 
 Summary: placeholder for `cullinan.application` module documentation. Include public classes, typical usage, and links to related tests and examples.
 

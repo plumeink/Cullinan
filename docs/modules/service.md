@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.service
 
 > **Note (v0.90)**: Services can now be registered via `ApplicationContext`.
-> For the new IoC/DI 2.0 architecture, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
 
 Summary: Service registration and provider patterns. Document how services are provided, scoped, and injected.
 

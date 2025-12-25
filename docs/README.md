@@ -17,14 +17,14 @@ pr_links: []
 
 Welcome — this site contains the Cullinan framework documentation.
 
-> **Version 0.90**: The IoC/DI architecture has been redesigned. See [IoC/DI 2.0](wiki/ioc_di_v2.md) and [Migration Guide](import_migration_090.md).
+> **Version 0.90**: The IoC/DI architecture has been redesigned. See [Dependency Injection Guide](dependency_injection_guide.md) and [Migration Guide](import_migration_090.md).
 
 Use the navigation to the left to get started. Key areas:
 
 - **Getting Started** — quick start and minimal app examples
 - **Architecture** — system overview and diagrams
 - **Wiki** — injection, lifecycle, middleware, extensions
-  - [IoC/DI 2.0](wiki/ioc_di_v2.md) — new container architecture
+  - [Dependency Injection Guide](dependency_injection_guide.md) — DI system documentation
   - [Migration Guide](import_migration_090.md) — upgrade from 0.83
 - **Modules** — per-module API and examples
 - **Examples** — runnable examples in the `examples/` directory

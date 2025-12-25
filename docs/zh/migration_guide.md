@@ -207,7 +207,7 @@ python -m pytest tests/test_ioc_di_v2_*.py -v
 
 ## 获取帮助
 
-- [IoC/DI 2.0 文档](wiki/ioc_di_v2.md)
+- [依赖注入指南](dependency_injection_guide.md)
 - [API 参考](api_reference.md)
 - [GitHub Issues](https://github.com/your-repo/cullinan/issues)
 

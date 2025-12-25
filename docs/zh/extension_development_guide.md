@@ -647,7 +647,7 @@ class TestMyMiddleware(ServiceTestCase):
 ## 进一步阅读
 
 - [维基扩展](wiki/extensions.md) - 扩展模式与最佳实践
-- [IoC/DI 2.0 架构](wiki/ioc_di_v2.md) - 新容器架构
+- [依赖注入指南](dependency_injection_guide.md) - DI 系统文档
 - [扩展快速入门](quick_start_extensions.md) - 扩展快速入门指南
 
 > **注意**：示例文件可以在仓库的 `examples/` 目录中找到：

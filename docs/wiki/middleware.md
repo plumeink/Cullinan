@@ -16,7 +16,7 @@ pr_links: []
 # Middleware
 
 > **Note (v0.90)**: The DI integration in middleware has been updated in version 0.90.
-> For the new IoC/DI system, see [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> For the new IoC/DI system, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > Middleware can now obtain dependencies via `ApplicationContext` instead of `InjectionRegistry`.
 
 This document explains Cullinan middleware: responsibilities, execution pipeline, registration, DI integration, examples, troubleshooting and best practices. Middleware is a pluggable stage in the request/response lifecycle for auth, logging, transformations, etc.

@@ -407,7 +407,7 @@ from cullinan.core import service, controller
 
 ## 相关文档
 
-- [IoC/DI 2.0 架构](ioc_di_v2.md)
+- [依赖注入指南](../dependency_injection_guide.md)
 - [导入迁移指南](../import_migration_090.md)
 - [组件](components.md)
 

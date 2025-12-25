@@ -236,6 +236,6 @@ python -m pytest tests/ -v --tb=short
 
 ## 相关文档
 
-- [IoC/DI 2.0 文档](wiki/ioc_di_v2.md)
-- [完整迁移指南](migration_guide_v2.md)
+- [依赖注入指南](dependency_injection_guide.md)
+- [完整迁移指南](migration_guide.md)
 

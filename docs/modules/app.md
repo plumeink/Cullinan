@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.app
 
 > **Note (v0.90)**: The application lifecycle is now managed by `ApplicationContext`.
-> For the new IoC/DI 2.0 lifecycle, see [IoC/DI 2.0 Architecture](../wiki/ioc_di_v2.md).
+> For the new IoC/DI 2.0 lifecycle, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > Use `ApplicationContext.refresh()` and `ApplicationContext.shutdown()` for lifecycle management.
 
 Summary: placeholder for `cullinan.app` module documentation. Describe entry-points and how to create app instances.

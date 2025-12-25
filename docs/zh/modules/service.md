@@ -16,7 +16,7 @@ pr_links: []
 # cullinan.service
 
 > **说明（v0.90）**：服务现在可以通过 `ApplicationContext` 注册。
-> 新的 IoC/DI 2.0 架构请参阅 [IoC/DI 2.0 架构](../wiki/ioc_di_v2.md)。
+> 新的 IoC/DI 2.0 架构请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 
 摘要：服务注册与提供者模式。记录服务如何被提供、作用域及注入方式。
 

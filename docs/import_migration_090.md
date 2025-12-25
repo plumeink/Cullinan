@@ -195,6 +195,6 @@ from cullinan import (
 
 ## Questions?
 
-- See [IoC/DI 2.0 Documentation](wiki/ioc_di_v2.md)
-- See [Full Migration Guide](migration_guide_v2.md)
+- See [Dependency Injection Guide](dependency_injection_guide.md)
+- See [Migration Guide](migration_guide.md)
 
