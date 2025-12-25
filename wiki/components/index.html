@@ -1401,23 +1401,23 @@ The new <code>ApplicationContext</code> from <code>cullinan.core.container</code
 </ul>
 <p>Examples — quick reference</p>
 <p>Minimal controller registration example (conceptual):</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_controller_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello Cullinan&#39;</span><span class="p">}</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello Cullinan&#39;</span><span class="p">}</span>
 
-<span class="c1"># controllers are discovered or registered; the app will route /hello to hello_handler</span>
+<span class="c1"># controllers are discovered automatically; the app will route /hello to HelloController</span>
 </code></pre></div>
 <p>Minimal service example (conceptual):</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span><span class="p">,</span> <span class="n">get_service_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">MySvc</span><span class="p">():</span>
-    <span class="c1"># register service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MySvc</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="c1"># service logic here</span>
     <span class="k">pass</span>
-
-<span class="n">svc_registry</span> <span class="o">=</span> <span class="n">get_service_registry</span><span class="p">()</span>
 </code></pre></div>
 <p>Where to look next</p>
 <ul>

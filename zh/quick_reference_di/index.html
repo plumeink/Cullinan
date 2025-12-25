@@ -1667,7 +1667,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-    <span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/users/&lt;user_id&gt;&#39;</span><span class="p">)</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/users/&lt;user_id&gt;&#39;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
         <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>

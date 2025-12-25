@@ -1894,12 +1894,13 @@ Middleware.process_response: Intercept and process responses before they are sen
 
 <span class="c1"># 3. 定义控制器</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="n">user_service</span><span class="p">:</span> <span class="s1">&#39;UserService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-    <span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 
 

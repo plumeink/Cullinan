@@ -1639,19 +1639,18 @@
 </tbody>
 </table>
 <h2 id="_1">示例：注册一个简单控制器<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_controller_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
-
-<span class="c1"># 可选：直接注册到 registry（通常由模块扫描自动发现）</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">get_controller_registry</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
 </code></pre></div>
 <p>说明：
-- 使用 <code>controller</code> 装饰器注册路由处理器；框架支持模块扫描自动发现或显式注册。
-- 若处理器需要依赖注入，请使用 <code>@injectable</code> 类或属性注入并确保在应用启动前已注册相应 provider。</p>
+- 使用 <code>@controller</code> 装饰器标记控制器类，<code>url</code> 参数指定 URL 前缀。
+- 使用 <code>@get_api</code>、<code>@post_api</code> 等装饰器定义具体的 HTTP 端点。
+- 框架支持模块扫描自动发现控制器。</p>
 
 
 

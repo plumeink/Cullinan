@@ -1850,17 +1850,19 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li>Create a minimal application file <code>minimal_app.py</code> in your project with the following content:</li>
 </ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP handler.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP controller.&quot;&quot;&quot;</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># Start the framework application (no instantiation required)</span>
-    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">run</span><span class="p">()</span>
 </code></pre></div>
 <ol>
 <li>Run your app:</li>
@@ -1907,17 +1909,19 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
 <p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_handler</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP handler.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP controller.&quot;&quot;&quot;</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello from Cullinan!&#39;</span><span class="p">}</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># Start the framework application (no instantiation required)</span>
-    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">run</span><span class="p">()</span>
 </code></pre></div>
 <p>To run this example:</p>
 <div class="highlight"><pre><span></span><code><span class="c"># Save the above code as minimal_app.py</span>

@@ -1519,19 +1519,18 @@ For the new IoC/DI 2.0 architecture, see <a href="../../dependency_injection_gui
 </tbody>
 </table>
 <h2 id="example-register-a-simple-controller">Example: register a simple controller<a class="headerlink" href="#example-register-a-simple-controller" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_controller_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
-
-<span class="c1"># Optionally register directly into registry (usually auto-discovered)</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">get_controller_registry</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/hello&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
 </code></pre></div>
 <p>Notes:
-- Use the <code>controller</code> decorator for route handlers; the framework supports automatic discovery via module scanning or explicit registry registration.
-- If handlers need DI, use <code>@injectable</code> classes or property injection and ensure providers are registered before app startup.</p>
+- Use the <code>@controller</code> decorator to mark controller classes, <code>url</code> parameter specifies URL prefix.
+- Use <code>@get_api</code>, <code>@post_api</code> and other decorators to define HTTP endpoints.
+- The framework supports automatic discovery via module scanning.</p>
 
 
 
