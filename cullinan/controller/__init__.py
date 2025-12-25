@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 """Controller module for Cullinan framework.
 
+v0.90: The @controller decorator now uses the new IoC/DI 2.0 system.
+Other APIs (get_api, post_api, etc.) remain unchanged.
+
 Provides HTTP request controller management using the core Registry pattern.
-This package re-exports both the new registry components and the existing
-controller decorators and utilities from controller.py for backward compatibility.
 """
 
 from .registry import ControllerRegistry, get_controller_registry, reset_controller_registry
 
-# Re-export all public APIs from core module
+# Import new controller decorator from core
+from cullinan.core.decorators import controller
+
+# Re-export route decorators and utilities from core module (unchanged)
 from .core import (
-    # Decorators
-    controller,
+    # Route Decorators
     get_api,
     post_api,
     patch_api,

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Service registry for Cullinan framework.
 
-统一使用 cullinan.core 的 DI 系统，作为 InjectionRegistry 的 provider。
+使用 cullinan.core 的 IoC/DI 2.0 系统。
 
-架构设计（类似 Spring ApplicationContext）：
+架构设计：
 - ServiceRegistry 存储服务类定义
-- 作为 provider 向 core.InjectionRegistry 提供服务实例
-- 完全解耦，不再使用 legacy DependencyInjector
+- ApplicationContext 负责依赖注入
 - 支持生命周期管理（on_init/on_startup/on_shutdown/on_destroy）
 
 Performance optimizations:
@@ -22,7 +21,7 @@ import inspect
 
 from cullinan.core import Registry, LifecycleManager
 from cullinan.core.exceptions import RegistryError, DependencyResolutionError
-# Import ProviderSource interface (Task-1.3)
+# Import ProviderSource interface
 from cullinan.core.provider_source import ProviderSource
 from .base import Service
 
@@ -30,25 +29,20 @@ logger = logging.getLogger(__name__)
 
 
 class ServiceRegistry(Registry[Type[Service]], ProviderSource):
-    """服务注册表 - cullinan.core DI 系统的 Service Provider (实现 ProviderSource 接口)
+    """服务注册表
 
-    职责（类似 Spring 的 BeanFactory）：
+    职责：
     1. 存储服务类定义
     2. 创建和缓存服务单例实例
-    3. 作为 ProviderSource 向 InjectionRegistry 提供服务实例
-    4. 管理服务生命周期（on_init/on_startup/on_shutdown/on_destroy）
+    3. 管理服务生命周期（on_init/on_startup/on_shutdown/on_destroy）
+    4. 作为 ProviderSource 提供服务实例查询
 
-    实现 ProviderSource 接口（Task-1.3）：
+    实现 ProviderSource 接口：
     - can_provide(name): 检查是否能提供服务
     - provide(name): 提供服务实例
     - list_available(): 列出所有可用服务
     - get_priority(): 返回优先级（默认 10）
 
-    与 core.InjectionRegistry 的关系：
-    - ServiceRegistry 在初始化时注册为 InjectionRegistry 的 ProviderSource
-    - 当 Controller/Service 使用 Inject() 或 InjectByName() 时
-    - InjectionRegistry 会调用 ServiceRegistry.provide() 获取实例
-    - 形成完整的依赖注入链条
 
     Usage:
         # 通过 @service 装饰器自动注册（推荐）
@@ -97,12 +91,10 @@ class ServiceRegistry(Registry[Type[Service]], ProviderSource):
         # ProviderSource 优先级
         self._priority = priority
 
-        # 始终注册到 InjectionRegistry (使用 ProviderSource 接口)
+        # In 2.0, we no longer auto-register to InjectionRegistry
+        # ApplicationContext handles all dependency injection
         if auto_register:
-            from cullinan.core import get_injection_registry
-            injection_registry = get_injection_registry()
-            injection_registry.add_provider_source(self)
-            logger.debug(f"ServiceRegistry auto-registered as core DI provider (priority={self._priority})")
+            logger.debug(f"ServiceRegistry initialized (priority={self._priority})")
 
     def register(self, name: str, service_class: Type[Service], 
                  dependencies: Optional[List[str]] = None, **metadata) -> None:

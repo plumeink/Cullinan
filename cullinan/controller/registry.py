@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """Controller registry for Cullinan framework.
 
-统一使用 cullinan.core 的 DI 系统，作为 InjectionRegistry 的 provider。
+使用 cullinan.core 的 IoC/DI 2.0 系统。
 
-架构设计（类似 Spring MVC）：
+架构设计：
 - ControllerRegistry 存储 Controller 类定义和路由信息
-- 作为 provider 向 core.InjectionRegistry 提供 Controller 实例
-- 完全解耦，依赖注入由 @injectable 处理
+- ApplicationContext 负责依赖注入
 - 支持路由注册和 HTTP 方法映射
 
 Performance optimizations:
@@ -28,24 +27,19 @@ logger = logging.getLogger(__name__)
 
 
 class ControllerRegistry(Registry[Type[Any]], ProviderSource):
-    """Controller 注册表 - cullinan.core DI 系统的 Controller Provider
+    """Controller 注册表
 
-    职责（类似 Spring MVC 的 RequestMappingHandlerMapping）：
+    职责：
     1. 存储 Controller 类定义
     2. 管理 URL 路由和 HTTP 方法映射
-    3. 作为 provider 向 InjectionRegistry 提供 Controller 实例
-    4. 按需创建 Controller 实例（每次请求或单例）
-
-    与 core.InjectionRegistry 的关系：
-    - ControllerRegistry 在初始化时注册为 InjectionRegistry 的 provider
-    - Controller 使用 Inject() 或 InjectByName() 注入 Service
-    - @injectable 装饰器会在 Controller 实例化时自动注入依赖
+    3. 管理 Controller 单例实例
+    4. 提供 Controller 实例查询接口
 
     Usage:
         # 通过 @controller 装饰器自动注册（推荐）
         @controller(url='/api/users')
         class UserController:
-            user_service = InjectByName('UserService')
+            user_service: UserService = Inject()
 
         # 或者手动注册
         registry = get_controller_registry()
@@ -71,27 +65,18 @@ class ControllerRegistry(Registry[Type[Any]], ProviderSource):
         # 线程锁（确保单例的线程安全）
         self._instance_lock = threading.RLock()
 
-        # 【关键】注册自己为 core.InjectionRegistry 的依赖提供者
-        # 使用 ProviderSource 接口（如果已实现）
-        from cullinan.core import get_injection_registry
-        injection_registry = get_injection_registry()
-        
-        # Check if this registry implements ProviderSource
-        from cullinan.core.provider_source import ProviderSource
-        if isinstance(self, ProviderSource):
-            injection_registry.add_provider_source(self)
-            logger.debug("ControllerRegistry registered as core DI provider (via ProviderSource)")
-        else:
-            logger.warning("ControllerRegistry does not implement ProviderSource interface")
+        # In 2.0, we no longer auto-register to InjectionRegistry
+        # ApplicationContext handles all dependency injection
+        logger.debug("ControllerRegistry initialized")
 
     def register(self, name: str, controller_class: Type[Any],
                  url_prefix: str = '', **metadata) -> None:
-        """注册 Controller 类到统一 DI 容器（O(1) 操作）
+        """注册 Controller 类（O(1) 操作）
 
         注意：
-        - Controller 类应该使用 @controller 装饰器，它会自动调用 @injectable
-        - @injectable 会扫描类的类型注解（Inject、InjectByName）并在实例化时注入
-        - Controller 实例通常按请求创建，也可以配置为单例
+        - Controller 类应该使用 @controller 装饰器
+        - 依赖注入由 ApplicationContext 在 refresh() 时处理
+        - Controller 实例通常是单例，所有请求共享
 
         Args:
             name: Controller 唯一标识符（通常是类名）
@@ -209,10 +194,10 @@ class ControllerRegistry(Registry[Type[Any]], ProviderSource):
     def get_instance(self, name: str) -> Optional[Any]:
         """获取或创建 Controller 单例实例（O(1) 缓存查找，线程安全）
 
-        工作流程（类似 ServiceRegistry.get_instance）：
+        工作流程：
         1. 检查缓存，如果已存在则直接返回（O(1））
-        2. 如果不存在，创建新实例（调用 __init__）
-        3. @injectable 装饰器会在 __init__ 后自动注入依赖
+        2. 如果不存在，创建新实例
+        3. ApplicationContext 负责依赖注入
         4. 缓存实例供所有请求共享
 
         注意：

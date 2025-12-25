@@ -30,6 +30,16 @@ from cullinan.path_utils import (
 
 # Export core module (foundational components)
 from cullinan.core import (
+    # IoC/DI 2.0
+    ApplicationContext,
+    service,
+    controller,
+    component,
+    Inject,
+    InjectByName,
+    Lazy,
+    PendingRegistry,
+    # Core infrastructure
     Registry,
     SimpleRegistry,
     LifecycleManager,
@@ -43,8 +53,7 @@ from cullinan.core import (
     ContextManager,
     get_context_value,
     set_context_value,
-    # Dependency Injection
-    Inject,
+    # Compatibility
     injectable,
     get_injection_registry,
     reset_injection_registry,
@@ -54,7 +63,6 @@ from cullinan.core import (
 from cullinan.service import (
     Service,
     ServiceRegistry,
-    service,
     get_service_registry,
     reset_service_registry,
 )
@@ -234,8 +242,26 @@ __all__ = [
 
     # Dependency Injection
     'Inject',
+    'InjectByName',
+    'Lazy',
     'injectable',
     'get_injection_registry',
     'reset_injection_registry',
+
+    # IoC/DI 2.0
+    'ApplicationContext',
+    'PendingRegistry',
+    'service',
+    'controller',
+    'component',
 ]
+
+# ============================================================================
+# IMPORTANT: Re-import decorators to override submodule names
+# Python's import system may return submodules (cullinan.service, cullinan.controller)
+# instead of the decorator functions we imported earlier.
+# These explicit assignments ensure the decorators are available at package level.
+# ============================================================================
+from cullinan.core.decorators import service, controller, component
+from cullinan.core.decorators import Inject, InjectByName, Lazy
 

@@ -387,72 +387,62 @@ def run(handlers=None):
         static_path=os.path.join(os.getcwd(), 'static')
     )
 
-    # IMPORTANT: Configure dependency injection system BEFORE scanning
-    # This ensures that when @service and @controller decorators execute,
-    # the injection system is already set up
-    logger.info("└---configuring dependency injection...")
-    from cullinan.core.injection import get_injection_registry
-    from cullinan.service.registry import get_service_registry
-    from cullinan.core.injection_executor import InjectionExecutor, set_injection_executor
+    # ========== IoC/DI 2.0: 使用 ApplicationContext 作为唯一入口 ==========
+    logger.info("└---initializing IoC/DI 2.0 ApplicationContext...")
+    from cullinan.core import ApplicationContext
+    from cullinan.core.pending import PendingRegistry, ComponentType
 
-    # Get registries (ServiceRegistry auto-registers itself as provider in __init__)
-    injection_registry = get_injection_registry()
-    service_registry = get_service_registry()
-
-    # Initialize InjectionExecutor with the registry
-    executor = InjectionExecutor(injection_registry)
-    set_injection_executor(executor)
-
-    logger.info("└---dependency injection configured (InjectionExecutor initialized)")
+    # 创建全局 ApplicationContext
+    ctx = ApplicationContext()
 
     # Register explicit services and controllers (if configured)
     _register_explicit_classes()
 
-    # Now scan services and controllers
-    logger.info("└---scanning services...")
+    # 扫描模块（触发装饰器执行，收集到 PendingRegistry）
+    logger.info("└---scanning modules...")
     logger.info("...")
-    service_modules = file_list_func()
+    modules = file_list_func()
 
-    if not service_modules:
-        logger.warning("[WARN] No modules found for service scanning!")
+    if not modules:
+        logger.warning("[WARN] No modules found for scanning!")
         logger.warning("[WARN] This is expected in packaged environments without configuration.")
         logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
     else:
-        logger.info("└---found %d modules to scan", len(service_modules))
-        scan_service(service_modules)
+        logger.info("└---found %d modules to scan", len(modules))
+        # 扫描 service 和 controller（装饰器会将组件注册到 PendingRegistry）
+        scan_service(modules)
+        scan_controller(modules)
 
-    logger.info("└---scanning controllers...")
-    logger.info("...")
-    controller_modules = file_list_func()
+    # 刷新 ApplicationContext（处理 PendingRegistry 中的所有组件）
+    logger.info("└---refreshing ApplicationContext (processing pending registrations)...")
+    ctx.refresh()
 
-    if not controller_modules:
-        logger.warning("[WARN] No modules found for controller scanning!")
-        logger.warning("[WARN] This is expected in packaged environments without configuration.")
-    else:
-        logger.info("└---found %d modules to scan", len(controller_modules))
-        scan_controller(controller_modules)
+    pending_count = PendingRegistry.get_instance().count
+    logger.info(f"[OK] ApplicationContext refreshed with {pending_count} components")
 
-    sort_url()
-
-    # ========== Service 初始化（扫描完成后） ==========
+    # 获取所有注册的 service 并初始化
     logger.info("└---initializing services...")
-    from cullinan.service import get_service_registry
-
-    service_registry = get_service_registry()
-    service_count = service_registry.count()
+    service_count = 0
+    for name in ctx.list_definitions():
+        try:
+            definition = ctx._definitions.get(name)
+            if definition and hasattr(definition, 'source') and 'service' in str(definition.source).lower():
+                instance = ctx.get(name)
+                # 调用生命周期方法
+                if hasattr(instance, 'on_startup') and callable(instance.on_startup):
+                    instance.on_startup()
+                    logger.debug(f"[OK] Called on_startup for {name}")
+                service_count += 1
+        except Exception as e:
+            logger.warning(f"[WARN] Failed to initialize {name}: {e}")
 
     if service_count > 0:
-        logger.info(f"└---found {service_count} registered services")
-        try:
-            # 按依赖顺序初始化所有 Service（调用 initialize_all）
-            service_registry.initialize_all()
-            logger.info(f"[OK] All {service_count} services initialized")
-        except Exception as e:
-            logger.error(f"[FAIL] Service initialization failed: {e}", exc_info=True)
-            logger.warning("[WARN] Application will continue with partial initialization")
+        logger.info(f"[OK] Initialized {service_count} services")
     else:
-        logger.info("└---no services registered")
-    # ========== END Service 初始化 ==========
+        logger.info("└---no services to initialize")
+    # ========== END IoC/DI 2.0 ==========
+
+    sort_url()
 
     # Get handlers from registry
     handler_registry = get_handler_registry()

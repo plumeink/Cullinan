@@ -11,7 +11,7 @@ from typing import Optional, List, Callable
 import tornado.ioloop
 
 from cullinan.service.registry import get_service_registry
-from cullinan.core.injection import get_injection_registry
+from cullinan.core import ApplicationContext, PendingRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -53,20 +53,16 @@ class CullinanApplication:
         logger.info("╚═══════════════════════════════════════════════════════════════════╝")
 
         try:
-            # Step 1: Configure dependency injection
-            logger.info("\n[1/4] Configuring dependency injection...")
-            # Get registries (ServiceRegistry auto-registers itself as provider)
-            injection_registry = get_injection_registry()
-            service_registry = get_service_registry()
+            # Step 1: Initialize IoC/DI 2.0 system
+            logger.info("\n[1/4] Initializing IoC/DI 2.0...")
+            from cullinan.core import ApplicationContext
+            ctx = ApplicationContext()
+            ctx.refresh()
+            logger.info(f"  [OK] ApplicationContext initialized ({ctx.definition_count} definitions)")
 
-            # Initialize InjectionExecutor with the registry
-            from cullinan.core.injection_executor import InjectionExecutor, set_injection_executor
-            executor = InjectionExecutor(injection_registry)
-            set_injection_executor(executor)
-            logger.info("  [OK] Dependency injection configured (InjectionExecutor initialized)")
-
-            # Step 2: Discover services (they are registered by @service decorator)
+            # Step 2: Get service registry for backward compatibility
             logger.info("\n[2/4] Discovering services...")
+            service_registry = get_service_registry()
             service_count = service_registry.count()
             logger.info(f"  [OK] Found {service_count} registered services")
 
@@ -79,14 +75,10 @@ class CullinanApplication:
             else:
                 logger.info("  [INFO] No services to initialize")
 
-            # Step 4: Verify injection system
-            logger.info("\n[4/4] Verifying injection system...")
-            from cullinan.core.injection_executor import has_injection_executor
-            if has_injection_executor():
-                cache_stats = executor.get_cache_stats()
-                logger.info(f"  [OK] Injection system ready (cache: {cache_stats['hits']} hits, {cache_stats['misses']} misses)")
-            else:
-                logger.warning("  [WARN] InjectionExecutor not properly initialized")
+            # Step 4: Verify system ready
+            logger.info("\n[4/4] Verifying system...")
+            pending_count = PendingRegistry.get_instance().count
+            logger.info(f"  [OK] IoC/DI 2.0 ready (processed {pending_count} pending registrations)")
 
             self._running = True
 

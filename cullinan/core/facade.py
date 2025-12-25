@@ -87,9 +87,10 @@ class IoCFacade:
     def _auto_discover_registries(self) -> None:
         """Auto-discover registry instances from the framework."""
         try:
+            # In 2.0, injection_registry is no longer used
+            # We keep this for compatibility but it returns None
             if not self._injection_registry:
-                from cullinan.core.injection import get_injection_registry
-                self._injection_registry = get_injection_registry()
+                self._injection_registry = None
 
             if not self._service_registry:
                 from cullinan.service import get_service_registry

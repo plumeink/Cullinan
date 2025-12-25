@@ -1,62 +1,53 @@
 # -*- coding: utf-8 -*-
-"""Enhanced service module for Cullinan framework.
+"""Service module for Cullinan framework.
 
-This module provides an enhanced service layer with:
-- Base Service class with lifecycle hooks (on_init, on_destroy)
-- ServiceRegistry for managing services with dependency injection
-- @service decorator for easy service registration
-- Full backward compatibility with simple service usage
-
-服务层使用 core 提供的通用 IoC 能力，不与 core 耦合。
+v0.90: This module now uses the new IoC/DI 2.0 system from cullinan.core.
+The API remains backward compatible.
 
 Usage:
-    # 方式1: 简单服务（向后兼容）
     from cullinan.service import service, Service
 
     @service
-    class EmailService(Service):
-        def send_email(self, to, subject, body):
-            print(f"Sending to {to}: {subject}")
-    
-    # 方式2: 使用依赖注入（推荐，无需 import）
-    from cullinan.core import InjectByName
+    class UserService(Service):  # Service is the base class
+        def get_user(self, id: int):
+            return {"id": id}
+
+    # With dependency injection
+    from cullinan.service import Inject
 
     @service
-    class UserService(Service):
-        email_service = InjectByName('EmailService')  # 自动注入，无需 import EmailService
-
-        def create_user(self, name):
-            user = {'name': name}
-            self.email_service.send_email(name, "Welcome", "Welcome!")
-            return user
-
-    # 方式3: 传统依赖方式（向后兼容）
-    @service(dependencies=['EmailService'])
-    class UserService(Service):
-        def on_init(self):
-            self.email = self.dependencies['EmailService']
+    class OrderService(Service):
+        user_service: UserService = Inject()
 """
 
+# Re-export decorators from the new system
+from cullinan.core.decorators import (
+    service,
+    Inject,
+    InjectByName,
+    Lazy,
+)
+
+# Keep base class - this is the Service class users inherit from
 from .base import Service
-from .decorators import service
+
+# Keep registry exports for backward compatibility
 from .registry import (
     ServiceRegistry,
     get_service_registry,
-    reset_service_registry
+    reset_service_registry,
 )
 
-# Re-export core's injection utilities for convenience
-# 为了方便使用，re-export core 的注入工具（但不产生耦合）
-from cullinan.core import Inject, InjectByName, injectable
-
 __all__ = [
-    'Service',
+    # Decorators (new system)
     'service',
+    'Inject',
+    'InjectByName',
+    'Lazy',
+    # Base class (for inheritance)
+    'Service',
+    # Registry (for advanced use)
     'ServiceRegistry',
     'get_service_registry',
     'reset_service_registry',
-    # Injection utilities from core
-    'Inject',
-    'InjectByName',
-    'injectable',
 ]

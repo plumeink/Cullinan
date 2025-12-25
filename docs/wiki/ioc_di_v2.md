@@ -183,6 +183,7 @@ def test_my_service():
 
 ## Related Documentation
 
+- [Decorators](decorators.md) - Decorator-based component registration
 - [Import Migration Guide](../import_migration_090.md)
 - [API Reference](../api_reference.md)
 - [Architecture Overview](architecture.md)

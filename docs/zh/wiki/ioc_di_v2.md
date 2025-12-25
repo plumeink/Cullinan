@@ -183,6 +183,7 @@ def test_my_service():
 
 ## 相关文档
 
+- [装饰器](decorators.md) - 基于装饰器的组件注册
 - [导入迁移指南](../import_migration_090.md)
 - [API 参考](../api_reference.md)
 - [架构概述](architecture.md)

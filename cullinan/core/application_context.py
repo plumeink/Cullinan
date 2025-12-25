@@ -116,6 +116,7 @@ class ApplicationContext:
         调用后：
         - registry 被冻结，禁止任何结构性写入
         - eager=True 的 definition 会被预创建
+        - PendingRegistry 中的装饰器注册会被处理
         """
         with self._lock:
             if self._refreshed:
@@ -123,6 +124,9 @@ class ApplicationContext:
                 return
 
             logger.info("ApplicationContext.refresh() 开始")
+
+            # 0. 处理装饰器收集的待注册组件
+            self._process_pending_registrations()
 
             # 1. 验证 dependencies 是否存在环（eager 初始化排序）
             self._validate_dependencies()
@@ -391,6 +395,251 @@ class ApplicationContext:
             except Exception as e:
                 logger.error(f"预创建 '{definition.name}' 失败: {e}")
                 raise
+
+    def _process_pending_registrations(self) -> None:
+        """处理所有待注册的装饰器组件
+
+        从 PendingRegistry 获取所有待注册项，转换为 Definition 并注册。
+        对于 Controller，还会注册路由到 HandlerRegistry。
+        处理完成后清空并冻结 PendingRegistry。
+        """
+        from .pending import PendingRegistry, ComponentType
+        from .definitions import ScopeType
+
+        pending = PendingRegistry.get_instance()
+        registrations = pending.get_all()
+
+        if not registrations:
+            logger.debug("没有待处理的装饰器注册")
+            return
+
+        logger.info(f"处理 {len(registrations)} 个装饰器注册")
+
+        for reg in registrations:
+            # 转换 scope 字符串到枚举
+            try:
+                scope = ScopeType[reg.scope.upper()]
+            except KeyError:
+                logger.warning(f"未知 scope '{reg.scope}'，使用 SINGLETON")
+                scope = ScopeType.SINGLETON
+
+            # 为类创建工厂函数
+            cls = reg.cls
+
+            def create_factory(target_cls):
+                """创建工厂闭包"""
+                def factory(ctx: 'ApplicationContext') -> object:
+                    return self._create_class_instance(target_cls)
+                return factory
+
+            # 创建 Definition
+            definition = Definition(
+                name=reg.name,
+                type_=cls,
+                scope=scope,
+                factory=create_factory(cls),
+                source=reg.get_source_location(),
+                dependencies=reg.dependencies,
+                conditions=reg.conditions if reg.conditions else [],
+            )
+
+            # 注册到内部定义表（不走 register 方法，避免冻结检查）
+            if reg.name in self._definitions:
+                logger.warning(f"Definition '{reg.name}' 已存在，跳过装饰器注册")
+                continue
+
+            self._definitions[reg.name] = definition
+
+            # ========== 特殊处理 Controller：注册路由 ==========
+            if reg.component_type == ComponentType.CONTROLLER:
+                self._register_controller_routes(cls, reg.url_prefix or "")
+            # ========== END 特殊处理 ==========
+
+            logger.debug(
+                f"从装饰器注册: {reg.name} "
+                f"(type={reg.component_type.value}, scope={scope.name})"
+            )
+
+        # 清空并冻结 PendingRegistry
+        pending.clear()
+        pending.freeze()
+
+        logger.info(f"装饰器注册处理完成")
+
+    def _register_controller_routes(self, cls: type, url_prefix: str) -> None:
+        """注册 Controller 的路由到 HandlerRegistry
+
+        扫描 Controller 类中被 @get_api/@post_api 等装饰的方法，
+        并注册到 Tornado 的 HandlerRegistry。
+
+        Args:
+            cls: Controller 类
+            url_prefix: URL 前缀
+        """
+        try:
+            from cullinan.controller.core import (
+                EncapsulationHandler,
+                url_resolver,
+                _controller_decoration_context,
+            )
+            from cullinan.handler import get_handler_registry
+            from cullinan.controller.registry import get_controller_registry
+
+            # 解析 URL 参数
+            url_params = None
+            if url_prefix:
+                parsed_prefix, url_params = url_resolver(url_prefix)
+            else:
+                parsed_prefix = url_prefix
+
+            # 获取在类定义时收集的方法（通过 add_func）
+            func_list = _controller_decoration_context.get() or []
+            _controller_decoration_context.set([])
+
+            # 扫描类的所有属性，查找被装饰的方法（fallback）
+            if not func_list:
+                for attr_name in dir(cls):
+                    if attr_name.startswith('_'):
+                        continue
+                    attr = getattr(cls, attr_name, None)
+                    if not callable(attr):
+                        continue
+                    wrapped = getattr(attr, '__wrapped__', None)
+                    if wrapped is None:
+                        continue
+                    route_url = getattr(attr, '__cullinan_url__', None)
+                    route_type = getattr(attr, '__cullinan_method__', None)
+                    if route_url is not None and route_type is not None:
+                        func_list.append((route_url, attr, route_type))
+
+            if not func_list:
+                logger.debug(f"Controller {cls.__name__} 没有路由方法")
+                return
+
+            # 注册到 ControllerRegistry
+            controller_registry = get_controller_registry()
+            controller_name = cls.__name__
+            controller_registry.register(controller_name, cls, url_prefix=url_prefix)
+
+            # 注册每个路由方法
+            for method_url, method_func, http_method in func_list:
+                full_url = url_prefix + method_url
+
+                # 注册到 ControllerRegistry
+                controller_registry.register_method(
+                    controller_name,
+                    method_url,
+                    http_method,
+                    method_func
+                )
+
+                # 注册到 HandlerRegistry（Tornado 路由）
+                handler = EncapsulationHandler.add_url(full_url, method_func)
+                setattr(handler, http_method + '_controller_factory', cls)
+                setattr(handler, http_method + '_controller_url_param_key_list', url_params)
+
+            logger.debug(f"注册 Controller: {controller_name} 包含 {len(func_list)} 个路由")
+
+        except Exception as e:
+            logger.warning(f"注册 Controller {cls.__name__} 路由失败: {e}")
+
+    def _create_class_instance(self, cls: type) -> object:
+        """创建类实例并注入依赖
+
+        Args:
+            cls: 要实例化的类
+
+        Returns:
+            创建的实例
+        """
+        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+
+        # 创建实例
+        instance = cls()
+
+        # 获取注入标记
+        markers = get_injection_markers(cls)
+
+        # 获取类型注解
+        type_hints = {}
+        try:
+            import typing
+            type_hints = typing.get_type_hints(cls)
+        except Exception:
+            type_hints = getattr(cls, '__annotations__', {})
+
+        # 处理每个注入点
+        for attr_name, marker in markers.items():
+            if isinstance(marker, Lazy):
+                # 延迟注入：创建属性代理
+                dep_name = marker.name or self._infer_dependency_name(attr_name, type_hints.get(attr_name))
+                self._setup_lazy_injection(instance, attr_name, dep_name)
+            elif isinstance(marker, InjectByName):
+                # 按名称注入
+                dep_name = marker.name or self._infer_dependency_name(attr_name, None)
+                dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
+                setattr(instance, attr_name, dep_instance)
+            elif isinstance(marker, Inject):
+                # 按类型注入
+                type_hint = type_hints.get(attr_name)
+                if type_hint:
+                    dep_name = type_hint.__name__ if hasattr(type_hint, '__name__') else str(type_hint)
+                else:
+                    dep_name = self._infer_dependency_name(attr_name, None)
+                dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
+                setattr(instance, attr_name, dep_instance)
+
+        return instance
+
+    def _infer_dependency_name(self, attr_name: str, type_hint) -> str:
+        """从属性名推断依赖名称
+
+        Args:
+            attr_name: 属性名 (如 user_service)
+            type_hint: 类型注解
+
+        Returns:
+            推断的依赖名称 (如 UserService)
+        """
+        if type_hint and hasattr(type_hint, '__name__'):
+            return type_hint.__name__
+
+        # 下划线命名转 PascalCase: user_service -> UserService
+        parts = attr_name.split('_')
+        return ''.join(part.capitalize() for part in parts)
+
+    def _setup_lazy_injection(self, instance: object, attr_name: str, dep_name: str) -> None:
+        """设置延迟注入
+
+        使用属性描述符实现首次访问时解析依赖。
+
+        Args:
+            instance: 目标实例
+            attr_name: 属性名
+            dep_name: 依赖名称
+        """
+        ctx = self
+        resolved_attr = f'_lazy_{attr_name}_resolved'
+        cache_attr = f'_lazy_{attr_name}_cache'
+
+        # 初始化标记
+        setattr(instance, resolved_attr, False)
+        setattr(instance, cache_attr, None)
+
+        # 保存原始类，用于设置描述符
+        original_class = type(instance)
+
+        # 创建 getter
+        def lazy_getter(self):
+            if not getattr(self, resolved_attr, False):
+                setattr(self, cache_attr, ctx.get(dep_name))
+                setattr(self, resolved_attr, True)
+            return getattr(self, cache_attr)
+
+        # 将延迟获取函数绑定到实例
+        # 使用 __dict__ 避免触发 __getattribute__
+        bound_getter = lambda: lazy_getter(instance)
+        instance.__dict__[attr_name] = property(lambda s: bound_getter())
 
 
 __all__ = ['ApplicationContext']

@@ -2,18 +2,13 @@
 """Core module for Cullinan framework.
 
 This module provides foundational components for the Cullinan framework:
-- Base registry pattern
-- Dependency injection
+- ApplicationContext: Single entry point for IoC/DI (2.0)
+- Decorators: @service, @controller, @component
+- Dependency Injection: Inject, InjectByName, Lazy
 - Lifecycle management
 - Core exceptions and types
 
-These components serve as building blocks for the service and handler layers.
-
-2.0 New Components:
-- ApplicationContext: Single entry point for IoC/DI
-- Definition: Immutable dependency definition
-- ScopeType: Scope enumeration
-- ScopeManager: Unified scope management
+Version: 0.90
 """
 
 from .registry import Registry, SimpleRegistry
@@ -43,12 +38,18 @@ from .exceptions import (
 )
 
 # ============================================================================
-# 2.0 New IoC/DI System (Recommended)
+# IoC/DI 2.0 System
 # ============================================================================
+
+# ApplicationContext - Single Entry Point
 from .application_context import ApplicationContext
+
+# Definitions and Scope
 from .definitions import Definition, ScopeType
 from .scope_manager import ScopeManager
 from .factory import Factory
+
+# Diagnostics
 from .diagnostics import (
     render_resolution_path,
     render_injection_point,
@@ -57,157 +58,128 @@ from .diagnostics import (
     format_missing_dependency_error,
 )
 
-# ============================================================================
-# Legacy IoC/DI System (Deprecated - will be removed in 3.0)
-# ============================================================================
-
-# Type-based Dependency Injection
-from .injection import (
+# Decorators - Primary Registration API
+from .decorators import (
+    service,
+    controller,
+    component,
+    provider as provider_decorator,
     Inject,
     InjectByName,
-    injectable,
-    inject_constructor,
-    InjectionRegistry,
-    get_injection_registry,
-    reset_injection_registry,
+    Lazy,
+    get_injection_markers,
 )
 
-# Task-3.4: Injection utilities
-from .injection_utils import (
-    resolve_dependency_name_from_annotation,
-    convert_snake_to_pascal,
+# Conditional Decorators
+from .conditions import (
+    ConditionalOnProperty,
+    ConditionalOnClass,
+    ConditionalOnMissingBean,
+    ConditionalOnBean,
+    Conditional,
 )
 
-# Unified Injection Model (Task-3.3)
-from .injection_model import (
-    InjectionPoint,
-    UnifiedInjectionMetadata,
-    ResolveStrategy,
-    infer_dependency_name
-)
+# Pending Registry (for two-phase registration)
+from .pending import PendingRegistry, PendingRegistration, ComponentType
 
-# Unified Injection Executor (Task-3.3)
-from .injection_executor import (
-    InjectionExecutor,
-    get_injection_executor,
-    set_injection_executor,
-    reset_injection_executor,
-    has_injection_executor
-)
+# ============================================================================
+# Compatibility Aliases (for backward compatibility)
+# ============================================================================
 
-# Provider System
-from .provider import (
-    Provider,
-    InstanceProvider,
-    ClassProvider,
-    FactoryProvider,
-    ScopedProvider,
-    ProviderRegistry
-)
+# injectable is now a no-op, classes are automatically injectable
+def injectable(cls):
+    """Compatibility decorator - no longer needed in 2.0.
 
-# Provider Source Interface (Task-1.3)
-from .provider_source import (
-    ProviderSource,
-    SimpleProviderSource
-)
+    In 2.0, all classes decorated with @service, @controller, or @component
+    are automatically injectable. This function is kept for backward compatibility.
+    """
+    return cls
 
-# Scope System
-from .scope import (
-    Scope,
-    SingletonScope,
-    TransientScope,
-    RequestScope,
-    get_singleton_scope,
-    get_transient_scope,
-    get_request_scope
-)
+def inject_constructor(cls):
+    """Compatibility decorator - no longer needed in 2.0."""
+    return cls
 
-# IoC/DI Facade (Unified dependency resolution interface)
-from .facade import (
-    IoCFacade,
-    get_ioc_facade,
-    reset_ioc_facade,
-    resolve_dependency,
-    resolve_dependency_by_name,
-    has_dependency,
-    DependencyResolutionError as FacadeDependencyResolutionError
-)
+# Provide dummy registry functions for compatibility
+_dummy_registry = None
+
+def get_injection_registry():
+    """Compatibility function - returns None in 2.0.
+
+    Use ApplicationContext instead.
+    """
+    return _dummy_registry
+
+def reset_injection_registry():
+    """Compatibility function - no-op in 2.0."""
+    pass
+
+# InjectionRegistry compatibility class
+class InjectionRegistry:
+    """Compatibility class - use ApplicationContext instead."""
+    pass
 
 __version__ = "0.90"
 
 __all__ = [
     # ========================================================================
-    # 2.0 New IoC/DI System (Recommended)
+    # IoC/DI 2.0 System
     # ========================================================================
+
+    # Application Context (Single Entry Point)
     'ApplicationContext',
     'Definition',
     'ScopeType',
     'ScopeManager',
     'Factory',
 
-    # 2.0 Diagnostics
+    # Diagnostics
     'render_resolution_path',
     'render_injection_point',
     'render_candidate_sources',
     'format_circular_dependency_error',
     'format_missing_dependency_error',
 
-    # 2.0 Exceptions
+    # Exceptions
+    'CullinanCoreError',
+    'RegistryError',
     'RegistryFrozenError',
+    'DependencyResolutionError',
     'DependencyNotFoundError',
+    'CircularDependencyError',
     'ScopeNotActiveError',
     'ConditionNotMetError',
     'CreationError',
+    'LifecycleError',
+
+    # Decorators (Primary API)
+    'service',
+    'controller',
+    'component',
+    'provider_decorator',
+    'Inject',
+    'InjectByName',
+    'Lazy',
+    'get_injection_markers',
+
+    # Conditional Decorators
+    'ConditionalOnProperty',
+    'ConditionalOnClass',
+    'ConditionalOnMissingBean',
+    'ConditionalOnBean',
+    'Conditional',
+
+    # Pending Registry
+    'PendingRegistry',
+    'PendingRegistration',
+    'ComponentType',
 
     # ========================================================================
-    # Legacy System (Deprecated - will be removed in 3.0)
+    # Core Infrastructure
     # ========================================================================
 
     # Registry
     'Registry',
     'SimpleRegistry',
-
-    # Provider System
-    'Provider',
-    'InstanceProvider',
-    'ClassProvider',
-    'FactoryProvider',
-    'ScopedProvider',
-    'ProviderRegistry',
-
-    # Provider Source Interface (Task-1.3)
-    'ProviderSource',
-    'SimpleProviderSource',
-
-    # Scope System
-    'Scope',
-    'SingletonScope',
-    'TransientScope',
-    'RequestScope',
-    'get_singleton_scope',
-    'get_transient_scope',
-    'get_request_scope',
-
-    # Lifecycle Management
-    # Type-based Dependency Injection
-    'Inject',
-    'InjectByName',
-    'inject_constructor',
-    'injectable',
-    'InjectionRegistry',
-    'get_injection_registry',
-    'reset_injection_registry',
-
-    # Unified Injection Model (Task-3.3)
-    'InjectionPoint',
-    'UnifiedInjectionMetadata',
-    'ResolveStrategy',
-    'infer_dependency_name',
-    'InjectionExecutor',
-    'get_injection_executor',
-    'set_injection_executor',
-    'reset_injection_executor',
-    'has_injection_executor',
 
     # Lifecycle Management
     'LifecycleManager',
@@ -223,19 +195,13 @@ __all__ = [
     'ContextManager',
     'get_context_value',
     'set_context_value',
-    
-    # Exceptions
-    'CullinanCoreError',
-    'RegistryError',
-    'DependencyResolutionError',
-    'CircularDependencyError',
-    'LifecycleError',
 
-    # IoC/DI Facade
-    'IoCFacade',
-    'get_ioc_facade',
-    'reset_ioc_facade',
-    'resolve_dependency',
-    'resolve_dependency_by_name',
-    'has_dependency',
+    # ========================================================================
+    # Compatibility (kept for backward compatibility)
+    # ========================================================================
+    'injectable',
+    'inject_constructor',
+    'InjectionRegistry',
+    'get_injection_registry',
+    'reset_injection_registry',
 ]
