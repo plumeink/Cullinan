@@ -38,17 +38,16 @@ Summary: Controller registration, lifecycle, and injection into controller insta
 ## Example: register a simple controller
 
 ```python
-from cullinan.controller import controller, get_controller_registry
+from cullinan.controller import controller, get_api
 
-@controller(path='/hello')
-def hello(request):
-    return {'status': 200, 'body': 'Hello World'}
-
-# Optionally register directly into registry (usually auto-discovered)
-registry = get_controller_registry()
-registry.register(r'/hello', hello)
+@controller(url='/hello')
+class HelloController:
+    @get_api(url='')
+    def hello(self):
+        return {'status': 200, 'body': 'Hello World'}
 ```
 
 Notes:
-- Use the `controller` decorator for route handlers; the framework supports automatic discovery via module scanning or explicit registry registration.
-- If handlers need DI, use `@injectable` classes or property injection and ensure providers are registered before app startup.
+- Use the `@controller` decorator to mark controller classes, `url` parameter specifies URL prefix.
+- Use `@get_api`, `@post_api` and other decorators to define HTTP endpoints.
+- The framework supports automatic discovery via module scanning.

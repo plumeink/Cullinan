@@ -63,26 +63,26 @@ Examples — quick reference
 Minimal controller registration example (conceptual):
 
 ```python
-from cullinan.controller import controller, get_controller_registry
+from cullinan.controller import controller, get_api
 
-@controller(path='/hello')
-def hello_handler(request):
-    return {'status': 200, 'body': 'Hello Cullinan'}
+@controller(url='/hello')
+class HelloController:
+    @get_api(url='')
+    def hello(self):
+        return {'status': 200, 'body': 'Hello Cullinan'}
 
-# controllers are discovered or registered; the app will route /hello to hello_handler
+# controllers are discovered automatically; the app will route /hello to HelloController
 ```
 
 Minimal service example (conceptual):
 
 ```python
-from cullinan.service import Service, service, get_service_registry
+from cullinan.service import Service, service
 
 @service
-def MySvc():
-    # register service
+class MySvc(Service):
+    # service logic here
     pass
-
-svc_registry = get_service_registry()
 ```
 
 Where to look next

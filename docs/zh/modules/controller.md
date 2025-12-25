@@ -62,17 +62,16 @@ pr_links: []
 ## 示例：注册一个简单控制器
 
 ```python
-from cullinan.controller import controller, get_controller_registry
+from cullinan.controller import controller, get_api
 
-@controller(path='/hello')
-def hello(request):
-    return {'status': 200, 'body': 'Hello World'}
-
-# 可选：直接注册到 registry（通常由模块扫描自动发现）
-registry = get_controller_registry()
-registry.register(r'/hello', hello)
+@controller(url='/hello')
+class HelloController:
+    @get_api(url='')
+    def hello(self):
+        return {'status': 200, 'body': 'Hello World'}
 ```
 
 说明：
-- 使用 `controller` 装饰器注册路由处理器；框架支持模块扫描自动发现或显式注册。
-- 若处理器需要依赖注入，请使用 `@injectable` 类或属性注入并确保在应用启动前已注册相应 provider。
+- 使用 `@controller` 装饰器标记控制器类，`url` 参数指定 URL 前缀。
+- 使用 `@get_api`、`@post_api` 等装饰器定义具体的 HTTP 端点。
+- 框架支持模块扫描自动发现控制器。

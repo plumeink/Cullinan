@@ -53,17 +53,19 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import application
-from cullinan.controller import controller
+from cullinan.application import run
+from cullinan.controller import controller, get_api
 
 @controller(url='/hello')
-def hello_handler(request):
-    """Simple HTTP handler."""
-    return {'message': 'Hello from Cullinan!'}
+class HelloController:
+    """Simple HTTP controller."""
+    
+    @get_api(url='')
+    def hello(self):
+        return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    # Start the framework application (no instantiation required)
-    application.run()
+    run()
 ```
 
 4. Run your app:
@@ -125,17 +127,19 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan import application
-from cullinan.controller import controller
+from cullinan.application import run
+from cullinan.controller import controller, get_api
 
 @controller(url='/hello')
-def hello_handler(request):
-    """Simple HTTP handler."""
-    return {'message': 'Hello from Cullinan!'}
+class HelloController:
+    """Simple HTTP controller."""
+    
+    @get_api(url='')
+    def hello(self):
+        return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    # Start the framework application (no instantiation required)
-    application.run()
+    run()
 ```
 
 To run this example:

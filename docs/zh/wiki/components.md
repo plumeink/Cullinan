@@ -63,22 +63,24 @@ pr_links: []
 最小的控制器注册示例（概念性）：
 
 ```python
-from cullinan.controller import controller, get_controller_registry
+from cullinan.controller import controller, get_api
 
-@controller(path='/hello')
-def hello_handler(request):
-    return {'status': 200, 'body': 'Hello Cullinan'}
+@controller(url='/hello')
+class HelloController:
+    @get_api(url='')
+    def hello(self):
+        return {'status': 200, 'body': 'Hello Cullinan'}
 
-# 控制器被扫描或注册；应用会将 /hello 路由到 hello_handler
+# 控制器被扫描或注册；应用会将 /hello 路由到 HelloController
 ```
 
 最小的服务示例（概念性）：
 
 ```python
-from cullinan.service import Service, service, get_service_registry
+from cullinan.service import Service, service
 
 @service
-def MySvc():
+class MySvc(Service):
     # 注册服务
     pass
 

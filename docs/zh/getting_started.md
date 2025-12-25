@@ -53,17 +53,19 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import application
-from cullinan.controller import controller
+from cullinan.application import run
+from cullinan.controller import controller, get_api
 
 @controller(url='/hello')
-def hello_handler(request):
-    """简单的 HTTP 处理器。"""
-    return {'message': 'Hello from Cullinan!'}
+class HelloController:
+    """简单的 HTTP 控制器。"""
+    
+    @get_api(url='')
+    def hello(self):
+        return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    # Start the framework application (no instantiation required)
-    application.run()
+    run()
 ```
 
 4. 运行你的应用：
@@ -125,17 +127,19 @@ python minimal_app.py
 
 ```python
 # minimal_app.py
-from cullinan import application
-from cullinan.controller import controller
+from cullinan.application import run
+from cullinan.controller import controller, get_api
 
 @controller(url='/hello')
-def hello_handler(request):
-    """简单的 HTTP 处理器。"""
-    return {'message': 'Hello from Cullinan!'}
+class HelloController:
+    """简单的 HTTP 控制器。"""
+    
+    @get_api(url='')
+    def hello(self):
+        return {'message': 'Hello from Cullinan!'}
 
 if __name__ == '__main__':
-    # Start the framework application (no instantiation required)
-    application.run()
+    run()
 ```
 
 运行此示例：

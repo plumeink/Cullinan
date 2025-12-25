@@ -205,12 +205,13 @@ Handles HTTP requests.
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
 
-@controller('/api/users')
+@controller(url='/api/users')
 class UserController:
     user_service: 'UserService' = Inject()
     
-    @get_api('/<user_id>')
-    def get_user(self, user_id: int):
+    @get_api(url='/<user_id>')
+    def get_user(self, url_params):
+        user_id = url_params.get('user_id')
         return self.user_service.get_user(user_id)
 ```
 

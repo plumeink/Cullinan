@@ -48,7 +48,7 @@ from cullinan.core import Inject
 class UserController:
     user_service: UserService = Inject()
     
-    @get_api('/users/<user_id>')
+    @get_api(url='/users/<user_id>')
     async def get_user(self, url_param):
         user_id = url_param.get('user_id')
         user = self.user_service.get_user(user_id)

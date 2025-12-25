@@ -374,9 +374,9 @@ if __name__ == '__main__':
 ```python
 from cullinan.controller import controller, get_api
 
-@controller('/api/users')
+@controller(url='/api/users')
 class UserController:
-    @get_api('/')
+    @get_api(url='/')
     def list_users(self):
         return {"users": []}
 
