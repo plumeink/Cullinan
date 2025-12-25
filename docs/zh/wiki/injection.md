@@ -4,16 +4,20 @@ module: ["cullinan.core"]
 tags: ["ioc", "di", "injection"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: deprecated
 locale: zh
 translation_pair: "docs/wiki/injection.md"
 related_tests: ["tests/test_core_injection.py"]
 related_examples: ["docs/work/core_examples.py"]
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # IoC 与 DI（注入）
+
+> **自 2.0 起已弃用**：本文档描述的是旧版 IoC/DI 系统。
+> 新项目请使用 [IoC/DI 2.0 架构](ioc_di_v2.md)。
+> 迁移指南请参阅 [迁移指南](../migration_guide_v2.md)。
 
 本文档基于 `cullinan/core` 源码（以源码实现为准）介绍 Cullinan 的 IoC（控制反转）与 DI（依赖注入）原语。目标：展示常见用法、provider/registry/scope 概念，并提供最小可运行示例。
 

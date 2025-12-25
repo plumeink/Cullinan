@@ -133,7 +133,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.83'
+__version__ = '0.90'
 
 __all__ = [
     # Configuration

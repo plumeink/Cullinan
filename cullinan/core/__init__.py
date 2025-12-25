@@ -8,6 +8,12 @@ This module provides foundational components for the Cullinan framework:
 - Core exceptions and types
 
 These components serve as building blocks for the service and handler layers.
+
+2.0 New Components:
+- ApplicationContext: Single entry point for IoC/DI
+- Definition: Immutable dependency definition
+- ScopeType: Scope enumeration
+- ScopeManager: Unified scope management
 """
 
 from .registry import Registry, SimpleRegistry
@@ -26,13 +32,36 @@ from .context import (
 from .exceptions import (
     CullinanCoreError,
     RegistryError,
+    RegistryFrozenError,
     DependencyResolutionError,
+    DependencyNotFoundError,
     CircularDependencyError,
+    ScopeNotActiveError,
+    ConditionNotMetError,
+    CreationError,
     LifecycleError
 )
 
+# ============================================================================
+# 2.0 New IoC/DI System (Recommended)
+# ============================================================================
+from .application_context import ApplicationContext
+from .definitions import Definition, ScopeType
+from .scope_manager import ScopeManager
+from .factory import Factory
+from .diagnostics import (
+    render_resolution_path,
+    render_injection_point,
+    render_candidate_sources,
+    format_circular_dependency_error,
+    format_missing_dependency_error,
+)
 
-# Type-based Dependency Injection System
+# ============================================================================
+# Legacy IoC/DI System (Deprecated - will be removed in 3.0)
+# ============================================================================
+
+# Type-based Dependency Injection
 from .injection import (
     Inject,
     InjectByName,
@@ -104,9 +133,36 @@ from .facade import (
     DependencyResolutionError as FacadeDependencyResolutionError
 )
 
-__version__ = "0.83"
+__version__ = "0.90"
 
 __all__ = [
+    # ========================================================================
+    # 2.0 New IoC/DI System (Recommended)
+    # ========================================================================
+    'ApplicationContext',
+    'Definition',
+    'ScopeType',
+    'ScopeManager',
+    'Factory',
+
+    # 2.0 Diagnostics
+    'render_resolution_path',
+    'render_injection_point',
+    'render_candidate_sources',
+    'format_circular_dependency_error',
+    'format_missing_dependency_error',
+
+    # 2.0 Exceptions
+    'RegistryFrozenError',
+    'DependencyNotFoundError',
+    'ScopeNotActiveError',
+    'ConditionNotMetError',
+    'CreationError',
+
+    # ========================================================================
+    # Legacy System (Deprecated - will be removed in 3.0)
+    # ========================================================================
+
     # Registry
     'Registry',
     'SimpleRegistry',

@@ -4,16 +4,20 @@ module: ["cullinan.core"]
 tags: ["ioc", "di", "injection"]
 author: "Plumeink"
 reviewers: []
-status: draft
+status: deprecated
 locale: en
 translation_pair: "docs/zh/wiki/injection.md"
 related_tests: ["tests/test_core_injection.py"]
 related_examples: ["docs/work/core_examples.py"]
 estimate_pd: 2.0
-last_updated: "2025-11-18T00:00:00Z"
+last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
 # IoC & DI (Injection)
+
+> **Deprecated since 2.0**: This document describes the legacy IoC/DI system. 
+> For new projects, please use the [IoC/DI 2.0 Architecture](ioc_di_v2.md).
+> For migration, see [Migration Guide](../migration_guide_v2.md).
 
 This page documents the IoC (Inversion of Control) and DI (Dependency Injection) primitives used by Cullinan, based on the source code in `cullinan/core`. The goal is to present concrete usage patterns, explain provider/registry/scope concepts, and show minimal runnable examples.
 
