@@ -18,7 +18,7 @@
         <link rel="prev" href="../decorators/">
       
       
-        <link rel="next" href="../ioc_di_v2/">
+        <link rel="next" href="../lifecycle/">
       
       
         
@@ -314,40 +314,6 @@
   </span>
   
   
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../architecture_updated/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture (Updated)
-  
-
-    
-  </span>
-  
-  
 
       </a>
     </li>
@@ -371,10 +337,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -392,8 +358,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -482,6 +448,31 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -499,76 +490,215 @@
     
   
   
-    <span class="md-status md-status--deprecated"></span>
-  
-
-  
-
-      </a>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ioc_di_v2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    IoC/DI 2.0
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
     <span class="md-status md-status--updated"></span>
   
 
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inversion-of-control-ioc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inversion of Control (IoC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-injection-di" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection (DI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-usage-decorator-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage (Decorator-Based)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Usage (Decorator-Based)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-define-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Define a Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inject-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inject Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-in-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Use in Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injection Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Injection Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-type-annotation-injection-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject() - Type Annotation Injection (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injectbyname-string-name-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InjectByName() - String Name Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-applicationcontext-for-complex-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced: ApplicationContext (For Complex Scenarios)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -736,10 +866,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -757,8 +887,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1033,10 +1163,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -1054,8 +1184,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1080,41 +1210,6 @@
     
   
     Migration Guide
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration_guide_v2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration Guide v2
   
 
     
@@ -1290,10 +1385,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1311,8 +1406,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1454,6 +1549,197 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inversion-of-control-ioc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inversion of Control (IoC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-injection-di" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection (DI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-usage-decorator-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Usage (Decorator-Based)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Usage (Decorator-Based)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-define-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Define a Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-inject-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Inject Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-use-in-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Use in Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#injection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injection Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Injection Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-type-annotation-injection-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject() - Type Annotation Injection (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injectbyname-string-name-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InjectByName() - String Name Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Hooks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-applicationcontext-for-complex-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced: ApplicationContext (For Complex Scenarios)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1471,99 +1757,165 @@
 
 <h1 id="ioc-di-injection">IoC &amp; DI (Injection)<a class="headerlink" href="#ioc-di-injection" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Deprecated since 2.0</strong>: This document describes the legacy IoC/DI system. 
-For new projects, please use the <a href="../ioc_di_v2/">IoC/DI 2.0 Architecture</a>.
-For migration, see <a href="../../migration_guide_v2/">Migration Guide</a>.</p>
+<p><strong>Version</strong>: v0.90<br />
+<strong>Author</strong>: Plumeink</p>
 </blockquote>
-<p>This page documents the IoC (Inversion of Control) and DI (Dependency Injection) primitives used by Cullinan, based on the source code in <code>cullinan/core</code>. The goal is to present concrete usage patterns, explain provider/registry/scope concepts, and show minimal runnable examples.</p>
-<p>Key concepts and components</p>
-<ul>
-<li>Provider &amp; ProviderRegistry: producers of service instances. Providers can be class-based, factory-based, or instance-based. The <code>ProviderRegistry</code> holds registered providers and is often bridged into the <code>InjectionRegistry</code> for application-wide resolution.</li>
-<li>Scopes: control provider lifetimes. Common scopes include <code>SingletonScope</code>, <code>TransientScope</code>, and <code>RequestScope</code>.</li>
-<li>Injection markers &amp; decorators:</li>
-<li><code>Inject</code> and <code>InjectByName</code> are used as markers for property injection.</li>
-<li><code>@injectable</code> marks a class to receive property injection when instantiated.</li>
-<li><code>@inject_constructor</code> enables constructor (parameter) injection.</li>
-<li>InjectionRegistry: central registry that coordinates provider registries and resolves dependencies for injection points.</li>
-<li>RequestContext: a context manager used with <code>create_context()</code> to scope request-local objects (used with <code>RequestScope</code>).</li>
-</ul>
-<p>Where to look in the source</p>
-<ul>
-<li><code>cullinan/core/injection.py</code> — injection registration and resolution mechanics.</li>
-<li><code>cullinan/core/provider.py</code> — provider implementations (ClassProvider, FactoryProvider, InstanceProvider).</li>
-<li><code>cullinan/core/registry.py</code> — registry patterns used by ProviderRegistry and general Registry classes.</li>
-<li><code>cullinan/core/scope.py</code> — scope implementations (SingletonScope, RequestScope, TransientScope).</li>
-<li>tests: <code>tests/test_core_injection.py</code>, <code>tests/test_core_scope_integration.py</code> — real usage examples and assertions.</li>
-</ul>
-<p>Minimal usage examples (runnable)</p>
-<p>Property injection (example):</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SingletonScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span><span class="p">,</span>
-    <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">reset_injection_registry</span>
-<span class="p">)</span>
+<p>This page documents the IoC (Inversion of Control) and DI (Dependency Injection) system used by Cullinan. For the complete architecture overview, see <a href="../../architecture/">Architecture</a>. For migration from previous versions, see <a href="../../migration_guide/">Migration Guide</a>.</p>
+<h2 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="inversion-of-control-ioc">Inversion of Control (IoC)<a class="headerlink" href="#inversion-of-control-ioc" title="Permanent link">&para;</a></h3>
+<p>IoC is a design principle where the control of object creation and lifecycle is transferred from the application code to a framework or container.</p>
+<h3 id="dependency-injection-di">Dependency Injection (DI)<a class="headerlink" href="#dependency-injection-di" title="Permanent link">&para;</a></h3>
+<p>DI is a technique for achieving IoC. Dependencies are "injected" into a class rather than being created by the class itself.</p>
+<h2 id="recommended-usage-decorator-based">Recommended Usage (Decorator-Based)<a class="headerlink" href="#recommended-usage-decorator-based" title="Permanent link">&para;</a></h2>
+<h3 id="1-define-a-service">1. Define a Service<a class="headerlink" href="#1-define-a-service" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-    <span class="n">_instance_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">reset_injection_registry</span><span class="p">()</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">ProviderRegistry</span><span class="p">()</span>
-<span class="n">scope</span> <span class="o">=</span> <span class="n">SingletonScope</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;Database&#39;</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Database</span><span class="p">(),</span> <span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;Database&#39;</span><span class="p">))</span>
-<span class="n">get_injection_registry</span><span class="p">()</span><span class="o">.</span><span class="n">add_provider_registry</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called during service initialization&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">()</span>
 
-<span class="nd">@injectable</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">:</span>
-    <span class="n">database</span><span class="p">:</span> <span class="n">Database</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called during service shutdown&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<span class="n">s1</span> <span class="o">=</span> <span class="n">Service</span><span class="p">()</span>
-<span class="n">s2</span> <span class="o">=</span> <span class="n">Service</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">database</span> <span class="ow">is</span> <span class="n">s2</span><span class="o">.</span><span class="n">database</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
 </code></pre></div>
-<p>Constructor injection (example):</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SingletonScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span><span class="p">,</span>
-    <span class="n">inject_constructor</span><span class="p">,</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">reset_injection_registry</span>
-<span class="p">)</span>
+<h3 id="2-inject-dependencies">2. Inject Dependencies<a class="headerlink" href="#2-inject-dependencies" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-    <span class="n">_instance_count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="c1"># Automatic injection via type annotation</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-<span class="n">reset_injection_registry</span><span class="p">()</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">ProviderRegistry</span><span class="p">()</span>
-<span class="n">scope</span> <span class="o">=</span> <span class="n">SingletonScope</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;Database&#39;</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Database</span><span class="p">(),</span> <span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;Database&#39;</span><span class="p">))</span>
-<span class="n">get_injection_registry</span><span class="p">()</span><span class="o">.</span><span class="n">add_provider_registry</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-
-<span class="nd">@inject_constructor</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Controller</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
-
-<span class="n">c1</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">()</span>
-<span class="n">c2</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">c1</span><span class="o">.</span><span class="n">database</span> <span class="ow">is</span> <span class="n">c2</span><span class="o">.</span><span class="n">database</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>Common patterns and tips</p>
+<h3 id="3-use-in-controllers">3. Use in Controllers<a class="headerlink" href="#3-use-in-controllers" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span>
+</code></pre></div>
+<h2 id="injection-methods">Injection Methods<a class="headerlink" href="#injection-methods" title="Permanent link">&para;</a></h2>
+<h3 id="inject-type-annotation-injection-recommended">Inject() - Type Annotation Injection (Recommended)<a class="headerlink" href="#inject-type-annotation-injection-recommended" title="Permanent link">&para;</a></h3>
+<p>Best IDE support and type safety.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="c1"># Infers dependency name from type annotation</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="c1"># Optional dependency</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="injectbyname-string-name-injection">InjectByName() - String Name Injection<a class="headerlink" href="#injectbyname-string-name-injection" title="Permanent link">&para;</a></h3>
+<p>No need to import dependency classes, avoids circular imports.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">:</span>
+    <span class="c1"># Explicit name</span>
+    <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Auto-infer name (snake_case -&gt; PascalCase)</span>
+    <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># -&gt; EmailService</span>
+</code></pre></div>
+<h2 id="lifecycle-hooks">Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">&para;</a></h2>
+<p>Services support lifecycle hooks for initialization and cleanup:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization order (lower = earlier)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after all services are registered&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called before the server starts accepting requests&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when the server is shutting down&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h2 id="advanced-applicationcontext-for-complex-scenarios">Advanced: ApplicationContext (For Complex Scenarios)<a class="headerlink" href="#advanced-applicationcontext-for-complex-scenarios" title="Permanent link">&para;</a></h2>
+<p>For advanced use cases like third-party integration or custom factories:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
+
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
+
+<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;CustomService&#39;</span><span class="p">,</span>
+    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">CustomService</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Dependency&#39;</span><span class="p">)),</span>
+    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s1">&#39;custom:CustomService&#39;</span>
+<span class="p">))</span>
+
+<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>  <span class="c1"># Freeze registry</span>
+<span class="n">service</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CustomService&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Use decorators for services and controllers</strong> - Let the framework handle registration</li>
+<li><strong>Use <code>Inject()</code> for type-safe injection</strong> - Better IDE support and refactoring</li>
+<li><strong>Use <code>InjectByName()</code> to avoid circular imports</strong> - When you can't import the type</li>
+<li><strong>Implement lifecycle hooks properly</strong> - Clean initialization and shutdown</li>
+<li><strong>Keep services focused</strong> - Single responsibility principle</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dependency is None</td>
+<td>Ensure the service is decorated with <code>@service</code></td>
+</tr>
+<tr>
+<td>Service not found</td>
+<td>Check the service name matches (case-sensitive)</td>
+</tr>
+<tr>
+<td>Circular dependency</td>
+<td>Use <code>InjectByName()</code> with lazy resolution</td>
+</tr>
+<tr>
+<td>Injection not working</td>
+<td>Ensure the class extends <code>Service</code> or <code>Controller</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Prefer <code>@injectable</code> + <code>Inject()</code> for property injection when classes are instantiated by user code; use <code>@inject_constructor</code> where constructor injection is more explicit or required.</li>
-<li>Register providers into a <code>ProviderRegistry</code> and add that registry to the global <code>InjectionRegistry</code> so injection points can resolve dependencies.</li>
-<li>Use <code>RequestScope</code> with <code>create_context()</code> when you need request-scoped lifetimes (HTTP handlers).</li>
-</ul>
-<p>Troubleshooting</p>
-<ul>
-<li>If injections are None, ensure <code>reset_injection_registry()</code> is called before registering providers during test setup.</li>
-<li>Verify provider keys (names) match the expected injection points (by type name or by explicit name when using <code>InjectByName</code>).</li>
-</ul>
-<p>Next steps</p>
-<ul>
-<li>Expand this page with diagrams showing provider -&gt; registry -&gt; injection resolution flow and common error modes (circular dependency, missing provider).</li>
-<li>Add more complex examples (provider ordering, lifecycle hooks <code>on_init</code>, <code>on_shutdown</code>).</li>
+<li><a href="../../architecture/">Architecture</a> - System architecture overview</li>
+<li><a href="../decorators/">Decorators</a> - All available decorators</li>
+<li><a href="../lifecycle/">Lifecycle</a> - Service lifecycle management</li>
+<li><a href="../../migration_guide/">Migration Guide</a> - Migrating from older versions</li>
 </ul>
 
 

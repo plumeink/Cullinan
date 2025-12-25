@@ -18,7 +18,7 @@
         <link rel="prev" href="../decorators/">
       
       
-        <link rel="next" href="../ioc_di_v2/">
+        <link rel="next" href="../lifecycle/">
       
       
         
@@ -314,40 +314,6 @@
   </span>
   
   
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../architecture_updated/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    架构设计（更新版）
-  
-
-    
-  </span>
-  
-  
 
       </a>
     </li>
@@ -371,10 +337,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -392,8 +358,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -482,6 +448,31 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    注入
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -499,76 +490,215 @@
     
   
   
-    <span class="md-status md-status--deprecated"></span>
-  
-
-  
-
-      </a>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ioc_di_v2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    IoC/DI 2.0
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    架构设计
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
     <span class="md-status md-status--updated"></span>
   
 
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心概念
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="核心概念">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ioc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        控制反转 (IoC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#di" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        依赖注入 (DI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推荐用法（基于装饰器）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="推荐用法（基于装饰器）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 定义服务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 注入依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 在控制器中使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        注入方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="注入方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject() - 类型注解注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injectbyname-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InjectByName() - 字符串名称注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        生命周期钩子
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#applicationcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高级用法：ApplicationContext（复杂场景）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最佳实践
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        故障排查
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        另请参阅
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -736,10 +866,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -757,8 +887,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1033,10 +1163,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -1054,8 +1184,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1080,41 +1210,6 @@
     
   
     迁移指南
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--draft"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration_guide_v2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    迁移指南 v2
   
 
     
@@ -1290,10 +1385,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -1311,8 +1406,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1454,6 +1549,197 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        核心概念
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="核心概念">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ioc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        控制反转 (IoC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#di" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        依赖注入 (DI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        推荐用法（基于装饰器）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="推荐用法（基于装饰器）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 定义服务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 注入依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 在控制器中使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        注入方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="注入方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject() - 类型注解注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injectbyname-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InjectByName() - 字符串名称注入
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        生命周期钩子
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#applicationcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高级用法：ApplicationContext（复杂场景）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最佳实践
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        故障排查
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        另请参阅
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1471,98 +1757,165 @@
 
 <h1 id="ioc-di">IoC 与 DI（注入）<a class="headerlink" href="#ioc-di" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>自 2.0 起已弃用</strong>：本文档描述的是旧版 IoC/DI 系统。
-新项目请使用 <a href="../ioc_di_v2/">IoC/DI 2.0 架构</a>。
-迁移指南请参阅 <a href="../../migration_guide_v2/">迁移指南</a>。</p>
+<p><strong>版本</strong>: v0.90<br />
+<strong>作者</strong>: Plumeink</p>
 </blockquote>
-<p>本文档基于 <code>cullinan/core</code> 源码（以源码实现为准）介绍 Cullinan 的 IoC（控制反转）与 DI（依赖注入）原语。目标：展示常见用法、provider/registry/scope 概念，并提供最小可运行示例。</p>
-<p>关键概念与组件</p>
-<ul>
-<li>Provider 与 ProviderRegistry：用于生成服务实例的提供者。提供者可以是类提供者、工厂提供者或实例提供者。<code>ProviderRegistry</code> 保存已注册的提供者，并常通过 <code>InjectionRegistry</code> 进行协调解析。</li>
-<li>Scope：控制提供者的生命周期。常用的作用域包括 <code>SingletonScope</code>、<code>TransientScope</code> 与 <code>RequestScope</code>。</li>
-<li>注入标记与装饰器：</li>
-<li>使用 <code>Inject</code> 与 <code>InjectByName</code> 进行属性注入标记。</li>
-<li>使用 <code>@injectable</code> 标记类以启用属性注入。</li>
-<li>使用 <code>@inject_constructor</code> 启用构造器注入（参数注入）。</li>
-<li>InjectionRegistry：负责协调 provider registry 并解析注入点的中心注册表。</li>
-<li>RequestContext：与 <code>create_context()</code> 配合使用的上下文管理器，用于请求范围的对象（配合 <code>RequestScope</code>）。</li>
-</ul>
-<p>源码位置建议阅读</p>
-<ul>
-<li><code>cullinan/core/injection.py</code> — 注入注册与解析实现。</li>
-<li><code>cullinan/core/provider.py</code> — 提供者实现（ClassProvider、FactoryProvider、InstanceProvider）。</li>
-<li><code>cullinan/core/registry.py</code> — ProviderRegistry 与通用 Registry 模式实现。</li>
-<li><code>cullinan/core/scope.py</code> — Scope 实现（SingletonScope、RequestScope、TransientScope）。</li>
-<li>测试示例：<code>tests/test_core_injection.py</code>, <code>tests/test_core_scope_integration.py</code>。</li>
-</ul>
-<p>最小可运行示例（可执行）</p>
-<p>属性注入：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SingletonScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span><span class="p">,</span>
-    <span class="n">injectable</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">reset_injection_registry</span>
-<span class="p">)</span>
+<p>本文档介绍 Cullinan 的 IoC（控制反转）与 DI（依赖注入）系统。完整架构概览请参阅 <a href="../../architecture/">架构设计</a>。从旧版本迁移请参阅 <a href="../../migration_guide/">迁移指南</a>。</p>
+<h2 id="_1">核心概念<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="ioc">控制反转 (IoC)<a class="headerlink" href="#ioc" title="Permanent link">&para;</a></h3>
+<p>IoC 是一种设计原则，将对象创建和生命周期的控制权从应用程序代码转移给框架或容器。</p>
+<h3 id="di">依赖注入 (DI)<a class="headerlink" href="#di" title="Permanent link">&para;</a></h3>
+<p>DI 是实现 IoC 的一种技术。依赖项被"注入"到类中，而不是由类自己创建。</p>
+<h2 id="_2">推荐用法（基于装饰器）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. 定义服务<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-    <span class="n">_instance_count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">reset_injection_registry</span><span class="p">()</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">ProviderRegistry</span><span class="p">()</span>
-<span class="n">scope</span> <span class="o">=</span> <span class="n">SingletonScope</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;Database&#39;</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Database</span><span class="p">(),</span> <span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;Database&#39;</span><span class="p">))</span>
-<span class="n">get_injection_registry</span><span class="p">()</span><span class="o">.</span><span class="n">add_provider_registry</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务初始化时调用&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">()</span>
 
-<span class="nd">@injectable</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Service</span><span class="p">:</span>
-    <span class="n">database</span><span class="p">:</span> <span class="n">Database</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务关闭时调用&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<span class="n">s1</span> <span class="o">=</span> <span class="n">Service</span><span class="p">()</span>
-<span class="n">s2</span> <span class="o">=</span> <span class="n">Service</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">database</span> <span class="ow">is</span> <span class="n">s2</span><span class="o">.</span><span class="n">database</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
 </code></pre></div>
-<p>构造器注入：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SingletonScope</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">,</span> <span class="n">ProviderRegistry</span><span class="p">,</span>
-    <span class="n">inject_constructor</span><span class="p">,</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">reset_injection_registry</span>
-<span class="p">)</span>
+<h3 id="2">2. 注入依赖<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-    <span class="n">_instance_count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">_instance_count</span>
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="c1"># 通过类型注解自动注入</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-<span class="n">reset_injection_registry</span><span class="p">()</span>
-<span class="n">registry</span> <span class="o">=</span> <span class="n">ProviderRegistry</span><span class="p">()</span>
-<span class="n">scope</span> <span class="o">=</span> <span class="n">SingletonScope</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;Database&#39;</span><span class="p">,</span> <span class="n">ScopedProvider</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Database</span><span class="p">(),</span> <span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;Database&#39;</span><span class="p">))</span>
-<span class="n">get_injection_registry</span><span class="p">()</span><span class="o">.</span><span class="n">add_provider_registry</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-
-<span class="nd">@inject_constructor</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Controller</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Database</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
-
-<span class="n">c1</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">()</span>
-<span class="n">c2</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">c1</span><span class="o">.</span><span class="n">database</span> <span class="ow">is</span> <span class="n">c2</span><span class="o">.</span><span class="n">database</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id=</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>常见模式与建议</p>
+<h3 id="3">3. 在控制器中使用<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_param</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span>
+</code></pre></div>
+<h2 id="_3">注入方式<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="inject-">Inject() - 类型注解注入（推荐）<a class="headerlink" href="#inject-" title="Permanent link">&para;</a></h3>
+<p>最佳的 IDE 支持和类型安全。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="c1"># 从类型注解推断依赖名称</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="c1"># 可选依赖</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="injectbyname-">InjectByName() - 字符串名称注入<a class="headerlink" href="#injectbyname-" title="Permanent link">&para;</a></h3>
+<p>无需导入依赖类，可避免循环导入。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">:</span>
+    <span class="c1"># 显式指定名称</span>
+    <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 自动推断名称 (snake_case -&gt; PascalCase)</span>
+    <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># -&gt; EmailService</span>
+</code></pre></div>
+<h2 id="_4">生命周期钩子<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>服务支持用于初始化和清理的生命周期钩子：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化顺序（数值越小越早）&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;所有服务注册完成后调用&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务器开始接受请求之前调用&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务器关闭时调用&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h2 id="applicationcontext">高级用法：ApplicationContext（复杂场景）<a class="headerlink" href="#applicationcontext" title="Permanent link">&para;</a></h2>
+<p>用于第三方集成或自定义工厂等高级用例：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
+
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
+
+<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;CustomService&#39;</span><span class="p">,</span>
+    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">CustomService</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Dependency&#39;</span><span class="p">)),</span>
+    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s1">&#39;custom:CustomService&#39;</span>
+<span class="p">))</span>
+
+<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>  <span class="c1"># 冻结注册表</span>
+<span class="n">service</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CustomService&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_5">最佳实践<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>为服务和控制器使用装饰器</strong> - 让框架处理注册</li>
+<li><strong>使用 <code>Inject()</code> 进行类型安全注入</strong> - 更好的 IDE 支持和重构能力</li>
+<li><strong>使用 <code>InjectByName()</code> 避免循环导入</strong> - 当无法导入类型时使用</li>
+<li><strong>正确实现生命周期钩子</strong> - 干净的初始化和关闭</li>
+<li><strong>保持服务职责单一</strong> - 单一职责原则</li>
+</ol>
+<h2 id="_6">故障排查<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>依赖为 None</td>
+<td>确保服务使用 <code>@service</code> 装饰器</td>
+</tr>
+<tr>
+<td>找不到服务</td>
+<td>检查服务名称是否匹配（区分大小写）</td>
+</tr>
+<tr>
+<td>循环依赖</td>
+<td>使用 <code>InjectByName()</code> 进行延迟解析</td>
+</tr>
+<tr>
+<td>注入不生效</td>
+<td>确保类继承自 <code>Service</code> 或 <code>Controller</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">另请参阅<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
-<li>当类由使用者直接实例化时，优先使用 <code>@injectable</code> + <code>Inject()</code> 做属性注入；需要更显式的注入或更严格的控制时使用 <code>@inject_constructor</code>。</li>
-<li>将提供者注册进 <code>ProviderRegistry</code>，并在全局 <code>InjectionRegistry</code> 中注册 ProviderRegistry，以便注入点能够解析依赖。</li>
-<li>在需要请求范围生命周期时，使用 <code>RequestScope</code> 与 <code>create_context()</code>。</li>
-</ul>
-<p>故障排查</p>
-<ul>
-<li>若注入为 None，确保在测试设置中调用 <code>reset_injection_registry()</code> 并在注册 provider 之后实例化目标类。</li>
-<li>使用 <code>InjectByName</code> 时确认提供者名称与注入点名称匹配。</li>
-</ul>
-<p>下一步</p>
-<ul>
-<li>为该页添加注入解析时序图、循环依赖错误示例与生命周期 hook 的完整示例（on_init/on_shutdown）。</li>
+<li><a href="../../architecture/">架构设计</a> - 系统架构概览</li>
+<li><a href="../decorators/">装饰器</a> - 所有可用的装饰器</li>
+<li><a href="../lifecycle/">生命周期</a> - 服务生命周期管理</li>
+<li><a href="../../migration_guide/">迁移指南</a> - 从旧版本迁移</li>
 </ul>
 
 
