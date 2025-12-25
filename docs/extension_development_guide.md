@@ -646,10 +646,14 @@ class TestMyMiddleware(ServiceTestCase):
 
 ## Further Reading
 
-- [Extension Points Overview](../work/extension_points_inventory.md)
-- [Middleware Example](../../examples/custom_auth_middleware.py)
-- [Provider Example](../../examples/custom_provider_demo.py)
-- [Extension Registration Demo](../../examples/extension_registration_demo.py)
+- [Wiki Extensions](wiki/extensions.md) - Extension patterns and best practices
+- [IoC/DI 2.0 Architecture](wiki/ioc_di_v2.md) - New container architecture
+- [Quick Start Extensions](quick_start_extensions.md) - Quick start guide for extensions
+
+> **Note**: Example files can be found in the `examples/` directory of the repository:
+> - `examples/custom_auth_middleware.py` - Middleware example
+> - `examples/custom_provider_demo.py` - Provider example
+> - `examples/extension_registration_demo.py` - Extension registration demo
 
 ---
 

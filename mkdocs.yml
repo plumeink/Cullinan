@@ -8,9 +8,12 @@ nav:
   - Home: README.md
   - Getting Started: getting_started.md
   - Architecture: architecture.md
+  - Architecture (Updated): architecture_updated.md
   - Wiki:
     - Components: wiki/components.md
     - Injection: wiki/injection.md
+    - IoC/DI 2.0: wiki/ioc_di_v2.md
+    - Architecture: wiki/architecture.md
     - Lifecycle: wiki/lifecycle.md
     - Middleware: wiki/middleware.md
     - Extensions: wiki/extensions.md
@@ -23,6 +26,29 @@ nav:
     - service: modules/service.md
   - Examples: examples.md
   - API Reference: api_reference.md
+  - Guides:
+    - Migration Guide: migration_guide.md
+    - Migration Guide v2: migration_guide_v2.md
+    - Import Migration 0.90: import_migration_090.md
+    - Dependency Injection Guide: dependency_injection_guide.md
+    - DI Troubleshooting: DEPENDENCY_INJECTION_TROUBLESHOOTING.md
+    - DI Quick Reference: quick_reference_di.md
+    - Extension Development: extension_development_guide.md
+    - Quick Start Extensions: quick_start_extensions.md
+    - Async Fix Guide: async_fix_guide.md
+  - Development:
+    - Build & Run: build_run.md
+    - Testing: testing.md
+    - Contributing: contributing.md
+
+# Exclude internal documentation files from nav warnings
+not_in_nav: |
+  /cullinan_documentation_plan.md
+  /REFACTORING_VERIFICATION_REPORT.md
+  /templates/**
+  /work/**
+  /zh/templates/**
+  /zh/work/**
 
 # Plugins: enable search and static-i18n for bilingual support
 plugins:
@@ -46,9 +72,11 @@ plugins:
             Home: 首页
             Getting Started: 快速开始
             Architecture: 架构设计
+            Architecture (Updated): 架构设计（更新版）
             Wiki: 维基
             Components: 组件
             Injection: 注入
+            IoC/DI 2.0: IoC/DI 2.0
             Lifecycle: 生命周期
             Middleware: 中间件
             Extensions: 扩展
@@ -61,6 +89,20 @@ plugins:
             service: 服务
             Examples: 示例
             API Reference: API 参考
+            Guides: 指南
+            Migration Guide: 迁移指南
+            Migration Guide v2: 迁移指南 v2
+            Import Migration 0.90: 0.90 导入迁移
+            Dependency Injection Guide: 依赖注入指南
+            DI Troubleshooting: DI 故障排查
+            DI Quick Reference: DI 快速参考
+            Extension Development: 扩展开发
+            Quick Start Extensions: 扩展快速入门
+            Async Fix Guide: 异步修复指南
+            Development: 开发
+            Build & Run: 构建与运行
+            Testing: 测试
+            Contributing: 贡献指南
 
 markdown_extensions:
   - admonition

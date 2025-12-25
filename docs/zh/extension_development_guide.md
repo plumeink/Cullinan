@@ -8,18 +8,18 @@
 
 ## 目录
 
-1. [概述](#概述)
-2. [扩展点分类](#扩展点分类)
-3. [中间件扩展](#中间件扩展)
-4. [依赖注入扩展](#依赖注入扩展)
-5. [生命周期扩展](#生命周期扩展)
-6. [路由扩展](#路由扩展)
-7. [最佳实践](#最佳实践)
-8. [常见问题](#常见问题)
+1. [概述](#overview)
+2. [扩展点分类](#extension-categories)
+3. [中间件扩展](#middleware-extensions)
+4. [依赖注入扩展](#di-extensions)
+5. [生命周期扩展](#lifecycle-extensions)
+6. [路由扩展](#routing-extensions)
+7. [最佳实践](#best-practices)
+8. [常见问题](#faq)
 
 ---
 
-## 概述
+## 概述 {#overview}
 
 Cullinan 框架提供了丰富的扩展点，允许开发者在不修改框架代码的前提下定制功能。本指南介绍如何开发各类扩展。
 
@@ -47,7 +47,7 @@ middleware_points = list_extension_points(category='middleware')
 
 ---
 
-## 扩展点分类
+## 扩展点分类 {#extension-categories}
 
 Cullinan 提供 6 大类扩展点：
 
@@ -62,7 +62,7 @@ Cullinan 提供 6 大类扩展点：
 
 ---
 
-## 中间件扩展
+## 中间件扩展 {#middleware-extensions}
 
 ### 基础概念
 
@@ -166,7 +166,7 @@ class AuthMiddleware(Middleware):
 
 ---
 
-## 依赖注入扩展
+## 依赖注入扩展 {#di-extensions}
 
 ### 自定义 Scope
 
@@ -293,7 +293,7 @@ class ProviderRegistryService(Service):
 
 ---
 
-## 生命周期扩展
+## 生命周期扩展 {#lifecycle-extensions}
 
 ### Service 生命周期钩子
 
@@ -340,7 +340,7 @@ class AsyncService(Service):
 
 ---
 
-## 路由扩展
+## 路由扩展 {#routing-extensions}
 
 ### 自定义 Tornado Handler
 
@@ -392,7 +392,7 @@ if __name__ == '__main__':
 
 ---
 
-## 最佳实践
+## 最佳实践 {#best-practices}
 
 ### 1. 中间件设计原则
 
@@ -538,7 +538,7 @@ class LoggingMiddleware(Middleware):
 
 ---
 
-## 常见问题
+## 常见问题 {#faq}
 
 ### Q1: 如何在中间件中访问依赖注入的服务？
 
@@ -646,10 +646,14 @@ class TestMyMiddleware(ServiceTestCase):
 
 ## 进一步阅读
 
-- [扩展点总览](../work/extension_points_inventory.md)
-- [中间件示例](../../examples/custom_auth_middleware.py)
-- [Provider 示例](../../examples/custom_provider_demo.py)
-- [扩展注册演示](../../examples/extension_registration_demo.py)
+- [维基扩展](wiki/extensions.md) - 扩展模式与最佳实践
+- [IoC/DI 2.0 架构](wiki/ioc_di_v2.md) - 新容器架构
+- [扩展快速入门](quick_start_extensions.md) - 扩展快速入门指南
+
+> **注意**：示例文件可以在仓库的 `examples/` 目录中找到：
+> - `examples/custom_auth_middleware.py` - 中间件示例
+> - `examples/custom_provider_demo.py` - Provider 示例
+> - `examples/extension_registration_demo.py` - 扩展注册演示
 
 ---
 

@@ -12,16 +12,16 @@ Cullinan 提供了一个强大的依赖注入（DI）系统，支持多种注入
 
 ## 目录
 
-1. [基础概念](#基础概念)
-2. [三种注入方式](#三种注入方式)
-3. [统一注入模型](#统一注入模型)
-4. [高级特性](#高级特性)
-5. [最佳实践](#最佳实践)
-6. [迁移指南](#迁移指南)
+1. [基础概念](#basics)
+2. [三种注入方式](#three-injection-methods)
+3. [统一注入模型](#unified-model)
+4. [高级特性](#advanced-features)
+5. [最佳实践](#best-practices)
+6. [迁移指南](#migration-guide)
 
 ---
 
-## 基础概念
+## 基础概念 {#basics}
 
 ### 什么是依赖注入？
 
@@ -36,7 +36,7 @@ Cullinan 提供了一个强大的依赖注入（DI）系统，支持多种注入
 
 ---
 
-## 三种注入方式
+## 三种注入方式 {#three-injection-methods}
 
 Cullinan 支持三种依赖注入方式，它们都已统一到新的注入模型中。
 
@@ -151,7 +151,7 @@ class UserController:
 
 ---
 
-## 统一注入模型
+## 统一注入模型 {#unified-model}
 
 ### 新架构概览
 
@@ -221,7 +221,7 @@ user_service = InjectByName('UserService')
 
 ---
 
-## 高级特性
+## 高级特性 {#advanced-features}
 
 ### 1. 嵌套依赖
 
@@ -309,7 +309,7 @@ def test_user_controller():
 
 ---
 
-## 最佳实践
+## 最佳实践 {#best-practices}
 
 ### ✅ 推荐做法
 
@@ -385,7 +385,7 @@ user_service: UserService = Inject()
 
 ---
 
-## 迁移指南
+## 迁移指南 {#migration-guide}
 
 ### 从旧代码迁移
 
