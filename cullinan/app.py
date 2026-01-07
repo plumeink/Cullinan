@@ -55,8 +55,9 @@ class CullinanApplication:
         try:
             # Step 1: Initialize IoC/DI 2.0 system
             logger.info("\n[1/4] Initializing IoC/DI 2.0...")
-            from cullinan.core import ApplicationContext
+            from cullinan.core import ApplicationContext, set_application_context
             ctx = ApplicationContext()
+            set_application_context(ctx)
             ctx.refresh()
             logger.info(f"  [OK] ApplicationContext initialized ({ctx.definition_count} definitions)")
 

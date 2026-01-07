@@ -389,11 +389,13 @@ def run(handlers=None):
 
     # ========== IoC/DI 2.0: 使用 ApplicationContext 作为唯一入口 ==========
     logger.info("└---initializing IoC/DI 2.0 ApplicationContext...")
-    from cullinan.core import ApplicationContext
+    from cullinan.core import ApplicationContext, set_application_context
     from cullinan.core.pending import PendingRegistry, ComponentType
 
     # 创建全局 ApplicationContext
     ctx = ApplicationContext()
+    # 保存全局引用，供 ControllerRegistry 等组件使用
+    set_application_context(ctx)
 
     # Register explicit services and controllers (if configured)
     _register_explicit_classes()

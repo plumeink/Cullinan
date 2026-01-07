@@ -391,11 +391,13 @@ def run(handlers=None):
     # This ensures that when @service and @controller decorators execute,
     # the components are collected in PendingRegistry
     logger.info("└---initializing IoC/DI 2.0...")
-    from cullinan.core import ApplicationContext, PendingRegistry
+    from cullinan.core import ApplicationContext, PendingRegistry, set_application_context
     from cullinan.service.registry import get_service_registry
 
     # Create ApplicationContext (will process PendingRegistry on refresh)
     ctx = ApplicationContext()
+    # 保存全局引用，供 ControllerRegistry 等组件使用
+    set_application_context(ctx)
 
     logger.info("└---IoC/DI 2.0 initialized (ApplicationContext created)")
 

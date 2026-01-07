@@ -234,14 +234,26 @@ class ControllerRegistry(Registry[Type[Any]], ProviderSource):
             try:
                 controller_class = self._items[name]
 
-                # 【关键】直接实例化 Controller 类
-                # @injectable 装饰器已经包装了 __init__，会在实例化后自动注入依赖
-                instance = controller_class()
+                # 【关键】通过 ApplicationContext 创建实例并注入依赖
+                # 不能直接实例化，因为 @controller 装饰器不包含 @injectable 逻辑
+                from cullinan.core import get_application_context
+                ctx = get_application_context()
+
+                if ctx is not None and ctx.is_refreshed:
+                    # 优先使用 ApplicationContext 的依赖注入机制
+                    instance = ctx._create_class_instance(controller_class)
+                else:
+                    # Fallback: 直接实例化（无依赖注入）
+                    logger.warning(
+                        f"ApplicationContext not available for controller {name}, "
+                        f"dependencies will not be injected"
+                    )
+                    instance = controller_class()
 
                 # 立即缓存实例 (O(1))
                 self._controller_instances[name] = instance
 
-                logger.debug(f"Created controller singleton: {name} (dependencies injected by @injectable)")
+                logger.debug(f"Created controller singleton: {name} (dependencies injected via ApplicationContext)")
                 return instance
 
             except Exception as e:

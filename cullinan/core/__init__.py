@@ -99,6 +99,32 @@ def inject_constructor(cls):
     """Compatibility decorator - no longer needed in 2.0."""
     return cls
 
+# ============================================================================
+# Global ApplicationContext Access
+# ============================================================================
+
+_global_application_context = None
+
+
+def get_application_context():
+    """获取全局 ApplicationContext 实例。
+
+    Returns:
+        全局 ApplicationContext 实例，如果未设置则返回 None
+    """
+    return _global_application_context
+
+
+def set_application_context(ctx) -> None:
+    """设置全局 ApplicationContext 实例。
+
+    Args:
+        ctx: ApplicationContext 实例
+    """
+    global _global_application_context
+    _global_application_context = ctx
+
+
 # Provide dummy registry functions for compatibility
 _dummy_registry = None
 
@@ -127,6 +153,8 @@ __all__ = [
 
     # Application Context (Single Entry Point)
     'ApplicationContext',
+    'get_application_context',
+    'set_application_context',
     'Definition',
     'ScopeType',
     'ScopeManager',
