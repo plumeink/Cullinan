@@ -1,5 +1,5 @@
 site_name: Cullinan Documentation
-site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework"
+site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration"
 site_author: Plumeink
 
 use_directory_urls: true
@@ -41,9 +41,12 @@ nav:
 not_in_nav: |
   /cullinan_documentation_plan.md
   /REFACTORING_VERIFICATION_REPORT.md
+  /bugfix_controller_di.md
   /templates/**
   /work/**
+  /examples/*.py
   /zh/cullinan_documentation_plan.md
+  /zh/bugfix_controller_di.md
   /zh/templates/**
   /zh/work/**
 
@@ -97,6 +100,7 @@ plugins:
             Import Migration 0.90: 0.90 导入迁移
             Dependency Injection Guide: 依赖注入指南
             DI Quick Reference: DI 快速参考
+            Parameter System Guide: 参数系统指南
             Extension Development: 扩展开发
             Quick Start Extensions: 扩展快速入门
             Development: 开发
