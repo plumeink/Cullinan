@@ -32,11 +32,11 @@ The following module list is for illustration only. The concrete index should be
 - `cullinan.codec` — Request/response encoding/decoding (JSON, Form, etc.)
 - `cullinan.params` — Parameter handling (Path, Query, Body, Header, File, validators)
 
-## New in v0.90: Parameter System
+## New in v0.90+: Parameter System
 
 The parameter system provides type-safe request parameter handling. See [Parameter System Guide](parameter_system_guide.md) for details.
 
-### cullinan.params
+### cullinan.params (v0.90a4+)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -51,12 +51,43 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `Auto` | class | Auto type inference utility |
 | `AutoType` | class | Auto type marker for signatures |
 | `DynamicBody` | class | Dynamic request body container |
+| `SafeAccessor` | class | Chain-safe property accessor |
+| `EMPTY` | sentinel | Empty value sentinel |
 | `ParamValidator` | class | Parameter validation utility |
 | `ValidationError` | exception | Validation error |
 | `ModelResolver` | class | dataclass model resolution |
 | `ModelError` | exception | Model resolution error |
 | `ParamResolver` | class | Parameter resolution orchestrator |
 | `ResolveError` | exception | Parameter resolution error |
+
+### cullinan.params (v0.90a5+)
+
+| Symbol | Type | Description |
+|--------|------|-------------|
+| `FileInfo` | class | File metadata container |
+| `FileList` | class | Multiple files container |
+| `field_validator` | decorator | Dataclass field validator |
+| `validated_dataclass` | decorator | Auto-validating dataclass |
+| `FieldValidationError` | exception | Field validation error |
+| `Response` | decorator | Response model decorator |
+| `ResponseModel` | class | Response model definition |
+| `ResponseSerializer` | class | Response serialization utility |
+| `serialize_response` | function | Convenience serialization function |
+| `get_response_models` | function | Get response models from function |
+
+### cullinan.params.model_handlers (v0.90a5+)
+
+Pluggable model handler architecture for third-party library integration.
+
+| Symbol | Type | Description |
+|--------|------|-------------|
+| `ModelHandler` | class | Abstract base class for model handlers |
+| `ModelHandlerError` | exception | Model handler error |
+| `ModelHandlerRegistry` | class | Registry for model handlers |
+| `DataclassHandler` | class | Built-in dataclass handler |
+| `PydanticHandler` | class | Optional Pydantic handler (if installed) |
+| `get_model_handler_registry()` | function | Get global handler registry |
+| `reset_model_handler_registry()` | function | Reset registry (testing) |
 
 ### cullinan.codec
 

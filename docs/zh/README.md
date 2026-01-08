@@ -17,7 +17,7 @@ pr_links: []
 
 欢迎查阅 Cullinan 框架文档。
 
-> **版本 0.90**：IoC/DI 架构已重新设计，新增参数系统。请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [参数系统指南](parameter_system_guide.md)。
+> **版本 0.90a5**：增强的参数系统，支持 `FileInfo`、`FileList`、`@field_validator`、`@validated_dataclass`、`ResponseSerializer`，以及用于 Pydantic 集成的**可插拔模型处理器**。请参阅 [参数系统指南](parameter_system_guide.md)。
 
 请使用左侧导航栏快速访问以下主要内容：
 
@@ -25,7 +25,8 @@ pr_links: []
 - **架构设计** — 系统概览和架构图
 - **维基** — 注入、生命周期、中间件、扩展
   - [依赖注入指南](dependency_injection_guide.md) — DI 系统文档
-  - [参数系统指南](parameter_system_guide.md) — 新的类型安全参数系统
+  - [参数系统指南](parameter_system_guide.md) — 类型安全参数系统 (v0.90+)
+  - [RESTful API 指南](wiki/restful_api.md) — HTTP 路由和参数处理
   - [迁移指南](import_migration_090.md) — 从 0.83 升级
 - **模块** — 各模块的 API 和示例
 - **示例** — `examples/` 目录下的可运行示例

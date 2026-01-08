@@ -15,9 +15,9 @@ pr_links: []
 
 # 示例与演示
 
-> **说明（v0.90）**：以下部分示例使用旧版 1.x DI API。
-> 新的 2.0 API 示例请参阅 [依赖注入指南](dependency_injection_guide.md)。
-> 新项目应使用 `cullinan.core.container` 中的 `ApplicationContext`。
+> **说明（v0.90+）**：推荐使用新的类型安全参数系统。
+> 请参阅 [参数系统指南](parameter_system_guide.md) 了解 `Path`、`Query`、`Body`、`DynamicBody` 等参数类型。
+> 以下旧版示例仍可用于向后兼容。
 
 本文列出了 Cullinan 仓库中维护的可运行示例。每个示例包含：路径、简要说明，以及在常见平台上的运行方式。
 

@@ -30,6 +30,13 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 
 ### Core Framework
 - Simple decorator-based routing (`@controller`, `@get_api`, `@post_api`, ...)
+- **Type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File` (v0.90+)
+- **DynamicBody** for flexible request body access with safe accessors (v0.90a4+)
+- **FileInfo/FileList** for file upload with validation (v0.90a5+)
+- **@field_validator** for dataclass field validation (v0.90a5+)
+- **ResponseSerializer** for automatic response serialization (v0.90a5+)
+- **Pluggable model handlers** for Pydantic and custom model integration (v0.90a5+)
+- **Auto type conversion** and validation (ge, le, min_length, regex, etc.)
 - Modular architecture with registry, DI, and lifecycle management
 - Built-in IoC/DI with `InjectByName` and `Inject` support
 - Lifecycle hooks (e.g. `on_init`, `on_destroy`) on services
@@ -64,7 +71,14 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 
 ### Version Notes
 
-- Current series: **v0.90+**
+- Current series: **v0.90a5+**
+  - **New type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File`
+  - **DynamicBody** for flexible request body access with safe accessors
+  - **FileInfo/FileList** for file upload handling with validation (v0.90a5+)
+  - **@field_validator** for dataclass field validation (v0.90a5+)
+  - **ResponseSerializer** for automatic response serialization (v0.90a5+)
+  - **Pluggable model handlers** for Pydantic and custom model integration (v0.90a5+)
+  - **Auto type conversion** and parameter validation
   - New IoC/DI 2.0 architecture with `ApplicationContext`
   - Single container entry point with freeze-after-startup
   - Definition/Factory separation for dependency management
@@ -99,17 +113,25 @@ Ensure you have a working Python 3.8+ environment (virtualenv/conda/system Pytho
 ```python
 # app.py
 from cullinan import application
-from cullinan.controller import controller, get_api
+from cullinan.controller import controller, get_api, post_api
+from cullinan.params import Query, Body, DynamicBody
 
 @controller(url='/api')
 class HelloController:
-    # Explicitly declare all query parameters used by this handler
-    @get_api(url='/hello', query_params=['name'])
-    def hello(self, query_params):
-        name = query_params.get('name', 'World')
+    # Type-safe query parameters with automatic conversion
+    @get_api(url='/hello')
+    def hello(self, name: Query(str, default='World')):
         return self.response_factory(
             status=200,
-            message=f"Hello, {name}!"
+            body={"message": f"Hello, {name}!"}
+        )
+    
+    # DynamicBody for flexible request body access
+    @post_api(url='/users')
+    def create_user(self, body: DynamicBody):
+        return self.response_factory(
+            status=200,
+            body={"name": body.name, "age": body.get('age', 0)}
         )
 
 if __name__ == '__main__':
@@ -121,7 +143,8 @@ Run:
 
 ```bash
 python app.py
-# Visit: http://localhost:4080/api/hello?name=Cullinan
+# GET:  http://localhost:4080/api/hello?name=Cullinan
+# POST: http://localhost:4080/api/users  {"name": "John", "age": 25}
 ```
 
 For a more detailed onboarding, follow `docs/getting_started.md` (or `docs/zh/getting_started.md`).
@@ -182,35 +205,34 @@ class UserService(Service):
 ```python
 from cullinan.controller import controller, get_api, post_api
 from cullinan.core import InjectByName
+from cullinan.params import Query, Body
 
 @controller(url='/api')
 class UserController:
     # Inject the UserService by name
     user_service = InjectByName('UserService')
 
-    @get_api(url='/users', query_params=['id'])
-    def get_user(self, query_params):
-        user_id = query_params.get('id')
+    # Type-safe query parameter (v0.90+)
+    @get_api(url='/users')
+    def get_user(self, id: Query(str)):
         return self.response_factory(
             status=200,
-            message="User fetched successfully",
-            data={"user_id": user_id},
+            body={"message": "User fetched successfully", "user_id": id},
         )
 
-    @post_api(url='/users', body_params=['name', 'email'])
-    def create_user(self, body_params):
-        user = self.user_service.create_user(
-            body_params['name'],
-            body_params['email'],
-        )
+    # Type-safe body parameters (v0.90+)
+    @post_api(url='/users')
+    def create_user(self, name: Body(str, required=True), email: Body(str, required=True)):
+        user = self.user_service.create_user(name, email)
         return self.response_factory(
             status=201,
-            message="User created successfully",
-            data=user,
+            body={"message": "User created successfully", "data": user},
         )
 ```
 
 > Note: RESTful decorators are defined as `def get_api(**kwargs)` etc. Only **keyword arguments** are supported. Use `@get_api(url='/users')`, not `@get_api('/users')`.
+
+For full parameter system documentation, see `docs/parameter_system_guide.md`.
 
 More DI patterns and controller examples are documented in `docs/wiki/injection.md` and `docs/wiki/restful_api.md` (and their Chinese counterparts).
 

@@ -60,6 +60,71 @@ class UserController:
 | `Body(type)` | 请求体 | `name: Body(str, required=True)` |
 | `Header(type)` | HTTP 请求头 | `auth: Header(str, alias='Authorization')` |
 | `File()` | 文件上传 | `avatar: File(max_size=5*1024*1024)` |
+| `DynamicBody` | 完整请求体 | `body: DynamicBody` |
+
+### 文件上传 (v0.90a5+)
+
+```python
+from cullinan.params import File, FileInfo, FileList
+
+@controller(url='/api')
+class UploadController:
+    # 带校验的单文件上传
+    @post_api(url='/upload')
+    async def upload(self, avatar: File(max_size=5*1024*1024, allowed_types=['image/*'])):
+        # avatar 是 FileInfo 实例
+        print(avatar.filename, avatar.size, avatar.content_type)
+        avatar.save('/uploads/')
+        return {"filename": avatar.filename}
+    
+    # 多文件上传
+    @post_api(url='/upload-multiple')
+    async def upload_multiple(self, files: File(multiple=True, max_count=10)):
+        # files 是 FileList 实例
+        return {"count": len(files), "names": files.filenames}
+```
+
+### Dataclass 字段校验 (v0.90a5+)
+
+```python
+from cullinan.params import validated_dataclass, field_validator
+
+@validated_dataclass
+class CreateUserRequest:
+    name: str
+    email: str
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in v:
+            raise ValueError('无效的邮箱')
+        return v
+```
+
+### Pydantic 集成 (v0.90a5+)
+
+安装 Pydantic 后，Pydantic 模型会自动被支持：
+
+```bash
+pip install pydantic
+```
+
+```python
+from pydantic import BaseModel, EmailStr, Field
+
+class CreateUserRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=50)
+    email: EmailStr
+    age: int = Field(default=0, ge=0, le=150)
+
+@post_api(url="/users")
+async def create_user(self, user: CreateUserRequest):
+    # Pydantic 校验自动执行
+    return {"name": user.name, "email": user.email}
+```
+
+框架使用可插拔的模型处理器架构。详见 [参数系统指南](../parameter_system_guide.md#可插拔模型处理器-v090a5)。
 
 ### 校验
 

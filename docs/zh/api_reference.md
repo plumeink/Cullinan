@@ -32,11 +32,11 @@ pr_links: []
 - `cullinan.codec` — 请求/响应编解码（JSON、Form 等）
 - `cullinan.params` — 参数处理（Path、Query、Body、Header、File、校验器）
 
-## v0.90 新增：参数系统
+## v0.90+ 新增：参数系统
 
 参数系统提供类型安全的请求参数处理。详见 [参数系统指南](parameter_system_guide.md)。
 
-### cullinan.params
+### cullinan.params (v0.90a4+)
 
 | 符号 | 类型 | 说明 |
 |------|------|------|
@@ -51,12 +51,43 @@ pr_links: []
 | `Auto` | 类 | 自动类型推断工具 |
 | `AutoType` | 类 | 用于签名的自动类型标记 |
 | `DynamicBody` | 类 | 动态请求体容器 |
+| `SafeAccessor` | 类 | 链式安全访问器 |
+| `EMPTY` | 哨兵 | 空值哨兵 |
 | `ParamValidator` | 类 | 参数校验工具 |
 | `ValidationError` | 异常 | 校验错误 |
 | `ModelResolver` | 类 | dataclass 模型解析器 |
 | `ModelError` | 异常 | 模型解析错误 |
 | `ParamResolver` | 类 | 参数解析编排器 |
 | `ResolveError` | 异常 | 参数解析错误 |
+
+### cullinan.params (v0.90a5+)
+
+| 符号 | 类型 | 说明 |
+|------|------|------|
+| `FileInfo` | 类 | 文件元数据容器 |
+| `FileList` | 类 | 多文件容器 |
+| `field_validator` | 装饰器 | Dataclass 字段校验器 |
+| `validated_dataclass` | 装饰器 | 自动校验的 dataclass |
+| `FieldValidationError` | 异常 | 字段校验错误 |
+| `Response` | 装饰器 | 响应模型装饰器 |
+| `ResponseModel` | 类 | 响应模型定义 |
+| `ResponseSerializer` | 类 | 响应序列化工具 |
+| `serialize_response` | 函数 | 便捷序列化函数 |
+| `get_response_models` | 函数 | 获取函数的响应模型 |
+
+### cullinan.params.model_handlers (v0.90a5+)
+
+可插拔模型处理器架构，用于第三方库集成。
+
+| 符号 | 类型 | 说明 |
+|------|------|------|
+| `ModelHandler` | 类 | 模型处理器抽象基类 |
+| `ModelHandlerError` | 异常 | 模型处理器错误 |
+| `ModelHandlerRegistry` | 类 | 模型处理器注册表 |
+| `DataclassHandler` | 类 | 内置 dataclass 处理器 |
+| `PydanticHandler` | 类 | 可选 Pydantic 处理器（安装后可用）|
+| `get_model_handler_registry()` | 函数 | 获取全局处理器注册表 |
+| `reset_model_handler_registry()` | 函数 | 重置注册表（测试用）|
 
 ### cullinan.codec
 

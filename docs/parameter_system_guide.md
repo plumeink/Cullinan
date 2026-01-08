@@ -17,9 +17,9 @@ pr_links: []
 
 # Parameter System Guide
 
-> **Version**: 0.90+
+> **Version**: 0.90a5+
 > 
-> This guide covers the new parameter system introduced in Cullinan 0.90, providing type-safe parameter handling with automatic conversion, validation, and model support.
+> This guide covers the parameter system introduced in Cullinan 0.90, providing type-safe parameter handling with automatic conversion, validation, and model support.
 
 ## Overview
 
@@ -31,28 +31,34 @@ The parameter system provides a modern approach to handling HTTP request paramet
 - **Multiple sources**: Path, Query, Body, Header, File
 - **Model support**: dataclass and DynamicBody
 - **Auto type inference**: Automatic type detection
+- **File handling**: FileInfo/FileList with validation (v0.90a5+)
+- **Dataclass validation**: @field_validator decorator (v0.90a5+)
+- **Response serialization**: ResponseSerializer (v0.90a5+)
 
 ## Module Structure
 
 ```
 cullinan/
-├── codec/           # Encoding/Decoding layer
-│   ├── base.py     # BodyCodec / ResponseCodec abstractions
-│   ├── errors.py   # DecodeError / EncodeError
+├── codec/                    # Encoding/Decoding layer
+│   ├── base.py              # BodyCodec / ResponseCodec abstractions
+│   ├── errors.py            # DecodeError / EncodeError
 │   ├── json_codec.py
 │   ├── form_codec.py
-│   └── registry.py # CodecRegistry
-├── params/          # Parameter handling layer
-│   ├── base.py     # Param base class + UNSET
-│   ├── types.py    # Path/Query/Body/Header/File
-│   ├── converter.py # TypeConverter
-│   ├── auto.py     # Auto type inference
-│   ├── dynamic.py  # DynamicBody
-│   ├── validator.py # ParamValidator
-│   ├── model.py    # ModelResolver (dataclass)
-│   └── resolver.py # ParamResolver
+│   └── registry.py          # CodecRegistry
+├── params/                   # Parameter handling layer
+│   ├── base.py              # Param base class + UNSET
+│   ├── types.py             # Path/Query/Body/Header/File
+│   ├── converter.py         # TypeConverter
+│   ├── auto.py              # Auto type inference
+│   ├── dynamic.py           # DynamicBody + SafeAccessor
+│   ├── validator.py         # ParamValidator
+│   ├── model.py             # ModelResolver (dataclass)
+│   ├── resolver.py          # ParamResolver
+│   ├── file_info.py         # FileInfo / FileList (v0.90a5+)
+│   ├── dataclass_validators.py  # @field_validator (v0.90a5+)
+│   └── response.py          # @Response / ResponseSerializer (v0.90a5+)
 └── middleware/
-    └── body_decoder.py # BodyDecoderMiddleware
+    └── body_decoder.py      # BodyDecoderMiddleware
 ```
 
 ## Quick Start
@@ -105,6 +111,59 @@ async def create_user(self, body: DynamicBody):
     return body.to_dict()
 ```
 
+#### DynamicBody Enhanced Methods
+
+**Null Checking:**
+
+```python
+# Check if field exists
+if body.has('email'):
+    send_email(body.email)
+
+# Check if field exists and has value (not None, '', [], etc.)
+if body.has_value('name'):
+    process(body.name)
+
+# Check if body is empty
+if body.is_empty():
+    return {'error': 'No data'}
+
+# Check if field is null/not null
+if body.is_not_null('callback_url'):
+    notify(body.callback_url)
+```
+
+**Nested Safe Access:**
+
+```python
+# Path-based nested access (no exceptions)
+city = body.get_nested('user.address.city', 'Unknown')
+```
+
+**Typed Getters:**
+
+```python
+name = body.get_str('name')        # '' if missing
+age = body.get_int('age')          # 0 if missing
+price = body.get_float('price')    # 0.0 if missing
+active = body.get_bool('active')   # False if missing
+tags = body.get_list('tags')       # [] if missing
+```
+
+**Chain-Safe Accessor:**
+
+```python
+# Traditional way may throw AttributeError
+# city = body.user.address.city
+
+# Chain-safe accessor (no exceptions)
+city = body.safe.user.address.city.value_or('Unknown')
+
+# Check existence
+if body.safe.user.email.exists:
+    send_email(body.safe.user.email.value)
+```
+
 ### Using dataclass Models
 
 ```python
@@ -125,6 +184,40 @@ async def create_user(self, user: CreateUserRequest):
         "age": user.age,
         "email": user.email
     }
+```
+
+### Dataclass Field Validation (v0.90a5+)
+
+Use `@field_validator` for custom field validation:
+
+```python
+from cullinan.params import validated_dataclass, field_validator, FieldValidationError
+
+@validated_dataclass
+class CreateUserRequest:
+    name: str
+    email: str
+    age: int = 0
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in str(v):
+            raise ValueError('Invalid email format')
+        return v
+    
+    @field_validator('age')
+    @classmethod
+    def validate_age(cls, v):
+        if v < 0 or v > 150:
+            raise ValueError('Age must be between 0 and 150')
+        return v
+
+# Validation is automatic on instantiation
+try:
+    user = CreateUserRequest(name='John', email='invalid', age=25)
+except FieldValidationError as e:
+    print(f"Validation error: {e.field} - {e.message}")
 ```
 
 ## Parameter Types
@@ -189,17 +282,65 @@ async def protected_resource(
 
 ### File
 
-File upload parameters.
+File upload parameters. Returns `FileInfo` (single) or `FileList` (multiple) in v0.90a5+.
 
 ```python
+from cullinan.params import File, FileInfo, FileList
+
 @post_api(url="/upload")
 async def upload_file(
     self,
     avatar: File(required=True, max_size=5*1024*1024),  # 5MB limit
     document: File(allowed_types=['application/pdf']),
 ):
+    # avatar is a FileInfo instance (v0.90a5+)
+    print(avatar.filename)      # Original filename
+    print(avatar.size)          # File size in bytes
+    print(avatar.content_type)  # MIME type
+    avatar.save('/uploads/')    # Save to disk
     pass
 ```
+
+#### File Parameter Options (v0.90a5+)
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `max_size` | int | Maximum file size in bytes |
+| `min_size` | int | Minimum file size in bytes |
+| `allowed_types` | list | Allowed MIME types (supports wildcards like `image/*`) |
+| `multiple` | bool | Enable multiple file upload |
+| `max_count` | int | Maximum number of files (when multiple=True) |
+
+#### Multiple File Upload (v0.90a5+)
+
+```python
+@post_api(url="/upload-multiple")
+async def upload_multiple(
+    self,
+    files: File(multiple=True, max_count=10),
+):
+    # files is a FileList instance
+    for f in files:
+        print(f.filename)
+        f.save('/uploads/')
+    return {"count": len(files), "total_size": files.total_size}
+```
+
+#### FileInfo Methods (v0.90a5+)
+
+| Method | Description |
+|--------|-------------|
+| `filename` | Original filename |
+| `size` | File size in bytes |
+| `content_type` | MIME type |
+| `body` | Raw file content (bytes) |
+| `extension` | File extension (without dot) |
+| `read()` | Read file content |
+| `read_text(encoding)` | Read as text |
+| `save(path)` | Save to disk |
+| `is_image()` | Check if image |
+| `is_pdf()` | Check if PDF |
+| `match_type(pattern)` | Match MIME pattern |
 
 ## Validators
 
@@ -282,6 +423,58 @@ class MyController:
         return body
 ```
 
+## Response Serialization (v0.90a5+)
+
+### ResponseSerializer
+
+Automatically serialize dataclass and other objects to JSON-compatible dicts:
+
+```python
+from dataclasses import dataclass
+from cullinan.params import ResponseSerializer
+
+@dataclass
+class UserResponse:
+    id: int
+    name: str
+    email: str
+
+user = UserResponse(id=1, name='John', email='john@example.com')
+
+# Serialize to dict
+result = ResponseSerializer.serialize(user)
+# {'id': 1, 'name': 'John', 'email': 'john@example.com'}
+
+# Serialize to JSON string
+json_str = ResponseSerializer.to_json(user)
+# '{"id": 1, "name": "John", "email": "john@example.com"}'
+```
+
+### @Response Decorator
+
+Define response models for API documentation:
+
+```python
+from cullinan.params import Response, get_response_models
+
+@dataclass
+class SuccessResponse:
+    data: dict
+
+@dataclass
+class ErrorResponse:
+    message: str
+    code: int = 0
+
+@Response(model=SuccessResponse, status_code=200, description="Success")
+@Response(model=ErrorResponse, status_code=404, description="Not found")
+async def get_user(user_id):
+    pass
+
+# Get response models for documentation
+models = get_response_models(get_user)
+```
+
 ## Backward Compatibility
 
 The traditional parameter style is fully supported:
@@ -321,6 +514,63 @@ from cullinan.params import ValidationError, ResolveError
 4. **Use models for complex bodies**: dataclass for structured request bodies
 5. **Use DynamicBody for flexibility**: When body structure varies
 
+## Pluggable Model Handlers (v0.90a5+)
+
+The framework uses a pluggable architecture for model parsing, allowing third-party libraries like Pydantic to be integrated without modifying core code.
+
+### Built-in Handlers
+
+| Handler | Priority | Description |
+|---------|----------|-------------|
+| `DataclassHandler` | 10 | Python dataclass support |
+| `PydanticHandler` | 50 | Pydantic BaseModel (if installed) |
+
+### Registering Custom Handlers
+
+```python
+from cullinan.params import ModelHandler, get_model_handler_registry
+
+class MyModelHandler(ModelHandler):
+    priority = 100  # Higher = matched first
+    name = "my_handler"
+    
+    def can_handle(self, type_):
+        # Return True if this handler can process the type
+        return hasattr(type_, '__my_model__')
+    
+    def resolve(self, model_class, data):
+        # Parse data into model instance
+        return model_class.from_dict(data)
+    
+    def to_dict(self, instance):
+        # Convert instance to dict
+        return instance.to_dict()
+
+# Register the handler
+registry = get_model_handler_registry()
+registry.register(MyModelHandler())
+```
+
+### Pydantic Integration (Optional)
+
+When Pydantic is installed, `PydanticHandler` is automatically registered:
+
+```python
+from pydantic import BaseModel, Field, EmailStr
+
+class CreateUserRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=50)
+    email: EmailStr
+    age: int = Field(default=0, ge=0, le=150)
+
+@post_api(url="/users")
+async def create_user(self, user: CreateUserRequest):
+    # Pydantic validation is automatic
+    return {"name": user.name, "email": user.email}
+```
+
+Install Pydantic: `pip install pydantic`
+
 ## API Reference
 
 ### cullinan.params
@@ -337,9 +587,21 @@ from cullinan.params import ValidationError, ResolveError
 | `Auto` | Auto type inference |
 | `AutoType` | Auto type marker |
 | `DynamicBody` | Dynamic request body container |
+| `SafeAccessor` | Chain-safe property accessor (v0.90a4+) |
 | `ParamValidator` | Parameter validation |
 | `ModelResolver` | dataclass model resolution |
 | `ParamResolver` | Parameter resolution orchestrator |
+| `FileInfo` | File metadata container (v0.90a5+) |
+| `FileList` | Multiple files container (v0.90a5+) |
+| `field_validator` | Dataclass field validator decorator (v0.90a5+) |
+| `validated_dataclass` | Auto-validating dataclass decorator (v0.90a5+) |
+| `FieldValidationError` | Field validation error (v0.90a5+) |
+| `Response` | Response model decorator (v0.90a5+) |
+| `ResponseSerializer` | Response serialization utility (v0.90a5+) |
+| `ModelHandler` | Base class for model handlers (v0.90a5+) |
+| `ModelHandlerRegistry` | Model handler registry (v0.90a5+) |
+| `DataclassHandler` | Built-in dataclass handler (v0.90a5+) |
+| `get_model_handler_registry` | Get global handler registry (v0.90a5+) |
 
 ### cullinan.codec
 

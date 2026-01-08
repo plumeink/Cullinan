@@ -15,9 +15,9 @@ pr_links: []
 
 # Examples and Demos
 
-> **Note (v0.90)**: Some examples below use the legacy 1.x DI API.
-> For the new 2.0 API examples, see [Dependency Injection Guide](dependency_injection_guide.md).
-> New projects should use `ApplicationContext` from `cullinan.core.container`.
+> **Note (v0.90+)**: The new type-safe parameter system is recommended.
+> See [Parameter System Guide](parameter_system_guide.md) for the new `Path`, `Query`, `Body`, `DynamicBody` parameter types.
+> Legacy examples below are still functional for backward compatibility.
 
 This page lists canonical runnable examples shipped with Cullinan. Each entry includes the example path, a short description, and how to run it on common platforms.
 

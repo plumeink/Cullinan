@@ -263,7 +263,11 @@ class UserController:
         return {"name": body.name, "age": body.get('age', 0)}
 ```
 
-详见 [参数系统指南](parameter_system_guide.md)。
+详见 [参数系统指南](parameter_system_guide.md)，包括：
+- 使用 `FileInfo`/`FileList` 的文件上传
+- 使用 `@field_validator` 的 Dataclass 校验
+- Pydantic 集成（可选，使用 `pip install pydantic` 安装）
+- 自定义模型处理器
 
 <details>
 <summary><strong>传统方式（仍然支持）</strong></summary>

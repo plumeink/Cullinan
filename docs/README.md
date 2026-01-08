@@ -17,7 +17,7 @@ pr_links: []
 
 Welcome — this site contains the Cullinan framework documentation.
 
-> **Version 0.90**: The IoC/DI architecture has been redesigned. New parameter system available. See [Dependency Injection Guide](dependency_injection_guide.md) and [Parameter System Guide](parameter_system_guide.md).
+> **Version 0.90a5**: Enhanced parameter system with `FileInfo`, `FileList`, `@field_validator`, `@validated_dataclass`, `ResponseSerializer`, and **pluggable model handlers** for Pydantic integration. See [Parameter System Guide](parameter_system_guide.md).
 
 Use the navigation to the left to get started. Key areas:
 
@@ -25,7 +25,8 @@ Use the navigation to the left to get started. Key areas:
 - **Architecture** — system overview and diagrams
 - **Wiki** — injection, lifecycle, middleware, extensions
   - [Dependency Injection Guide](dependency_injection_guide.md) — DI system documentation
-  - [Parameter System Guide](parameter_system_guide.md) — New type-safe parameter system
+  - [Parameter System Guide](parameter_system_guide.md) — Type-safe parameter system (v0.90+)
+  - [RESTful API Guide](wiki/restful_api.md) — HTTP routing and parameter handling
   - [Migration Guide](import_migration_090.md) — upgrade from 0.83
 - **Modules** — per-module API and examples
 - **Examples** — runnable examples in the `examples/` directory

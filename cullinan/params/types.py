@@ -173,20 +173,41 @@ class File(Param):
     Attributes:
         max_size: 最大文件大小 (bytes)
         allowed_types: 允许的 MIME 类型列表
+        multiple: 是否支持多文件上传
+        max_count: 多文件上传时的最大文件数量
 
     Example:
+        # 单文件上传
         @post_api(url="/upload")
         async def upload(
             self,
             avatar: File(required=True, max_size=5*1024*1024),  # 5MB
-            document: File(allowed_types=['application/pdf', 'image/*']),
+        ):
+            print(avatar.filename)
+            print(avatar.size)
+            avatar.save('/uploads/')
+
+        # 带类型校验
+        @post_api(url="/upload-image")
+        async def upload_image(
+            self,
+            image: File(allowed_types=['image/png', 'image/jpeg', 'image/*']),
         ):
             pass
+
+        # 多文件上传
+        @post_api(url="/upload-multiple")
+        async def upload_multiple(
+            self,
+            files: File(multiple=True, max_count=10),
+        ):
+            for f in files:
+                print(f.filename)
     """
     _source = 'file'
 
     # 扩展 __slots__
-    __slots__ = ('max_size', 'allowed_types')
+    __slots__ = ('max_size', 'allowed_types', 'multiple', 'max_count', 'min_size')
 
     def __init__(
         self,
@@ -196,7 +217,10 @@ class File(Param):
         description: str = '',
         alias: str = None,
         max_size: Optional[int] = None,
+        min_size: Optional[int] = None,
         allowed_types: Optional[List[str]] = None,
+        multiple: bool = False,
+        max_count: Optional[int] = None,
     ):
         """初始化文件参数
 
@@ -206,7 +230,10 @@ class File(Param):
             description: 参数描述
             alias: 别名 (表单字段名)
             max_size: 最大文件大小 (bytes)
-            allowed_types: 允许的 MIME 类型列表
+            min_size: 最小文件大小 (bytes)
+            allowed_types: 允许的 MIME 类型列表，支持通配符如 'image/*'
+            multiple: 是否支持多文件上传
+            max_count: 多文件上传时的最大文件数量
         """
         super().__init__(
             type_=bytes,  # 文件内容为 bytes
@@ -217,18 +244,97 @@ class File(Param):
             alias=alias,
         )
         self.max_size = max_size
+        self.min_size = min_size
         self.allowed_types = allowed_types or []
+        self.multiple = multiple
+        self.max_count = max_count
+
+    def validate_file(self, file_info) -> None:
+        """校验文件
+
+        Args:
+            file_info: FileInfo 实例
+
+        Raises:
+            ValueError: 校验失败
+        """
+        # 校验文件大小
+        if self.max_size is not None and file_info.size > self.max_size:
+            raise ValueError(
+                f"File '{file_info.filename}' size ({file_info.size} bytes) "
+                f"exceeds maximum allowed size ({self.max_size} bytes)"
+            )
+
+        if self.min_size is not None and file_info.size < self.min_size:
+            raise ValueError(
+                f"File '{file_info.filename}' size ({file_info.size} bytes) "
+                f"is below minimum required size ({self.min_size} bytes)"
+            )
+
+        # 校验 MIME 类型
+        if self.allowed_types:
+            if not self._match_content_type(file_info.content_type):
+                raise ValueError(
+                    f"File '{file_info.filename}' type '{file_info.content_type}' "
+                    f"is not allowed. Allowed types: {self.allowed_types}"
+                )
+
+    def validate_file_list(self, file_list) -> None:
+        """校验文件列表
+
+        Args:
+            file_list: FileList 实例
+
+        Raises:
+            ValueError: 校验失败
+        """
+        # 校验文件数量
+        if self.max_count is not None and len(file_list) > self.max_count:
+            raise ValueError(
+                f"Number of files ({len(file_list)}) exceeds maximum allowed ({self.max_count})"
+            )
+
+        # 校验每个文件
+        for file_info in file_list:
+            self.validate_file(file_info)
+
+    def _match_content_type(self, content_type: str) -> bool:
+        """检查 MIME 类型是否匹配允许列表
+
+        Args:
+            content_type: 文件的 MIME 类型
+
+        Returns:
+            是否匹配
+        """
+        for pattern in self.allowed_types:
+            if pattern == '*/*' or pattern == '*':
+                return True
+            if pattern.endswith('/*'):
+                # 通配符匹配
+                prefix = pattern[:-1]  # 'image/'
+                if content_type.startswith(prefix):
+                    return True
+            elif content_type == pattern:
+                return True
+        return False
 
     def __repr__(self) -> str:
-        parts = [f"File("]
+        parts = ["File("]
         if self.name:
             parts.append(f"name={self.name!r}, ")
         if not self.required:
             parts.append("required=False, ")
         if self.max_size:
             parts.append(f"max_size={self.max_size}, ")
+        if self.min_size:
+            parts.append(f"min_size={self.min_size}, ")
         if self.allowed_types:
             parts.append(f"allowed_types={self.allowed_types!r}, ")
+        if self.multiple:
+            parts.append("multiple=True, ")
+        if self.max_count:
+            parts.append(f"max_count={self.max_count}, ")
         result = "".join(parts)
         if result.endswith(", "):
             result = result[:-2]

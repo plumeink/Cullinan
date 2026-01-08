@@ -60,6 +60,71 @@ class UserController:
 | `Body(type)` | Request body | `name: Body(str, required=True)` |
 | `Header(type)` | HTTP headers | `auth: Header(str, alias='Authorization')` |
 | `File()` | File upload | `avatar: File(max_size=5*1024*1024)` |
+| `DynamicBody` | Full request body | `body: DynamicBody` |
+
+### File Uploads (v0.90a5+)
+
+```python
+from cullinan.params import File, FileInfo, FileList
+
+@controller(url='/api')
+class UploadController:
+    # Single file with validation
+    @post_api(url='/upload')
+    async def upload(self, avatar: File(max_size=5*1024*1024, allowed_types=['image/*'])):
+        # avatar is a FileInfo instance
+        print(avatar.filename, avatar.size, avatar.content_type)
+        avatar.save('/uploads/')
+        return {"filename": avatar.filename}
+    
+    # Multiple files
+    @post_api(url='/upload-multiple')
+    async def upload_multiple(self, files: File(multiple=True, max_count=10)):
+        # files is a FileList instance
+        return {"count": len(files), "names": files.filenames}
+```
+
+### Dataclass Field Validation (v0.90a5+)
+
+```python
+from cullinan.params import validated_dataclass, field_validator
+
+@validated_dataclass
+class CreateUserRequest:
+    name: str
+    email: str
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in v:
+            raise ValueError('Invalid email')
+        return v
+```
+
+### Pydantic Integration (v0.90a5+)
+
+Pydantic models are automatically supported when Pydantic is installed:
+
+```bash
+pip install pydantic
+```
+
+```python
+from pydantic import BaseModel, EmailStr, Field
+
+class CreateUserRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=50)
+    email: EmailStr
+    age: int = Field(default=0, ge=0, le=150)
+
+@post_api(url="/users")
+async def create_user(self, user: CreateUserRequest):
+    # Pydantic validation is automatic
+    return {"name": user.name, "email": user.email}
+```
+
+The framework uses a pluggable model handler architecture. See [Parameter System Guide](../parameter_system_guide.md#pluggable-model-handlers-v090a5) for details.
 
 ### Validation
 

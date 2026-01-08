@@ -17,6 +17,8 @@ from .auto import Auto, AutoType
 from .dynamic import DynamicBody
 from .validator import ParamValidator, ValidationError
 from .model import ModelResolver, ModelError
+from .file_info import FileInfo, FileList
+from .model_handlers import get_model_handler_registry, ModelHandlerError
 
 
 class ResolveError(Exception):
@@ -138,11 +140,13 @@ class ParamResolver:
                 config['type'] = DynamicBody
                 config['required'] = False
 
-            # 检查是否是 dataclass
-            elif ModelResolver.is_dataclass(annotation):
-                config['source'] = 'body'
+            # 检查是否是可处理的模型类型（通过注册表）
+            elif get_model_handler_registry().can_handle(annotation):
+                handler = get_model_handler_registry().get_handler(annotation)
+                config['source'] = handler.get_source()
                 config['type'] = annotation
-                config['required'] = True
+                config['required'] = handler.is_required_by_default()
+                config['model_handler'] = handler
 
             # 检查是否是 AutoType
             elif annotation is AutoType:
@@ -264,17 +268,21 @@ class ParamResolver:
         elif source == 'query':
             raw_value = query_params.get(alias) or query_params.get(name)
         elif source == 'body':
-            # 特殊处理 DynamicBody 和 dataclass
+            # 特殊处理 DynamicBody 和模型类型
             if target_type is DynamicBody:
                 return DynamicBody(body_data)
-            elif ModelResolver.is_dataclass(target_type):
-                return ModelResolver.resolve(target_type, body_data)
+            elif config.get('model_handler'):
+                # 使用注册的模型处理器
+                return config['model_handler'].resolve(target_type, body_data)
             else:
                 raw_value = body_data.get(alias) or body_data.get(name)
         elif source == 'header':
             raw_value = headers.get(alias) or headers.get(name)
         elif source == 'file':
             raw_value = files.get(alias) or files.get(name)
+            # 处理文件参数
+            if raw_value is not None:
+                return cls._resolve_file_param(raw_value, param_spec, name)
         elif source == 'auto':
             # Auto 类型：依次查找各来源
             raw_value = (
@@ -310,8 +318,12 @@ class ParamResolver:
                 converted = DynamicBody(raw_value)
             else:
                 converted = raw_value
-        elif ModelResolver.is_dataclass(target_type):
-            converted = ModelResolver.resolve(target_type, raw_value)
+        elif config.get('model_handler'):
+            # 使用注册的模型处理器
+            if isinstance(raw_value, dict):
+                converted = config['model_handler'].resolve(target_type, raw_value)
+            else:
+                converted = raw_value
         else:
             converted = TypeConverter.convert(raw_value, target_type)
 
@@ -325,4 +337,70 @@ class ParamResolver:
     def clear_cache(cls) -> None:
         """清空签名缓存"""
         cls._signature_cache.clear()
+
+    @classmethod
+    def _resolve_file_param(
+        cls,
+        raw_value: Any,
+        param_spec: File,
+        name: str,
+    ) -> Any:
+        """解析文件参数
+
+        Args:
+            raw_value: 原始文件数据 (来自 Tornado)
+            param_spec: File 参数规格
+            name: 参数名
+
+        Returns:
+            FileInfo 或 FileList
+        """
+        # 处理列表格式 (Tornado 的 request.files 返回列表)
+        if isinstance(raw_value, list):
+            file_list = []
+            for item in raw_value:
+                if isinstance(item, dict):
+                    file_info = FileInfo.from_tornado_file(item)
+                elif isinstance(item, FileInfo):
+                    file_info = item
+                else:
+                    # 尝试作为字典处理
+                    file_info = FileInfo(
+                        filename=getattr(item, 'filename', 'unknown'),
+                        body=getattr(item, 'body', b''),
+                        content_type=getattr(item, 'content_type', None),
+                    )
+                file_list.append(file_info)
+
+            if param_spec and param_spec.multiple:
+                # 多文件模式
+                result = FileList(file_list)
+                if param_spec:
+                    param_spec.validate_file_list(result)
+                return result
+            elif file_list:
+                # 单文件模式，取第一个
+                result = file_list[0]
+                if param_spec:
+                    param_spec.validate_file(result)
+                return result
+            else:
+                return None
+
+        # 处理单个文件
+        if isinstance(raw_value, dict):
+            file_info = FileInfo.from_tornado_file(raw_value)
+        elif isinstance(raw_value, FileInfo):
+            file_info = raw_value
+        else:
+            file_info = FileInfo(
+                filename=getattr(raw_value, 'filename', 'unknown'),
+                body=getattr(raw_value, 'body', b''),
+                content_type=getattr(raw_value, 'content_type', None),
+            )
+
+        if param_spec:
+            param_spec.validate_file(file_info)
+
+        return file_info
 

@@ -263,7 +263,11 @@ class UserController:
         return {"name": body.name, "age": body.get('age', 0)}
 ```
 
-See [Parameter System Guide](parameter_system_guide.md) for full details.
+See [Parameter System Guide](parameter_system_guide.md) for full details, including:
+- File uploads with `FileInfo`/`FileList`
+- Dataclass validation with `@field_validator`
+- Pydantic integration (optional, install with `pip install pydantic`)
+- Custom model handlers
 
 <details>
 <summary><strong>Legacy Style (still supported)</strong></summary>

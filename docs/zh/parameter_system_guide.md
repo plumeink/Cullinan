@@ -17,9 +17,9 @@ pr_links: []
 
 # 参数系统指南
 
-> **版本**: 0.90+
+> **版本**: 0.90a5+
 > 
-> 本指南介绍 Cullinan 0.90 版本引入的新参数系统，提供类型安全的参数处理，支持自动转换、校验和模型映射。
+> 本指南介绍 Cullinan 0.90 版本引入的参数系统，提供类型安全的参数处理，支持自动转换、校验和模型映射。
 
 ## 概述
 
@@ -31,28 +31,34 @@ pr_links: []
 - **多数据源**：Path, Query, Body, Header, File
 - **模型支持**：dataclass 和 DynamicBody
 - **自动类型推断**：自动检测值类型
+- **文件处理**：FileInfo/FileList 及校验 (v0.90a5+)
+- **Dataclass 校验**：@field_validator 装饰器 (v0.90a5+)
+- **响应序列化**：ResponseSerializer (v0.90a5+)
 
 ## 模块结构
 
 ```
 cullinan/
-├── codec/           # 编解码层
-│   ├── base.py     # BodyCodec / ResponseCodec 抽象
-│   ├── errors.py   # DecodeError / EncodeError
+├── codec/                    # 编解码层
+│   ├── base.py              # BodyCodec / ResponseCodec 抽象
+│   ├── errors.py            # DecodeError / EncodeError
 │   ├── json_codec.py
 │   ├── form_codec.py
-│   └── registry.py # CodecRegistry
-├── params/          # 参数处理层
-│   ├── base.py     # Param 基类 + UNSET
-│   ├── types.py    # Path/Query/Body/Header/File
-│   ├── converter.py # TypeConverter
-│   ├── auto.py     # Auto 类型推断
-│   ├── dynamic.py  # DynamicBody
-│   ├── validator.py # ParamValidator
-│   ├── model.py    # ModelResolver (dataclass)
-│   └── resolver.py # ParamResolver
+│   └── registry.py          # CodecRegistry
+├── params/                   # 参数处理层
+│   ├── base.py              # Param 基类 + UNSET
+│   ├── types.py             # Path/Query/Body/Header/File
+│   ├── converter.py         # TypeConverter
+│   ├── auto.py              # Auto 类型推断
+│   ├── dynamic.py           # DynamicBody + SafeAccessor
+│   ├── validator.py         # ParamValidator
+│   ├── model.py             # ModelResolver (dataclass)
+│   ├── resolver.py          # ParamResolver
+│   ├── file_info.py         # FileInfo / FileList (v0.90a5+)
+│   ├── dataclass_validators.py  # @field_validator (v0.90a5+)
+│   └── response.py          # @Response / ResponseSerializer (v0.90a5+)
 └── middleware/
-    └── body_decoder.py # BodyDecoderMiddleware
+    └── body_decoder.py      # BodyDecoderMiddleware
 ```
 
 ## 快速开始
@@ -105,6 +111,59 @@ async def create_user(self, body: DynamicBody):
     return body.to_dict()
 ```
 
+#### DynamicBody 增强方法
+
+**判空方法:**
+
+```python
+# 检查字段是否存在
+if body.has('email'):
+    send_email(body.email)
+
+# 检查字段存在且有值（不是 None、''、[] 等）
+if body.has_value('name'):
+    process(body.name)
+
+# 检查是否为空
+if body.is_empty():
+    return {'error': 'No data'}
+
+# 检查字段是否为 None
+if body.is_not_null('callback_url'):
+    notify(body.callback_url)
+```
+
+**嵌套安全访问:**
+
+```python
+# 路径式嵌套访问（不抛异常）
+city = body.get_nested('user.address.city', 'Unknown')
+```
+
+**类型化获取器:**
+
+```python
+name = body.get_str('name')        # 缺失返回 ''
+age = body.get_int('age')          # 缺失返回 0
+price = body.get_float('price')    # 缺失返回 0.0
+active = body.get_bool('active')   # 缺失返回 False
+tags = body.get_list('tags')       # 缺失返回 []
+```
+
+**链式安全访问器:**
+
+```python
+# 传统方式可能抛 AttributeError
+# city = body.user.address.city
+
+# 链式安全访问器（不抛异常）
+city = body.safe.user.address.city.value_or('Unknown')
+
+# 检查存在性
+if body.safe.user.email.exists:
+    send_email(body.safe.user.email.value)
+```
+
 ### 使用 dataclass 模型
 
 ```python
@@ -125,6 +184,40 @@ async def create_user(self, user: CreateUserRequest):
         "age": user.age,
         "email": user.email
     }
+```
+
+### Dataclass 字段校验 (v0.90a5+)
+
+使用 `@field_validator` 进行自定义字段校验：
+
+```python
+from cullinan.params import validated_dataclass, field_validator, FieldValidationError
+
+@validated_dataclass
+class CreateUserRequest:
+    name: str
+    email: str
+    age: int = 0
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in str(v):
+            raise ValueError('无效的邮箱格式')
+        return v
+    
+    @field_validator('age')
+    @classmethod
+    def validate_age(cls, v):
+        if v < 0 or v > 150:
+            raise ValueError('年龄必须在 0 到 150 之间')
+        return v
+
+# 实例化时自动校验
+try:
+    user = CreateUserRequest(name='John', email='invalid', age=25)
+except FieldValidationError as e:
+    print(f"校验错误: {e.field} - {e.message}")
 ```
 
 ## 参数类型
@@ -189,17 +282,65 @@ async def protected_resource(
 
 ### File
 
-文件上传参数。
+文件上传参数。在 v0.90a5+ 中返回 `FileInfo`（单文件）或 `FileList`（多文件）。
 
 ```python
+from cullinan.params import File, FileInfo, FileList
+
 @post_api(url="/upload")
 async def upload_file(
     self,
     avatar: File(required=True, max_size=5*1024*1024),  # 5MB 限制
     document: File(allowed_types=['application/pdf']),
 ):
+    # avatar 是 FileInfo 实例 (v0.90a5+)
+    print(avatar.filename)      # 原始文件名
+    print(avatar.size)          # 文件大小（字节）
+    print(avatar.content_type)  # MIME 类型
+    avatar.save('/uploads/')    # 保存到磁盘
     pass
 ```
+
+#### File 参数选项 (v0.90a5+)
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `max_size` | int | 最大文件大小（字节）|
+| `min_size` | int | 最小文件大小（字节）|
+| `allowed_types` | list | 允许的 MIME 类型（支持通配符如 `image/*`）|
+| `multiple` | bool | 启用多文件上传 |
+| `max_count` | int | 最大文件数量（multiple=True 时）|
+
+#### 多文件上传 (v0.90a5+)
+
+```python
+@post_api(url="/upload-multiple")
+async def upload_multiple(
+    self,
+    files: File(multiple=True, max_count=10),
+):
+    # files 是 FileList 实例
+    for f in files:
+        print(f.filename)
+        f.save('/uploads/')
+    return {"count": len(files), "total_size": files.total_size}
+```
+
+#### FileInfo 方法 (v0.90a5+)
+
+| 方法 | 说明 |
+|------|------|
+| `filename` | 原始文件名 |
+| `size` | 文件大小（字节）|
+| `content_type` | MIME 类型 |
+| `body` | 原始文件内容（bytes）|
+| `extension` | 文件扩展名（不含点）|
+| `read()` | 读取文件内容 |
+| `read_text(encoding)` | 以文本读取 |
+| `save(path)` | 保存到磁盘 |
+| `is_image()` | 检查是否是图片 |
+| `is_pdf()` | 检查是否是 PDF |
+| `match_type(pattern)` | 匹配 MIME 模式 |
 
 ## 校验器
 
@@ -282,6 +423,58 @@ class MyController:
         return body
 ```
 
+## 响应序列化 (v0.90a5+)
+
+### ResponseSerializer
+
+自动将 dataclass 和其他对象序列化为 JSON 兼容的字典：
+
+```python
+from dataclasses import dataclass
+from cullinan.params import ResponseSerializer
+
+@dataclass
+class UserResponse:
+    id: int
+    name: str
+    email: str
+
+user = UserResponse(id=1, name='John', email='john@example.com')
+
+# 序列化为字典
+result = ResponseSerializer.serialize(user)
+# {'id': 1, 'name': 'John', 'email': 'john@example.com'}
+
+# 序列化为 JSON 字符串
+json_str = ResponseSerializer.to_json(user)
+# '{"id": 1, "name": "John", "email": "john@example.com"}'
+```
+
+### @Response 装饰器
+
+为 API 文档定义响应模型：
+
+```python
+from cullinan.params import Response, get_response_models
+
+@dataclass
+class SuccessResponse:
+    data: dict
+
+@dataclass
+class ErrorResponse:
+    message: str
+    code: int = 0
+
+@Response(model=SuccessResponse, status_code=200, description="成功")
+@Response(model=ErrorResponse, status_code=404, description="未找到")
+async def get_user(user_id):
+    pass
+
+# 获取响应模型用于文档生成
+models = get_response_models(get_user)
+```
+
 ## 向后兼容
 
 传统参数风格完全支持：
@@ -321,6 +514,63 @@ from cullinan.params import ValidationError, ResolveError
 4. **复杂请求体使用模型**：结构化请求体使用 dataclass
 5. **灵活场景使用 DynamicBody**：请求体结构变化时使用
 
+## 可插拔模型处理器 (v0.90a5+)
+
+框架使用可插拔架构进行模型解析，允许 Pydantic 等第三方库在不修改核心代码的情况下集成。
+
+### 内置处理器
+
+| 处理器 | 优先级 | 说明 |
+|--------|--------|------|
+| `DataclassHandler` | 10 | Python dataclass 支持 |
+| `PydanticHandler` | 50 | Pydantic BaseModel（如果已安装）|
+
+### 注册自定义处理器
+
+```python
+from cullinan.params import ModelHandler, get_model_handler_registry
+
+class MyModelHandler(ModelHandler):
+    priority = 100  # 数值越大优先级越高
+    name = "my_handler"
+    
+    def can_handle(self, type_):
+        # 如果能处理该类型返回 True
+        return hasattr(type_, '__my_model__')
+    
+    def resolve(self, model_class, data):
+        # 将数据解析为模型实例
+        return model_class.from_dict(data)
+    
+    def to_dict(self, instance):
+        # 将实例转换为字典
+        return instance.to_dict()
+
+# 注册处理器
+registry = get_model_handler_registry()
+registry.register(MyModelHandler())
+```
+
+### Pydantic 集成（可选）
+
+当 Pydantic 已安装时，`PydanticHandler` 会自动注册：
+
+```python
+from pydantic import BaseModel, Field, EmailStr
+
+class CreateUserRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=50)
+    email: EmailStr
+    age: int = Field(default=0, ge=0, le=150)
+
+@post_api(url="/users")
+async def create_user(self, user: CreateUserRequest):
+    # Pydantic 校验自动执行
+    return {"name": user.name, "email": user.email}
+```
+
+安装 Pydantic: `pip install pydantic`
+
 ## API 参考
 
 ### cullinan.params
@@ -337,9 +587,21 @@ from cullinan.params import ValidationError, ResolveError
 | `Auto` | 自动类型推断 |
 | `AutoType` | 自动类型标记 |
 | `DynamicBody` | 动态请求体容器 |
+| `SafeAccessor` | 链式安全访问器 (v0.90a4+) |
 | `ParamValidator` | 参数校验器 |
 | `ModelResolver` | dataclass 模型解析器 |
 | `ParamResolver` | 参数解析编排器 |
+| `FileInfo` | 文件元数据容器 (v0.90a5+) |
+| `FileList` | 多文件容器 (v0.90a5+) |
+| `field_validator` | Dataclass 字段校验装饰器 (v0.90a5+) |
+| `validated_dataclass` | 自动校验的 dataclass 装饰器 (v0.90a5+) |
+| `FieldValidationError` | 字段校验错误 (v0.90a5+) |
+| `Response` | 响应模型装饰器 (v0.90a5+) |
+| `ResponseSerializer` | 响应序列化工具 (v0.90a5+) |
+| `ModelHandler` | 模型处理器基类 (v0.90a5+) |
+| `ModelHandlerRegistry` | 模型处理器注册表 (v0.90a5+) |
+| `DataclassHandler` | 内置 dataclass 处理器 (v0.90a5+) |
+| `get_model_handler_registry` | 获取全局处理器注册表 (v0.90a5+) |
 
 ### cullinan.codec
 
@@ -360,4 +622,3 @@ from cullinan.params import ValidationError, ResolveError
 |---|------|
 | `BodyDecoderMiddleware` | 自动请求体解码中间件 |
 | `get_decoded_body()` | 获取已解码的请求体 |
-
