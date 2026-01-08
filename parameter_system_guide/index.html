@@ -1185,10 +1185,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-recommended-syntax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (Recommended Syntax)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pure-type-annotation-as-query-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pure Type Annotation as Query (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as_required-shortcut-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        as_required() Shortcut (v0.90a5+)
       
     </span>
   </a>
@@ -1908,10 +1930,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#basic-usage-recommended-syntax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
+        Basic Usage (Recommended Syntax)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pure-type-annotation-as-query-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pure Type Annotation as Query (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as_required-shortcut-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        as_required() Shortcut (v0.90a5+)
       
     </span>
   </a>
@@ -2398,7 +2442,7 @@
     └── body_decoder.py      # BodyDecoderMiddleware
 </code></pre></div>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<h3 id="basic-usage-recommended-syntax">Basic Usage (Recommended Syntax)<a class="headerlink" href="#basic-usage-recommended-syntax" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span>
 
@@ -2406,25 +2450,48 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
         <span class="c1"># id is already converted to int</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
 
     <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="pure-type-annotation-as-query-v090a5">Pure Type Annotation as Query (v0.90a5+)<a class="headerlink" href="#pure-type-annotation-as-query-v090a5" title="Permanent link">&para;</a></h3>
+<p>Pure type annotations are automatically treated as Query parameters:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">page</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>          <span class="c1"># Same as page: int = Query()</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>     <span class="c1"># Same as size: int = Query(default=10)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>     <span class="c1"># Same as name: str = Query(default=&quot;&quot;)</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<h3 id="as_required-shortcut-v090a5">as_required() Shortcut (v0.90a5+)<a class="headerlink" href="#as_required-shortcut-v090a5" title="Permanent link">&para;</a></h3>
+<p>Use <code>.as_required()</code> for required parameters:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span><span class="p">,</span> <span class="n">File</span>
+
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
 </code></pre></div>
 <h3 id="simplified-syntax-v090a5">Simplified Syntax (v0.90a5+)<a class="headerlink" href="#simplified-syntax-v090a5" title="Permanent link">&para;</a></h3>
 <p>For parameters with alias (like HTTP headers with <code>-</code>), specify directly in type annotation:</p>
@@ -2454,7 +2521,7 @@
 - HTTP header matching is <strong>case-insensitive</strong> (per RFC 7230)
 - Supports headers with <code>-</code> like <code>X-Hub-Signature-256</code>, <code>X-GitHub-Event</code></p>
 <h3 id="using-rawbody-v090a5">Using RawBody (v0.90a5+)<a class="headerlink" href="#using-rawbody-v090a5" title="Permanent link">&para;</a></h3>
-<p>Get the raw binary request body for signature verification or custom parsing:</p>
+<p>Get the raw unparsed request body (bytes) for signature verification or custom parsing:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">RawBody</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hmac</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
@@ -2462,8 +2529,9 @@
 <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/webhook&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_webhook</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sign</span><span class="p">:</span> <span class="n">Header</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
-    <span class="n">raw_body</span><span class="p">:</span> <span class="n">RawBody</span><span class="p">(),</span>
+    <span class="n">sign</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
+    <span class="n">event</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-GitHub-Event&quot;</span><span class="p">),</span>
+    <span class="n">raw_body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">RawBody</span><span class="p">(),</span>  <span class="c1"># Recommended syntax</span>
 <span class="p">):</span>
     <span class="c1"># raw_body is bytes</span>
     <span class="n">secret</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;your_secret&#39;</span>
@@ -2476,6 +2544,34 @@
     <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_body</span><span class="p">)</span>
 </code></pre></div>
+<p><strong>Comparison:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Syntax</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DynamicBody</code></td>
+<td><code>body: DynamicBody = DynamicBody()</code></td>
+<td>DynamicBody object</td>
+<td>Parsed request body</td>
+</tr>
+<tr>
+<td><code>RawBody</code></td>
+<td><code>body: bytes = RawBody()</code></td>
+<td>bytes</td>
+<td>Unparsed raw request body</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong>: Use <code>= RawBody()</code> or <code>= DynamicBody()</code> syntax to avoid Python's "non-default parameter follows default parameter" error.</p>
+</blockquote>
 <h3 id="using-dynamicbody">Using DynamicBody<a class="headerlink" href="#using-dynamicbody" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicBody</span>
 
@@ -2585,8 +2681,8 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users/</span><span class="si">{user_id}</span><span class="s2">/posts/</span><span class="si">{post_id}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">user_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-    <span class="n">post_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(),</span>
+    <span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
@@ -2595,9 +2691,9 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/search&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">q</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
 <span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
@@ -2629,14 +2725,23 @@
 <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>  <span class="c1"># 5MB limit</span>
-    <span class="n">document</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;application/pdf&#39;</span><span class="p">]),</span>
+    <span class="c1"># New unified syntax: Type = Type(...)</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>  <span class="c1"># 5MB limit</span>
+    <span class="n">document</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;application/pdf&#39;</span><span class="p">]),</span>
 <span class="p">):</span>
     <span class="c1"># avatar is a FileInfo instance (v0.90a5+)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>      <span class="c1"># Original filename</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>          <span class="c1"># File size in bytes</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>  <span class="c1"># MIME type</span>
     <span class="n">avatar</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/uploads/&#39;</span><span class="p">)</span>    <span class="c1"># Save to disk</span>
+    <span class="k">pass</span>
+
+<span class="c1"># Required file using as_required()</span>
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/upload-required&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_required</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>
+<span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
 <h4 id="file-parameter-options-v090a5">File Parameter Options (v0.90a5+)<a class="headerlink" href="#file-parameter-options-v090a5" title="Permanent link">&para;</a></h4>
@@ -3019,7 +3124,7 @@
 </tr>
 <tr>
 <td><code>RawBody</code></td>
-<td>Raw binary body parameter (v0.90a5+)</td>
+<td>Raw unparsed request body, use <code>bytes = RawBody()</code> (v0.90a5+)</td>
 </tr>
 <tr>
 <td><code>TypeConverter</code></td>

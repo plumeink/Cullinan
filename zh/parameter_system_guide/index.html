@@ -1188,7 +1188,29 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        基础用法
+        基础用法（推荐语法）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        纯类型注解作为 Query (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as_required-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        as_required() 快捷方法 (v0.90a5+)
       
     </span>
   </a>
@@ -1911,7 +1933,29 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        基础用法
+        基础用法（推荐语法）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        纯类型注解作为 Query (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as_required-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        as_required() 快捷方法 (v0.90a5+)
       
     </span>
   </a>
@@ -2398,7 +2442,7 @@
     └── body_decoder.py      # BodyDecoderMiddleware
 </code></pre></div>
 <h2 id="_4">快速开始<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<h3 id="_5">基础用法<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h3 id="_5">基础用法（推荐语法）<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span>
 
@@ -2406,25 +2450,48 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users/</span><span class="si">{id}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
         <span class="c1"># id 已经转换为 int 类型</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
 
     <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="query-v090a5">纯类型注解作为 Query (v0.90a5+)<a class="headerlink" href="#query-v090a5" title="Permanent link">&para;</a></h3>
+<p>纯类型注解会自动作为 Query 参数处理：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">page</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>          <span class="c1"># 等同于 page: int = Query()</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>     <span class="c1"># 等同于 size: int = Query(default=10)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>     <span class="c1"># 等同于 name: str = Query(default=&quot;&quot;)</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<h3 id="as_required-v090a5">as_required() 快捷方法 (v0.90a5+)<a class="headerlink" href="#as_required-v090a5" title="Permanent link">&para;</a></h3>
+<p>使用 <code>.as_required()</code> 声明必填参数：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span><span class="p">,</span> <span class="n">File</span>
+
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
 </code></pre></div>
 <h3 id="v090a5">简化语法 (v0.90a5+)<a class="headerlink" href="#v090a5" title="Permanent link">&para;</a></h3>
 <p>对于带别名的参数（如包含 <code>-</code> 的 HTTP 头），直接在类型注解中指定：</p>
@@ -2454,7 +2521,7 @@
 - HTTP 头匹配是<strong>大小写不敏感</strong>的（符合 RFC 7230）
 - 支持 <code>X-Hub-Signature-256</code>、<code>X-GitHub-Event</code> 等带 <code>-</code> 的头名称</p>
 <h3 id="rawbody-v090a5">使用 RawBody (v0.90a5+)<a class="headerlink" href="#rawbody-v090a5" title="Permanent link">&para;</a></h3>
-<p>获取原始二进制请求体，用于签名验证或自定义解析：</p>
+<p>获取未解析的原始请求体 (bytes)，用于签名验证或自定义解析：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">RawBody</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hmac</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
@@ -2462,8 +2529,9 @@
 <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/webhook&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_webhook</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">sign</span><span class="p">:</span> <span class="n">Header</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
-    <span class="n">raw_body</span><span class="p">:</span> <span class="n">RawBody</span><span class="p">(),</span>
+    <span class="n">sign</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
+    <span class="n">event</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-GitHub-Event&quot;</span><span class="p">),</span>
+    <span class="n">raw_body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">RawBody</span><span class="p">(),</span>  <span class="c1"># 推荐语法</span>
 <span class="p">):</span>
     <span class="c1"># raw_body 是 bytes 类型</span>
     <span class="n">secret</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;your_secret&#39;</span>
@@ -2476,6 +2544,34 @@
     <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_body</span><span class="p">)</span>
 </code></pre></div>
+<p><strong>对比：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>写法</th>
+<th>返回类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DynamicBody</code></td>
+<td><code>body: DynamicBody = DynamicBody()</code></td>
+<td>DynamicBody 对象</td>
+<td>已解析的请求体</td>
+</tr>
+<tr>
+<td><code>RawBody</code></td>
+<td><code>body: bytes = RawBody()</code></td>
+<td>bytes</td>
+<td>未解析的原始请求体</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>: 使用 <code>= RawBody()</code> 或 <code>= DynamicBody()</code> 语法可以避免 Python 的 "non-default parameter follows default parameter" 错误。</p>
+</blockquote>
 <h3 id="dynamicbody">使用 DynamicBody<a class="headerlink" href="#dynamicbody" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicBody</span>
 
@@ -2585,8 +2681,8 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users/</span><span class="si">{user_id}</span><span class="s2">/posts/</span><span class="si">{post_id}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">user_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
-    <span class="n">post_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(),</span>
+    <span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
@@ -2595,9 +2691,9 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/search&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">q</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-    <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
 <span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
@@ -2629,14 +2725,23 @@
 <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>  <span class="c1"># 5MB 限制</span>
-    <span class="n">document</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;application/pdf&#39;</span><span class="p">]),</span>
+    <span class="c1"># 新的统一语法: Type = Type(...)</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>  <span class="c1"># 5MB 限制</span>
+    <span class="n">document</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;application/pdf&#39;</span><span class="p">]),</span>
 <span class="p">):</span>
     <span class="c1"># avatar 是 FileInfo 实例 (v0.90a5+)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>      <span class="c1"># 原始文件名</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>          <span class="c1"># 文件大小（字节）</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>  <span class="c1"># MIME 类型</span>
     <span class="n">avatar</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/uploads/&#39;</span><span class="p">)</span>    <span class="c1"># 保存到磁盘</span>
+    <span class="k">pass</span>
+
+<span class="c1"># 使用 as_required() 声明必填文件</span>
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/upload-required&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_required</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">),</span>
+<span class="p">):</span>
     <span class="k">pass</span>
 </code></pre></div>
 <h4 id="file-v090a5">File 参数选项 (v0.90a5+)<a class="headerlink" href="#file-v090a5" title="Permanent link">&para;</a></h4>
@@ -3019,7 +3124,7 @@
 </tr>
 <tr>
 <td><code>RawBody</code></td>
-<td>原始二进制请求体参数 (v0.90a5+)</td>
+<td>原始请求体，使用 <code>bytes = RawBody()</code> (v0.90a5+)</td>
 </tr>
 <tr>
 <td><code>TypeConverter</code></td>
