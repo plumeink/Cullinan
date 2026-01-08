@@ -967,6 +967,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#new-in-v090-parameter-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New in v0.90: Parameter System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New in v0.90: Parameter System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinancodec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.codec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanmiddleware-new-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.middleware (new additions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#public-symbols-and-signatures-recommended-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1147,6 +1197,41 @@
     
   </span>
   
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
   
 
       </a>
@@ -1415,6 +1500,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#new-in-v090-parameter-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New in v0.90: Parameter System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New in v0.90: Parameter System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinancodec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.codec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanmiddleware-new-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.middleware (new additions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#public-symbols-and-signatures-recommended-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1467,7 +1602,202 @@
 <li><code>cullinan.controller</code> — Controllers and RESTful API decorators</li>
 <li><code>cullinan.service</code> — Service base class and the <code>@service</code> decorator</li>
 <li><code>cullinan.middleware</code> — Middleware base classes and extension points</li>
+<li><code>cullinan.codec</code> — Request/response encoding/decoding (JSON, Form, etc.)</li>
+<li><code>cullinan.params</code> — Parameter handling (Path, Query, Body, Header, File, validators)</li>
 </ul>
+<h2 id="new-in-v090-parameter-system">New in v0.90: Parameter System<a class="headerlink" href="#new-in-v090-parameter-system" title="Permanent link">&para;</a></h2>
+<p>The parameter system provides type-safe request parameter handling. See <a href="../parameter_system_guide/">Parameter System Guide</a> for details.</p>
+<h3 id="cullinanparams">cullinan.params<a class="headerlink" href="#cullinanparams" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Param</code></td>
+<td>class</td>
+<td>Base parameter class</td>
+</tr>
+<tr>
+<td><code>Path</code></td>
+<td>class</td>
+<td>URL path parameter marker</td>
+</tr>
+<tr>
+<td><code>Query</code></td>
+<td>class</td>
+<td>Query string parameter marker</td>
+</tr>
+<tr>
+<td><code>Body</code></td>
+<td>class</td>
+<td>Request body parameter marker</td>
+</tr>
+<tr>
+<td><code>Header</code></td>
+<td>class</td>
+<td>HTTP header parameter marker</td>
+</tr>
+<tr>
+<td><code>File</code></td>
+<td>class</td>
+<td>File upload parameter marker</td>
+</tr>
+<tr>
+<td><code>UNSET</code></td>
+<td>sentinel</td>
+<td>Sentinel value for unset parameters</td>
+</tr>
+<tr>
+<td><code>TypeConverter</code></td>
+<td>class</td>
+<td>Type conversion utility</td>
+</tr>
+<tr>
+<td><code>Auto</code></td>
+<td>class</td>
+<td>Auto type inference utility</td>
+</tr>
+<tr>
+<td><code>AutoType</code></td>
+<td>class</td>
+<td>Auto type marker for signatures</td>
+</tr>
+<tr>
+<td><code>DynamicBody</code></td>
+<td>class</td>
+<td>Dynamic request body container</td>
+</tr>
+<tr>
+<td><code>ParamValidator</code></td>
+<td>class</td>
+<td>Parameter validation utility</td>
+</tr>
+<tr>
+<td><code>ValidationError</code></td>
+<td>exception</td>
+<td>Validation error</td>
+</tr>
+<tr>
+<td><code>ModelResolver</code></td>
+<td>class</td>
+<td>dataclass model resolution</td>
+</tr>
+<tr>
+<td><code>ModelError</code></td>
+<td>exception</td>
+<td>Model resolution error</td>
+</tr>
+<tr>
+<td><code>ParamResolver</code></td>
+<td>class</td>
+<td>Parameter resolution orchestrator</td>
+</tr>
+<tr>
+<td><code>ResolveError</code></td>
+<td>exception</td>
+<td>Parameter resolution error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinancodec">cullinan.codec<a class="headerlink" href="#cullinancodec" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BodyCodec</code></td>
+<td>class</td>
+<td>Abstract request body codec</td>
+</tr>
+<tr>
+<td><code>ResponseCodec</code></td>
+<td>class</td>
+<td>Abstract response codec</td>
+</tr>
+<tr>
+<td><code>JsonBodyCodec</code></td>
+<td>class</td>
+<td>JSON body decoder</td>
+</tr>
+<tr>
+<td><code>JsonResponseCodec</code></td>
+<td>class</td>
+<td>JSON response encoder</td>
+</tr>
+<tr>
+<td><code>FormBodyCodec</code></td>
+<td>class</td>
+<td>Form body decoder</td>
+</tr>
+<tr>
+<td><code>CodecRegistry</code></td>
+<td>class</td>
+<td>Codec registry</td>
+</tr>
+<tr>
+<td><code>get_codec_registry()</code></td>
+<td>function</td>
+<td>Get global codec registry</td>
+</tr>
+<tr>
+<td><code>reset_codec_registry()</code></td>
+<td>function</td>
+<td>Reset codec registry (testing)</td>
+</tr>
+<tr>
+<td><code>DecodeError</code></td>
+<td>exception</td>
+<td>Decoding error</td>
+</tr>
+<tr>
+<td><code>EncodeError</code></td>
+<td>exception</td>
+<td>Encoding error</td>
+</tr>
+<tr>
+<td><code>CodecError</code></td>
+<td>exception</td>
+<td>Base codec error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanmiddleware-new-additions">cullinan.middleware (new additions)<a class="headerlink" href="#cullinanmiddleware-new-additions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BodyDecoderMiddleware</code></td>
+<td>class</td>
+<td>Auto body decoding middleware</td>
+</tr>
+<tr>
+<td><code>get_decoded_body()</code></td>
+<td>function</td>
+<td>Get decoded request body</td>
+</tr>
+<tr>
+<td><code>set_decoded_body()</code></td>
+<td>function</td>
+<td>Set decoded body (testing)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="public-symbols-and-signatures-recommended-structure">Public symbols and signatures (recommended structure)<a class="headerlink" href="#public-symbols-and-signatures-recommended-structure" title="Permanent link">&para;</a></h2>
 <p>For each module, the API reference is recommended to follow this structure:</p>
 <ul>

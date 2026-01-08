@@ -967,6 +967,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v090" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.90 新增：参数系统
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.90 新增：参数系统">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinancodec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.codec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanmiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.middleware（新增）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1147,6 +1197,41 @@
     
   </span>
   
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
   
 
       </a>
@@ -1415,6 +1500,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#v090" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.90 新增：参数系统
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v0.90 新增：参数系统">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinancodec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.codec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanmiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.middleware（新增）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1467,7 +1602,202 @@
 <li><code>cullinan.controller</code> — 控制器与 RESTful API 装饰器</li>
 <li><code>cullinan.service</code> — Service 基类与 <code>@service</code> 装饰器</li>
 <li><code>cullinan.middleware</code> — 中间件基类与扩展点</li>
+<li><code>cullinan.codec</code> — 请求/响应编解码（JSON、Form 等）</li>
+<li><code>cullinan.params</code> — 参数处理（Path、Query、Body、Header、File、校验器）</li>
 </ul>
+<h2 id="v090">v0.90 新增：参数系统<a class="headerlink" href="#v090" title="Permanent link">&para;</a></h2>
+<p>参数系统提供类型安全的请求参数处理。详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
+<h3 id="cullinanparams">cullinan.params<a class="headerlink" href="#cullinanparams" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Param</code></td>
+<td>类</td>
+<td>参数基类</td>
+</tr>
+<tr>
+<td><code>Path</code></td>
+<td>类</td>
+<td>URL 路径参数标记</td>
+</tr>
+<tr>
+<td><code>Query</code></td>
+<td>类</td>
+<td>查询字符串参数标记</td>
+</tr>
+<tr>
+<td><code>Body</code></td>
+<td>类</td>
+<td>请求体参数标记</td>
+</tr>
+<tr>
+<td><code>Header</code></td>
+<td>类</td>
+<td>HTTP 请求头参数标记</td>
+</tr>
+<tr>
+<td><code>File</code></td>
+<td>类</td>
+<td>文件上传参数标记</td>
+</tr>
+<tr>
+<td><code>UNSET</code></td>
+<td>哨兵</td>
+<td>表示未设置的哨兵值</td>
+</tr>
+<tr>
+<td><code>TypeConverter</code></td>
+<td>类</td>
+<td>类型转换工具</td>
+</tr>
+<tr>
+<td><code>Auto</code></td>
+<td>类</td>
+<td>自动类型推断工具</td>
+</tr>
+<tr>
+<td><code>AutoType</code></td>
+<td>类</td>
+<td>用于签名的自动类型标记</td>
+</tr>
+<tr>
+<td><code>DynamicBody</code></td>
+<td>类</td>
+<td>动态请求体容器</td>
+</tr>
+<tr>
+<td><code>ParamValidator</code></td>
+<td>类</td>
+<td>参数校验工具</td>
+</tr>
+<tr>
+<td><code>ValidationError</code></td>
+<td>异常</td>
+<td>校验错误</td>
+</tr>
+<tr>
+<td><code>ModelResolver</code></td>
+<td>类</td>
+<td>dataclass 模型解析器</td>
+</tr>
+<tr>
+<td><code>ModelError</code></td>
+<td>异常</td>
+<td>模型解析错误</td>
+</tr>
+<tr>
+<td><code>ParamResolver</code></td>
+<td>类</td>
+<td>参数解析编排器</td>
+</tr>
+<tr>
+<td><code>ResolveError</code></td>
+<td>异常</td>
+<td>参数解析错误</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinancodec">cullinan.codec<a class="headerlink" href="#cullinancodec" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BodyCodec</code></td>
+<td>类</td>
+<td>请求体编解码器抽象类</td>
+</tr>
+<tr>
+<td><code>ResponseCodec</code></td>
+<td>类</td>
+<td>响应编码器抽象类</td>
+</tr>
+<tr>
+<td><code>JsonBodyCodec</code></td>
+<td>类</td>
+<td>JSON 请求体解码器</td>
+</tr>
+<tr>
+<td><code>JsonResponseCodec</code></td>
+<td>类</td>
+<td>JSON 响应编码器</td>
+</tr>
+<tr>
+<td><code>FormBodyCodec</code></td>
+<td>类</td>
+<td>Form 请求体解码器</td>
+</tr>
+<tr>
+<td><code>CodecRegistry</code></td>
+<td>类</td>
+<td>Codec 注册表</td>
+</tr>
+<tr>
+<td><code>get_codec_registry()</code></td>
+<td>函数</td>
+<td>获取全局 Codec 注册表</td>
+</tr>
+<tr>
+<td><code>reset_codec_registry()</code></td>
+<td>函数</td>
+<td>重置 Codec 注册表（测试用）</td>
+</tr>
+<tr>
+<td><code>DecodeError</code></td>
+<td>异常</td>
+<td>解码错误</td>
+</tr>
+<tr>
+<td><code>EncodeError</code></td>
+<td>异常</td>
+<td>编码错误</td>
+</tr>
+<tr>
+<td><code>CodecError</code></td>
+<td>异常</td>
+<td>编解码错误基类</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanmiddleware">cullinan.middleware（新增）<a class="headerlink" href="#cullinanmiddleware" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BodyDecoderMiddleware</code></td>
+<td>类</td>
+<td>自动请求体解码中间件</td>
+</tr>
+<tr>
+<td><code>get_decoded_body()</code></td>
+<td>函数</td>
+<td>获取已解码的请求体</td>
+</tr>
+<tr>
+<td><code>set_decoded_body()</code></td>
+<td>函数</td>
+<td>设置已解码的请求体（测试用）</td>
+</tr>
+</tbody>
+</table>
 <h2 id="_2">公共符号与签名（建议结构）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>每个模块建议按以下结构列出公共符号：</p>
 <ul>

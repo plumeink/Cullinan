@@ -1345,6 +1345,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../extension_development_guide/" class="md-nav__link">
         
   
@@ -1953,6 +1988,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">injectable</span><span class="p">,</span> <span class="n">InjectByName</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="c1"># Service 使用 @service (继承自 Service 基类)</span>
 <span class="nd">@service</span>
@@ -1973,9 +2009,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="n">user_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
-        <span class="c1"># 从 url_params 字典中获取路径参数</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_params</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>重要：</strong> 在 Controller 中<strong>不要</strong>重复使用 <code>@injectable</code>，因为 <code>@controller()</code> 已经自动包含了它。</p>
@@ -1994,39 +2028,77 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li>这些装饰器在源码中定义为 <code>def get_api(**kwargs)</code> 等，<strong>只接受关键字参数</strong>。</li>
 <li>写法 <code>@get_api('/user')</code> 是<strong>不合法</strong>的，会在导入模块时抛出 <code>TypeError</code>。</li>
 <li>正确写法应为：<code>@get_api(url='/user')</code>。</li>
-<li><code>url</code> 参数使用轻量级模板语法，支持 <code>{param}</code> 占位符，并与方法参数一一对应：</li>
+<li><code>url</code> 参数使用轻量级模板语法，支持 <code>{param}</code> 占位符。</li>
 </ul>
+<p><strong>v0.90+ 推荐：类型安全参数系统</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="c1"># 类型安全的路径和查询参数</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">include_posts</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;include_posts&quot;</span><span class="p">:</span> <span class="n">include_posts</span><span class="p">}</span>
+
+    <span class="c1"># 带校验的查询参数</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">size</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
+
+    <span class="c1"># 带校验的类型安全请求体参数</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+
+    <span class="c1"># DynamicBody 提供灵活的属性访问</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/dynamic&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+</code></pre></div>
+<p>详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
+<details>
+<summary><strong>传统方式（仍然支持）</strong></summary>
+
+传统参数风格仍然支持，用于向后兼容：
+
+常用参数：
+- `url`：路由路径（字符串），支持 `{param}` 占位符，例如 `'/users/{user_id}'`。
+- `query_params`：查询参数名称列表/元组，例如 `('page', 'size')`。
+- `body_params`（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。
+- `file_params`：上传文件字段名称列表。
+- `headers`：必须存在的 HTTP 请求头名称列表。
+- `get_request_body`（仅 POST/PATCH）：为 `True` 时，会将原始请求体作为参数传入方法。
+
 <div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
         <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">url_params</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="o">...</span>
-</code></pre></div>
-<p>常用参数：</p>
-<ul>
-<li><code>url</code>：路由路径（字符串），支持 <code>{param}</code> 占位符，例如 <code>'/users/{user_id}'</code>。</li>
-<li><code>query_params</code>：查询参数名称列表/元组，例如 <code>('page', 'size')</code>。 在处理器中，这些查询参数通过单个 <code>query_params</code> 字典参数传入。</li>
-<li><code>body_params</code>（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。在处理器中，这些字段通过单个 <code>body_params</code> 字典参数传入。</li>
-<li><code>file_params</code>：上传文件字段名称列表。</li>
-<li><code>headers</code>：必须存在的 HTTP 请求头名称列表。</li>
-<li><code>get_request_body</code>（仅 POST/PATCH）：为 <code>True</code> 时，会将原始请求体作为参数传入方法。</li>
-</ul>
-<p>典型组合示例：</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
+
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_params</span><span class="p">):</span>
         <span class="n">page</span> <span class="o">=</span> <span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;size&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">query_params</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="o">...</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
 
     <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">body_params</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">))</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body_params</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">body_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_params</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">email</span> <span class="o">=</span> <span class="n">body_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">body_params</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="o">...</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">}</span>
 </code></pre></div>
+
+</details>
+
 <p>如需了解 URL 模板与各装饰器参数的完整说明，请参考 <code>docs/zh/wiki/restful_api.md</code>。</p>
 <hr />
 <h4 id="_9">推荐的依赖注入方式<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>

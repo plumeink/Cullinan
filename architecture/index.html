@@ -505,22 +505,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-extension-mechanism" class="md-nav__link">
+  <a href="#4-parameter-system-cullinanparams-cullinancodec-new-in-v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Extension Mechanism
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Extension Mechanism">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-middleware-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 Middleware System
+        4. Parameter System (cullinan/params/, cullinan/codec/) - New in v0.90
       
     </span>
   </a>
@@ -528,10 +516,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-extension-point-discovery" class="md-nav__link">
+  <a href="#5-extension-mechanism" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 Extension Point Discovery
+        5. Extension Mechanism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Extension Mechanism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-middleware-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Middleware System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-extension-point-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Extension Point Discovery
       
     </span>
   </a>
@@ -1695,6 +1706,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../extension_development_guide/" class="md-nav__link">
         
   
@@ -2082,22 +2128,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-extension-mechanism" class="md-nav__link">
+  <a href="#4-parameter-system-cullinanparams-cullinancodec-new-in-v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Extension Mechanism
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Extension Mechanism">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-middleware-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 Middleware System
+        4. Parameter System (cullinan/params/, cullinan/codec/) - New in v0.90
       
     </span>
   </a>
@@ -2105,10 +2139,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-extension-point-discovery" class="md-nav__link">
+  <a href="#5-extension-mechanism" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 Extension Point Discovery
+        5. Extension Mechanism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Extension Mechanism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-middleware-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Middleware System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-extension-point-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Extension Point Discovery
       
     </span>
   </a>
@@ -2703,14 +2760,14 @@
 <p><strong>Usage</strong>:
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="n">user_service</span><span class="p">:</span> <span class="s1">&#39;UserService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div></p>
 <p><strong>Features</strong>:
@@ -2719,8 +2776,59 @@
 - Request-level instances (new per request)
 - Automatic parameter parsing and validation</p>
 <hr />
-<h3 id="4-extension-mechanism">4. Extension Mechanism<a class="headerlink" href="#4-extension-mechanism" title="Permanent link">&para;</a></h3>
-<h4 id="41-middleware-system">4.1 Middleware System<a class="headerlink" href="#41-middleware-system" title="Permanent link">&para;</a></h4>
+<h3 id="4-parameter-system-cullinanparams-cullinancodec-new-in-v090">4. Parameter System (<code>cullinan/params/</code>, <code>cullinan/codec/</code>) - New in v0.90<a class="headerlink" href="#4-parameter-system-cullinanparams-cullinancodec-new-in-v090" title="Permanent link">&para;</a></h3>
+<p>Type-safe parameter handling with automatic conversion and validation.</p>
+<p><strong>Module Structure</strong>:
+<div class="highlight"><pre><span></span><code>cullinan/
+├── codec/           # Encoding/Decoding layer
+│   ├── base.py     # BodyCodec / ResponseCodec abstractions
+│   ├── errors.py   # DecodeError / EncodeError
+│   ├── json_codec.py
+│   ├── form_codec.py
+│   └── registry.py # CodecRegistry
+├── params/          # Parameter handling layer
+│   ├── base.py     # Param base class + UNSET
+│   ├── types.py    # Path/Query/Body/Header/File
+│   ├── converter.py # TypeConverter
+│   ├── auto.py     # Auto type inference
+│   ├── dynamic.py  # DynamicBody
+│   ├── validator.py # ParamValidator
+│   ├── model.py    # ModelResolver (dataclass)
+│   └── resolver.py # ParamResolver
+└── middleware/
+    └── body_decoder.py # BodyDecoderMiddleware
+</code></pre></div></p>
+<p><strong>Usage</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+        <span class="n">include_posts</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
+
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Features</strong>:
+- Type-safe parameter declaration
+- Automatic type conversion
+- Built-in validators (ge, le, regex, etc.)
+- dataclass and DynamicBody support
+- Custom codec registration</p>
+<p>See <a href="../parameter_system_guide/">Parameter System Guide</a> for details.</p>
+<hr />
+<h3 id="5-extension-mechanism">5. Extension Mechanism<a class="headerlink" href="#5-extension-mechanism" title="Permanent link">&para;</a></h3>
+<h4 id="51-middleware-system">5.1 Middleware System<a class="headerlink" href="#51-middleware-system" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">middleware</span><span class="p">,</span> <span class="n">Middleware</span>
 
 <span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -2738,7 +2846,7 @@
 - Priority control (lower numbers execute first)
 - Bidirectional request/response interception
 - Support short-circuiting (return None to stop)</p>
-<h4 id="42-extension-point-discovery">4.2 Extension Point Discovery<a class="headerlink" href="#42-extension-point-discovery" title="Permanent link">&para;</a></h4>
+<h4 id="52-extension-point-discovery">5.2 Extension Point Discovery<a class="headerlink" href="#52-extension-point-discovery" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_extension_points</span>
 
 <span class="c1"># Query available extension points</span>

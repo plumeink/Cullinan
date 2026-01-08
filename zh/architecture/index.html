@@ -505,22 +505,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
+  <a href="#4-cullinanparams-cullinancodec-v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. 扩展机制
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. 扩展机制">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 中间件系统
+        4. 参数系统 (cullinan/params/, cullinan/codec/) - v0.90 新增
       
     </span>
   </a>
@@ -528,10 +516,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42" class="md-nav__link">
+  <a href="#5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 扩展点发现
+        5. 扩展机制
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 扩展机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 中间件系统
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 扩展点发现
       
     </span>
   </a>
@@ -812,7 +823,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
+  <a href="#4" class="md-nav__link">
     <span class="md-ellipsis">
       
         4. 结构化日志
@@ -1695,6 +1706,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../extension_development_guide/" class="md-nav__link">
         
   
@@ -2082,22 +2128,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
+  <a href="#4-cullinanparams-cullinancodec-v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. 扩展机制
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. 扩展机制">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 中间件系统
+        4. 参数系统 (cullinan/params/, cullinan/codec/) - v0.90 新增
       
     </span>
   </a>
@@ -2105,10 +2139,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42" class="md-nav__link">
+  <a href="#5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 扩展点发现
+        5. 扩展机制
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 扩展机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 中间件系统
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 扩展点发现
       
     </span>
   </a>
@@ -2389,7 +2446,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
+  <a href="#4" class="md-nav__link">
     <span class="md-ellipsis">
       
         4. 结构化日志
@@ -2717,14 +2774,14 @@
 <p><strong>使用方式</strong>：
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
     <span class="n">user_service</span><span class="p">:</span> <span class="s1">&#39;UserService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&lt;user_id&gt;&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="p">):</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div></p>
 <p><strong>特性</strong>：
@@ -2733,8 +2790,59 @@
 - 请求级实例（每个请求新建）
 - 参数自动解析和验证</p>
 <hr />
-<h3 id="4">4. 扩展机制<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
-<h4 id="41">4.1 中间件系统<a class="headerlink" href="#41" title="Permanent link">&para;</a></h4>
+<h3 id="4-cullinanparams-cullinancodec-v090">4. 参数系统 (<code>cullinan/params/</code>, <code>cullinan/codec/</code>) - v0.90 新增<a class="headerlink" href="#4-cullinanparams-cullinancodec-v090" title="Permanent link">&para;</a></h3>
+<p>类型安全的参数处理，支持自动转换和校验。</p>
+<p><strong>模块结构</strong>：
+<div class="highlight"><pre><span></span><code>cullinan/
+├── codec/           # 编解码层
+│   ├── base.py     # BodyCodec / ResponseCodec 抽象
+│   ├── errors.py   # DecodeError / EncodeError
+│   ├── json_codec.py
+│   ├── form_codec.py
+│   └── registry.py # CodecRegistry
+├── params/          # 参数处理层
+│   ├── base.py     # Param 基类 + UNSET
+│   ├── types.py    # Path/Query/Body/Header/File
+│   ├── converter.py # TypeConverter
+│   ├── auto.py     # Auto 类型推断
+│   ├── dynamic.py  # DynamicBody
+│   ├── validator.py # ParamValidator
+│   ├── model.py    # ModelResolver (dataclass)
+│   └── resolver.py # ParamResolver
+└── middleware/
+    └── body_decoder.py # BodyDecoderMiddleware
+</code></pre></div></p>
+<p><strong>使用方式</strong>：
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+        <span class="n">include_posts</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
+
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>特性</strong>：
+- 类型安全的参数声明
+- 自动类型转换
+- 内置校验器 (ge, le, regex 等)
+- dataclass 和 DynamicBody 支持
+- 自定义 Codec 注册</p>
+<p>详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
+<hr />
+<h3 id="5">5. 扩展机制<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<h4 id="51">5.1 中间件系统<a class="headerlink" href="#51" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">middleware</span><span class="p">,</span> <span class="n">Middleware</span>
 
 <span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -2752,7 +2860,7 @@
 - 优先级控制（数字越小越先执行）
 - 请求/响应双向拦截
 - 支持短路（返回 None 停止后续处理）</p>
-<h4 id="42">4.2 扩展点发现<a class="headerlink" href="#42" title="Permanent link">&para;</a></h4>
+<h4 id="52">5.2 扩展点发现<a class="headerlink" href="#52" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_extension_points</span>
 
 <span class="c1"># 查询可用扩展点</span>
@@ -3097,7 +3205,7 @@ Development  Nuitka   PyInstaller  其他
 <li>IoC 依赖解析缓存（0.26 μs）</li>
 <li>Provider 实例缓存</li>
 </ul>
-<h4 id="4_1">4. 结构化日志<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h4>
+<h4 id="4">4. 结构化日志<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
 <ul>
 <li>生产环境日志优化</li>
 <li>惰性求值减少开销</li>
