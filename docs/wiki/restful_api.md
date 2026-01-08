@@ -28,20 +28,20 @@ from cullinan.params import Path, Query, Body, DynamicBody
 
 @controller(url='/api/users')
 class UserController:
-    # Type-safe parameters with automatic conversion and validation
+    # Type-safe parameters with automatic conversion and validation (new unified syntax)
     @get_api(url='/{id}')
     async def get_user(
         self,
-        id: Path(int),
-        include_posts: Query(bool, default=False),
+        id: int = Path(),
+        include_posts: bool = Query(default=False),
     ):
         return {"id": id, "include_posts": include_posts}
     
     @post_api(url='/')
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0, le=150),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0, le=150),
     ):
         return {"name": name, "age": age}
     
@@ -55,12 +55,16 @@ class UserController:
 
 | Type | Source | Example |
 |------|--------|---------|
-| `Path(type)` | URL path | `id: Path(int)` |
-| `Query(type)` | Query string | `page: Query(int, default=1)` |
-| `Body(type)` | Request body | `name: Body(str, required=True)` |
-| `Header(type)` | HTTP headers | `auth: Header(str, alias='Authorization')` |
-| `File()` | File upload | `avatar: File(max_size=5*1024*1024)` |
-| `DynamicBody` | Full request body | `body: DynamicBody` |
+| `Path(type)` | URL path | `id: int = Path()` |
+| `Query(type)` | Query string | `page: int = Query(default=1)` |
+| `Body(type)` | Request body | `name: str = Body(required=True)` |
+| `Header(type)` | HTTP headers | `auth: str = Header(alias='Authorization')` |
+| `File()` | File upload | `avatar: File = File(max_size=5*1024*1024)` |
+| `RawBody` | Raw unparsed body (bytes) | `raw: bytes = RawBody()` |
+| `DynamicBody` | Full request body (parsed) | `body: DynamicBody = DynamicBody()` |
+
+> **Note**: Pure type annotations like `page: int` are automatically treated as Query parameters.
+> Use `= RawBody()` or `= DynamicBody()` to avoid "non-default parameter follows default parameter" error.
 
 ### File Uploads (v0.90a5+)
 
@@ -69,17 +73,22 @@ from cullinan.params import File, FileInfo, FileList
 
 @controller(url='/api')
 class UploadController:
-    # Single file with validation
+    # Single file with validation (new syntax)
     @post_api(url='/upload')
-    async def upload(self, avatar: File(max_size=5*1024*1024, allowed_types=['image/*'])):
+    async def upload(self, avatar: File = File(max_size=5*1024*1024, allowed_types=['image/*'])):
         # avatar is a FileInfo instance
         print(avatar.filename, avatar.size, avatar.content_type)
         avatar.save('/uploads/')
         return {"filename": avatar.filename}
     
+    # Required file using as_required()
+    @post_api(url='/upload-required')
+    async def upload_required(self, avatar: File = File.as_required(max_size=5*1024*1024)):
+        return {"filename": avatar.filename}
+    
     # Multiple files
     @post_api(url='/upload-multiple')
-    async def upload_multiple(self, files: File(multiple=True, max_count=10)):
+    async def upload_multiple(self, files: File = File(multiple=True, max_count=10)):
         # files is a FileList instance
         return {"count": len(files), "names": files.filenames}
 ```

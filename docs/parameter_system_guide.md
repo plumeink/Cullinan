@@ -63,7 +63,7 @@ cullinan/
 
 ## Quick Start
 
-### Basic Usage
+### Basic Usage (Recommended Syntax)
 
 ```python
 from cullinan import get_api, post_api
@@ -73,25 +73,56 @@ from cullinan.params import Path, Query, Body
 class UserController:
     
     @get_api(url="/users/{id}")
-    async def get_user(self, id: Path(int)):
+    async def get_user(self, id: int = Path()):
         # id is already converted to int
         return {"id": id}
     
     @get_api(url="/users")
     async def list_users(
         self,
-        page: Query(int, default=1, ge=1),
-        size: Query(int, default=10, ge=1, le=100),
+        page: int = Query(default=1, ge=1),
+        size: int = Query(default=10, ge=1, le=100),
     ):
         return {"page": page, "size": size}
     
     @post_api(url="/users")
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0),
     ):
         return {"name": name, "age": age}
+```
+
+### Pure Type Annotation as Query (v0.90a5+)
+
+Pure type annotations are automatically treated as Query parameters:
+
+```python
+@get_api(url="/users")
+async def list_users(
+    self,
+    page: int,          # Same as page: int = Query()
+    size: int = 10,     # Same as size: int = Query(default=10)
+    name: str = "",     # Same as name: str = Query(default="")
+):
+    pass
+```
+
+### as_required() Shortcut (v0.90a5+)
+
+Use `.as_required()` for required parameters:
+
+```python
+from cullinan.params import Body, File
+
+@post_api(url="/users")
+async def create_user(
+    self,
+    name: str = Body.as_required(min_length=1),
+    avatar: File = File.as_required(max_size=5*1024*1024),
+):
+    pass
 ```
 
 ### Simplified Syntax (v0.90a5+)
@@ -128,7 +159,7 @@ async def list_items(
 
 ### Using RawBody (v0.90a5+)
 
-Get the raw binary request body for signature verification or custom parsing:
+Get the raw unparsed request body (bytes) for signature verification or custom parsing:
 
 ```python
 from cullinan.params import Header, RawBody
@@ -138,8 +169,9 @@ import hashlib
 @post_api(url="/webhook")
 async def handle_webhook(
     self,
-    sign: Header(str, alias="X-Hub-Signature-256"),
-    raw_body: RawBody(),
+    sign: str = Header(alias="X-Hub-Signature-256"),
+    event: str = Header(alias="X-GitHub-Event"),
+    raw_body: bytes = RawBody(),  # Recommended syntax
 ):
     # raw_body is bytes
     secret = b'your_secret'
@@ -152,6 +184,15 @@ async def handle_webhook(
     import json
     data = json.loads(raw_body)
 ```
+
+**Comparison:**
+
+| Type | Syntax | Return Type | Description |
+|------|--------|-------------|-------------|
+| `DynamicBody` | `body: DynamicBody = DynamicBody()` | DynamicBody object | Parsed request body |
+| `RawBody` | `body: bytes = RawBody()` | bytes | Unparsed raw request body |
+
+> **Note**: Use `= RawBody()` or `= DynamicBody()` syntax to avoid Python's "non-default parameter follows default parameter" error.
 
 ### Using DynamicBody
 
@@ -289,8 +330,8 @@ URL path parameters, always required.
 @get_api(url="/users/{user_id}/posts/{post_id}")
 async def get_post(
     self,
-    user_id: Path(int),
-    post_id: Path(int, ge=1),
+    user_id: int = Path(),
+    post_id: int = Path(ge=1),
 ):
     pass
 ```
@@ -303,9 +344,9 @@ Query string parameters.
 @get_api(url="/search")
 async def search(
     self,
-    q: Query(str, required=True),
-    page: Query(int, default=1),
-    limit: Query(int, default=10, ge=1, le=100),
+    q: str = Query(required=True),
+    page: int = Query(default=1),
+    limit: int = Query(default=10, ge=1, le=100),
 ):
     pass
 ```
@@ -349,14 +390,23 @@ from cullinan.params import File, FileInfo, FileList
 @post_api(url="/upload")
 async def upload_file(
     self,
-    avatar: File(required=True, max_size=5*1024*1024),  # 5MB limit
-    document: File(allowed_types=['application/pdf']),
+    # New unified syntax: Type = Type(...)
+    avatar: File = File(max_size=5*1024*1024),  # 5MB limit
+    document: File = File(allowed_types=['application/pdf']),
 ):
     # avatar is a FileInfo instance (v0.90a5+)
     print(avatar.filename)      # Original filename
     print(avatar.size)          # File size in bytes
     print(avatar.content_type)  # MIME type
     avatar.save('/uploads/')    # Save to disk
+    pass
+
+# Required file using as_required()
+@post_api(url="/upload-required")
+async def upload_required(
+    self,
+    avatar: File = File.as_required(max_size=5*1024*1024),
+):
     pass
 ```
 
@@ -642,7 +692,7 @@ Install Pydantic: `pip install pydantic`
 | `Body` | Request body parameter |
 | `Header` | HTTP header parameter |
 | `File` | File upload parameter |
-| `RawBody` | Raw binary body parameter (v0.90a5+) |
+| `RawBody` | Raw unparsed request body, use `bytes = RawBody()` (v0.90a5+) |
 | `TypeConverter` | Type conversion utility |
 | `Auto` | Auto type inference |
 | `AutoType` | Auto type marker |

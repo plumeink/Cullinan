@@ -46,7 +46,7 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `Body` | class | Request body parameter marker |
 | `Header` | class | HTTP header parameter marker |
 | `File` | class | File upload parameter marker |
-| `RawBody` | class | Raw binary body parameter marker (v0.90a5+) |
+| `RawBody` | class | Raw unparsed request body, use `bytes = RawBody()` (v0.90a5+) |
 | `UNSET` | sentinel | Sentinel value for unset parameters |
 | `TypeConverter` | class | Type conversion utility |
 | `Auto` | class | Auto type inference utility |

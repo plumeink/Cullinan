@@ -19,12 +19,12 @@ class Path(Param):
 
     Example:
         @get_api(url="/users/{id}")
-        async def get_user(self, id: Path(int)):
+        async def get_user(self, id: int = Path()):
             # id 已经转换为 int 类型
             pass
 
         @get_api(url="/users/{id}/posts/{post_id}")
-        async def get_post(self, id: Path(int), post_id: Path(int)):
+        async def get_post(self, id: int = Path(), post_id: int = Path()):
             pass
     """
     _source = 'path'
@@ -78,10 +78,15 @@ class Query(Param):
         @get_api(url="/users")
         async def list_users(
             self,
-            page: Query(int, default=1, ge=1),
-            size: Query(int, default=10, ge=1, le=100),
-            q: Query(str, required=False),
+            page: int = Query(default=1, ge=1),
+            size: int = Query(default=10, ge=1, le=100),
+            q: str = Query(required=False),
         ):
+            pass
+
+        # 纯类型注解自动作为 Query（v0.90a5+）
+        @get_api(url="/items")
+        async def list_items(self, page: int = 1, size: int = 10):
             pass
     """
     _source = 'query'
@@ -95,12 +100,20 @@ class Body(Param):
     从请求体中提取的参数。传输格式 (JSON/Form) 由 Codec 层处理。
 
     Example:
-        # 单个字段
+        # 单个字段（新的统一语法）
         @post_api(url="/users")
         async def create_user(
             self,
-            name: Body(str, required=True),
-            age: Body(int, default=0, ge=0),
+            name: str = Body(required=True),
+            age: int = Body(default=0, ge=0),
+        ):
+            pass
+
+        # 使用 as_required() 快捷方法
+        @post_api(url="/users")
+        async def create_user(
+            self,
+            name: str = Body.as_required(min_length=1),
         ):
             pass
 
@@ -115,7 +128,7 @@ class Body(Param):
 
 
 class RawBody(Param):
-    """原始二进制请求体
+    """原始请求体 (未解析的 bytes)
 
     获取未解析的原始请求体 bytes，适用于：
     - 签名验证（如 GitHub Webhook）
@@ -126,10 +139,11 @@ class RawBody(Param):
         @post_api(url="/webhook")
         async def handle_webhook(
             self,
-            sign: Header(str, alias="X-Hub-Signature-256"),
-            raw_body: RawBody(),
+            sign: str = Header(alias="X-Hub-Signature-256"),
+            event: str = Header(alias="X-GitHub-Event"),
+            raw_body: bytes = RawBody(),  # 推荐语法
         ):
-            # raw_body 是原始的 bytes
+            # raw_body 是 bytes 类型
             import hmac
             expected = hmac.new(secret, raw_body, 'sha256').hexdigest()
             if sign != f'sha256={expected}':
@@ -169,13 +183,24 @@ class Header(Param):
 
     从 HTTP 请求头中提取的参数。
     通常使用 alias 指定实际的请求头名称。
+    HTTP 头匹配是大小写不敏感的（符合 RFC 7230）。
 
     Example:
         @get_api(url="/users")
         async def list_users(
             self,
-            auth: Header(str, alias='Authorization', required=True),
-            request_id: Header(str, alias='X-Request-ID', required=False),
+            auth: str = Header(alias='Authorization', required=True),
+            request_id: str = Header(alias='X-Request-ID', required=False),
+        ):
+            pass
+
+        # GitHub Webhook 签名验证
+        @post_api(url="/webhook")
+        async def handle_webhook(
+            self,
+            sign: str = Header(alias="X-Hub-Signature-256"),
+            event: str = Header(alias="X-GitHub-Event"),
+            raw_body: RawBody,
         ):
             pass
     """
@@ -227,21 +252,29 @@ class File(Param):
         max_count: 多文件上传时的最大文件数量
 
     Example:
-        # 单文件上传
+        # 单文件上传（新的统一语法）
         @post_api(url="/upload")
         async def upload(
             self,
-            avatar: File(required=True, max_size=5*1024*1024),  # 5MB
+            avatar: File = File(max_size=5*1024*1024),  # 5MB
         ):
             print(avatar.filename)
             print(avatar.size)
             avatar.save('/uploads/')
 
+        # 使用 as_required() 快捷方法
+        @post_api(url="/upload-required")
+        async def upload_required(
+            self,
+            avatar: File = File.as_required(max_size=5*1024*1024),
+        ):
+            pass
+
         # 带类型校验
         @post_api(url="/upload-image")
         async def upload_image(
             self,
-            image: File(allowed_types=['image/png', 'image/jpeg', 'image/*']),
+            image: File = File(allowed_types=['image/png', 'image/jpeg', 'image/*']),
         ):
             pass
 
@@ -249,7 +282,7 @@ class File(Param):
         @post_api(url="/upload-multiple")
         async def upload_multiple(
             self,
-            files: File(multiple=True, max_count=10),
+            files: File = File(multiple=True, max_count=10),
         ):
             for f in files:
                 print(f.filename)
@@ -389,4 +422,39 @@ class File(Param):
         if result.endswith(", "):
             result = result[:-2]
         return result + ")"
+
+    @classmethod
+    def as_required(
+        cls,
+        *,
+        name: str = None,
+        description: str = '',
+        alias: str = None,
+        max_size: Optional[int] = None,
+        min_size: Optional[int] = None,
+        allowed_types: Optional[List[str]] = None,
+        multiple: bool = False,
+        max_count: Optional[int] = None,
+    ) -> 'File':
+        """创建必填文件参数的快捷方法
+
+        Example:
+            # 以下两种写法等价
+            avatar: File = File.as_required(max_size=5*1024*1024)
+            avatar: File = File(required=True, max_size=5*1024*1024)
+
+        Returns:
+            设置了 required=True 的 File 实例
+        """
+        return cls(
+            name=name,
+            required=True,
+            description=description,
+            alias=alias,
+            max_size=max_size,
+            min_size=min_size,
+            allowed_types=allowed_types,
+            multiple=multiple,
+            max_count=max_count,
+        )
 

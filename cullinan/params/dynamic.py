@@ -45,6 +45,21 @@ class DynamicBody:
     - 嵌套访问: body.user.name (嵌套字典自动转换)
     - 链式安全访问: body.safe.user.address.city (不抛异常)
 
+    Usage:
+        # 推荐语法（避免 non-default parameter 问题）
+        @post_api(url="/users")
+        async def create_user(
+            self,
+            auth: str = Header(alias="Authorization"),
+            body: DynamicBody = DynamicBody(),  # 使用默认值语法
+        ):
+            print(body.name, body.age)
+
+        # 简化语法（无其他有默认值的参数时）
+        @post_api(url="/users")
+        async def create_user(self, body: DynamicBody):
+            print(body.name, body.age)
+
     Example:
         body = DynamicBody({'name': 'test', 'age': 18, 'user': {'id': 1}})
 

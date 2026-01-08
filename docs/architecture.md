@@ -211,7 +211,7 @@ class UserController:
     user_service: 'UserService' = Inject()
     
     @get_api(url='/{user_id}')
-    async def get_user(self, user_id: Path(int)):
+    async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
 ```
 
@@ -258,16 +258,16 @@ class UserController:
     @get_api(url='/{id}')
     async def get_user(
         self,
-        id: Path(int),
-        include_posts: Query(bool, default=False),
+        id: int = Path(),
+        include_posts: bool = Query(default=False),
     ):
         return {"id": id}
     
     @post_api(url='/')
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0, le=150),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0, le=150),
     ):
         return {"name": name, "age": age}
 ```

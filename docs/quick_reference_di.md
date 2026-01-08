@@ -50,7 +50,7 @@ class UserController:
     user_service: UserService = Inject()
     
     @get_api(url='/users/{user_id}')
-    async def get_user(self, user_id: Path(int)):
+    async def get_user(self, user_id: int = Path()):
         user = self.user_service.get_user(user_id)
         return user
 ```

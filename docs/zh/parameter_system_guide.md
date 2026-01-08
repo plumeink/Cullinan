@@ -63,7 +63,7 @@ cullinan/
 
 ## 快速开始
 
-### 基础用法
+### 基础用法（推荐语法）
 
 ```python
 from cullinan import get_api, post_api
@@ -73,25 +73,56 @@ from cullinan.params import Path, Query, Body
 class UserController:
     
     @get_api(url="/users/{id}")
-    async def get_user(self, id: Path(int)):
+    async def get_user(self, id: int = Path()):
         # id 已经转换为 int 类型
         return {"id": id}
     
     @get_api(url="/users")
     async def list_users(
         self,
-        page: Query(int, default=1, ge=1),
-        size: Query(int, default=10, ge=1, le=100),
+        page: int = Query(default=1, ge=1),
+        size: int = Query(default=10, ge=1, le=100),
     ):
         return {"page": page, "size": size}
     
     @post_api(url="/users")
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0),
     ):
         return {"name": name, "age": age}
+```
+
+### 纯类型注解作为 Query (v0.90a5+)
+
+纯类型注解会自动作为 Query 参数处理：
+
+```python
+@get_api(url="/users")
+async def list_users(
+    self,
+    page: int,          # 等同于 page: int = Query()
+    size: int = 10,     # 等同于 size: int = Query(default=10)
+    name: str = "",     # 等同于 name: str = Query(default="")
+):
+    pass
+```
+
+### as_required() 快捷方法 (v0.90a5+)
+
+使用 `.as_required()` 声明必填参数：
+
+```python
+from cullinan.params import Body, File
+
+@post_api(url="/users")
+async def create_user(
+    self,
+    name: str = Body.as_required(min_length=1),
+    avatar: File = File.as_required(max_size=5*1024*1024),
+):
+    pass
 ```
 
 ### 简化语法 (v0.90a5+)
@@ -128,7 +159,7 @@ async def list_items(
 
 ### 使用 RawBody (v0.90a5+)
 
-获取原始二进制请求体，用于签名验证或自定义解析：
+获取未解析的原始请求体 (bytes)，用于签名验证或自定义解析：
 
 ```python
 from cullinan.params import Header, RawBody
@@ -138,8 +169,9 @@ import hashlib
 @post_api(url="/webhook")
 async def handle_webhook(
     self,
-    sign: Header(str, alias="X-Hub-Signature-256"),
-    raw_body: RawBody(),
+    sign: str = Header(alias="X-Hub-Signature-256"),
+    event: str = Header(alias="X-GitHub-Event"),
+    raw_body: bytes = RawBody(),  # 推荐语法
 ):
     # raw_body 是 bytes 类型
     secret = b'your_secret'
@@ -152,6 +184,15 @@ async def handle_webhook(
     import json
     data = json.loads(raw_body)
 ```
+
+**对比：**
+
+| 类型 | 写法 | 返回类型 | 说明 |
+|------|------|----------|------|
+| `DynamicBody` | `body: DynamicBody = DynamicBody()` | DynamicBody 对象 | 已解析的请求体 |
+| `RawBody` | `body: bytes = RawBody()` | bytes | 未解析的原始请求体 |
+
+> **注意**: 使用 `= RawBody()` 或 `= DynamicBody()` 语法可以避免 Python 的 "non-default parameter follows default parameter" 错误。
 
 ### 使用 DynamicBody
 
@@ -289,8 +330,8 @@ URL 路径参数，始终必填。
 @get_api(url="/users/{user_id}/posts/{post_id}")
 async def get_post(
     self,
-    user_id: Path(int),
-    post_id: Path(int, ge=1),
+    user_id: int = Path(),
+    post_id: int = Path(ge=1),
 ):
     pass
 ```
@@ -303,9 +344,9 @@ async def get_post(
 @get_api(url="/search")
 async def search(
     self,
-    q: Query(str, required=True),
-    page: Query(int, default=1),
-    limit: Query(int, default=10, ge=1, le=100),
+    q: str = Query(required=True),
+    page: int = Query(default=1),
+    limit: int = Query(default=10, ge=1, le=100),
 ):
     pass
 ```
@@ -349,14 +390,23 @@ from cullinan.params import File, FileInfo, FileList
 @post_api(url="/upload")
 async def upload_file(
     self,
-    avatar: File(required=True, max_size=5*1024*1024),  # 5MB 限制
-    document: File(allowed_types=['application/pdf']),
+    # 新的统一语法: Type = Type(...)
+    avatar: File = File(max_size=5*1024*1024),  # 5MB 限制
+    document: File = File(allowed_types=['application/pdf']),
 ):
     # avatar 是 FileInfo 实例 (v0.90a5+)
     print(avatar.filename)      # 原始文件名
     print(avatar.size)          # 文件大小（字节）
     print(avatar.content_type)  # MIME 类型
     avatar.save('/uploads/')    # 保存到磁盘
+    pass
+
+# 使用 as_required() 声明必填文件
+@post_api(url="/upload-required")
+async def upload_required(
+    self,
+    avatar: File = File.as_required(max_size=5*1024*1024),
+):
     pass
 ```
 
@@ -642,7 +692,7 @@ async def create_user(self, user: CreateUserRequest):
 | `Body` | 请求体参数 |
 | `Header` | HTTP 请求头参数 |
 | `File` | 文件上传参数 |
-| `RawBody` | 原始二进制请求体参数 (v0.90a5+) |
+| `RawBody` | 原始请求体，使用 `bytes = RawBody()` (v0.90a5+) |
 | `TypeConverter` | 类型转换工具 |
 | `Auto` | 自动类型推断 |
 | `AutoType` | 自动类型标记 |

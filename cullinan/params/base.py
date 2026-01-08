@@ -218,3 +218,22 @@ class Param:
     def __hash__(self) -> int:
         return hash((self.name, self.type_, self.required))
 
+    @classmethod
+    def as_required(cls, type_: Type = str, **kwargs) -> 'Param':
+        """创建必填参数的快捷方法
+
+        Example:
+            # 以下两种写法等价
+            avatar: File = File.as_required(max_size=5*1024*1024)
+            avatar: File = File(required=True, max_size=5*1024*1024)
+
+        Args:
+            type_: 目标类型 (默认 str)
+            **kwargs: 其他参数配置
+
+        Returns:
+            设置了 required=True 的 Param 实例
+        """
+        kwargs['required'] = True
+        return cls(type_, **kwargs)
+

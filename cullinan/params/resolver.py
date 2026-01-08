@@ -11,7 +11,7 @@ import dataclasses
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, get_type_hints
 
 from .base import Param, UNSET
-from .types import Path, Query, Body, Header, File
+from .types import Path, Query, Body, Header, File, RawBody
 from .converter import TypeConverter, ConversionError
 from .auto import Auto, AutoType
 from .dynamic import DynamicBody
@@ -167,6 +167,14 @@ class ParamResolver:
                 if param_spec.name is None:
                     param_spec.name = name
 
+            # 检查默认值是否是 DynamicBody 实例
+            # 例如: body: DynamicBody = DynamicBody()
+            elif param.default is not inspect.Parameter.empty and isinstance(param.default, DynamicBody):
+                config['source'] = 'body'
+                config['type'] = DynamicBody
+                config['required'] = False
+                config['default'] = param.default
+
             # 检查是否是 Param 实例（类型注解方式）
             elif isinstance(annotation, Param):
                 param_spec = annotation
@@ -185,6 +193,12 @@ class ParamResolver:
                 config['type'] = DynamicBody
                 config['required'] = False
 
+            # 检查是否是 RawBody（类本身，不需要括号）
+            elif annotation is RawBody:
+                config['source'] = 'raw_body'
+                config['type'] = bytes
+                config['required'] = False
+
             # 检查是否是可处理的模型类型（通过注册表）
             elif get_model_handler_registry().can_handle(annotation):
                 handler = get_model_handler_registry().get_handler(annotation)
@@ -198,7 +212,12 @@ class ParamResolver:
                 config['source'] = 'auto'
                 config['type'] = AutoType
 
-            # 普通类型注解
+            # 普通类型注解（默认作为 Query 参数）
+            elif annotation in (str, int, float, bool):
+                config['source'] = 'query'
+                config['type'] = annotation
+
+            # 其他类型注解
             elif annotation is not None:
                 config['type'] = annotation
 

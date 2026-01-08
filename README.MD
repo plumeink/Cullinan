@@ -31,7 +31,11 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 ### Core Framework
 - Simple decorator-based routing (`@controller`, `@get_api`, `@post_api`, ...)
 - **Type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File` (v0.90+)
+- **Unified parameter syntax**: `param: Type = Type(...)` (v0.90a5+)
+- **Pure type annotation as Query**: `page: int` automatically becomes Query parameter (v0.90a5+)
+- **as_required() shortcut**: `File.as_required()`, `Body.as_required()` (v0.90a5+)
 - **DynamicBody** for flexible request body access with safe accessors (v0.90a4+)
+- **RawBody** for raw unparsed request body (bytes) (v0.90a5+)
 - **FileInfo/FileList** for file upload with validation (v0.90a5+)
 - **@field_validator** for dataclass field validation (v0.90a5+)
 - **ResponseSerializer** for automatic response serialization (v0.90a5+)
@@ -118,13 +122,19 @@ from cullinan.params import Query, Body, DynamicBody
 
 @controller(url='/api')
 class HelloController:
-    # Type-safe query parameters with automatic conversion
+    # Type-safe query parameters (new unified syntax)
     @get_api(url='/hello')
-    def hello(self, name: Query(str, default='World')):
+    def hello(self, name: str = Query(default='World')):
         return self.response_factory(
             status=200,
             body={"message": f"Hello, {name}!"}
         )
+    
+    # Pure type annotation as Query (v0.90a5+)
+    @get_api(url='/users')
+    def list_users(self, page: int = 1, size: int = 10):
+        # page and size are automatically Query parameters
+        return {"page": page, "size": size}
     
     # DynamicBody for flexible request body access
     @post_api(url='/users')

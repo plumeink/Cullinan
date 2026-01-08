@@ -46,7 +46,7 @@ pr_links: []
 | `Body` | 类 | 请求体参数标记 |
 | `Header` | 类 | HTTP 请求头参数标记 |
 | `File` | 类 | 文件上传参数标记 |
-| `RawBody` | 类 | 原始二进制请求体参数标记 (v0.90a5+) |
+| `RawBody` | 类 | 原始请求体，使用 `bytes = RawBody()` (v0.90a5+) |
 | `UNSET` | 哨兵 | 表示未设置的哨兵值 |
 | `TypeConverter` | 类 | 类型转换工具 |
 | `Auto` | 类 | 自动类型推断工具 |

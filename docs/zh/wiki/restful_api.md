@@ -28,20 +28,20 @@ from cullinan.params import Path, Query, Body, DynamicBody
 
 @controller(url='/api/users')
 class UserController:
-    # 类型安全参数，支持自动转换和校验
+    # 类型安全参数，支持自动转换和校验（新的统一语法）
     @get_api(url='/{id}')
     async def get_user(
         self,
-        id: Path(int),
-        include_posts: Query(bool, default=False),
+        id: int = Path(),
+        include_posts: bool = Query(default=False),
     ):
         return {"id": id, "include_posts": include_posts}
     
     @post_api(url='/')
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0, le=150),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0, le=150),
     ):
         return {"name": name, "age": age}
     
@@ -55,12 +55,16 @@ class UserController:
 
 | 类型 | 来源 | 示例 |
 |------|------|------|
-| `Path(type)` | URL 路径 | `id: Path(int)` |
-| `Query(type)` | 查询字符串 | `page: Query(int, default=1)` |
-| `Body(type)` | 请求体 | `name: Body(str, required=True)` |
-| `Header(type)` | HTTP 请求头 | `auth: Header(str, alias='Authorization')` |
-| `File()` | 文件上传 | `avatar: File(max_size=5*1024*1024)` |
-| `DynamicBody` | 完整请求体 | `body: DynamicBody` |
+| `Path(type)` | URL 路径 | `id: int = Path()` |
+| `Query(type)` | 查询字符串 | `page: int = Query(default=1)` |
+| `Body(type)` | 请求体 | `name: str = Body(required=True)` |
+| `Header(type)` | HTTP 请求头 | `auth: str = Header(alias='Authorization')` |
+| `File()` | 文件上传 | `avatar: File = File(max_size=5*1024*1024)` |
+| `RawBody` | 原始请求体 (未解析的 bytes) | `raw: bytes = RawBody()` |
+| `DynamicBody` | 完整请求体 (已解析) | `body: DynamicBody = DynamicBody()` |
+
+> **注意**: 纯类型注解如 `page: int` 会自动作为 Query 参数处理。
+> 使用 `= RawBody()` 或 `= DynamicBody()` 可以避免 "non-default parameter follows default parameter" 错误。
 
 ### 文件上传 (v0.90a5+)
 
@@ -69,17 +73,22 @@ from cullinan.params import File, FileInfo, FileList
 
 @controller(url='/api')
 class UploadController:
-    # 带校验的单文件上传
+    # 带校验的单文件上传（新语法）
     @post_api(url='/upload')
-    async def upload(self, avatar: File(max_size=5*1024*1024, allowed_types=['image/*'])):
+    async def upload(self, avatar: File = File(max_size=5*1024*1024, allowed_types=['image/*'])):
         # avatar 是 FileInfo 实例
         print(avatar.filename, avatar.size, avatar.content_type)
         avatar.save('/uploads/')
         return {"filename": avatar.filename}
     
+    # 使用 as_required() 声明必填文件
+    @post_api(url='/upload-required')
+    async def upload_required(self, avatar: File = File.as_required(max_size=5*1024*1024)):
+        return {"filename": avatar.filename}
+    
     # 多文件上传
     @post_api(url='/upload-multiple')
-    async def upload_multiple(self, files: File(multiple=True, max_count=10)):
+    async def upload_multiple(self, files: File = File(multiple=True, max_count=10)):
         # files 是 FileList 实例
         return {"count": len(files), "names": files.filenames}
 ```

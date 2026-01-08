@@ -202,7 +202,7 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    async def get_user(self, user_id: Path(int)):
+    async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
 ```
     
@@ -234,17 +234,17 @@ from cullinan.params import Path, Query, Body, DynamicBody
 
 @controller(url='/api/users')
 class UserController:
-    # Type-safe path and query parameters
+    # Type-safe path and query parameters (new unified syntax)
     @get_api(url='/{id}')
-    async def get_user(self, id: Path(int), include_posts: Query(bool, default=False)):
+    async def get_user(self, id: int = Path(), include_posts: bool = Query(default=False)):
         return {"id": id, "include_posts": include_posts}
     
-    # Query parameters with validation
+    # Pure type annotation as Query (v0.90a5+)
     @get_api(url='/')
     async def list_users(
         self,
-        page: Query(int, default=1, ge=1),
-        size: Query(int, default=10, ge=1, le=100),
+        page: int = 1,      # Same as Query(default=1)
+        size: int = 10,     # Same as Query(default=10)
     ):
         return {"page": page, "size": size}
     
@@ -252,8 +252,8 @@ class UserController:
     @post_api(url='/')
     async def create_user(
         self,
-        name: Body(str, required=True),
-        age: Body(int, default=0, ge=0, le=150),
+        name: str = Body(required=True),
+        age: int = Body(default=0, ge=0, le=150),
     ):
         return {"name": name, "age": age}
     

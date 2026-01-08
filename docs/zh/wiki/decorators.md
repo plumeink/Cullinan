@@ -75,7 +75,7 @@ class UserController:
         return {"users": []}
     
     @get_api(url="/{id}")
-    async def get_user(self, id: Path(int)):
+    async def get_user(self, id: int = Path()):
         return self.user_service.get_user(id)
 ```
 
