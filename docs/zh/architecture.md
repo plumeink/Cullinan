@@ -214,14 +214,14 @@ class UserService(Service):
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
+from cullinan.params import Path
 
 @controller(url='/api/users')
 class UserController:
     user_service: 'UserService' = Inject()
     
-    @get_api(url='/<user_id>')
-    def get_user(self, url_params):
-        user_id = url_params.get('user_id')
+    @get_api(url='/{user_id}')
+    async def get_user(self, user_id: Path(int)):
         return self.user_service.get_user(user_id)
 ```
 
@@ -233,9 +233,69 @@ class UserController:
 
 ---
 
-### 4. 扩展机制
+### 4. 参数系统 (`cullinan/params/`, `cullinan/codec/`) - v0.90 新增
 
-#### 4.1 中间件系统
+类型安全的参数处理，支持自动转换和校验。
+
+**模块结构**：
+```
+cullinan/
+├── codec/           # 编解码层
+│   ├── base.py     # BodyCodec / ResponseCodec 抽象
+│   ├── errors.py   # DecodeError / EncodeError
+│   ├── json_codec.py
+│   ├── form_codec.py
+│   └── registry.py # CodecRegistry
+├── params/          # 参数处理层
+│   ├── base.py     # Param 基类 + UNSET
+│   ├── types.py    # Path/Query/Body/Header/File
+│   ├── converter.py # TypeConverter
+│   ├── auto.py     # Auto 类型推断
+│   ├── dynamic.py  # DynamicBody
+│   ├── validator.py # ParamValidator
+│   ├── model.py    # ModelResolver (dataclass)
+│   └── resolver.py # ParamResolver
+└── middleware/
+    └── body_decoder.py # BodyDecoderMiddleware
+```
+
+**使用方式**：
+```python
+from cullinan.params import Path, Query, Body, DynamicBody
+
+@controller(url='/api/users')
+class UserController:
+    @get_api(url='/{id}')
+    async def get_user(
+        self,
+        id: Path(int),
+        include_posts: Query(bool, default=False),
+    ):
+        return {"id": id}
+    
+    @post_api(url='/')
+    async def create_user(
+        self,
+        name: Body(str, required=True),
+        age: Body(int, default=0, ge=0, le=150),
+    ):
+        return {"name": name, "age": age}
+```
+
+**特性**：
+- 类型安全的参数声明
+- 自动类型转换
+- 内置校验器 (ge, le, regex 等)
+- dataclass 和 DynamicBody 支持
+- 自定义 Codec 注册
+
+详见 [参数系统指南](parameter_system_guide.md)。
+
+---
+
+### 5. 扩展机制
+
+#### 5.1 中间件系统
 
 ```python
 from cullinan.middleware import middleware, Middleware
@@ -257,7 +317,7 @@ class LoggingMiddleware(Middleware):
 - 请求/响应双向拦截
 - 支持短路（返回 None 停止后续处理）
 
-#### 4.2 扩展点发现
+#### 5.2 扩展点发现
 
 ```python
 from cullinan.extensions import list_extension_points

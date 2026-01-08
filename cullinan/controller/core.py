@@ -23,6 +23,9 @@ from cullinan.logging_utils import should_log, log_if_enabled
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol, List
 from cullinan.handler import get_handler_registry
 
+# New parameter system imports
+from cullinan.params import Param, DynamicBody, ParamResolver, ResolveError
+
 class ResponseProtocol(Protocol):
     def push(self, resp: Any) -> Any: ...
     def pop(self, token: Any) -> None: ...
@@ -673,7 +676,8 @@ def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional
 
 
 async def request_handler(self, func: Callable, params: Tuple, headers: Optional[dict],
-                          type: str, get_request_body: bool = False) -> None:
+                          type: str, get_request_body: bool = False,
+                          url_param_keys: list = None, url_param_values: tuple = None) -> None:
     """Handle HTTP request by invoking the controller function with resolved parameters.
     
     This is the core request handling function that:
@@ -691,7 +695,9 @@ async def request_handler(self, func: Callable, params: Tuple, headers: Optional
         headers: Dictionary of required headers
         type: HTTP method type ('get', 'post', 'patch', 'delete', 'put')
         get_request_body: Whether to pass raw request body to the function
-        
+        url_param_keys: List of URL parameter names (for new param system)
+        url_param_values: Tuple of URL parameter values (for new param system)
+
     Performance optimizations:
         - Uses cached function signatures (_get_cached_signature)
         - Uses cached parameter mappings (_get_cached_param_mapping)
@@ -786,23 +792,143 @@ async def request_handler(self, func: Callable, params: Tuple, headers: Optional
     resp_obj = None
 
     try:
-        # Performance optimization: use pre-compiled parameter mapping
-        param_names, needs_request_body, needs_headers = _get_cached_param_mapping(func)
+        # =================================================================
+        # New Parameter System Integration (v0.90+)
+        # =================================================================
+        # Check if function uses new-style parameter annotations (Path, Query, Body, DynamicBody, etc.)
+        # If so, use ParamResolver; otherwise fall back to legacy parameter handling
 
-        param_list = []
-        for name in param_names:
-            if name in KEY_NAME_INDEX:
-                idx = KEY_NAME_INDEX[name]
+        use_new_param_system = False
+        params_config = {}
+
+        try:
+            params_config = ParamResolver.analyze_params(func)
+            # Check if any parameter uses the new system
+            for name, config in params_config.items():
+                source = config.get('source', 'unknown')
+                target_type = config.get('type')
+                param_spec = config.get('param_spec')
+                # New system markers: Param subclass instance, DynamicBody, or dataclass
+                if param_spec is not None or target_type is DynamicBody:
+                    use_new_param_system = True
+                    break
+                # Also check if it's a source we recognize from new system
+                if source in ('path', 'query', 'body', 'header', 'file', 'auto'):
+                    use_new_param_system = True
+                    break
+        except Exception as e:
+            logger.debug(f"ParamResolver.analyze_params failed, using legacy: {e}")
+            use_new_param_system = False
+
+        if use_new_param_system:
+            # =================================================================
+            # New Parameter System Path
+            # =================================================================
+            # Prepare data sources for ParamResolver
+
+            # Build URL params dict from keys and values passed by decorator
+            url_params_dict = {}
+            if url_param_keys and url_param_values:
+                for i, key in enumerate(url_param_keys):
+                    if i < len(url_param_values):
+                        url_params_dict[key] = url_param_values[i]
+            # Fallback to params[0] if available
+            if not url_params_dict and params[0]:
+                url_params_dict = params[0]
+
+            query_params_dict = params[1] if params[1] else {}
+            body_params_dict = params[2] if params[2] else {}
+            file_params_dict = params[3] if params[3] else {}
+
+            # For new param system, also extract query params from request directly
+            if not query_params_dict and hasattr(self, 'request'):
+                # Extract all query arguments
                 try:
-                    param_list.append(params[idx])
+                    for key in self.request.query_arguments:
+                        values = self.request.query_arguments[key]
+                        query_params_dict[key] = values[0].decode('utf-8') if values else None
                 except Exception:
+                    pass
+
+            # If body_params is empty but request has body, try to parse it
+            if not body_params_dict and hasattr(self, 'request') and self.request.body:
+                try:
+                    body_bytes = self.request.body
+                    if isinstance(body_bytes, bytes):
+                        body_bytes = body_bytes.decode('utf-8')
+                    if body_bytes:
+                        body_params_dict = json.loads(body_bytes)
+                except Exception as e:
+                    logger.debug(f"Failed to parse request body as JSON: {e}")
+                    body_params_dict = {}
+
+            # For new param system, extract headers from request directly
+            headers_dict = {}
+            if hasattr(self, 'request') and hasattr(self.request, 'headers'):
+                try:
+                    # Convert HTTPHeaders to dict
+                    for key in self.request.headers:
+                        headers_dict[key] = self.request.headers[key]
+                except Exception:
+                    pass
+            # Merge with any headers from header_resolver (for backward compat)
+            if headers:
+                headers_dict.update(headers)
+
+            # Resolve parameters using ParamResolver
+            try:
+                resolved_params = ParamResolver.resolve(
+                    func=func,
+                    request=self.request if hasattr(self, 'request') else None,
+                    url_params=url_params_dict,
+                    query_params=query_params_dict,
+                    body_data=body_params_dict,
+                    headers=headers_dict,
+                    files=file_params_dict,
+                )
+
+                # Build param_list in correct order based on function signature
+                sig = ParamResolver.get_signature(func)
+                param_list = []
+                for name, param in sig.parameters.items():
+                    if name == 'self':
+                        continue
+                    if name in resolved_params:
+                        param_list.append(resolved_params[name])
+                    else:
+                        param_list.append(None)
+
+            except ResolveError as e:
+                logger.warning(f"Parameter resolution failed: {e.message}, errors: {e.errors}")
+                # Return error response
+                self.set_status(400)
+                self.write(json.dumps({
+                    'error': 'Parameter validation failed',
+                    'details': e.errors
+                }))
+                self.finish()
+                return
+        else:
+            # =================================================================
+            # Legacy Parameter System Path (backward compatibility)
+            # =================================================================
+            # Performance optimization: use pre-compiled parameter mapping
+            param_names, needs_request_body, needs_headers = _get_cached_param_mapping(func)
+
+            param_list = []
+            for name in param_names:
+                if name in KEY_NAME_INDEX:
+                    idx = KEY_NAME_INDEX[name]
+                    try:
+                        param_list.append(params[idx])
+                    except Exception:
+                        param_list.append(None)
+                elif name == 'request_body' and get_request_body:
+                    param_list.append(self.request.body)
+                elif name == 'headers' and headers is not None:
+                    param_list.append(headers)
+                else:
                     param_list.append(None)
-            elif name == 'request_body' and get_request_body:
-                param_list.append(self.request.body)
-            elif name == 'headers' and headers is not None:
-                param_list.append(headers)
-            else:
-                param_list.append(None)
 
         # 调用目标函数
         response_ret = func(controller_self, *param_list) if len(param_list) > 0 else func(controller_self)
@@ -880,6 +1006,9 @@ def get_api(**kwargs: Any) -> Callable:
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
+        # Attach URL param keys to original function for new param system
+        setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+
         @EncapsulationHandler.add_func(url=local_url, type='get')
         async def get(self, *args):
             # Conditional logging: only log if INFO level is enabled
@@ -898,7 +1027,9 @@ def get_api(**kwargs: Any) -> Callable:
                                                    query_params, None,
                                                    file_params),
                                   header_resolver(self, kwargs.get('headers')),
-                                  'get')
+                                  'get',
+                                  url_param_keys=url_param_key_list,
+                                  url_param_values=args)
 
         # Task: attach route metadata for fallback scanning
         setattr(get, '__cullinan_url__', local_url)
@@ -915,6 +1046,9 @@ def post_api(**kwargs: Any) -> Callable:
         local_url = kwargs.get('url', '')
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
+
+        # Attach URL param keys to original function for new param system
+        setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
 
         @EncapsulationHandler.add_func(url=local_url, type='post')
         async def post(self, *args):
@@ -937,7 +1071,9 @@ def post_api(**kwargs: Any) -> Callable:
                                                    file_params),
                                   header_resolver(self, kwargs.get('headers')),
                                   'post',
-                                  kwargs.get('get_request_body', False))
+                                  kwargs.get('get_request_body', False),
+                                  url_param_keys=url_param_key_list,
+                                  url_param_values=args)
 
         setattr(post, '__cullinan_url__', local_url)
         setattr(post, '__cullinan_method__', 'post')
@@ -953,6 +1089,9 @@ def patch_api(**kwargs: Any) -> Callable:
         local_url = kwargs.get('url', '')
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
+
+        # Attach URL param keys to original function for new param system
+        setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
 
         @EncapsulationHandler.add_func(url=local_url, type='patch')
         async def patch(self, *args):
@@ -974,7 +1113,9 @@ def patch_api(**kwargs: Any) -> Callable:
                                                    body_params, file_params),
                                   header_resolver(self, kwargs.get('headers')),
                                   'patch',
-                                  kwargs.get('get_request_body', False))
+                                  kwargs.get('get_request_body', False),
+                                  url_param_keys=url_param_key_list,
+                                  url_param_values=args)
 
         setattr(patch, '__cullinan_url__', local_url)
         setattr(patch, '__cullinan_method__', 'patch')
@@ -990,6 +1131,9 @@ def delete_api(**kwargs: Any) -> Callable:
         local_url = kwargs.get('url', '')
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
+
+        # Attach URL param keys to original function for new param system
+        setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
 
         @EncapsulationHandler.add_func(url=local_url, type='delete')
         async def delete(self, *args):
@@ -1008,7 +1152,9 @@ def delete_api(**kwargs: Any) -> Callable:
                                                    caller_keys + tuple(url_param_key_list), url_values,
                                                    query_params, None, file_params),
                                   header_resolver(self, kwargs.get('headers')),
-                                  'delete')
+                                  'delete',
+                                  url_param_keys=url_param_key_list,
+                                  url_param_values=args)
 
         setattr(delete, '__cullinan_url__', local_url)
         setattr(delete, '__cullinan_method__', 'delete')
@@ -1024,6 +1170,9 @@ def put_api(**kwargs: Any) -> Callable:
         local_url = kwargs.get('url', '')
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
+
+        # Attach URL param keys to original function for new param system
+        setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
 
         @EncapsulationHandler.add_func(url=local_url, type='put')
         async def put(self, *args):
@@ -1042,7 +1191,9 @@ def put_api(**kwargs: Any) -> Callable:
                                                    caller_keys + tuple(url_param_key_list), url_values,
                                                    query_params, None, file_params),
                                   header_resolver(self, kwargs.get('headers')),
-                                  'put')
+                                  'put',
+                                  url_param_keys=url_param_key_list,
+                                  url_param_values=args)
 
         setattr(put, '__cullinan_url__', local_url)
         setattr(put, '__cullinan_method__', 'put')

@@ -29,6 +29,7 @@ nav:
     - Import Migration 0.90: import_migration_090.md
     - Dependency Injection Guide: dependency_injection_guide.md
     - DI Quick Reference: quick_reference_di.md
+    - Parameter System Guide: parameter_system_guide.md
     - Extension Development: extension_development_guide.md
     - Quick Start Extensions: quick_start_extensions.md
   - Development:

@@ -43,14 +43,14 @@ class UserController:
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
+from cullinan.params import Path
 
 @controller(url='/api')
 class UserController:
     user_service: UserService = Inject()
     
-    @get_api(url='/users/<user_id>')
-    async def get_user(self, url_param):
-        user_id = url_param.get('user_id')
+    @get_api(url='/users/{user_id}')
+    async def get_user(self, user_id: Path(int)):
         user = self.user_service.get_user(user_id)
         return user
 ```

@@ -29,6 +29,58 @@ pr_links: []
 - `cullinan.controller` — 控制器与 RESTful API 装饰器
 - `cullinan.service` — Service 基类与 `@service` 装饰器
 - `cullinan.middleware` — 中间件基类与扩展点
+- `cullinan.codec` — 请求/响应编解码（JSON、Form 等）
+- `cullinan.params` — 参数处理（Path、Query、Body、Header、File、校验器）
+
+## v0.90 新增：参数系统
+
+参数系统提供类型安全的请求参数处理。详见 [参数系统指南](parameter_system_guide.md)。
+
+### cullinan.params
+
+| 符号 | 类型 | 说明 |
+|------|------|------|
+| `Param` | 类 | 参数基类 |
+| `Path` | 类 | URL 路径参数标记 |
+| `Query` | 类 | 查询字符串参数标记 |
+| `Body` | 类 | 请求体参数标记 |
+| `Header` | 类 | HTTP 请求头参数标记 |
+| `File` | 类 | 文件上传参数标记 |
+| `UNSET` | 哨兵 | 表示未设置的哨兵值 |
+| `TypeConverter` | 类 | 类型转换工具 |
+| `Auto` | 类 | 自动类型推断工具 |
+| `AutoType` | 类 | 用于签名的自动类型标记 |
+| `DynamicBody` | 类 | 动态请求体容器 |
+| `ParamValidator` | 类 | 参数校验工具 |
+| `ValidationError` | 异常 | 校验错误 |
+| `ModelResolver` | 类 | dataclass 模型解析器 |
+| `ModelError` | 异常 | 模型解析错误 |
+| `ParamResolver` | 类 | 参数解析编排器 |
+| `ResolveError` | 异常 | 参数解析错误 |
+
+### cullinan.codec
+
+| 符号 | 类型 | 说明 |
+|------|------|------|
+| `BodyCodec` | 类 | 请求体编解码器抽象类 |
+| `ResponseCodec` | 类 | 响应编码器抽象类 |
+| `JsonBodyCodec` | 类 | JSON 请求体解码器 |
+| `JsonResponseCodec` | 类 | JSON 响应编码器 |
+| `FormBodyCodec` | 类 | Form 请求体解码器 |
+| `CodecRegistry` | 类 | Codec 注册表 |
+| `get_codec_registry()` | 函数 | 获取全局 Codec 注册表 |
+| `reset_codec_registry()` | 函数 | 重置 Codec 注册表（测试用）|
+| `DecodeError` | 异常 | 解码错误 |
+| `EncodeError` | 异常 | 编码错误 |
+| `CodecError` | 异常 | 编解码错误基类 |
+
+### cullinan.middleware（新增）
+
+| 符号 | 类型 | 说明 |
+|------|------|------|
+| `BodyDecoderMiddleware` | 类 | 自动请求体解码中间件 |
+| `get_decoded_body()` | 函数 | 获取已解码的请求体 |
+| `set_decoded_body()` | 函数 | 设置已解码的请求体（测试用）|
 
 ## 公共符号与签名（建议结构）
 

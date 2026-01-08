@@ -181,6 +181,7 @@ Cullinan provides built-in IoC/DI support.
 from cullinan.controller import controller, get_api
 from cullinan.service import Service, service
 from cullinan.core import injectable, InjectByName
+from cullinan.params import Path
 
 # Service uses @service (inherits from Service base class)
 @service
@@ -201,9 +202,7 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    def get_user(self, url_params):
-        # extract the path parameter from the url_params dict
-        user_id = url_params.get('user_id') if url_params else None
+    async def get_user(self, user_id: Path(int)):
         return self.user_service.get_user(user_id)
 ```
     
@@ -226,7 +225,58 @@ Key points:
 - These decorators **only accept keyword arguments** (they are defined as `def get_api(**kwargs)` etc.).
   - `@get_api('/user')` is **invalid** and will raise a `TypeError` at import time.
   - Always use the keyword form: `@get_api(url='/user')`.
-- The `url` argument uses a lightweight template syntax with `{param}` placeholders, which are mapped to your method parameters. Use the singular dict-style parameter names in your handler to access captured values:
+- The `url` argument uses a lightweight template syntax with `{param}` placeholders.
+
+**v0.90+ Recommended: Type-Safe Parameter System**
+
+```python
+from cullinan.params import Path, Query, Body, DynamicBody
+
+@controller(url='/api/users')
+class UserController:
+    # Type-safe path and query parameters
+    @get_api(url='/{id}')
+    async def get_user(self, id: Path(int), include_posts: Query(bool, default=False)):
+        return {"id": id, "include_posts": include_posts}
+    
+    # Query parameters with validation
+    @get_api(url='/')
+    async def list_users(
+        self,
+        page: Query(int, default=1, ge=1),
+        size: Query(int, default=10, ge=1, le=100),
+    ):
+        return {"page": page, "size": size}
+    
+    # Type-safe body parameters with validation
+    @post_api(url='/')
+    async def create_user(
+        self,
+        name: Body(str, required=True),
+        age: Body(int, default=0, ge=0, le=150),
+    ):
+        return {"name": name, "age": age}
+    
+    # DynamicBody for flexible access
+    @post_api(url='/dynamic')
+    async def create_dynamic(self, body: DynamicBody):
+        return {"name": body.name, "age": body.get('age', 0)}
+```
+
+See [Parameter System Guide](parameter_system_guide.md) for full details.
+
+<details>
+<summary><strong>Legacy Style (still supported)</strong></summary>
+
+The traditional parameter style is still supported for backward compatibility:
+
+Common options:
+- `url`: Route pattern (string). Supports `{param}` placeholders, e.g. `'/users/{user_id}'`.
+- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`.
+- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing.
+- `file_params`: Iterable of file field names for file uploads.
+- `headers`: Iterable of required HTTP header names.
+- `get_request_body` (POST/PATCH only): If `True`, passes the raw request body to your method.
 
 ```python
 @controller(url='/api/users')
@@ -234,35 +284,22 @@ class UserController:
     @get_api(url='/{user_id}')
     def get_user(self, url_params):
         user_id = url_params.get('user_id') if url_params else None
-        ...
-```
+        return {"id": user_id}
 
-Common options:
-
-- `url`: Route pattern (string). Supports `{param}` placeholders, e.g. `'/users/{user_id}'`.
-- `query_params`: Iterable of query parameter names, e.g. `('page', 'size')`. In handlers the query values are provided via a single `query_params` dict argument.
-- `body_params` (POST/PATCH only): Iterable of body field names for JSON/form parsing. In handlers the parsed fields are provided via a single `body_params` dict argument.
-- `file_params`: Iterable of file field names for file uploads.
-- `headers`: Iterable of required HTTP header names.
-- `get_request_body` (POST/PATCH only): If `True`, passes the raw request body to your method.
-
-Example combinations:
-
-```python
-@controller(url='/api/users')
-class UserController:
     @get_api(url='/', query_params=('page', 'size'))
     def list_users(self, query_params):
         page = query_params.get('page') if query_params else None
         size = query_params.get('size') if query_params else None
-        ...
+        return {"page": page, "size": size}
 
     @post_api(url='/', body_params=('name', 'email'))
     def create_user(self, body_params):
         name = body_params.get('name') if body_params else None
         email = body_params.get('email') if body_params else None
-        ...
+        return {"name": name, "email": email}
 ```
+
+</details>
 
 For a deeper dive into URL patterns and all decorator options, see `docs/wiki/restful_api.md`.
 

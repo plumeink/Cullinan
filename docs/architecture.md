@@ -204,14 +204,14 @@ Handles HTTP requests.
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
+from cullinan.params import Path
 
 @controller(url='/api/users')
 class UserController:
     user_service: 'UserService' = Inject()
     
-    @get_api(url='/<user_id>')
-    def get_user(self, url_params):
-        user_id = url_params.get('user_id')
+    @get_api(url='/{user_id}')
+    async def get_user(self, user_id: Path(int)):
         return self.user_service.get_user(user_id)
 ```
 
@@ -223,9 +223,69 @@ class UserController:
 
 ---
 
-### 4. Extension Mechanism
+### 4. Parameter System (`cullinan/params/`, `cullinan/codec/`) - New in v0.90
 
-#### 4.1 Middleware System
+Type-safe parameter handling with automatic conversion and validation.
+
+**Module Structure**:
+```
+cullinan/
+├── codec/           # Encoding/Decoding layer
+│   ├── base.py     # BodyCodec / ResponseCodec abstractions
+│   ├── errors.py   # DecodeError / EncodeError
+│   ├── json_codec.py
+│   ├── form_codec.py
+│   └── registry.py # CodecRegistry
+├── params/          # Parameter handling layer
+│   ├── base.py     # Param base class + UNSET
+│   ├── types.py    # Path/Query/Body/Header/File
+│   ├── converter.py # TypeConverter
+│   ├── auto.py     # Auto type inference
+│   ├── dynamic.py  # DynamicBody
+│   ├── validator.py # ParamValidator
+│   ├── model.py    # ModelResolver (dataclass)
+│   └── resolver.py # ParamResolver
+└── middleware/
+    └── body_decoder.py # BodyDecoderMiddleware
+```
+
+**Usage**:
+```python
+from cullinan.params import Path, Query, Body, DynamicBody
+
+@controller(url='/api/users')
+class UserController:
+    @get_api(url='/{id}')
+    async def get_user(
+        self,
+        id: Path(int),
+        include_posts: Query(bool, default=False),
+    ):
+        return {"id": id}
+    
+    @post_api(url='/')
+    async def create_user(
+        self,
+        name: Body(str, required=True),
+        age: Body(int, default=0, ge=0, le=150),
+    ):
+        return {"name": name, "age": age}
+```
+
+**Features**:
+- Type-safe parameter declaration
+- Automatic type conversion
+- Built-in validators (ge, le, regex, etc.)
+- dataclass and DynamicBody support
+- Custom codec registration
+
+See [Parameter System Guide](parameter_system_guide.md) for details.
+
+---
+
+### 5. Extension Mechanism
+
+#### 5.1 Middleware System
 
 ```python
 from cullinan.middleware import middleware, Middleware
@@ -247,7 +307,7 @@ class LoggingMiddleware(Middleware):
 - Bidirectional request/response interception
 - Support short-circuiting (return None to stop)
 
-#### 4.2 Extension Point Discovery
+#### 5.2 Extension Point Discovery
 
 ```python
 from cullinan.extensions import list_extension_points

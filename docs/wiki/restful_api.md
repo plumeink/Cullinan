@@ -4,7 +4,7 @@ author: "Plumeink"
 status: updated
 locale: en
 translation_pair: "docs/zh/wiki/restful_api.md"
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-01-08T00:00:00Z"
 
 # RESTful API decorators (detailed)
 
@@ -13,6 +13,75 @@ This page documents the HTTP method decorators used in Cullinan controllers: `ge
 Summary
 - All decorators are defined as `def get_api(**kwargs)` (and similarly for others) and therefore accept only keyword arguments. Using a positional argument like `@get_api('/user')` is invalid and will raise a TypeError on import. Always use `@get_api(url='/users/{user_id}')`.
 - URL templates use `{name}` placeholders parsed by `url_resolver`. Those placeholders are mapped to controller method arguments (order-based).
+
+---
+
+## v0.90+ Recommended: Type-Safe Parameters
+
+Cullinan 0.90 introduces a new type-safe parameter system. See [Parameter System Guide](../parameter_system_guide.md) for full details.
+
+### Quick Example
+
+```python
+from cullinan.controller import controller, get_api, post_api
+from cullinan.params import Path, Query, Body, DynamicBody
+
+@controller(url='/api/users')
+class UserController:
+    # Type-safe parameters with automatic conversion and validation
+    @get_api(url='/{id}')
+    async def get_user(
+        self,
+        id: Path(int),
+        include_posts: Query(bool, default=False),
+    ):
+        return {"id": id, "include_posts": include_posts}
+    
+    @post_api(url='/')
+    async def create_user(
+        self,
+        name: Body(str, required=True),
+        age: Body(int, default=0, ge=0, le=150),
+    ):
+        return {"name": name, "age": age}
+    
+    # DynamicBody for flexible body access
+    @post_api(url='/dynamic')
+    async def create_dynamic(self, body: DynamicBody):
+        return {"name": body.name, "age": body.get('age', 0)}
+```
+
+### Available Parameter Types
+
+| Type | Source | Example |
+|------|--------|---------|
+| `Path(type)` | URL path | `id: Path(int)` |
+| `Query(type)` | Query string | `page: Query(int, default=1)` |
+| `Body(type)` | Request body | `name: Body(str, required=True)` |
+| `Header(type)` | HTTP headers | `auth: Header(str, alias='Authorization')` |
+| `File()` | File upload | `avatar: File(max_size=5*1024*1024)` |
+
+### Validation
+
+Built-in validators: `required`, `ge`, `le`, `gt`, `lt`, `min_length`, `max_length`, `regex`.
+
+```python
+@post_api(url='/register')
+async def register(
+    self,
+    email: Body(str, regex=r'^[\w.-]+@[\w.-]+\.\w+$'),
+    password: Body(str, min_length=8),
+    age: Body(int, ge=18, le=120),
+):
+    pass
+```
+
+---
+
+## Legacy Style (Decorator Options)
+
+<details>
+<summary><strong>Click to expand legacy style documentation</strong></summary>
 
 Supported keyword arguments (common)
 - url: string route template, e.g. `'/users/{user_id}'`.
@@ -35,7 +104,7 @@ Decorator behavior and request handling
 - At request time the framework calls `request_resolver` and `header_resolver` to build (url_dict, query_dict, body_dict, file_dict) and passes them, together with header data, into `request_handler` which invokes your controller method.
 - `get_api`/`delete_api`/`put_api` typically do not use `body_params`; `post_api` and `patch_api` support `body_params` and `get_request_body`.
 
-Examples
+### Legacy Examples
 
 1) Simple GET with path param
 
@@ -74,20 +143,30 @@ class UploadController:
         return {'uploaded': bool(file_obj)}
 ```
 
-Errors and common pitfalls
+</details>
+
+---
+
+## Errors and common pitfalls
+
 - Using positional decorator args: `@get_api('/user')` is invalid. Use `@get_api(url='/user')`.
 - Mismatched path names: if your URL template includes `{user_id}` but your method signature lacks the corresponding parameter, the framework will pass None or may behave unexpectedly — ensure names match and argument order aligns.
 - Missing required headers: if `headers` is provided and request omits them, the configured missing-header handler will be invoked (it may raise or set an error response).
 - Body parsing: `body_params` attempts to parse JSON when Content-Type starts with `application/json`; if parsing fails, fields will be None.
 
-When to use which decorator
+## When to use which decorator
+
 - Use `get_api` for idempotent read operations.
 - Use `post_api` for create operations where you need to parse body fields or accept file uploads.
 - Use `patch_api` for partial updates and `put_api` for full replacements; behavior mirrors POST w.r.t. body_params when provided.
 
-Linking to source
+## Linking to source
+
 - Implementation lives in `cullinan/controller/core.py` (`get_api`, `post_api`, `url_resolver`, `request_resolver`, and `request_handler`). Prefer reading the tests in `tests/` (search for `@get_api(url=`) for practical examples.
 
-See also
+## See also
+
 - `docs/getting_started.md` (quick overview)
 - `docs/wiki/injection.md` (dependency injection patterns)
+- `docs/parameter_system_guide.md` (new type-safe parameter system)
+

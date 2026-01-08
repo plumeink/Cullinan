@@ -118,6 +118,50 @@ from cullinan.websocket_registry import (
     reset_websocket_registry,
 )
 
+# Export codec module
+from cullinan.codec import (
+    BodyCodec,
+    ResponseCodec,
+    CodecError,
+    DecodeError,
+    EncodeError,
+    JsonBodyCodec,
+    JsonResponseCodec,
+    FormBodyCodec,
+    CodecRegistry,
+    get_codec_registry,
+    reset_codec_registry,
+)
+
+# Export params module
+from cullinan.params import (
+    Param,
+    UNSET,
+    Path,
+    Query,
+    Body,
+    Header,
+    File,
+    TypeConverter,
+    ConversionError,
+    Auto,
+    AutoType,
+    DynamicBody,
+    ParamValidator,
+    ValidationError,
+    ModelResolver,
+    ModelError,
+    ParamResolver,
+    ResolveError,
+)
+
+# Export body decoder middleware
+from cullinan.middleware import (
+    BodyDecoderMiddleware,
+    get_decoded_body,
+    set_decoded_body,
+)
+
 # Export controller registry and decorators from controller package
 # Note: 'controller' is both a package and a decorator function
 # To avoid naming conflicts in Nuitka and other packagers:
@@ -209,6 +253,44 @@ __all__ = [
     'websocket_handler',
     'get_websocket_registry',
     'reset_websocket_registry',
+
+    # Codec module
+    'BodyCodec',
+    'ResponseCodec',
+    'CodecError',
+    'DecodeError',
+    'EncodeError',
+    'JsonBodyCodec',
+    'JsonResponseCodec',
+    'FormBodyCodec',
+    'CodecRegistry',
+    'get_codec_registry',
+    'reset_codec_registry',
+
+    # Params module
+    'Param',
+    'UNSET',
+    'Path',
+    'Query',
+    'Body',
+    'Header',
+    'File',
+    'TypeConverter',
+    'ConversionError',
+    'Auto',
+    'AutoType',
+    'DynamicBody',
+    'ParamValidator',
+    'ValidationError',
+    'ModelResolver',
+    'ModelError',
+    'ParamResolver',
+    'ResolveError',
+
+    # Body decoder middleware
+    'BodyDecoderMiddleware',
+    'get_decoded_body',
+    'set_decoded_body',
 
     # Controller module (import controller decorator from cullinan.controller)
     'ControllerRegistry',

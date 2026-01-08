@@ -56,8 +56,9 @@ class NotificationService:
 Marks a class as a controller component. Controllers handle HTTP requests.
 
 ```python
-from cullinan.core import controller
-from cullinan.core.decorators import Inject
+from cullinan.controller import controller, get_api
+from cullinan.core import Inject
+from cullinan.params import Path
 
 # Simple usage
 @controller
@@ -74,9 +75,8 @@ class UserController:
         return {"users": []}
     
     @get_api(url="/{id}")
-    def get_user(self, url_params):
-        user_id = url_params.get("id")
-        return self.user_service.get_user(user_id)
+    async def get_user(self, id: Path(int)):
+        return self.user_service.get_user(id)
 ```
 
 **Parameters:**
@@ -281,9 +281,11 @@ class ProductionOnlyService:
 ## Complete Example
 
 ```python
-from cullinan.core import service, controller, ApplicationContext, PendingRegistry
+from cullinan.controller import controller, get_api
+from cullinan.core import service, ApplicationContext, PendingRegistry
 from cullinan.core.decorators import Inject, InjectByName
 from cullinan.core.conditions import ConditionalOnClass
+from cullinan.params import Path
 
 # Reset for clean state
 PendingRegistry.reset()
@@ -311,9 +313,8 @@ class UserController:
     user_service: UserService = Inject()
     
     @get_api(url="/{id}")
-    def get_user(self, url_params):
-        user_id = url_params.get("id")
-        return self.user_service.get_user(user_id)
+    async def get_user(self, id: Path(int)):
+        return self.user_service.get_user(id)
 
 # Optional JSON processor (only if json module available)
 @service

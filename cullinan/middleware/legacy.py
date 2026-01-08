@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 """Legacy middleware registration API (Backward Compatibility).
 
 This module provides backward compatibility for the old middleware
@@ -49,7 +49,8 @@ def register_middleware_manual(middleware_class: Type,
     from cullinan.middleware.registry import get_middleware_registry
 
     registry = get_middleware_registry()
-    registry.register(middleware_class, priority=priority, name=name)
+    # Note: name parameter is ignored in new API for backward compatibility
+    registry.register(middleware_class, priority=priority)
 
     logger.warning(
         f"register_middleware_manual() is deprecated. "

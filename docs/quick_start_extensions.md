@@ -107,6 +107,7 @@ from cullinan.middleware import middleware, Middleware
 from cullinan.controller import controller, get_api
 from cullinan.service import service, Service
 from cullinan.core import Inject
+from cullinan.params import Path
 
 # 1. Define middleware (auto-sorted by priority)
 
@@ -152,9 +153,8 @@ class UserService(Service):
 class UserController:
     user_service: 'UserService' = Inject()
     
-    @get_api(url='/<user_id>')
-    def get_user(self, url_params):
-        user_id = url_params.get('user_id')
+    @get_api(url='/{user_id}')
+    async def get_user(self, user_id: Path(int)):
         return self.user_service.get_user(user_id)
 
 

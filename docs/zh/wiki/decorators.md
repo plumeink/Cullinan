@@ -56,8 +56,9 @@ class NotificationService:
 将类标记为控制器组件。控制器处理 HTTP 请求。
 
 ```python
-from cullinan.core import controller
-from cullinan.core.decorators import Inject
+from cullinan.controller import controller, get_api
+from cullinan.core import Inject
+from cullinan.params import Path
 
 # 简单用法
 @controller
@@ -74,9 +75,8 @@ class UserController:
         return {"users": []}
     
     @get_api(url="/{id}")
-    def get_user(self, url_params):
-        user_id = url_params.get("id")
-        return self.user_service.get_user(user_id)
+    async def get_user(self, id: Path(int)):
+        return self.user_service.get_user(id)
 ```
 
 **参数：**
@@ -281,9 +281,11 @@ class ProductionOnlyService:
 ## 完整示例
 
 ```python
-from cullinan.core import service, controller, ApplicationContext, PendingRegistry
+from cullinan.controller import controller, get_api
+from cullinan.core import service, ApplicationContext, PendingRegistry
 from cullinan.core.decorators import Inject, InjectByName
 from cullinan.core.conditions import ConditionalOnClass
+from cullinan.params import Path
 
 # 重置以获得干净状态
 PendingRegistry.reset()
@@ -311,9 +313,8 @@ class UserController:
     user_service: UserService = Inject()
     
     @get_api(url="/{id}")
-    def get_user(self, url_params):
-        user_id = url_params.get("id")
-        return self.user_service.get_user(user_id)
+    async def get_user(self, id: Path(int)):
+        return self.user_service.get_user(id)
 
 # 可选的 JSON 处理器（仅当 json 模块可用时）
 @service

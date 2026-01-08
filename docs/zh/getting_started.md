@@ -181,6 +181,7 @@ Cullinan 提供内置的 IoC/DI 支持。
 from cullinan.controller import controller, get_api
 from cullinan.service import Service, service
 from cullinan.core import injectable, InjectByName
+from cullinan.params import Path
 
 # Service 使用 @service (继承自 Service 基类)
 @service
@@ -201,9 +202,7 @@ class UserController:
     user_service = InjectByName('UserService')
     
     @get_api(url='/{user_id}')
-    def get_user(self, url_params):
-        # 从 url_params 字典中获取路径参数
-        user_id = url_params.get('user_id') if url_params else None
+    async def get_user(self, user_id: Path(int)):
         return self.user_service.get_user(user_id)
 ```
 
@@ -226,7 +225,58 @@ Cullinan 提供一组 REST 风格的装饰器，用于将 Controller 方法绑�
 - 这些装饰器在源码中定义为 `def get_api(**kwargs)` 等，**只接受关键字参数**。
   - 写法 `@get_api('/user')` 是**不合法**的，会在导入模块时抛出 `TypeError`。
   - 正确写法应为：`@get_api(url='/user')`。
-- `url` 参数使用轻量级模板语法，支持 `{param}` 占位符，并与方法参数一一对应：
+- `url` 参数使用轻量级模板语法，支持 `{param}` 占位符。
+
+**v0.90+ 推荐：类型安全参数系统**
+
+```python
+from cullinan.params import Path, Query, Body, DynamicBody
+
+@controller(url='/api/users')
+class UserController:
+    # 类型安全的路径和查询参数
+    @get_api(url='/{id}')
+    async def get_user(self, id: Path(int), include_posts: Query(bool, default=False)):
+        return {"id": id, "include_posts": include_posts}
+    
+    # 带校验的查询参数
+    @get_api(url='/')
+    async def list_users(
+        self,
+        page: Query(int, default=1, ge=1),
+        size: Query(int, default=10, ge=1, le=100),
+    ):
+        return {"page": page, "size": size}
+    
+    # 带校验的类型安全请求体参数
+    @post_api(url='/')
+    async def create_user(
+        self,
+        name: Body(str, required=True),
+        age: Body(int, default=0, ge=0, le=150),
+    ):
+        return {"name": name, "age": age}
+    
+    # DynamicBody 提供灵活的属性访问
+    @post_api(url='/dynamic')
+    async def create_dynamic(self, body: DynamicBody):
+        return {"name": body.name, "age": body.get('age', 0)}
+```
+
+详见 [参数系统指南](parameter_system_guide.md)。
+
+<details>
+<summary><strong>传统方式（仍然支持）</strong></summary>
+
+传统参数风格仍然支持，用于向后兼容：
+
+常用参数：
+- `url`：路由路径（字符串），支持 `{param}` 占位符，例如 `'/users/{user_id}'`。
+- `query_params`：查询参数名称列表/元组，例如 `('page', 'size')`。
+- `body_params`（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。
+- `file_params`：上传文件字段名称列表。
+- `headers`：必须存在的 HTTP 请求头名称列表。
+- `get_request_body`（仅 POST/PATCH）：为 `True` 时，会将原始请求体作为参数传入方法。
 
 ```python
 @controller(url='/api/users')
@@ -234,35 +284,22 @@ class UserController:
     @get_api(url='/{user_id}')
     def get_user(self, url_params):
         user_id = url_params.get('user_id') if url_params else None
-        ...
-```
+        return {"id": user_id}
 
-常用参数：
-
-- `url`：路由路径（字符串），支持 `{param}` 占位符，例如 `'/users/{user_id}'`。
-- `query_params`：查询参数名称列表/元组，例如 `('page', 'size')`。 在处理器中，这些查询参数通过单个 `query_params` 字典参数传入。
-- `body_params`（仅 POST/PATCH）：需要从 JSON/form body 中解析的字段名称集合。在处理器中，这些字段通过单个 `body_params` 字典参数传入。
-- `file_params`：上传文件字段名称列表。
-- `headers`：必须存在的 HTTP 请求头名称列表。
-- `get_request_body`（仅 POST/PATCH）：为 `True` 时，会将原始请求体作为参数传入方法。
-
-典型组合示例：
-
-```python
-@controller(url='/api/users')
-class UserController:
     @get_api(url='/', query_params=('page', 'size'))
     def list_users(self, query_params):
         page = query_params.get('page') if query_params else None
         size = query_params.get('size') if query_params else None
-        ...
+        return {"page": page, "size": size}
 
     @post_api(url='/', body_params=('name', 'email'))
     def create_user(self, body_params):
         name = body_params.get('name') if body_params else None
         email = body_params.get('email') if body_params else None
-        ...
+        return {"name": name, "email": email}
 ```
+
+</details>
 
 如需了解 URL 模板与各装饰器参数的完整说明，请参考 `docs/zh/wiki/restful_api.md`。
 

@@ -17,7 +17,7 @@ pr_links: []
 
 欢迎查阅 Cullinan 框架文档。
 
-> **版本 0.90**：IoC/DI 架构已重新设计。请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [迁移指南](import_migration_090.md).
+> **版本 0.90**：IoC/DI 架构已重新设计，新增参数系统。请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [参数系统指南](parameter_system_guide.md)。
 
 请使用左侧导航栏快速访问以下主要内容：
 
@@ -25,6 +25,7 @@ pr_links: []
 - **架构设计** — 系统概览和架构图
 - **维基** — 注入、生命周期、中间件、扩展
   - [依赖注入指南](dependency_injection_guide.md) — DI 系统文档
+  - [参数系统指南](parameter_system_guide.md) — 新的类型安全参数系统
   - [迁移指南](import_migration_090.md) — 从 0.83 升级
 - **模块** — 各模块的 API 和示例
 - **示例** — `examples/` 目录下的可运行示例

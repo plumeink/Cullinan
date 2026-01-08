@@ -29,6 +29,58 @@ The following module list is for illustration only. The concrete index should be
 - `cullinan.controller` — Controllers and RESTful API decorators
 - `cullinan.service` — Service base class and the `@service` decorator
 - `cullinan.middleware` — Middleware base classes and extension points
+- `cullinan.codec` — Request/response encoding/decoding (JSON, Form, etc.)
+- `cullinan.params` — Parameter handling (Path, Query, Body, Header, File, validators)
+
+## New in v0.90: Parameter System
+
+The parameter system provides type-safe request parameter handling. See [Parameter System Guide](parameter_system_guide.md) for details.
+
+### cullinan.params
+
+| Symbol | Type | Description |
+|--------|------|-------------|
+| `Param` | class | Base parameter class |
+| `Path` | class | URL path parameter marker |
+| `Query` | class | Query string parameter marker |
+| `Body` | class | Request body parameter marker |
+| `Header` | class | HTTP header parameter marker |
+| `File` | class | File upload parameter marker |
+| `UNSET` | sentinel | Sentinel value for unset parameters |
+| `TypeConverter` | class | Type conversion utility |
+| `Auto` | class | Auto type inference utility |
+| `AutoType` | class | Auto type marker for signatures |
+| `DynamicBody` | class | Dynamic request body container |
+| `ParamValidator` | class | Parameter validation utility |
+| `ValidationError` | exception | Validation error |
+| `ModelResolver` | class | dataclass model resolution |
+| `ModelError` | exception | Model resolution error |
+| `ParamResolver` | class | Parameter resolution orchestrator |
+| `ResolveError` | exception | Parameter resolution error |
+
+### cullinan.codec
+
+| Symbol | Type | Description |
+|--------|------|-------------|
+| `BodyCodec` | class | Abstract request body codec |
+| `ResponseCodec` | class | Abstract response codec |
+| `JsonBodyCodec` | class | JSON body decoder |
+| `JsonResponseCodec` | class | JSON response encoder |
+| `FormBodyCodec` | class | Form body decoder |
+| `CodecRegistry` | class | Codec registry |
+| `get_codec_registry()` | function | Get global codec registry |
+| `reset_codec_registry()` | function | Reset codec registry (testing) |
+| `DecodeError` | exception | Decoding error |
+| `EncodeError` | exception | Encoding error |
+| `CodecError` | exception | Base codec error |
+
+### cullinan.middleware (new additions)
+
+| Symbol | Type | Description |
+|--------|------|-------------|
+| `BodyDecoderMiddleware` | class | Auto body decoding middleware |
+| `get_decoded_body()` | function | Get decoded request body |
+| `set_decoded_body()` | function | Set decoded body (testing) |
 
 ## Public symbols and signatures (recommended structure)
 
