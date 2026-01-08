@@ -1196,6 +1196,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        简化语法 (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rawbody-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用 RawBody (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dynamicbody" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1330,7 +1352,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v090a5" class="md-nav__link">
+  <a href="#v090a5_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         多文件上传 (v0.90a5+)
@@ -1423,7 +1445,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v090a5_1" class="md-nav__link">
+  <a href="#v090a5_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         响应序列化 (v0.90a5+)
@@ -1495,7 +1517,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v090a5_2" class="md-nav__link">
+  <a href="#v090a5_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         可插拔模型处理器 (v0.90a5+)
@@ -1897,6 +1919,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        简化语法 (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rawbody-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用 RawBody (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dynamicbody" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2031,7 +2075,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v090a5" class="md-nav__link">
+  <a href="#v090a5_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         多文件上传 (v0.90a5+)
@@ -2124,7 +2168,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v090a5_1" class="md-nav__link">
+  <a href="#v090a5_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         响应序列化 (v0.90a5+)
@@ -2196,7 +2240,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#v090a5_2" class="md-nav__link">
+  <a href="#v090a5_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         可插拔模型处理器 (v0.90a5+)
@@ -2381,6 +2425,56 @@
         <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="v090a5">简化语法 (v0.90a5+)<a class="headerlink" href="#v090a5" title="Permanent link">&para;</a></h3>
+<p>对于带别名的参数（如包含 <code>-</code> 的 HTTP 头），直接在类型注解中指定：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/webhook&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_webhook</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="c1"># 标准语法：Header(类型, alias=&quot;...&quot;)</span>
+    <span class="n">sign</span><span class="p">:</span> <span class="n">Header</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
+    <span class="n">event</span><span class="p">:</span> <span class="n">Header</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-GitHub-Event&quot;</span><span class="p">),</span>
+    <span class="n">request_body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/items&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_items</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">page</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Query</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<p><strong>要点：</strong>
+- 类型作为第一个参数传入 <code>Header(str, ...)</code>
+- 使用 <code>alias</code> 指定实际的 HTTP 头名称
+- HTTP 头匹配是<strong>大小写不敏感</strong>的（符合 RFC 7230）
+- 支持 <code>X-Hub-Signature-256</code>、<code>X-GitHub-Event</code> 等带 <code>-</code> 的头名称</p>
+<h3 id="rawbody-v090a5">使用 RawBody (v0.90a5+)<a class="headerlink" href="#rawbody-v090a5" title="Permanent link">&para;</a></h3>
+<p>获取原始二进制请求体，用于签名验证或自定义解析：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">RawBody</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hmac</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/webhook&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_webhook</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">sign</span><span class="p">:</span> <span class="n">Header</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;X-Hub-Signature-256&quot;</span><span class="p">),</span>
+    <span class="n">raw_body</span><span class="p">:</span> <span class="n">RawBody</span><span class="p">(),</span>
+<span class="p">):</span>
+    <span class="c1"># raw_body 是 bytes 类型</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;your_secret&#39;</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="s1">&#39;sha256=&#39;</span> <span class="o">+</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">raw_body</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hmac</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;签名无效&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 手动解析请求体</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_body</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="dynamicbody">使用 DynamicBody<a class="headerlink" href="#dynamicbody" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicBody</span>
@@ -2582,7 +2676,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="v090a5">多文件上传 (v0.90a5+)<a class="headerlink" href="#v090a5" title="Permanent link">&para;</a></h4>
+<h4 id="v090a5_1">多文件上传 (v0.90a5+)<a class="headerlink" href="#v090a5_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/upload-multiple&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_multiple</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
@@ -2753,7 +2847,7 @@
         <span class="n">body</span> <span class="o">=</span> <span class="n">get_decoded_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">body</span>
 </code></pre></div>
-<h2 id="v090a5_1">响应序列化 (v0.90a5+)<a class="headerlink" href="#v090a5_1" title="Permanent link">&para;</a></h2>
+<h2 id="v090a5_2">响应序列化 (v0.90a5+)<a class="headerlink" href="#v090a5_2" title="Permanent link">&para;</a></h2>
 <h3 id="responseserializer">ResponseSerializer<a class="headerlink" href="#responseserializer" title="Permanent link">&para;</a></h3>
 <p>自动将 dataclass 和其他对象序列化为 JSON 兼容的字典：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
@@ -2827,7 +2921,7 @@
 <li><strong>复杂请求体使用模型</strong>：结构化请求体使用 dataclass</li>
 <li><strong>灵活场景使用 DynamicBody</strong>：请求体结构变化时使用</li>
 </ol>
-<h2 id="v090a5_2">可插拔模型处理器 (v0.90a5+)<a class="headerlink" href="#v090a5_2" title="Permanent link">&para;</a></h2>
+<h2 id="v090a5_3">可插拔模型处理器 (v0.90a5+)<a class="headerlink" href="#v090a5_3" title="Permanent link">&para;</a></h2>
 <p>框架使用可插拔架构进行模型解析，允许 Pydantic 等第三方库在不修改核心代码的情况下集成。</p>
 <h3 id="_13">内置处理器<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
 <table>
@@ -2922,6 +3016,10 @@
 <tr>
 <td><code>File</code></td>
 <td>文件上传参数</td>
+</tr>
+<tr>
+<td><code>RawBody</code></td>
+<td>原始二进制请求体参数 (v0.90a5+)</td>
 </tr>
 <tr>
 <td><code>TypeConverter</code></td>
