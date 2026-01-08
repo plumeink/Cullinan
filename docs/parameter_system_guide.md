@@ -94,6 +94,65 @@ class UserController:
         return {"name": name, "age": age}
 ```
 
+### Simplified Syntax (v0.90a5+)
+
+For parameters with alias (like HTTP headers with `-`), specify directly in type annotation:
+
+```python
+from cullinan.params import Header, Query, Body, DynamicBody
+
+@post_api(url="/webhook")
+async def handle_webhook(
+    self,
+    # Standard syntax: Header(type, alias="...")
+    sign: Header(str, alias="X-Hub-Signature-256"),
+    event: Header(str, alias="X-GitHub-Event"),
+    request_body: DynamicBody,
+):
+    pass
+
+@get_api(url="/items")
+async def list_items(
+    self,
+    page: Query(int, default=1, ge=1),
+    size: Query(int, default=10, le=100),
+):
+    pass
+```
+
+**Key Points:**
+- Type is passed as the first argument `Header(str, ...)`
+- Use `alias` to specify the actual HTTP header name
+- HTTP header matching is **case-insensitive** (per RFC 7230)
+- Supports headers with `-` like `X-Hub-Signature-256`, `X-GitHub-Event`
+
+### Using RawBody (v0.90a5+)
+
+Get the raw binary request body for signature verification or custom parsing:
+
+```python
+from cullinan.params import Header, RawBody
+import hmac
+import hashlib
+
+@post_api(url="/webhook")
+async def handle_webhook(
+    self,
+    sign: Header(str, alias="X-Hub-Signature-256"),
+    raw_body: RawBody(),
+):
+    # raw_body is bytes
+    secret = b'your_secret'
+    expected = 'sha256=' + hmac.new(secret, raw_body, hashlib.sha256).hexdigest()
+    
+    if not hmac.compare_digest(sign, expected):
+        raise ValueError('Invalid signature')
+    
+    # Manually parse the body
+    import json
+    data = json.loads(raw_body)
+```
+
 ### Using DynamicBody
 
 ```python
@@ -583,6 +642,7 @@ Install Pydantic: `pip install pydantic`
 | `Body` | Request body parameter |
 | `Header` | HTTP header parameter |
 | `File` | File upload parameter |
+| `RawBody` | Raw binary body parameter (v0.90a5+) |
 | `TypeConverter` | Type conversion utility |
 | `Auto` | Auto type inference |
 | `AutoType` | Auto type marker |

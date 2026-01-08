@@ -70,6 +70,34 @@ class ParamResolver:
     _signature_cache: Dict[Callable, inspect.Signature] = {}
 
     @classmethod
+    def _get_header_value(cls, headers: Dict[str, str], key: str) -> Optional[str]:
+        """Get header value with case-insensitive matching
+
+        HTTP headers are case-insensitive per RFC 7230.
+
+        Args:
+            headers: Header dictionary
+            key: Header name to look up
+
+        Returns:
+            Header value or None
+        """
+        if not headers or not key:
+            return None
+
+        # Try exact match first
+        if key in headers:
+            return headers[key]
+
+        # Try case-insensitive match
+        key_lower = key.lower()
+        for header_key, header_value in headers.items():
+            if header_key.lower() == key_lower:
+                return header_value
+
+        return None
+
+    @classmethod
     def get_signature(cls, func: Callable) -> inspect.Signature:
         """获取函数签名 (带缓存)
 
@@ -122,8 +150,25 @@ class ParamResolver:
             if annotation is inspect.Parameter.empty:
                 annotation = None
 
-            # 检查是否是 Param 实例
-            if isinstance(annotation, Param):
+            # 优先检查默认值是否是 Param 实例（支持简化语法）
+            # 例如: sign: str = Header(alias="X-Hub-Signature-256")
+            if param.default is not inspect.Parameter.empty and isinstance(param.default, Param):
+                param_spec = param.default
+                config['source'] = param_spec.source
+                # 如果 Param 没有指定类型，从注解获取
+                if param_spec.type_ is str and annotation is not None and annotation is not str:
+                    config['type'] = annotation
+                else:
+                    config['type'] = param_spec.type_
+                config['required'] = param_spec.required
+                config['default'] = param_spec.default
+                config['param_spec'] = param_spec
+                # 使用参数名作为 name（如果未指定）
+                if param_spec.name is None:
+                    param_spec.name = name
+
+            # 检查是否是 Param 实例（类型注解方式）
+            elif isinstance(annotation, Param):
                 param_spec = annotation
                 config['source'] = param_spec.source
                 config['type'] = param_spec.type_
@@ -157,8 +202,8 @@ class ParamResolver:
             elif annotation is not None:
                 config['type'] = annotation
 
-            # 检查默认值
-            if param.default is not inspect.Parameter.empty:
+            # 检查默认值（非 Param 实例的普通默认值）
+            if param.default is not inspect.Parameter.empty and not isinstance(param.default, Param):
                 config['default'] = param.default
                 config['required'] = False
 
@@ -210,7 +255,7 @@ class ParamResolver:
             try:
                 value = cls._resolve_param(
                     name, config,
-                    url_params, query_params, body_data, headers, files
+                    url_params, query_params, body_data, headers, files, request
                 )
                 result[name] = value
             except (ConversionError, ValidationError, ModelError) as e:
@@ -238,6 +283,7 @@ class ParamResolver:
         body_data: Dict[str, Any],
         headers: Dict[str, str],
         files: Dict[str, Any],
+        request: Any = None,
     ) -> Any:
         """解析单个参数
 
@@ -245,6 +291,7 @@ class ParamResolver:
             name: 参数名
             config: 参数配置
             各种来源数据...
+            request: 原始请求对象（用于 RawBody）
 
         Returns:
             解析后的值
@@ -277,7 +324,13 @@ class ParamResolver:
             else:
                 raw_value = body_data.get(alias) or body_data.get(name)
         elif source == 'header':
-            raw_value = headers.get(alias) or headers.get(name)
+            # HTTP headers are case-insensitive, use lowercase matching
+            raw_value = cls._get_header_value(headers, alias) or cls._get_header_value(headers, name)
+        elif source == 'raw_body':
+            # 返回原始二进制请求体
+            if request is not None and hasattr(request, 'body'):
+                return request.body if request.body else b''
+            return b''
         elif source == 'file':
             raw_value = files.get(alias) or files.get(name)
             # 处理文件参数

@@ -9,6 +9,7 @@
 - Body: 请求体参数
 - Header: 请求头参数
 - File: 文件参数
+- RawBody: 原始二进制请求体
 
 类型转换:
 - TypeConverter: 类型转换器
@@ -37,7 +38,7 @@ Author: Plumeink
 """
 
 from .base import Param, UNSET
-from .types import Path, Query, Body, Header, File
+from .types import Path, Query, Body, Header, File, RawBody
 from .converter import TypeConverter, ConversionError
 from .auto import Auto, AutoType
 from .dynamic import DynamicBody, SafeAccessor, EMPTY
@@ -79,6 +80,7 @@ __all__ = [
     'Body',
     'Header',
     'File',
+    'RawBody',
 
     # 类型转换
     'TypeConverter',

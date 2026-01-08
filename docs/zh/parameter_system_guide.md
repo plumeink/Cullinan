@@ -94,6 +94,65 @@ class UserController:
         return {"name": name, "age": age}
 ```
 
+### 简化语法 (v0.90a5+)
+
+对于带别名的参数（如包含 `-` 的 HTTP 头），直接在类型注解中指定：
+
+```python
+from cullinan.params import Header, Query, Body, DynamicBody
+
+@post_api(url="/webhook")
+async def handle_webhook(
+    self,
+    # 标准语法：Header(类型, alias="...")
+    sign: Header(str, alias="X-Hub-Signature-256"),
+    event: Header(str, alias="X-GitHub-Event"),
+    request_body: DynamicBody,
+):
+    pass
+
+@get_api(url="/items")
+async def list_items(
+    self,
+    page: Query(int, default=1, ge=1),
+    size: Query(int, default=10, le=100),
+):
+    pass
+```
+
+**要点：**
+- 类型作为第一个参数传入 `Header(str, ...)`
+- 使用 `alias` 指定实际的 HTTP 头名称
+- HTTP 头匹配是**大小写不敏感**的（符合 RFC 7230）
+- 支持 `X-Hub-Signature-256`、`X-GitHub-Event` 等带 `-` 的头名称
+
+### 使用 RawBody (v0.90a5+)
+
+获取原始二进制请求体，用于签名验证或自定义解析：
+
+```python
+from cullinan.params import Header, RawBody
+import hmac
+import hashlib
+
+@post_api(url="/webhook")
+async def handle_webhook(
+    self,
+    sign: Header(str, alias="X-Hub-Signature-256"),
+    raw_body: RawBody(),
+):
+    # raw_body 是 bytes 类型
+    secret = b'your_secret'
+    expected = 'sha256=' + hmac.new(secret, raw_body, hashlib.sha256).hexdigest()
+    
+    if not hmac.compare_digest(sign, expected):
+        raise ValueError('签名无效')
+    
+    # 手动解析请求体
+    import json
+    data = json.loads(raw_body)
+```
+
 ### 使用 DynamicBody
 
 ```python
@@ -583,6 +642,7 @@ async def create_user(self, user: CreateUserRequest):
 | `Body` | 请求体参数 |
 | `Header` | HTTP 请求头参数 |
 | `File` | 文件上传参数 |
+| `RawBody` | 原始二进制请求体参数 (v0.90a5+) |
 | `TypeConverter` | 类型转换工具 |
 | `Auto` | 自动类型推断 |
 | `AutoType` | 自动类型标记 |

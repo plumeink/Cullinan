@@ -114,6 +114,56 @@ class Body(Param):
     # 继承 Param 的 __init__，无需重写
 
 
+class RawBody(Param):
+    """原始二进制请求体
+
+    获取未解析的原始请求体 bytes，适用于：
+    - 签名验证（如 GitHub Webhook）
+    - 自定义解析格式
+    - 二进制数据处理
+
+    Example:
+        @post_api(url="/webhook")
+        async def handle_webhook(
+            self,
+            sign: Header(str, alias="X-Hub-Signature-256"),
+            raw_body: RawBody(),
+        ):
+            # raw_body 是原始的 bytes
+            import hmac
+            expected = hmac.new(secret, raw_body, 'sha256').hexdigest()
+            if sign != f'sha256={expected}':
+                raise ValueError('Invalid signature')
+
+            # 手动解析
+            import json
+            data = json.loads(raw_body)
+    """
+    _source = 'raw_body'
+
+    def __init__(
+        self,
+        *,
+        name: str = None,
+        required: bool = False,
+        description: str = '',
+    ):
+        """初始化原始请求体参数
+
+        Args:
+            name: 参数名称
+            required: 是否必填（默认 False）
+            description: 参数描述
+        """
+        super().__init__(
+            type_=bytes,
+            name=name,
+            required=required,
+            default=b'',
+            description=description,
+        )
+
+
 class Header(Param):
     """请求头参数
 
