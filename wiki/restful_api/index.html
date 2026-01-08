@@ -687,6 +687,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#file-uploads-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Uploads (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataclass-field-validation-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataclass Field Validation (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pydantic-integration-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pydantic Integration (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1547,6 +1580,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#file-uploads-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Uploads (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dataclass-field-validation-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataclass Field Validation (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pydantic-integration-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pydantic Integration (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1705,8 +1771,64 @@
 <td>File upload</td>
 <td><code>avatar: File(max_size=5*1024*1024)</code></td>
 </tr>
+<tr>
+<td><code>DynamicBody</code></td>
+<td>Full request body</td>
+<td><code>body: DynamicBody</code></td>
+</tr>
 </tbody>
 </table>
+<h3 id="file-uploads-v090a5">File Uploads (v0.90a5+)<a class="headerlink" href="#file-uploads-v090a5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">FileInfo</span><span class="p">,</span> <span class="n">FileList</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UploadController</span><span class="p">:</span>
+    <span class="c1"># Single file with validation</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;image/*&#39;</span><span class="p">])):</span>
+        <span class="c1"># avatar is a FileInfo instance</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+        <span class="n">avatar</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/uploads/&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
+
+    <span class="c1"># Multiple files</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload-multiple&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">File</span><span class="p">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_count</span><span class="o">=</span><span class="mi">10</span><span class="p">)):</span>
+        <span class="c1"># files is a FileList instance</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">files</span><span class="o">.</span><span class="n">filenames</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="dataclass-field-validation-v090a5">Dataclass Field Validation (v0.90a5+)<a class="headerlink" href="#dataclass-field-validation-v090a5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">validated_dataclass</span><span class="p">,</span> <span class="n">field_validator</span>
+
+<span class="nd">@validated_dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid email&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+</code></pre></div>
+<h3 id="pydantic-integration-v090a5">Pydantic Integration (v0.90a5+)<a class="headerlink" href="#pydantic-integration-v090a5" title="Permanent link">&para;</a></h3>
+<p>Pydantic models are automatically supported when Pydantic is installed:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pydantic
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+
+<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">CreateUserRequest</span><span class="p">):</span>
+    <span class="c1"># Pydantic validation is automatic</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">}</span>
+</code></pre></div>
+<p>The framework uses a pluggable model handler architecture. See <a href="../../parameter_system_guide/#pluggable-model-handlers-v090a5">Parameter System Guide</a> for details.</p>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
 <p>Built-in validators: <code>required</code>, <code>ge</code>, <code>le</code>, <code>gt</code>, <code>lt</code>, <code>min_length</code>, <code>max_length</code>, <code>regex</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/register&#39;</span><span class="p">)</span>

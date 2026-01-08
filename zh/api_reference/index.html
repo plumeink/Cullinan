@@ -970,19 +970,41 @@
   <a href="#v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.90 新增：参数系统
+        v0.90+ 新增：参数系统
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.90 新增：参数系统">
+    <nav class="md-nav" aria-label="v0.90+ 新增：参数系统">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams" class="md-nav__link">
+  <a href="#cullinanparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params
+        cullinan.params (v0.90a4+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -1503,19 +1525,41 @@
   <a href="#v090" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.90 新增：参数系统
+        v0.90+ 新增：参数系统
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="v0.90 新增：参数系统">
+    <nav class="md-nav" aria-label="v0.90+ 新增：参数系统">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams" class="md-nav__link">
+  <a href="#cullinanparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params
+        cullinan.params (v0.90a4+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -1605,9 +1649,9 @@
 <li><code>cullinan.codec</code> — 请求/响应编解码（JSON、Form 等）</li>
 <li><code>cullinan.params</code> — 参数处理（Path、Query、Body、Header、File、校验器）</li>
 </ul>
-<h2 id="v090">v0.90 新增：参数系统<a class="headerlink" href="#v090" title="Permanent link">&para;</a></h2>
+<h2 id="v090">v0.90+ 新增：参数系统<a class="headerlink" href="#v090" title="Permanent link">&para;</a></h2>
 <p>参数系统提供类型安全的请求参数处理。详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
-<h3 id="cullinanparams">cullinan.params<a class="headerlink" href="#cullinanparams" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanparams-v090a4">cullinan.params (v0.90a4+)<a class="headerlink" href="#cullinanparams-v090a4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1673,6 +1717,16 @@
 <td>动态请求体容器</td>
 </tr>
 <tr>
+<td><code>SafeAccessor</code></td>
+<td>类</td>
+<td>链式安全访问器</td>
+</tr>
+<tr>
+<td><code>EMPTY</code></td>
+<td>哨兵</td>
+<td>空值哨兵</td>
+</tr>
+<tr>
 <td><code>ParamValidator</code></td>
 <td>类</td>
 <td>参数校验工具</td>
@@ -1701,6 +1755,116 @@
 <td><code>ResolveError</code></td>
 <td>异常</td>
 <td>参数解析错误</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanparams-v090a5">cullinan.params (v0.90a5+)<a class="headerlink" href="#cullinanparams-v090a5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FileInfo</code></td>
+<td>类</td>
+<td>文件元数据容器</td>
+</tr>
+<tr>
+<td><code>FileList</code></td>
+<td>类</td>
+<td>多文件容器</td>
+</tr>
+<tr>
+<td><code>field_validator</code></td>
+<td>装饰器</td>
+<td>Dataclass 字段校验器</td>
+</tr>
+<tr>
+<td><code>validated_dataclass</code></td>
+<td>装饰器</td>
+<td>自动校验的 dataclass</td>
+</tr>
+<tr>
+<td><code>FieldValidationError</code></td>
+<td>异常</td>
+<td>字段校验错误</td>
+</tr>
+<tr>
+<td><code>Response</code></td>
+<td>装饰器</td>
+<td>响应模型装饰器</td>
+</tr>
+<tr>
+<td><code>ResponseModel</code></td>
+<td>类</td>
+<td>响应模型定义</td>
+</tr>
+<tr>
+<td><code>ResponseSerializer</code></td>
+<td>类</td>
+<td>响应序列化工具</td>
+</tr>
+<tr>
+<td><code>serialize_response</code></td>
+<td>函数</td>
+<td>便捷序列化函数</td>
+</tr>
+<tr>
+<td><code>get_response_models</code></td>
+<td>函数</td>
+<td>获取函数的响应模型</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanparamsmodel_handlers-v090a5">cullinan.params.model_handlers (v0.90a5+)<a class="headerlink" href="#cullinanparamsmodel_handlers-v090a5" title="Permanent link">&para;</a></h3>
+<p>可插拔模型处理器架构，用于第三方库集成。</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModelHandler</code></td>
+<td>类</td>
+<td>模型处理器抽象基类</td>
+</tr>
+<tr>
+<td><code>ModelHandlerError</code></td>
+<td>异常</td>
+<td>模型处理器错误</td>
+</tr>
+<tr>
+<td><code>ModelHandlerRegistry</code></td>
+<td>类</td>
+<td>模型处理器注册表</td>
+</tr>
+<tr>
+<td><code>DataclassHandler</code></td>
+<td>类</td>
+<td>内置 dataclass 处理器</td>
+</tr>
+<tr>
+<td><code>PydanticHandler</code></td>
+<td>类</td>
+<td>可选 Pydantic 处理器（安装后可用）</td>
+</tr>
+<tr>
+<td><code>get_model_handler_registry()</code></td>
+<td>函数</td>
+<td>获取全局处理器注册表</td>
+</tr>
+<tr>
+<td><code>reset_model_handler_registry()</code></td>
+<td>函数</td>
+<td>重置注册表（测试用）</td>
 </tr>
 </tbody>
 </table>

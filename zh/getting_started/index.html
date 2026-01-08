@@ -2063,7 +2063,11 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
 </code></pre></div>
-<p>详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
+<p>详见 <a href="../parameter_system_guide/">参数系统指南</a>，包括：
+- 使用 <code>FileInfo</code>/<code>FileList</code> 的文件上传
+- 使用 <code>@field_validator</code> 的 Dataclass 校验
+- Pydantic 集成（可选，使用 <code>pip install pydantic</code> 安装）
+- 自定义模型处理器</p>
 <details>
 <summary><strong>传统方式（仍然支持）</strong></summary>
 

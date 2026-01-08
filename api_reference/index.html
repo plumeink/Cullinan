@@ -970,19 +970,41 @@
   <a href="#new-in-v090-parameter-system" class="md-nav__link">
     <span class="md-ellipsis">
       
-        New in v0.90: Parameter System
+        New in v0.90+: Parameter System
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="New in v0.90: Parameter System">
+    <nav class="md-nav" aria-label="New in v0.90+: Parameter System">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams" class="md-nav__link">
+  <a href="#cullinanparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params
+        cullinan.params (v0.90a4+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -1503,19 +1525,41 @@
   <a href="#new-in-v090-parameter-system" class="md-nav__link">
     <span class="md-ellipsis">
       
-        New in v0.90: Parameter System
+        New in v0.90+: Parameter System
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="New in v0.90: Parameter System">
+    <nav class="md-nav" aria-label="New in v0.90+: Parameter System">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams" class="md-nav__link">
+  <a href="#cullinanparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params
+        cullinan.params (v0.90a4+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparams-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params (v0.90a5+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -1605,9 +1649,9 @@
 <li><code>cullinan.codec</code> — Request/response encoding/decoding (JSON, Form, etc.)</li>
 <li><code>cullinan.params</code> — Parameter handling (Path, Query, Body, Header, File, validators)</li>
 </ul>
-<h2 id="new-in-v090-parameter-system">New in v0.90: Parameter System<a class="headerlink" href="#new-in-v090-parameter-system" title="Permanent link">&para;</a></h2>
+<h2 id="new-in-v090-parameter-system">New in v0.90+: Parameter System<a class="headerlink" href="#new-in-v090-parameter-system" title="Permanent link">&para;</a></h2>
 <p>The parameter system provides type-safe request parameter handling. See <a href="../parameter_system_guide/">Parameter System Guide</a> for details.</p>
-<h3 id="cullinanparams">cullinan.params<a class="headerlink" href="#cullinanparams" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanparams-v090a4">cullinan.params (v0.90a4+)<a class="headerlink" href="#cullinanparams-v090a4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1673,6 +1717,16 @@
 <td>Dynamic request body container</td>
 </tr>
 <tr>
+<td><code>SafeAccessor</code></td>
+<td>class</td>
+<td>Chain-safe property accessor</td>
+</tr>
+<tr>
+<td><code>EMPTY</code></td>
+<td>sentinel</td>
+<td>Empty value sentinel</td>
+</tr>
+<tr>
 <td><code>ParamValidator</code></td>
 <td>class</td>
 <td>Parameter validation utility</td>
@@ -1701,6 +1755,116 @@
 <td><code>ResolveError</code></td>
 <td>exception</td>
 <td>Parameter resolution error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanparams-v090a5">cullinan.params (v0.90a5+)<a class="headerlink" href="#cullinanparams-v090a5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FileInfo</code></td>
+<td>class</td>
+<td>File metadata container</td>
+</tr>
+<tr>
+<td><code>FileList</code></td>
+<td>class</td>
+<td>Multiple files container</td>
+</tr>
+<tr>
+<td><code>field_validator</code></td>
+<td>decorator</td>
+<td>Dataclass field validator</td>
+</tr>
+<tr>
+<td><code>validated_dataclass</code></td>
+<td>decorator</td>
+<td>Auto-validating dataclass</td>
+</tr>
+<tr>
+<td><code>FieldValidationError</code></td>
+<td>exception</td>
+<td>Field validation error</td>
+</tr>
+<tr>
+<td><code>Response</code></td>
+<td>decorator</td>
+<td>Response model decorator</td>
+</tr>
+<tr>
+<td><code>ResponseModel</code></td>
+<td>class</td>
+<td>Response model definition</td>
+</tr>
+<tr>
+<td><code>ResponseSerializer</code></td>
+<td>class</td>
+<td>Response serialization utility</td>
+</tr>
+<tr>
+<td><code>serialize_response</code></td>
+<td>function</td>
+<td>Convenience serialization function</td>
+</tr>
+<tr>
+<td><code>get_response_models</code></td>
+<td>function</td>
+<td>Get response models from function</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cullinanparamsmodel_handlers-v090a5">cullinan.params.model_handlers (v0.90a5+)<a class="headerlink" href="#cullinanparamsmodel_handlers-v090a5" title="Permanent link">&para;</a></h3>
+<p>Pluggable model handler architecture for third-party library integration.</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModelHandler</code></td>
+<td>class</td>
+<td>Abstract base class for model handlers</td>
+</tr>
+<tr>
+<td><code>ModelHandlerError</code></td>
+<td>exception</td>
+<td>Model handler error</td>
+</tr>
+<tr>
+<td><code>ModelHandlerRegistry</code></td>
+<td>class</td>
+<td>Registry for model handlers</td>
+</tr>
+<tr>
+<td><code>DataclassHandler</code></td>
+<td>class</td>
+<td>Built-in dataclass handler</td>
+</tr>
+<tr>
+<td><code>PydanticHandler</code></td>
+<td>class</td>
+<td>Optional Pydantic handler (if installed)</td>
+</tr>
+<tr>
+<td><code>get_model_handler_registry()</code></td>
+<td>function</td>
+<td>Get global handler registry</td>
+</tr>
+<tr>
+<td><code>reset_model_handler_registry()</code></td>
+<td>function</td>
+<td>Reset registry (testing)</td>
 </tr>
 </tbody>
 </table>

@@ -2063,7 +2063,11 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
 </code></pre></div>
-<p>See <a href="../parameter_system_guide/">Parameter System Guide</a> for full details.</p>
+<p>See <a href="../parameter_system_guide/">Parameter System Guide</a> for full details, including:
+- File uploads with <code>FileInfo</code>/<code>FileList</code>
+- Dataclass validation with <code>@field_validator</code>
+- Pydantic integration (optional, install with <code>pip install pydantic</code>)
+- Custom model handlers</p>
 <details>
 <summary><strong>Legacy Style (still supported)</strong></summary>
 
