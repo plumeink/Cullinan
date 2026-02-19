@@ -2585,8 +2585,8 @@
 
 <h1 id="cullinan">Cullinan 框架架构文档（更新版）<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>版本</strong>：v0.90<br />
-<strong>最后更新</strong>：2025-12-25<br />
+<p><strong>版本</strong>：v0.92<br />
+<strong>最后更新</strong>：2026-02-19<br />
 <strong>作者</strong>：Plumeink<br />
 <strong>状态</strong>：已更新</p>
 </blockquote>
@@ -2719,14 +2719,15 @@
 </ul>
 <h4 id="12">1.2 生命周期管理<a class="headerlink" href="#12" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LifecycleManager</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">initialize</span><span class="p">()</span>    <span class="c1"># 初始化阶段</span>
-    <span class="o">-</span> <span class="n">startup</span><span class="p">()</span>       <span class="c1"># 启动阶段</span>
+    <span class="o">-</span> <span class="n">refresh</span><span class="p">()</span>       <span class="c1"># 初始化/启动阶段</span>
     <span class="o">-</span> <span class="n">shutdown</span><span class="p">()</span>      <span class="c1"># 关闭阶段</span>
 </code></pre></div>
-<p><strong>生命周期钩子</strong>：
-- <code>on_init()</code> - Service 实例化后执行
-- <code>on_startup()</code> - 所有 Service 就绪后执行
-- <code>on_shutdown()</code> - 应用关闭时执行</p>
+<p><strong>统一生命周期钩子（v0.92+）</strong>：
+- <code>on_post_construct()</code> - 依赖注入完成后执行
+- <code>on_startup()</code> - 应用启动时执行
+- <code>on_shutdown()</code> - 应用关闭时执行
+- <code>on_pre_destroy()</code> - 销毁前执行</p>
+<p>所有钩子支持异步版本（添加 <code>_async</code> 后缀）。</p>
 <h4 id="13">1.3 请求上下文<a class="headerlink" href="#13" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RequestContext</span><span class="p">:</span>
     <span class="o">-</span> <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -2755,7 +2756,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
     <span class="n">email_service</span><span class="p">:</span> <span class="s1">&#39;EmailService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># 初始化资源</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">connect_database</span><span class="p">()</span>
 
@@ -2938,12 +2939,12 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
     <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># 自动注入</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># 初始化逻辑</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_post_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 依赖注入完成后执行</span>
         <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># 服务启动时执行</span>
+        <span class="c1"># 应用启动时执行</span>
         <span class="k">pass</span>
 </code></pre></div>
 <p><strong>特性</strong>：
@@ -3017,7 +3018,7 @@ CorsMiddleware (priority=10)      → process_response
 
 4. Service 初始化
    ├── 按依赖顺序初始化
-   ├── 调用 on_init() 钩子
+   ├── 调用 on_post_construct() 钩子
    ├── 调用 on_startup() 钩子
    └── 错误处理（根据 startup_error_policy）
 
@@ -3027,7 +3028,7 @@ CorsMiddleware (priority=10)      → process_response
 
 6. 中间件链构建
    ├── 按优先级排序
-   ├── 初始化中间件（on_init）
+   ├── 初始化中间件（on_startup）
    └── 构建处理链
 
 7. 启动 Web 服务器

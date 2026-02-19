@@ -548,7 +548,57 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v092" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        统一生命周期钩子（v0.92+）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="统一生命周期钩子（v0.92+）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 顺序控制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        主要阶段
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见钩子与扩展点
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         生命周期序列（图示）
@@ -1419,7 +1469,57 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v092" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        统一生命周期钩子（v0.92+）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="统一生命周期钩子（v0.92+）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 顺序控制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        主要阶段
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见钩子与扩展点
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         生命周期序列（图示）
@@ -1448,19 +1548,53 @@
 
 <h1 id="_1">应用生命周期<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>说明（v0.90）</strong>：本文档描述旧版生命周期管理。
-新的 IoC/DI 2.0 生命周期，请参阅 <a href="../../dependency_injection_guide/">依赖注入指南</a>。
-新的 <code>ApplicationContext</code> 通过 <code>refresh()</code> 和 <code>shutdown()</code> 提供统一的生命周期管理。</p>
+<p><strong>说明（v0.92）</strong>：本文档描述统一的生命周期管理系统。
+所有组件（<code>@service</code>、<code>@component</code>、<code>@controller</code>）现在使用相同的生命周期钩子。
+<code>ApplicationContext</code> 通过 <code>refresh()</code> 和 <code>shutdown()</code> 提供统一的生命周期管理。</p>
 </blockquote>
 <p>本文档描述 Cullinan 应用的生命周期：启动（startup）、初始化服务（initialize）、请求处理（request handling）、以及优雅关闭（shutdown）钩子与事件。内容基于源码（以实现为准），主要参考：<code>cullinan/app.py</code>、<code>cullinan/application.py</code> 与 <code>cullinan/core/lifecycle</code> 相关实现。</p>
-<p>主要阶段</p>
+<h2 id="v092">统一生命周期钩子（v0.92+）<a class="headerlink" href="#v092" title="Permanent link">&para;</a></h2>
+<p>所有组件现在使用统一的生命周期方法（Duck Typing - 无需继承基类）：</p>
+<table>
+<thead>
+<tr>
+<th>钩子方法</th>
+<th>调用时机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_post_construct()</code></td>
+<td>依赖注入完成后</td>
+</tr>
+<tr>
+<td><code>on_startup()</code></td>
+<td>应用启动时</td>
+</tr>
+<tr>
+<td><code>on_shutdown()</code></td>
+<td>应用关闭时</td>
+</tr>
+<tr>
+<td><code>on_pre_destroy()</code></td>
+<td>销毁前</td>
+</tr>
+</tbody>
+</table>
+<p>所有钩子均支持异步版本（添加 <code>_async</code> 后缀）。</p>
+<h3 id="phase">Phase 顺序控制<a class="headerlink" href="#phase" title="Permanent link">&para;</a></h3>
+<p>通过 <code>get_phase()</code> 方法控制组件启动/关闭顺序：
+- 负值 = 较早启动，较晚关闭
+- 正值 = 较晚启动，较早关闭</p>
+<h2 id="_2">主要阶段<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <ol>
 <li>启动（startup）</li>
 <li>入口：<code>CullinanApplication.run()</code> 或 <code>create_app()</code> 之后调用 <code>app.run()</code>。</li>
 <li>
 <p>行为（见 <code>cullinan/app.py</code>）:</p>
 <ul>
-<li>调用 <code>startup()</code> 执行启动序列：配置注入（InjectionRegistry）、发现服务（ServiceRegistry）、按依赖顺序初始化服务（initialize_all）。</li>
+<li>调用 <code>startup()</code> 执行启动序列：配置注入（InjectionRegistry）、发现服务（ServiceRegistry）。</li>
+<li><code>ApplicationContext.refresh()</code> 初始化所有组件并调用生命周期钩子（<code>on_post_construct</code>、<code>on_startup</code>）。</li>
 <li>注册信号处理（SIGINT / SIGTERM），以便在接收到信号时触发优雅关闭。</li>
 <li>启动 Tornado 的 IOLoop：<code>IOLoop.start()</code>（阻塞，直到收到停止事件）。</li>
 </ul>
@@ -1469,7 +1603,7 @@
 <p>初始化服务（service initialization）</p>
 </li>
 <li>服务通过 <code>@service</code> 装饰器或在模块扫描时注册到 <code>ServiceRegistry</code>。</li>
-<li><code>ProviderRegistry</code> / <code>ServiceRegistry</code> 负责按依赖顺序实例化服务并调用初始化钩子（如 <code>on_init</code>）。</li>
+<li><code>ApplicationContext.refresh()</code> 按依赖顺序实例化组件并调用生命周期钩子。</li>
 <li>
 <p>如果没有注册服务，初始化阶段会跳过实例化步骤。</p>
 </li>
@@ -1485,39 +1619,51 @@
 <p>关闭（shutdown）</p>
 </li>
 <li>当应用接收到终止信号或手动触发关闭时，会调用 <code>shutdown()</code>：<ul>
+<li><code>ApplicationContext.shutdown()</code> 调用所有组件的生命周期钩子（<code>on_shutdown</code>、<code>on_pre_destroy</code>）。</li>
 <li>依次执行注册的关闭处理器（同步或异步），处理错误时根据 <code>force</code> 标志决定是否忽略。</li>
 <li>将 <code>_running</code> 标志置为 False 并停止 IOLoop。</li>
-<li>调用服务的生命周期钩子（如 <code>on_shutdown</code>）以便清理资源。</li>
 </ul>
 </li>
 </ol>
-<h2 id="_2">生命周期序列（图示）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>CullinanApplication ProviderRegistry    ServiceRegistry Tornado IOLoop  RequestContext  Handler
-------------------- ----------------    --------------- --------------- --------------  -------
-startup() -&gt; 注册 providers -&gt; 发现并初始化服务 -&gt; 启动 IOLoop
-                                                        |
+<h2 id="_3">常见钩子与扩展点<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>CullinanApplication.add_shutdown_handler(handler)</code> — 向应用添加自定义关闭处理器（支持 async callable）。</li>
+<li><code>LifecycleAware</code> 与 <code>SmartLifecycle</code>（位于 <code>cullinan/core</code>）— 如果组件实现了生命周期接口，框架会在合适的时机调用其钩子。</li>
+<li>组件生命周期钩子（<code>on_post_construct</code>、<code>on_startup</code>、<code>on_shutdown</code>、<code>on_pre_destroy</code>）— 在初始化与关闭阶段被调用。</li>
+</ul>
+<h2 id="_4">生命周期序列（图示）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>CullinanApplication    ApplicationContext    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
+-------------------    ------------------    ---------------    ---------------    --------------    -------
+startup() -&gt; ApplicationContext.refresh() -&gt; 发现并初始化服务 -&gt; 启动 IOLoop
+             (on_post_construct, on_startup)                    |
                                                         |-&gt; IOLoop 接收请求 -&gt; 创建 RequestContext
                                                         |                         -&gt; 解析请求作用域 providers
                                                         |                         -&gt; 分发到 Handler（注入解析）
                                                         |                         -&gt; Handler 返回响应
                                                         |                         -&gt; RequestContext 清理
-shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
+shutdown() -&gt; ApplicationContext.shutdown() -&gt; 停止 IOLoop
+              (on_shutdown, on_pre_destroy)
 </code></pre></div>
 <!--
 <div class="highlight"><pre><span></span><code>sequenceDiagram
     participant App as CullinanApplication
+    participant Ctx as ApplicationContext
     participant SR as ServiceRegistry
-    participant PV as ProviderRegistry
     participant IO as Tornado IOLoop
     participant Req as RequestContext
 
-    App-&gt;&gt;PV: 注册 providers
-    App-&gt;&gt;SR: 发现并初始化服务
+    App-&gt;&gt;Ctx: refresh()
+    Ctx-&gt;&gt;SR: 发现并注册服务
+    Ctx-&gt;&gt;Ctx: 解析依赖并实例化
+    Ctx-&gt;&gt;Ctx: 调用 on_post_construct()
+    Ctx-&gt;&gt;Ctx: 调用 on_startup()
     App-&gt;&gt;IO: 启动 IOLoop
     IO-&gt;&gt;Req: 创建请求上下文
-    Req-&gt;&gt;PV: 解析请求作用域的 providers
+    Req-&gt;&gt;Ctx: 解析请求作用域的 providers
     IO-&gt;&gt;App: 请求被处理
-    App-&gt;&gt;SR: 调用服务的 on_shutdown
+    App-&gt;&gt;Ctx: shutdown()
+    Ctx-&gt;&gt;Ctx: 调用 on_shutdown()
+    Ctx-&gt;&gt;Ctx: 调用 on_pre_destroy()
     App-&gt;&gt;IO: 停止 IOLoop
 </code></pre></div>
 
@@ -1532,7 +1678,9 @@ shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
     Note over App: Startup
     App-&gt;&gt;PV: register providers
     App-&gt;&gt;SR: discover &amp; register services
-    SR-&gt;&gt;SR: resolve deps &amp; instantiate (on_init)
+    SR-&gt;&gt;SR: resolve deps &amp; instantiate
+    SR-&gt;&gt;SR: call on_post_construct()
+    SR-&gt;&gt;SR: call on_startup()
     App-&gt;&gt;IO: start IOLoop
 
     Note over IO,Req: Request handling
@@ -1544,6 +1692,7 @@ shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
 
     Note over App: Shutdown
     App-&gt;&gt;SR: call on_shutdown on services
+    App-&gt;&gt;SR: call on_pre_destroy on services
     App-&gt;&gt;IO: stop IOLoop
 </code></pre></div>
 
@@ -1560,8 +1709,8 @@ shutdown() -&gt; 调用服务 on_shutdown -&gt; 停止 IOLoop
 <div class="highlight"><pre><span></span><code>常见钩子与扩展点
 
 <span class="k">-</span><span class="w"> </span><span class="sb">`CullinanApplication.add_shutdown_handler(handler)`</span> — 向应用添加自定义关闭处理器（支持 async callable）。
-<span class="k">-</span><span class="w"> </span><span class="sb">`LifecycleAware`</span> 与 <span class="sb">`LifecycleManager`</span>（位于 <span class="sb">`cullinan/core`</span>）— 如果服务实现了生命周期接口，框架会在合适的时机调用其钩子。
-<span class="k">-</span><span class="w"> </span>Provider / Service 的 <span class="sb">`on_init`</span> / <span class="sb">`on_shutdown`</span>（如有）— 在初始化与关闭阶段被调用。
+<span class="k">-</span><span class="w"> </span><span class="sb">`LifecycleAware`</span> 与 <span class="sb">`SmartLifecycle`</span>（位于 <span class="sb">`cullinan/core`</span>）— 如果组件实现了生命周期接口，框架会在合适的时机调用其钩子。
+<span class="k">-</span><span class="w"> </span>组件生命周期钩子（`on_post_construct`、`on_startup`、`on_shutdown`、`on_pre_destroy`）— 在初始化与关闭阶段被调用。
 
 最小示例：注册自定义关闭处理器
 

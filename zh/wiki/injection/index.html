@@ -1811,8 +1811,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务初始化时调用&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务启动时调用&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1875,23 +1875,27 @@
     <span class="n">email_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>  <span class="c1"># -&gt; EmailService</span>
 </code></pre></div>
 <h2 id="_4">生命周期钩子<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<p>服务支持用于初始化和清理的生命周期钩子：</p>
+<p>服务支持用于初始化和清理的生命周期钩子（Duck Typing - 无需继承基类）：</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MyService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化顺序（数值越小越早）&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;所有服务注册完成后调用&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_post_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;依赖注入完成后调用&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务器开始接受请求之前调用&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;应用启动时调用&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务器关闭时调用&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;应用关闭时调用&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pre_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;销毁前调用&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 </code></pre></div>
 <h2 id="applicationcontext">高级用法：ApplicationContext（复杂场景）<a class="headerlink" href="#applicationcontext" title="Permanent link">&para;</a></h2>

@@ -2473,9 +2473,9 @@
 
 <h1 id="cullinan-extension-development-guide">Cullinan Extension Development Guide<a class="headerlink" href="#cullinan-extension-development-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: v0.81+<br />
+<p><strong>Version</strong>: v0.92+<br />
 <strong>Author</strong>: Plumeink<br />
-<strong>Last Updated</strong>: 2025-12-16</p>
+<strong>Last Updated</strong>: 2026-02-19</p>
 </blockquote>
 <hr />
 <h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
@@ -2602,12 +2602,12 @@
 <h3 id="lifecycle-hooks">Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatabaseMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during initialization (application startup)&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during application startup&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">create_connection_pool</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during destruction (application shutdown)&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during application shutdown&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
@@ -2727,8 +2727,8 @@
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProviderRegistryService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register custom Providers during service initialization&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register custom Providers during application startup&quot;&quot;&quot;</span>
         <span class="n">registry</span> <span class="o">=</span> <span class="n">get_injection_registry</span><span class="p">()</span>
 
         <span class="c1"># Register factory Provider</span>
@@ -2754,13 +2754,13 @@
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize resources (after Service instantiation)&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_post_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize resources (after dependency injection)&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connect_to_database</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database connected&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute after all Services are ready&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during application startup&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT 1&quot;</span><span class="p">)</span>  <span class="c1"># Health check</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database ready&quot;</span><span class="p">)</span>
 
@@ -2768,23 +2768,28 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute during application shutdown&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database disconnected&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_pre_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute before destruction&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
 </code></pre></div>
 <h3 id="async-hooks">Async Hooks<a class="headerlink" href="#async-hooks" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AsyncService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Support async initialization&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_async_client</span><span class="p">()</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Support async cleanup&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="hook-execution-order">Hook Execution Order<a class="headerlink" href="#hook-execution-order" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>on_init()</strong>: Execute immediately after Service instantiation</li>
-<li><strong>on_startup()</strong>: Execute after all Services are initialized</li>
+<li><strong>on_post_construct()</strong>: Execute after dependency injection</li>
+<li><strong>on_startup()</strong>: Execute during application startup</li>
 <li><strong>on_shutdown()</strong>: Execute during application shutdown (reverse order)</li>
+<li><strong>on_pre_destroy()</strong>: Execute before destruction</li>
 </ol>
 <hr />
 <h2 id="routing-extensions">Routing Extensions<a class="headerlink" href="#routing-extensions" title="Permanent link">&para;</a></h2>
@@ -2888,13 +2893,14 @@
 </code></pre></div></p>
 <h3 id="4-lifecycle-management">4. Lifecycle Management<a class="headerlink" href="#4-lifecycle-management" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>on_init()</strong>: Initialize required resources</li>
+<li><strong>on_post_construct()</strong>: Initialize resources after dependency injection</li>
 <li><strong>on_startup()</strong>: Execute logic that depends on other services</li>
 <li><strong>on_shutdown()</strong>: Always clean up resources</li>
+<li><strong>on_pre_destroy()</strong>: Final cleanup before destruction</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResourceService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_post_construct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Initialize independent resources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">()</span>
 
@@ -2961,7 +2967,7 @@
 <p>A: Middleware doesn't support automatic injection, but you can manually retrieve:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ServiceAwareMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Get service from ServiceRegistry</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service_registry</span>
         <span class="n">registry</span> <span class="o">=</span> <span class="n">get_service_registry</span><span class="p">()</span>
@@ -3061,9 +3067,9 @@ Client Response
 <li><strong>API Documentation</strong>: <code>docs/api_reference.md</code></li>
 </ul>
 <hr />
-<p><strong>Version</strong>: v1.0<br />
+<p><strong>Version</strong>: v0.92<br />
 <strong>Author</strong>: Plumeink<br />
-<strong>Last Updated</strong>: 2025-12-16</p>
+<strong>Last Updated</strong>: 2026-02-19</p>
 
 
 

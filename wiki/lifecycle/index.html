@@ -548,6 +548,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#unified-lifecycle-hooks-v092" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Lifecycle Hooks (v0.92+)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Lifecycle Hooks (v0.92+)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-ordering-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Ordering Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Phases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-hooks-extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Hooks &amp; Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-sequence-diagram" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1419,6 +1469,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#unified-lifecycle-hooks-v092" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Lifecycle Hooks (v0.92+)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Lifecycle Hooks (v0.92+)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-ordering-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Ordering Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Phases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-hooks-extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Hooks &amp; Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-sequence-diagram" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1448,19 +1548,53 @@
 
 <h1 id="application-lifecycle">Application Lifecycle<a class="headerlink" href="#application-lifecycle" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Note (v0.90)</strong>: This document describes the legacy lifecycle management.
-For the new IoC/DI 2.0 lifecycle, see <a href="../../dependency_injection_guide/">Dependency Injection Guide</a>.
-The new <code>ApplicationContext</code> provides unified lifecycle management via <code>refresh()</code> and <code>shutdown()</code>.</p>
+<p><strong>Note (v0.92)</strong>: This document describes the unified lifecycle management system.
+All components (<code>@service</code>, <code>@component</code>, <code>@controller</code>) now use the same lifecycle hooks.
+The <code>ApplicationContext</code> provides unified lifecycle management via <code>refresh()</code> and <code>shutdown()</code>.</p>
 </blockquote>
 <p>This document describes the Cullinan application lifecycle: startup, service initialization, request handling, and graceful shutdown hooks and events. The content is derived from the implementation (source-first) and references <code>cullinan/app.py</code>, <code>cullinan/application.py</code> and <code>cullinan/core/lifecycle</code> related files.</p>
-<p>Main phases</p>
+<h2 id="unified-lifecycle-hooks-v092">Unified Lifecycle Hooks (v0.92+)<a class="headerlink" href="#unified-lifecycle-hooks-v092" title="Permanent link">&para;</a></h2>
+<p>All components now use unified lifecycle methods (Duck Typing - no base class inheritance required):</p>
+<table>
+<thead>
+<tr>
+<th>Hook Method</th>
+<th>When Called</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_post_construct()</code></td>
+<td>After dependency injection</td>
+</tr>
+<tr>
+<td><code>on_startup()</code></td>
+<td>During application startup</td>
+</tr>
+<tr>
+<td><code>on_shutdown()</code></td>
+<td>During application shutdown</td>
+</tr>
+<tr>
+<td><code>on_pre_destroy()</code></td>
+<td>Before destruction</td>
+</tr>
+</tbody>
+</table>
+<p>All hooks support async versions (append <code>_async</code> suffix).</p>
+<h3 id="phase-ordering-control">Phase Ordering Control<a class="headerlink" href="#phase-ordering-control" title="Permanent link">&para;</a></h3>
+<p>Control component startup/shutdown order via <code>get_phase()</code> method:
+- Negative values = starts earlier, stops later
+- Positive values = starts later, stops earlier</p>
+<h2 id="main-phases">Main Phases<a class="headerlink" href="#main-phases" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Startup</li>
 <li>Entry point: <code>CullinanApplication.run()</code> or using <code>create_app()</code> then calling <code>app.run()</code>.</li>
 <li>
 <p>Behavior (see <code>cullinan/app.py</code>):</p>
 <ul>
-<li>Calls <code>startup()</code> to perform the startup sequence: configure injection (InjectionRegistry), discover services (ServiceRegistry), and initialize services in dependency order.</li>
+<li>Calls <code>startup()</code> to perform the startup sequence: configure injection (InjectionRegistry), discover services (ServiceRegistry).</li>
+<li><code>ApplicationContext.refresh()</code> initializes all components and calls lifecycle hooks (<code>on_post_construct</code>, <code>on_startup</code>).</li>
 <li>Registers signal handlers (SIGINT / SIGTERM) to trigger graceful shutdown on signals.</li>
 <li>Starts Tornado's IOLoop: <code>IOLoop.start()</code> (blocking until stop event).</li>
 </ul>
@@ -1469,7 +1603,7 @@ The new <code>ApplicationContext</code> provides unified lifecycle management vi
 <p>Service initialization</p>
 </li>
 <li>Services register via <code>@service</code> or during module scanning into <code>ServiceRegistry</code>.</li>
-<li><code>ProviderRegistry</code> / <code>ServiceRegistry</code> instantiate services in dependency order and invoke init hooks (e.g., <code>on_init</code>).</li>
+<li><code>ApplicationContext.refresh()</code> instantiates components in dependency order and invokes lifecycle hooks.</li>
 <li>
 <p>If no services registered, initialization step is skipped.</p>
 </li>
@@ -1485,17 +1619,17 @@ The new <code>ApplicationContext</code> provides unified lifecycle management vi
 <p>Shutdown</p>
 </li>
 <li>When the app receives termination signals or a manual shutdown, <code>shutdown()</code> is invoked:<ul>
+<li><code>ApplicationContext.shutdown()</code> calls lifecycle hooks (<code>on_shutdown</code>, <code>on_pre_destroy</code>) on all components.</li>
 <li>Executes registered shutdown handlers in order (sync or async); errors are controlled by the <code>force</code> flag.</li>
 <li>Sets <code>_running</code> to False and stops the IOLoop.</li>
-<li>Calls lifecycle hooks (e.g., <code>on_shutdown</code>) on services to clean up resources.</li>
 </ul>
 </li>
 </ol>
-<p>Common hooks &amp; extension points</p>
+<h2 id="common-hooks-extension-points">Common Hooks &amp; Extension Points<a class="headerlink" href="#common-hooks-extension-points" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>CullinanApplication.add_shutdown_handler(handler)</code> — register custom shutdown handlers (async or sync).</li>
-<li><code>LifecycleAware</code> and <code>LifecycleManager</code> (in <code>cullinan/core</code>) — services implementing lifecycle interfaces will be called at appropriate times.</li>
-<li>Provider/service <code>on_init</code> / <code>on_shutdown</code> hooks (if present) — invoked during init and shutdown phases.</li>
+<li><code>LifecycleAware</code> and <code>SmartLifecycle</code> (in <code>cullinan/core</code>) — components implementing lifecycle interfaces will be called at appropriate times.</li>
+<li>Component lifecycle hooks (<code>on_post_construct</code>, <code>on_startup</code>, <code>on_shutdown</code>, <code>on_pre_destroy</code>) — invoked during init and shutdown phases.</li>
 </ul>
 <p>Minimal example: registering shutdown handlers</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Quick (recommended): simple entrypoint using the framework module</span>
@@ -1548,36 +1682,39 @@ The new <code>ApplicationContext</code> provides unified lifecycle management vi
 <li>Suggestion: add sequence diagrams illustrating startup and shutdown flows to <code>docs/wiki/lifecycle.md</code> for review.</li>
 </ul>
 <h2 id="lifecycle-sequence-diagram">Lifecycle Sequence (diagram)<a class="headerlink" href="#lifecycle-sequence-diagram" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>CullinanApplication    ProviderRegistry    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
--------------------    ----------------    ---------------    ---------------    --------------    -------
-startup() -&gt; register providers -&gt; discover &amp; init services -&gt; start IOLoop
-                                                        |
+<div class="highlight"><pre><span></span><code>CullinanApplication    ApplicationContext    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
+-------------------    ------------------    ---------------    ---------------    --------------    -------
+startup() -&gt; ApplicationContext.refresh() -&gt; discover &amp; init services -&gt; start IOLoop
+             (on_post_construct, on_startup)                    |
                                                         |-&gt; IOLoop receives request -&gt; create RequestContext
                                                         |                             -&gt; resolve request-scoped providers
                                                         |                             -&gt; dispatch to Handler (injection resolves)
                                                         |                             -&gt; Handler returns response
                                                         |                             -&gt; RequestContext cleanup
-shutdown() -&gt; call on_shutdown on services -&gt; stop IOLoop
+shutdown() -&gt; ApplicationContext.shutdown() -&gt; stop IOLoop
+              (on_shutdown, on_pre_destroy)
 </code></pre></div>
 <!--
 <div class="highlight"><pre><span></span><code>sequenceDiagram
     autonumber
     participant App as CullinanApplication
-    participant PV as ProviderRegistry
+    participant Ctx as ApplicationContext
     participant SR as ServiceRegistry
     participant IO as Tornado IOLoop
     participant Req as RequestContext
     participant Hand as Handler
 
     Note over App: Startup
-    App-&gt;&gt;PV: register providers
-    App-&gt;&gt;SR: discover &amp; register services
-    SR-&gt;&gt;SR: resolve deps &amp; instantiate (on_init)
+    App-&gt;&gt;Ctx: refresh()
+    Ctx-&gt;&gt;SR: discover &amp; register services
+    Ctx-&gt;&gt;Ctx: resolve deps &amp; instantiate
+    Ctx-&gt;&gt;Ctx: call on_post_construct()
+    Ctx-&gt;&gt;Ctx: call on_startup()
     App-&gt;&gt;IO: start IOLoop
 
     Note over IO,Req: Request handling
     IO-&gt;&gt;Req: create request context
-    Req-&gt;&gt;PV: resolve request-scoped providers
+    Req-&gt;&gt;Ctx: resolve request-scoped providers
     IO-&gt;&gt;Hand: dispatch to handler (injection resolves)
     Hand--&gt;&gt;IO: return response
     Req--&gt;&gt;IO: cleanup request context
