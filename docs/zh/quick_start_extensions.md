@@ -220,9 +220,10 @@ registry.register(MyMiddleware, priority=100)
    - `Middleware.process_response`
 
 2. **Lifecycle（生命周期）**
-   - `Service.on_init`
-   - `Service.on_startup`
-   - `Service.on_shutdown`
+   - `on_post_construct`
+   - `on_startup`
+   - `on_shutdown`
+   - `on_pre_destroy`
 
 3. **Injection（依赖注入）**
    - `custom_scope`

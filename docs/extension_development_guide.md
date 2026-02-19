@@ -1,8 +1,8 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.81+  
+> **Version**: v0.92+  
 > **Author**: Plumeink  
-> **Last Updated**: 2025-12-16
+> **Last Updated**: 2026-02-19
 
 ---
 
@@ -120,12 +120,12 @@ registry.register(MyMiddleware, priority=100)
 ```python
 @middleware(priority=100)
 class DatabaseMiddleware(Middleware):
-    def on_init(self):
-        """Execute during initialization (application startup)"""
+    def on_startup(self):
+        """Execute during application startup"""
         self.pool = create_connection_pool()
     
-    def on_destroy(self):
-        """Execute during destruction (application shutdown)"""
+    def on_shutdown(self):
+        """Execute during application shutdown"""
         self.pool.close()
     
     def process_request(self, handler):
@@ -268,8 +268,8 @@ from cullinan.core.injection import get_injection_registry
 
 @service
 class ProviderRegistryService(Service):
-    def on_init(self):
-        """Register custom Providers during service initialization"""
+    def on_startup(self):
+        """Register custom Providers during application startup"""
         registry = get_injection_registry()
         
         # Register factory Provider
@@ -302,13 +302,13 @@ from cullinan.service import service, Service
 
 @service
 class DatabaseService(Service):
-    def on_init(self):
-        """Initialize resources (after Service instantiation)"""
+    def on_post_construct(self):
+        """Initialize resources (after dependency injection)"""
         self.connection = connect_to_database()
         print("Database connected")
     
     def on_startup(self):
-        """Execute after all Services are ready"""
+        """Execute during application startup"""
         self.connection.execute("SELECT 1")  # Health check
         print("Database ready")
     
@@ -316,6 +316,10 @@ class DatabaseService(Service):
         """Execute during application shutdown"""
         self.connection.close()
         print("Database disconnected")
+    
+    def on_pre_destroy(self):
+        """Execute before destruction"""
+        pass
 ```
 
 ### Async Hooks
@@ -323,20 +327,21 @@ class DatabaseService(Service):
 ```python
 @service
 class AsyncService(Service):
-    async def on_init(self):
+    async def on_startup_async(self):
         """Support async initialization"""
         self.client = await create_async_client()
     
-    async def on_shutdown(self):
+    async def on_shutdown_async(self):
         """Support async cleanup"""
         await self.client.close()
 ```
 
 ### Hook Execution Order
 
-1. **on_init()**: Execute immediately after Service instantiation
-2. **on_startup()**: Execute after all Services are initialized
+1. **on_post_construct()**: Execute after dependency injection
+2. **on_startup()**: Execute during application startup
 3. **on_shutdown()**: Execute during application shutdown (reverse order)
+4. **on_pre_destroy()**: Execute before destruction
 
 ---
 
@@ -462,14 +467,15 @@ class UserService(Service):
 
 ### 4. Lifecycle Management
 
-- **on_init()**: Initialize required resources
+- **on_post_construct()**: Initialize resources after dependency injection
 - **on_startup()**: Execute logic that depends on other services
 - **on_shutdown()**: Always clean up resources
+- **on_pre_destroy()**: Final cleanup before destruction
 
 ```python
 @service
 class ResourceService(Service):
-    def on_init(self):
+    def on_post_construct(self):
         # Initialize independent resources
         self.connection = create_connection()
     
@@ -547,7 +553,7 @@ A: Middleware doesn't support automatic injection, but you can manually retrieve
 ```python
 @middleware(priority=100)
 class ServiceAwareMiddleware(Middleware):
-    def on_init(self):
+    def on_startup(self):
         # Get service from ServiceRegistry
         from cullinan.service import get_service_registry
         registry = get_service_registry()
@@ -665,7 +671,7 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v1.0  
+**Version**: v0.92  
 **Author**: Plumeink  
-**Last Updated**: 2025-12-16
+**Last Updated**: 2026-02-19
 

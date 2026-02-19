@@ -43,8 +43,8 @@ class DatabaseService(Service):
         super().__init__()
         self.connection = None
     
-    def on_init(self):
-        """服务初始化时调用"""
+    def on_startup(self):
+        """服务启动时调用"""
         self.connection = create_connection()
     
     def on_shutdown(self):
@@ -124,7 +124,7 @@ class MyController:
 
 ## 生命周期钩子
 
-服务支持用于初始化和清理的生命周期钩子：
+服务支持用于初始化和清理的生命周期钩子（Duck Typing - 无需继承基类）：
 
 ```python
 @service
@@ -133,16 +133,20 @@ class MyService(Service):
         """初始化顺序（数值越小越早）"""
         return 0
     
-    def on_init(self):
-        """所有服务注册完成后调用"""
+    def on_post_construct(self):
+        """依赖注入完成后调用"""
         pass
     
     def on_startup(self):
-        """服务器开始接受请求之前调用"""
+        """应用启动时调用"""
         pass
     
     def on_shutdown(self):
-        """服务器关闭时调用"""
+        """应用关闭时调用"""
+        pass
+    
+    def on_pre_destroy(self):
+        """销毁前调用"""
         pass
 ```
 

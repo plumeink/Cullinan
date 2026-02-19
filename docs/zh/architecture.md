@@ -1,7 +1,7 @@
 # Cullinan 框架架构文档（更新版）
 
-> **版本**：v0.90  
-> **最后更新**：2025-12-25  
+> **版本**：v0.92  
+> **最后更新**：2026-02-19  
 > **作者**：Plumeink  
 > **状态**：已更新
 
@@ -143,15 +143,17 @@ cullinan/core/
 
 ```python
 class LifecycleManager:
-    - initialize()    # 初始化阶段
-    - startup()       # 启动阶段
+    - refresh()       # 初始化/启动阶段
     - shutdown()      # 关闭阶段
 ```
 
-**生命周期钩子**：
-- `on_init()` - Service 实例化后执行
-- `on_startup()` - 所有 Service 就绪后执行
+**统一生命周期钩子（v0.92+）**：
+- `on_post_construct()` - 依赖注入完成后执行
+- `on_startup()` - 应用启动时执行
 - `on_shutdown()` - 应用关闭时执行
+- `on_pre_destroy()` - 销毁前执行
+
+所有钩子支持异步版本（添加 `_async` 后缀）。
 
 #### 1.3 请求上下文
 
@@ -189,7 +191,7 @@ from cullinan.core import Inject
 class UserService(Service):
     email_service: 'EmailService' = Inject()
     
-    def on_init(self):
+    def on_startup(self):
         # 初始化资源
         self.db = connect_database()
     
@@ -380,12 +382,12 @@ from cullinan.core import Inject
 class UserService(Service):
     email_service: EmailService = Inject()  # 自动注入
     
-    def on_init(self):
-        # 初始化逻辑
+    def on_post_construct(self):
+        # 依赖注入完成后执行
         pass
     
     def on_startup(self):
-        # 服务启动时执行
+        # 应用启动时执行
         pass
 ```
 
@@ -475,7 +477,7 @@ CorsMiddleware (priority=10)      → process_response
 
 4. Service 初始化
    ├── 按依赖顺序初始化
-   ├── 调用 on_init() 钩子
+   ├── 调用 on_post_construct() 钩子
    ├── 调用 on_startup() 钩子
    └── 错误处理（根据 startup_error_policy）
 
@@ -485,7 +487,7 @@ CorsMiddleware (priority=10)      → process_response
 
 6. 中间件链构建
    ├── 按优先级排序
-   ├── 初始化中间件（on_init）
+   ├── 初始化中间件（on_startup）
    └── 构建处理链
 
 7. 启动 Web 服务器

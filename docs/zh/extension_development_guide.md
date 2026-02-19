@@ -1,8 +1,8 @@
 # Cullinan 扩展开发指南
 
-> **版本**：v0.81+  
+> **版本**：v0.92+  
 > **作者**：Plumeink  
-> **最后更新**：2025-12-16
+> **最后更新**：2026-02-19
 
 ---
 
@@ -120,12 +120,12 @@ registry.register(MyMiddleware, priority=100)
 ```python
 @middleware(priority=100)
 class DatabaseMiddleware(Middleware):
-    def on_init(self):
-        """初始化时执行（应用启动时）"""
+    def on_startup(self):
+        """应用启动时执行"""
         self.pool = create_connection_pool()
     
-    def on_destroy(self):
-        """销毁时执行（应用关闭时）"""
+    def on_shutdown(self):
+        """应用关闭时执行"""
         self.pool.close()
     
     def process_request(self, handler):
@@ -268,8 +268,8 @@ from cullinan.core.injection import get_injection_registry
 
 @service
 class ProviderRegistryService(Service):
-    def on_init(self):
-        """在服务初始化时注册自定义 Provider"""
+    def on_startup(self):
+        """在应用启动时注册自定义 Provider"""
         registry = get_injection_registry()
         
         # 注册工厂 Provider
@@ -302,13 +302,13 @@ from cullinan.service import service, Service
 
 @service
 class DatabaseService(Service):
-    def on_init(self):
-        """初始化资源（Service 实例化后）"""
+    def on_post_construct(self):
+        """初始化资源（依赖注入完成后）"""
         self.connection = connect_to_database()
         print("Database connected")
     
     def on_startup(self):
-        """所有 Service 就绪后执行"""
+        """应用启动时执行"""
         self.connection.execute("SELECT 1")  # 健康检查
         print("Database ready")
     
@@ -316,6 +316,10 @@ class DatabaseService(Service):
         """应用关闭时执行"""
         self.connection.close()
         print("Database disconnected")
+    
+    def on_pre_destroy(self):
+        """销毁前执行"""
+        pass
 ```
 
 ### 异步钩子
@@ -323,20 +327,21 @@ class DatabaseService(Service):
 ```python
 @service
 class AsyncService(Service):
-    async def on_init(self):
+    async def on_startup_async(self):
         """支持异步初始化"""
         self.client = await create_async_client()
     
-    async def on_shutdown(self):
+    async def on_shutdown_async(self):
         """支持异步清理"""
         await self.client.close()
 ```
 
 ### 钩子执行顺序
 
-1. **on_init()**：Service 实例化后立即执行
-2. **on_startup()**：所有 Service 初始化完成后执行
+1. **on_post_construct()**：依赖注入完成后执行
+2. **on_startup()**：应用启动时执行
 3. **on_shutdown()**：应用关闭时执行（逆序）
+4. **on_pre_destroy()**：销毁前执行
 
 ---
 
@@ -462,14 +467,15 @@ class UserService(Service):
 
 ### 4. 生命周期管理
 
-- **on_init()**：初始化必需资源
+- **on_post_construct()**：依赖注入完成后初始化资源
 - **on_startup()**：执行依赖其他服务的逻辑
 - **on_shutdown()**：总是清理资源
+- **on_pre_destroy()**：销毁前的最终清理
 
 ```python
 @service
 class ResourceService(Service):
-    def on_init(self):
+    def on_post_construct(self):
         # 初始化独立资源
         self.connection = create_connection()
     
@@ -547,7 +553,7 @@ A: 中间件本身不支持自动注入，但可以手动获取：
 ```python
 @middleware(priority=100)
 class ServiceAwareMiddleware(Middleware):
-    def on_init(self):
+    def on_startup(self):
         # 从 ServiceRegistry 获取服务
         from cullinan.service import get_service_registry
         registry = get_service_registry()
@@ -665,7 +671,7 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**版本**：v1.0  
+**版本**：v0.92  
 **作者**：Plumeink  
-**最后更新**：2025-12-16
+**最后更新**：2026-02-19
 

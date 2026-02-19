@@ -10,29 +10,49 @@ translation_pair: "docs/zh/wiki/lifecycle.md"
 related_tests: ["tests/test_real_app_startup.py","tests/test_comprehensive_lifecycle.py"]
 related_examples: ["docs/work/core_examples.py","examples/hello_http.py"]
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-02-19T00:00:00Z"
 pr_links: []
 
 # Application Lifecycle
 
-> **Note (v0.90)**: This document describes the legacy lifecycle management.
-> For the new IoC/DI 2.0 lifecycle, see [Dependency Injection Guide](../dependency_injection_guide.md).
-> The new `ApplicationContext` provides unified lifecycle management via `refresh()` and `shutdown()`.
+> **Note (v0.92)**: This document describes the unified lifecycle management system.
+> All components (`@service`, `@component`, `@controller`) now use the same lifecycle hooks.
+> The `ApplicationContext` provides unified lifecycle management via `refresh()` and `shutdown()`.
 
 This document describes the Cullinan application lifecycle: startup, service initialization, request handling, and graceful shutdown hooks and events. The content is derived from the implementation (source-first) and references `cullinan/app.py`, `cullinan/application.py` and `cullinan/core/lifecycle` related files.
 
-Main phases
+## Unified Lifecycle Hooks (v0.92+)
+
+All components now use unified lifecycle methods (Duck Typing - no base class inheritance required):
+
+| Hook Method | When Called |
+|-------------|-------------|
+| `on_post_construct()` | After dependency injection |
+| `on_startup()` | During application startup |
+| `on_shutdown()` | During application shutdown |
+| `on_pre_destroy()` | Before destruction |
+
+All hooks support async versions (append `_async` suffix).
+
+### Phase Ordering Control
+
+Control component startup/shutdown order via `get_phase()` method:
+- Negative values = starts earlier, stops later
+- Positive values = starts later, stops earlier
+
+## Main Phases
 
 1. Startup
    - Entry point: `CullinanApplication.run()` or using `create_app()` then calling `app.run()`.
    - Behavior (see `cullinan/app.py`):
-     - Calls `startup()` to perform the startup sequence: configure injection (InjectionRegistry), discover services (ServiceRegistry), and initialize services in dependency order.
+     - Calls `startup()` to perform the startup sequence: configure injection (InjectionRegistry), discover services (ServiceRegistry).
+     - `ApplicationContext.refresh()` initializes all components and calls lifecycle hooks (`on_post_construct`, `on_startup`).
      - Registers signal handlers (SIGINT / SIGTERM) to trigger graceful shutdown on signals.
      - Starts Tornado's IOLoop: `IOLoop.start()` (blocking until stop event).
 
 2. Service initialization
    - Services register via `@service` or during module scanning into `ServiceRegistry`.
-   - `ProviderRegistry` / `ServiceRegistry` instantiate services in dependency order and invoke init hooks (e.g., `on_init`).
+   - `ApplicationContext.refresh()` instantiates components in dependency order and invokes lifecycle hooks.
    - If no services registered, initialization step is skipped.
 
 3. Request handling & request scope
@@ -42,15 +62,15 @@ Main phases
 
 4. Shutdown
    - When the app receives termination signals or a manual shutdown, `shutdown()` is invoked:
+     - `ApplicationContext.shutdown()` calls lifecycle hooks (`on_shutdown`, `on_pre_destroy`) on all components.
      - Executes registered shutdown handlers in order (sync or async); errors are controlled by the `force` flag.
      - Sets `_running` to False and stops the IOLoop.
-     - Calls lifecycle hooks (e.g., `on_shutdown`) on services to clean up resources.
 
-Common hooks & extension points
+## Common Hooks & Extension Points
 
 - `CullinanApplication.add_shutdown_handler(handler)` — register custom shutdown handlers (async or sync).
-- `LifecycleAware` and `LifecycleManager` (in `cullinan/core`) — services implementing lifecycle interfaces will be called at appropriate times.
-- Provider/service `on_init` / `on_shutdown` hooks (if present) — invoked during init and shutdown phases.
+- `LifecycleAware` and `SmartLifecycle` (in `cullinan/core`) — components implementing lifecycle interfaces will be called at appropriate times.
+- Component lifecycle hooks (`on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`) — invoked during init and shutdown phases.
 
 Minimal example: registering shutdown handlers
 
@@ -111,16 +131,17 @@ References & next steps
 ## Lifecycle Sequence (diagram)
 
 ```
-CullinanApplication    ProviderRegistry    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
--------------------    ----------------    ---------------    ---------------    --------------    -------
-startup() -> register providers -> discover & init services -> start IOLoop
-                                                        |
+CullinanApplication    ApplicationContext    ServiceRegistry    Tornado IOLoop    RequestContext    Handler
+-------------------    ------------------    ---------------    ---------------    --------------    -------
+startup() -> ApplicationContext.refresh() -> discover & init services -> start IOLoop
+             (on_post_construct, on_startup)                    |
                                                         |-> IOLoop receives request -> create RequestContext
                                                         |                             -> resolve request-scoped providers
                                                         |                             -> dispatch to Handler (injection resolves)
                                                         |                             -> Handler returns response
                                                         |                             -> RequestContext cleanup
-shutdown() -> call on_shutdown on services -> stop IOLoop
+shutdown() -> ApplicationContext.shutdown() -> stop IOLoop
+              (on_shutdown, on_pre_destroy)
 ```
 
 <!--
@@ -128,21 +149,23 @@ shutdown() -> call on_shutdown on services -> stop IOLoop
 sequenceDiagram
     autonumber
     participant App as CullinanApplication
-    participant PV as ProviderRegistry
+    participant Ctx as ApplicationContext
     participant SR as ServiceRegistry
     participant IO as Tornado IOLoop
     participant Req as RequestContext
     participant Hand as Handler
 
     Note over App: Startup
-    App->>PV: register providers
-    App->>SR: discover & register services
-    SR->>SR: resolve deps & instantiate (on_init)
+    App->>Ctx: refresh()
+    Ctx->>SR: discover & register services
+    Ctx->>Ctx: resolve deps & instantiate
+    Ctx->>Ctx: call on_post_construct()
+    Ctx->>Ctx: call on_startup()
     App->>IO: start IOLoop
 
     Note over IO,Req: Request handling
     IO->>Req: create request context
-    Req->>PV: resolve request-scoped providers
+    Req->>Ctx: resolve request-scoped providers
     IO->>Hand: dispatch to handler (injection resolves)
     Hand-->>IO: return response
     Req-->>IO: cleanup request context

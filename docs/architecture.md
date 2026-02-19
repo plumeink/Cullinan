@@ -1,7 +1,7 @@
-# Cullinan Framework Architecture (Updated)
+# Cullinan Framework Architecture Document (Updated)
 
-> **Version**: v0.90  
-> **Last Updated**: 2025-12-25  
+> **Version**: v0.92  
+> **Last Updated**: 2026-02-19  
 > **Author**: Plumeink  
 > **Status**: Updated
 
@@ -138,10 +138,21 @@ class LifecycleManager:
     - shutdown()      # Shutdown phase
 ```
 
-**Lifecycle Hooks**:
-- `on_init()` - Execute after Service instantiation
-- `on_startup()` - Execute after all Services are ready
+#### 1.2 Lifecycle Management
+
+```python
+class LifecycleManager:
+    - refresh()       # Initialize/Startup phase
+    - shutdown()      # Shutdown phase
+```
+
+**Unified Lifecycle Hooks (v0.92+)**:
+- `on_post_construct()` - Execute after dependency injection
+- `on_startup()` - Execute during application startup
 - `on_shutdown()` - Execute during application shutdown
+- `on_pre_destroy()` - Execute before destruction
+
+All hooks support async versions (append `_async` suffix).
 
 #### 1.3 Request Context
 
@@ -179,7 +190,7 @@ from cullinan.core import Inject
 class UserService(Service):
     email_service: 'EmailService' = Inject()
     
-    def on_init(self):
+    def on_startup(self):
         # Initialize resources
         self.db = connect_database()
     
@@ -370,12 +381,12 @@ from cullinan.core import Inject
 class UserService(Service):
     email_service: EmailService = Inject()  # Auto-inject
     
-    def on_init(self):
-        # Initialization logic
+    def on_post_construct(self):
+        # Execute after dependency injection
         pass
     
     def on_startup(self):
-        # Execute when service starts
+        # Execute during application startup
         pass
 ```
 
@@ -465,7 +476,7 @@ Client Response
 
 4. Service Initialization
    ├── Initialize in dependency order
-   ├── Call on_init() hooks
+   ├── Call on_post_construct() hooks
    ├── Call on_startup() hooks
    └── Error handling (per startup_error_policy)
 
@@ -475,7 +486,7 @@ Client Response
 
 6. Middleware Chain Building
    ├── Sort by priority
-   ├── Initialize middleware (on_init)
+   ├── Initialize middleware (on_startup)
    └── Build processing chain
 
 7. Start Web Server

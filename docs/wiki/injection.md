@@ -43,12 +43,12 @@ class DatabaseService(Service):
         super().__init__()
         self.connection = None
     
-    def on_init(self):
-        """Called during service initialization"""
+    def on_startup(self):
+        """Called during application startup"""
         self.connection = create_connection()
     
     def on_shutdown(self):
-        """Called during service shutdown"""
+        """Called during application shutdown"""
         if self.connection:
             self.connection.close()
     
@@ -124,7 +124,7 @@ class MyController:
 
 ## Lifecycle Hooks
 
-Services support lifecycle hooks for initialization and cleanup:
+Services support lifecycle hooks for initialization and cleanup (Duck Typing - no base class inheritance required):
 
 ```python
 @service
@@ -133,16 +133,20 @@ class MyService(Service):
         """Initialization order (lower = earlier)"""
         return 0
     
-    def on_init(self):
-        """Called after all services are registered"""
+    def on_post_construct(self):
+        """Called after dependency injection"""
         pass
     
     def on_startup(self):
-        """Called before the server starts accepting requests"""
+        """Called during application startup"""
         pass
     
     def on_shutdown(self):
-        """Called when the server is shutting down"""
+        """Called during application shutdown"""
+        pass
+    
+    def on_pre_destroy(self):
+        """Called before destruction"""
         pass
 ```
 

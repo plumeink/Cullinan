@@ -220,9 +220,10 @@ The framework provides 6 major extension point categories:
    - `Middleware.process_response`
 
 2. **Lifecycle**
-   - `Service.on_init`
-   - `Service.on_startup`
-   - `Service.on_shutdown`
+   - `on_post_construct`
+   - `on_startup`
+   - `on_shutdown`
+   - `on_pre_destroy`
 
 3. **Injection**
    - `custom_scope`
