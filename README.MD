@@ -43,7 +43,8 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 - **Auto type conversion** and validation (ge, le, min_length, regex, etc.)
 - Modular architecture with registry, DI, and lifecycle management
 - Built-in IoC/DI with `InjectByName` and `Inject` support
-- Lifecycle hooks (e.g. `on_init`, `on_destroy`) on services
+- Unified lifecycle hooks (`on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`) on all components
+- Duck Typing lifecycle: no base class inheritance required (v0.92+)
 - Designed for tests: resettable registries and request-scoped dependencies
 
 ### Services & WebSocket
@@ -75,15 +76,19 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 
 ### Version Notes
 
-- Current series: **v0.90a5+**
+- Current series: **v0.92**
+  - **Unified lifecycle management** with `on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`
+  - **Duck Typing lifecycle**: no base class inheritance required
+  - **Phase ordering control** via `get_phase()` method
+  - **Breaking change**: Removed legacy `on_init()` and `on_destroy()` methods
   - **New type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File`
   - **DynamicBody** for flexible request body access with safe accessors
-  - **FileInfo/FileList** for file upload handling with validation (v0.90a5+)
-  - **@field_validator** for dataclass field validation (v0.90a5+)
-  - **ResponseSerializer** for automatic response serialization (v0.90a5+)
-  - **Pluggable model handlers** for Pydantic and custom model integration (v0.90a5+)
+  - **FileInfo/FileList** for file upload handling with validation
+  - **@field_validator** for dataclass field validation
+  - **ResponseSerializer** for automatic response serialization
+  - **Pluggable model handlers** for Pydantic and custom model integration
   - **Auto type conversion** and parameter validation
-  - New IoC/DI 2.0 architecture with `ApplicationContext`
+  - IoC/DI 2.0 architecture with `ApplicationContext`
   - Single container entry point with freeze-after-startup
   - Definition/Factory separation for dependency management
   - Structured diagnostics with stable dependency chains
