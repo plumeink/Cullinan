@@ -1,15 +1,28 @@
 # -*- coding: utf-8 -*-
 """Cullinan Lifecycle Module
 
-This module provides lifecycle management:
+This module provides unified lifecycle management:
+- LifecycleAware: Base interface for lifecycle-aware components
+- SmartLifecycle: Extended interface with phase control
 - LifecycleManager: Component lifecycle orchestration
-- LifecycleEvent: Lifecycle event types
-- Event hooks and callbacks
+- LifecyclePhase: Lifecycle phase enumeration
+
+All lifecycle management is now centralized in ApplicationContext.
 
 Author: Plumeink
 """
 
-from .manager import LifecycleManager
+# Re-export unified lifecycle from parent lifecycle_enhanced
+from ..lifecycle_enhanced import (
+    LifecyclePhase,
+    LifecycleAware,
+    SmartLifecycle,
+    LifecycleManager,
+    get_lifecycle_manager,
+    reset_lifecycle_manager,
+)
+
+# Keep events for backward compatibility
 from .events import (
     LifecycleEvent,
     LifecycleEventManager,
@@ -20,7 +33,14 @@ from .events import (
 )
 
 __all__ = [
+    # Unified lifecycle
+    'LifecyclePhase',
+    'LifecycleAware',
+    'SmartLifecycle',
     'LifecycleManager',
+    'get_lifecycle_manager',
+    'reset_lifecycle_manager',
+    # Events
     'LifecycleEvent',
     'LifecycleEventManager',
     'LifecycleEventContext',

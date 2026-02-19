@@ -5,15 +5,24 @@ This module provides foundational components for the Cullinan framework:
 - ApplicationContext: Single entry point for IoC/DI (2.0)
 - Decorators: @service, @controller, @component
 - Dependency Injection: Inject, InjectByName, Lazy
-- Lifecycle management
+- Unified lifecycle management (all components share same lifecycle)
 - Core exceptions and types
 
 Version: 0.90
 """
 
 from .registry import Registry, SimpleRegistry
-from .lifecycle import LifecycleManager
-from .types import LifecycleState, LifecycleAware
+# Import unified lifecycle from lifecycle_enhanced (the single source of truth)
+from .lifecycle_enhanced import (
+    LifecycleAware,
+    SmartLifecycle,
+    LifecyclePhase,
+    LifecycleManager,
+    get_lifecycle_manager,
+    reset_lifecycle_manager,
+)
+# Keep LifecycleState for backward compatibility
+from .types import LifecycleState
 from .context import (
     RequestContext,
     get_current_context,
@@ -209,11 +218,15 @@ __all__ = [
     'Registry',
     'SimpleRegistry',
 
-    # Lifecycle Management
+    # Lifecycle Management (Unified)
     'LifecycleManager',
     'LifecycleState',
     'LifecycleAware',
-    
+    'SmartLifecycle',
+    'LifecyclePhase',
+    'get_lifecycle_manager',
+    'reset_lifecycle_manager',
+
     # Request Context
     'RequestContext',
     'get_current_context',

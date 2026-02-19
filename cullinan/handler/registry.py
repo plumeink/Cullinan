@@ -68,24 +68,9 @@ class HandlerRegistry(Registry[Tuple[str, Any]]):
         if metadata:
             self._metadata[url] = metadata
         
-        # Call on_init lifecycle hook if handler has it
-        if hasattr(servlet, 'on_init') and callable(servlet.on_init):
-            try:
-                # Check if it's a class method or instance method
-                # For classes, we need to instantiate or call as unbound
-                if isinstance(servlet, type):
-                    # It's a class, create temporary instance to call on_init
-                    # Note: This may not be ideal for all cases
-                    # Better to call on_init after handler instantiation by the framework
-                    logger.debug(f"Handler {url} has on_init but is a class - will be called on instantiation")
-                else:
-                    # It's an instance
-                    servlet.on_init()
-                    self._initialized_handlers.add(url)
-                    logger.debug(f"Called on_init for handler: {url}")
-            except Exception as e:
-                logger.error(f"Error in on_init for handler {url}: {e}", exc_info=True)
-        
+        # Note: Lifecycle hooks (on_post_construct, on_startup, etc.) are called
+        # by ApplicationContext during refresh(), not here.
+
         logger.debug(f"Registered handler for URL: {url}")
     
     def get(self, url: str) -> Optional[Tuple[str, Any]]:
@@ -116,26 +101,6 @@ class HandlerRegistry(Registry[Tuple[str, Any]]):
         self._handlers.clear()
         self._initialized_handlers.clear()
         logger.debug("Cleared all registered handlers")
-    
-    def destroy_all(self) -> None:
-        """Destroy all handlers by calling their on_destroy() lifecycle hooks.
-        
-        This should be called during application shutdown.
-        """
-        for url, servlet in reversed(self._handlers):
-            if hasattr(servlet, 'on_destroy') and callable(servlet.on_destroy):
-                try:
-                    if isinstance(servlet, type):
-                        # It's a class, skip (on_destroy should be called on instances)
-                        logger.debug(f"Handler {url} is a class - on_destroy should be called on instances")
-                    else:
-                        # It's an instance
-                        servlet.on_destroy()
-                        logger.debug(f"Called on_destroy for handler: {url}")
-                except Exception as e:
-                    logger.error(f"Error in on_destroy for handler {url}: {e}", exc_info=True)
-        
-        logger.info(f"Destroyed {len(self._handlers)} handlers")
     
     def count(self) -> int:
         """Get the number of registered handlers.

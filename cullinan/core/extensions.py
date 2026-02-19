@@ -92,39 +92,40 @@ class ExtensionRegistry:
                 name='Middleware.process_request',
                 description='Intercept and process requests before they reach handlers',
                 interface=Middleware,
-                example_url='https://docs.cullinan.io/extensions/middleware',
             ),
             ExtensionPoint(
                 category=ExtensionCategory.MIDDLEWARE,
                 name='Middleware.process_response',
                 description='Intercept and process responses before they are sent',
                 interface=Middleware,
-                example_url='https://docs.cullinan.io/extensions/middleware',
             ),
         ])
 
-        # Lifecycle extension points
+        # Lifecycle extension points (unified lifecycle)
         self._extension_points.extend([
             ExtensionPoint(
                 category=ExtensionCategory.LIFECYCLE,
-                name='Service.on_init',
-                description='Initialize service resources after instantiation',
+                name='on_post_construct',
+                description='Initialize component after dependency injection',
                 interface=Service,
-                example_url='https://docs.cullinan.io/extensions/service-lifecycle',
             ),
             ExtensionPoint(
                 category=ExtensionCategory.LIFECYCLE,
-                name='Service.on_startup',
-                description='Execute logic after all services are initialized',
+                name='on_startup',
+                description='Execute logic during application startup',
                 interface=Service,
-                example_url='https://docs.cullinan.io/extensions/service-lifecycle',
             ),
             ExtensionPoint(
                 category=ExtensionCategory.LIFECYCLE,
-                name='Service.on_shutdown',
+                name='on_shutdown',
                 description='Clean up resources during application shutdown',
                 interface=Service,
-                example_url='https://docs.cullinan.io/extensions/service-lifecycle',
+            ),
+            ExtensionPoint(
+                category=ExtensionCategory.LIFECYCLE,
+                name='on_pre_destroy',
+                description='Final cleanup before component destruction',
+                interface=Service,
             ),
         ])
 
@@ -134,13 +135,11 @@ class ExtensionRegistry:
                 category=ExtensionCategory.INJECTION,
                 name='custom_scope',
                 description='Define custom dependency injection scopes',
-                example_url='https://docs.cullinan.io/extensions/custom-scope',
             ),
             ExtensionPoint(
                 category=ExtensionCategory.INJECTION,
                 name='custom_provider',
                 description='Define custom dependency providers',
-                example_url='https://docs.cullinan.io/extensions/custom-provider',
             ),
         ])
 
@@ -150,7 +149,6 @@ class ExtensionRegistry:
                 category=ExtensionCategory.ROUTING,
                 name='custom_handler',
                 description='Register custom Tornado request handlers',
-                example_url='https://docs.cullinan.io/extensions/custom-handler',
             ),
         ])
 
@@ -160,7 +158,6 @@ class ExtensionRegistry:
                 category=ExtensionCategory.CONFIGURATION,
                 name='config_provider',
                 description='Provide custom configuration sources',
-                example_url='https://docs.cullinan.io/extensions/config-provider',
             ),
         ])
 

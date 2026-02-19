@@ -22,8 +22,8 @@ class GreetingService(Service):
         super().__init__()
         self.greeting_count = 0
 
-    def on_init(self):
-        """Service 初始化时调用"""
+    def on_startup(self):
+        """Service 启动时调用"""
         print("GreetingService 已初始化")
 
     def get_greeting(self, name: str) -> str:

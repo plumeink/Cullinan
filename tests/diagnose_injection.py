@@ -28,8 +28,8 @@ from cullinan.core import InjectByName
 class TestService(Service):
     """测试服务"""
 
-    def on_init(self):
-        logger.info("[OK] TestService.on_init() called")
+    def on_startup(self):
+        logger.info("[OK] TestService.on_startup() called")
 
     def get_binding(self):
         """测试方法"""
@@ -87,10 +87,13 @@ def diagnose():
     services = service_registry.list_all()
     print(f"[OK] 已注册 Service: {services}")
 
-    # 2. 初始化 Service
-    print("\n[步骤 2] 初始化 Service...")
-    service_registry.initialize_all()
-    print("[OK] Service 初始化完成")
+    # 2. 初始化 Service（通过 ApplicationContext）
+    print("\n[步骤 2] 初始化 Service（通过 ApplicationContext）...")
+    from cullinan.core import ApplicationContext, set_application_context
+    ctx = ApplicationContext()
+    set_application_context(ctx)
+    ctx.refresh()
+    print("[OK] Service 初始化完成（通过统一生命周期）")
 
     # 3. 检查 Service 实例
     print("\n[步骤 3] 检查 Service 实例...")

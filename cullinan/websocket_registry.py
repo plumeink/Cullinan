@@ -101,15 +101,9 @@ class WebSocketRegistry(Registry['Type[Any]']):
         logger.info(f"Registered WebSocket handler: {name}" + 
                    (f" at {url}" if url else ""))
         
-        # Initialize lifecycle if handler implements LifecycleAware
-        if hasattr(handler_class, 'on_init') and callable(getattr(handler_class, 'on_init')):
-            try:
-                instance = handler_class()
-                if hasattr(instance, 'on_init'):
-                    instance.on_init()
-            except Exception as e:
-                logger.error(f"Error calling on_init for {name}: {e}")
-    
+        # Note: Lifecycle hooks (on_post_construct, on_startup, etc.) are called
+        # by ApplicationContext during refresh(), not here.
+
     def get(self, name: str) -> Optional[Type[Any]]:
         """Retrieve a WebSocket handler class by name.
         

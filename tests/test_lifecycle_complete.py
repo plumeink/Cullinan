@@ -207,20 +207,23 @@ class TestPhaseControl(unittest.TestCase):
 
 
 class TestServiceIntegration(unittest.TestCase):
-    """Test integration with Service and dependency injection"""
+    """Test integration with Service and dependency injection using ApplicationContext"""
 
     def setUp(self):
-        reset_injection_registry()
-        reset_service_registry()
+        from cullinan.core.pending import PendingRegistry
+        PendingRegistry.reset()
         reset_lifecycle_manager()
 
-        # Configure injection
-        injection_registry = get_injection_registry()
-        service_registry = get_service_registry()
-        injection_registry.add_provider_registry(service_registry, priority=100)
-
     def test_service_with_lifecycle(self):
-        """Test Service with lifecycle hooks"""
+        """Test Service with lifecycle hooks via ApplicationContext
+
+        NOTE: ApplicationContext.refresh() already calls lifecycle methods,
+        so we should NOT manually call LifecycleManager.startup() again.
+        """
+        from cullinan.core import ApplicationContext, set_application_context
+        from cullinan.core.pending import PendingRegistry
+        PendingRegistry.reset()
+
         execution_log = []
 
         @service
@@ -231,23 +234,34 @@ class TestServiceIntegration(unittest.TestCase):
             def on_startup(self):
                 execution_log.append('service_start')
 
-        # Get lifecycle manager
-        manager = get_lifecycle_manager()
-        service_registry = get_service_registry()
+        # Create ApplicationContext and refresh
+        # refresh() automatically calls on_post_construct and on_startup
+        ctx = ApplicationContext()
+        set_application_context(ctx)
+        ctx.refresh()
 
-        # Register service with lifecycle
-        svc = service_registry.get_instance('TestService')
-        manager.register(svc, name='TestService')
+        # Get service - lifecycle already executed during refresh()
+        svc = ctx.get('TestService')
+        self.assertIsNotNone(svc)
 
-        # Run lifecycle
-        asyncio.run(manager.startup())
-
+        # Verify lifecycle methods were called during refresh()
         self.assertIn('service_init', execution_log)
         self.assertIn('service_start', execution_log)
+
+        ctx.shutdown()
         print("  [OK] Service lifecycle integration works")
 
     def test_service_dependency_chain(self):
-        """Test lifecycle with service dependency chain"""
+        """Test lifecycle with service dependency chain via ApplicationContext
+
+        NOTE: ApplicationContext.refresh() handles lifecycle execution
+        in phase order, so we just need to verify the order is correct.
+        """
+        from cullinan.core import ApplicationContext, set_application_context
+        from cullinan.core.pending import PendingRegistry
+        PendingRegistry.reset()
+        reset_lifecycle_manager()
+
         startup_log = []
 
         @service
@@ -271,18 +285,16 @@ class TestServiceIntegration(unittest.TestCase):
             def on_startup(self):
                 startup_log.append('C')
 
-        # Setup lifecycle
-        manager = get_lifecycle_manager()
-        service_registry = get_service_registry()
+        # Create ApplicationContext
+        # refresh() will call on_startup in phase order
+        ctx = ApplicationContext()
+        set_application_context(ctx)
+        ctx.refresh()
 
-        for name in ['ServiceA', 'ServiceB', 'ServiceC']:
-            svc = service_registry.get_instance(name)
-            manager.register(svc, name=name)
-
-        asyncio.run(manager.startup())
-
-        # Should follow phase order: A (-100), B (-50), C (0)
+        # Verify lifecycle was called in phase order: A (-100), B (-50), C (0)
         self.assertEqual(startup_log, ['A', 'B', 'C'])
+
+        ctx.shutdown()
         print("  [OK] Service dependency chain with phases works")
 
 

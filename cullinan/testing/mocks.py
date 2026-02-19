@@ -106,10 +106,21 @@ class MockService:
         self._calls.clear()
         logger.debug("MockService calls reset")
     
-    def on_init(self):
-        """Lifecycle hook for compatibility with Service."""
+    # Unified lifecycle hooks (Duck Typing - no base class needed)
+    # These match the unified lifecycle interface from cullinan.core
+
+    def on_post_construct(self):
+        """Lifecycle hook: called after dependency injection."""
+        pass
+
+    def on_startup(self):
+        """Lifecycle hook: called during application startup."""
         pass
     
-    def on_destroy(self):
-        """Lifecycle hook for compatibility with Service."""
+    def on_shutdown(self):
+        """Lifecycle hook: called during application shutdown."""
+        pass
+
+    def on_pre_destroy(self):
+        """Lifecycle hook: called before destruction."""
         pass

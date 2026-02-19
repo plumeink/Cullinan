@@ -3,10 +3,12 @@
 
 Provides abstract base classes for implementing middleware that can
 intercept and process HTTP requests and responses.
+
+Lifecycle is managed by ApplicationContext using Duck Typing.
 """
 
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional, List
+from abc import ABC
+from typing import Any, Optional, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,9 +18,14 @@ class Middleware(ABC):
     """Abstract base class for middleware components.
     
     Middleware can intercept requests before they reach handlers and
-    responses before they are sent to clients. Middleware can also
-    implement lifecycle methods for initialization and cleanup.
-    
+    responses before they are sent to clients.
+
+    Lifecycle hooks (Duck Typing - no base class inheritance required):
+    - on_post_construct(): Called after instance creation
+    - on_startup(): Called during application startup
+    - on_shutdown(): Called during application shutdown
+    - on_pre_destroy(): Called before destruction
+
     Example:
         class LoggingMiddleware(Middleware):
             def process_request(self, request):
@@ -28,6 +35,9 @@ class Middleware(ABC):
             def process_response(self, request, response):
                 logger.info(f"Response: {response.status_code}")
                 return response
+
+            def on_startup(self):
+                logger.info("LoggingMiddleware started")
     """
     
     def __init__(self):
@@ -60,18 +70,22 @@ class Middleware(ABC):
         """
         return response
     
-    def on_init(self):
-        """Lifecycle hook called after middleware is registered.
-        
-        Override this method to perform initialization.
-        """
+    # Unified lifecycle hooks (Duck Typing - managed by ApplicationContext)
+
+    def on_post_construct(self):
+        """Lifecycle hook: called after instance creation."""
         pass
-    
-    def on_destroy(self):
-        """Lifecycle hook called during application shutdown.
-        
-        Override this method to perform cleanup.
-        """
+
+    def on_startup(self):
+        """Lifecycle hook: called during application startup."""
+        pass
+
+    def on_shutdown(self):
+        """Lifecycle hook: called during application shutdown."""
+        pass
+
+    def on_pre_destroy(self):
+        """Lifecycle hook: called before destruction."""
         pass
 
 
@@ -81,6 +95,8 @@ class MiddlewareChain:
     Middleware are executed in the order they are registered for requests,
     and in reverse order for responses.
     
+    Note: Lifecycle is managed by ApplicationContext.
+
     Example:
         chain = MiddlewareChain()
         chain.add(AuthMiddleware())
@@ -141,20 +157,36 @@ class MiddlewareChain:
         return response
     
     def initialize_all(self) -> None:
-        """Initialize all middleware in the chain."""
+        """Initialize all middleware in the chain.
+
+        Calls unified lifecycle methods:
+        1. on_post_construct()
+        2. on_startup()
+        """
         for middleware in self._middleware:
             try:
-                middleware.on_init()
+                if hasattr(middleware, 'on_post_construct'):
+                    middleware.on_post_construct()
+                if hasattr(middleware, 'on_startup'):
+                    middleware.on_startup()
                 logger.debug(f"Initialized middleware: {middleware.__class__.__name__}")
             except Exception as e:
                 logger.error(f"Failed to initialize {middleware.__class__.__name__}: {e}", exc_info=True)
                 raise
     
     def destroy_all(self) -> None:
-        """Destroy all middleware in reverse order."""
+        """Destroy all middleware in reverse order.
+
+        Calls unified lifecycle methods:
+        1. on_shutdown()
+        2. on_pre_destroy()
+        """
         for middleware in reversed(self._middleware):
             try:
-                middleware.on_destroy()
+                if hasattr(middleware, 'on_shutdown'):
+                    middleware.on_shutdown()
+                if hasattr(middleware, 'on_pre_destroy'):
+                    middleware.on_pre_destroy()
                 logger.debug(f"Destroyed middleware: {middleware.__class__.__name__}")
             except Exception as e:
                 logger.error(f"Error destroying {middleware.__class__.__name__}: {e}", exc_info=True)

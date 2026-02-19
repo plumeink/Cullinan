@@ -46,7 +46,7 @@ class CullinanApplication:
 
         Steps:
         1. Configure dependency injection
-        2. Discover and instantiate services
+        2. Discover and instantiate services (lifecycle hooks called by ApplicationContext)
         """
         logger.info("╔═══════════════════════════════════════════════════════════════════╗")
         logger.info("║           Cullinan Framework - Application Starting              ║")
@@ -54,32 +54,24 @@ class CullinanApplication:
 
         try:
             # Step 1: Initialize IoC/DI 2.0 system
-            logger.info("\n[1/4] Initializing IoC/DI 2.0...")
+            logger.info("\n[1/3] Initializing IoC/DI 2.0...")
             from cullinan.core import ApplicationContext, set_application_context
             ctx = ApplicationContext()
             set_application_context(ctx)
-            ctx.refresh()
+            ctx.refresh()  # This now also calls lifecycle hooks (on_post_construct, on_startup)
             logger.info(f"  [OK] ApplicationContext initialized ({ctx.definition_count} definitions)")
 
             # Step 2: Get service registry for backward compatibility
-            logger.info("\n[2/4] Discovering services...")
+            logger.info("\n[2/3] Discovering services...")
             service_registry = get_service_registry()
             service_count = service_registry.count()
             logger.info(f"  [OK] Found {service_count} registered services")
 
-            # Step 3: Initialize all services (按依赖顺序实例化 + 调用 on_init)
-            logger.info("\n[3/4] Initializing services...")
-            if service_count > 0:
-                # 使用 initialize_all() 按依赖顺序初始化所有 Service
-                service_registry.initialize_all()
-                logger.info(f"  [OK] All {service_count} services initialized")
-            else:
-                logger.info("  [INFO] No services to initialize")
-
-            # Step 4: Verify system ready
-            logger.info("\n[4/4] Verifying system...")
+            # Step 3: Verify system ready (lifecycle hooks already called by refresh())
+            logger.info("\n[3/3] Verifying system...")
             pending_count = PendingRegistry.get_instance().count
             logger.info(f"  [OK] IoC/DI 2.0 ready (processed {pending_count} pending registrations)")
+            logger.info(f"  [OK] Lifecycle hooks executed by ApplicationContext")
 
             self._running = True
 

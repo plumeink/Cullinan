@@ -3,6 +3,7 @@
 Tests for the middleware module.
 
 This test suite validates the middleware base classes and chain management.
+Uses unified lifecycle methods (on_post_construct, on_startup, on_shutdown, on_pre_destroy).
 """
 
 import unittest
@@ -18,9 +19,11 @@ class ConcreteMiddleware(Middleware):
         super().__init__()
         self.process_request_called = False
         self.process_response_called = False
-        self.init_called = False
-        self.destroy_called = False
-    
+        self.post_construct_called = False
+        self.startup_called = False
+        self.shutdown_called = False
+        self.pre_destroy_called = False
+
     def process_request(self, request):
         self.process_request_called = True
         return request
@@ -29,11 +32,17 @@ class ConcreteMiddleware(Middleware):
         self.process_response_called = True
         return response
     
-    def on_init(self):
-        self.init_called = True
-    
-    def on_destroy(self):
-        self.destroy_called = True
+    def on_post_construct(self):
+        self.post_construct_called = True
+
+    def on_startup(self):
+        self.startup_called = True
+
+    def on_shutdown(self):
+        self.shutdown_called = True
+
+    def on_pre_destroy(self):
+        self.pre_destroy_called = True
 
 
 class TestMiddleware(unittest.TestCase):
@@ -45,13 +54,17 @@ class TestMiddleware(unittest.TestCase):
         self.assertIsNotNone(middleware)
     
     def test_lifecycle_methods_exist(self):
-        """Test that lifecycle methods exist."""
+        """Test that unified lifecycle methods exist."""
         middleware = ConcreteMiddleware()
-        self.assertTrue(hasattr(middleware, 'on_init'))
-        self.assertTrue(hasattr(middleware, 'on_destroy'))
-        self.assertTrue(callable(middleware.on_init))
-        self.assertTrue(callable(middleware.on_destroy))
-    
+        self.assertTrue(hasattr(middleware, 'on_post_construct'))
+        self.assertTrue(hasattr(middleware, 'on_startup'))
+        self.assertTrue(hasattr(middleware, 'on_shutdown'))
+        self.assertTrue(hasattr(middleware, 'on_pre_destroy'))
+        self.assertTrue(callable(middleware.on_post_construct))
+        self.assertTrue(callable(middleware.on_startup))
+        self.assertTrue(callable(middleware.on_shutdown))
+        self.assertTrue(callable(middleware.on_pre_destroy))
+
     def test_process_methods_exist(self):
         """Test that process methods exist."""
         middleware = ConcreteMiddleware()
@@ -81,19 +94,33 @@ class TestMiddleware(unittest.TestCase):
         self.assertTrue(middleware.process_response_called)
         self.assertIs(result, response)
     
-    def test_on_init(self):
-        """Test on_init lifecycle hook."""
+    def test_on_post_construct(self):
+        """Test on_post_construct lifecycle hook."""
         middleware = ConcreteMiddleware()
-        middleware.on_init()
-        
-        self.assertTrue(middleware.init_called)
-    
-    def test_on_destroy(self):
-        """Test on_destroy lifecycle hook."""
+        middleware.on_post_construct()
+
+        self.assertTrue(middleware.post_construct_called)
+
+    def test_on_startup(self):
+        """Test on_startup lifecycle hook."""
         middleware = ConcreteMiddleware()
-        middleware.on_destroy()
-        
-        self.assertTrue(middleware.destroy_called)
+        middleware.on_startup()
+
+        self.assertTrue(middleware.startup_called)
+
+    def test_on_shutdown(self):
+        """Test on_shutdown lifecycle hook."""
+        middleware = ConcreteMiddleware()
+        middleware.on_shutdown()
+
+        self.assertTrue(middleware.shutdown_called)
+
+    def test_on_pre_destroy(self):
+        """Test on_pre_destroy lifecycle hook."""
+        middleware = ConcreteMiddleware()
+        middleware.on_pre_destroy()
+
+        self.assertTrue(middleware.pre_destroy_called)
 
 
 class TestMiddlewareChain(unittest.TestCase):
@@ -239,9 +266,12 @@ class TestMiddlewareChain(unittest.TestCase):
         
         self.chain.initialize_all()
         
-        self.assertTrue(m1.init_called)
-        self.assertTrue(m2.init_called)
-    
+        # initialize_all calls on_post_construct and on_startup
+        self.assertTrue(m1.post_construct_called)
+        self.assertTrue(m1.startup_called)
+        self.assertTrue(m2.post_construct_called)
+        self.assertTrue(m2.startup_called)
+
     def test_destroy_all(self):
         """Test destroying all middleware."""
         m1 = ConcreteMiddleware()
@@ -252,9 +282,12 @@ class TestMiddlewareChain(unittest.TestCase):
         
         self.chain.destroy_all()
         
-        self.assertTrue(m1.destroy_called)
-        self.assertTrue(m2.destroy_called)
-    
+        # destroy_all calls on_shutdown and on_pre_destroy
+        self.assertTrue(m1.shutdown_called)
+        self.assertTrue(m1.pre_destroy_called)
+        self.assertTrue(m2.shutdown_called)
+        self.assertTrue(m2.pre_destroy_called)
+
     def test_destroy_all_reverse_order(self):
         """Test that destroy is called in reverse order."""
         order = []
@@ -264,7 +297,7 @@ class TestMiddlewareChain(unittest.TestCase):
                 super().__init__()
                 self.name = name
             
-            def on_destroy(self):
+            def on_shutdown(self):
                 order.append(self.name)
         
         m1 = OrderedMiddleware("first")
@@ -285,15 +318,15 @@ class TestMiddlewareChain(unittest.TestCase):
         destroyed = []
         
         class FailingMiddleware(Middleware):
-            def on_destroy(self):
-                raise RuntimeError("Destroy failed")
-        
+            def on_shutdown(self):
+                raise RuntimeError("Shutdown failed")
+
         class TrackingMiddleware(Middleware):
             def __init__(self, name):
                 super().__init__()
                 self.name = name
             
-            def on_destroy(self):
+            def on_shutdown(self):
                 destroyed.append(self.name)
         
         m1 = TrackingMiddleware("first")

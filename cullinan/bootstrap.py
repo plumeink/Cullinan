@@ -67,12 +67,13 @@ class CullinanApplication:
             service_count = service_registry.count()
             logger.info(f"  [OK] Found {service_count} registered services")
 
-            # Step 3: Initialize all services (按依赖顺序实例化 + 调用 on_init)
-            logger.info("\n[3/4] Initializing services...")
+            # Step 3: Services are now managed by unified lifecycle via ApplicationContext.refresh()
+            # Note: ApplicationContext.refresh() already calls on_post_construct and on_startup
+            # for all registered components, so no manual initialization needed.
+            logger.info("\n[3/4] Service lifecycle managed by ApplicationContext...")
             if service_count > 0:
-                # 使用 initialize_all() 按依赖顺序初始化所有 Service
-                service_registry.initialize_all()
-                logger.info(f"  [OK] All {service_count} services initialized")
+                # 生命周期已由 ApplicationContext.refresh() 统一调用
+                logger.info(f"  [OK] All {service_count} services managed by unified lifecycle")
             else:
                 logger.info("  [INFO] No services to initialize")
 

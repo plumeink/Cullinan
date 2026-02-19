@@ -3,7 +3,7 @@
 验证修复：测试 InjectByName 在类和实例上的行为
 """
 
-from cullinan.core import InjectByName
+from cullinan.core import InjectByName, ApplicationContext, set_application_context
 from cullinan.service import service, Service, get_service_registry
 
 print("=" * 80)
@@ -16,9 +16,12 @@ class TestService(Service):
     def get_data(self):
         return "real_data"
 
-# 2. 初始化 Service
+# 2. 初始化 Service（通过 ApplicationContext）
+ctx = ApplicationContext()
+set_application_context(ctx)
+ctx.refresh()
+
 service_registry = get_service_registry()
-service_registry.initialize_all()
 
 # 3. 定义 Controller
 class TestController:

@@ -6,6 +6,14 @@ This module provides utilities for testing Cullinan applications:
 - TestRegistry: Isolated registry for testing
 - Test fixtures and base classes
 
+Lifecycle Management:
+    All components use Duck Typing for lifecycle - NO base class inheritance required!
+    Just define the lifecycle methods you need:
+    - on_post_construct(): Called after instance creation
+    - on_startup(): Called during application startup
+    - on_shutdown(): Called during application shutdown
+    - on_pre_destroy(): Called before destruction
+
 Usage:
     from cullinan.testing import MockService, TestRegistry, IsolatedServiceTestCase
     
@@ -18,8 +26,10 @@ Usage:
             # Use isolated registry
             self.registry.register('EmailService', MockEmailService)
             self.registry.register('UserService', UserService, dependencies=['EmailService'])
-            self.registry.initialize_all()
-            
+
+            # Get instance - lifecycle hooks called via Duck Typing
+            user_service = self.registry.get_instance('UserService')
+
             # Test...
 """
 

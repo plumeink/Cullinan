@@ -431,21 +431,23 @@ def run(handlers=None):
     sort_url()
 
     # ========== Service 初始化（扫描完成后） ==========
-    logger.info("└---initializing services...")
+    # 注意：Service 生命周期由 ApplicationContext.refresh() 统一管理
+    # 这里只是日志提示，不再手动调用 initialize_all()
+    logger.info("└---services initialized via ApplicationContext lifecycle...")
     from cullinan.service import get_service_registry
+    from cullinan.core import get_application_context
 
     service_registry = get_service_registry()
     service_count = service_registry.count()
 
     if service_count > 0:
         logger.info(f"└---found {service_count} registered services")
-        try:
-            # 按依赖顺序初始化所有 Service（调用 initialize_all）
-            service_registry.initialize_all()
-            logger.info(f"[OK] All {service_count} services initialized")
-        except Exception as e:
-            logger.error(f"[FAIL] Service initialization failed: {e}", exc_info=True)
-            logger.warning("[WARN] Application will continue with partial initialization")
+        # 生命周期由 ApplicationContext.refresh() 统一调用
+        ctx = get_application_context()
+        if ctx and ctx.is_refreshed:
+            logger.info(f"[OK] All {service_count} services managed by unified lifecycle")
+        else:
+            logger.debug("ApplicationContext not yet refreshed - lifecycle pending")
     else:
         logger.info("└---no services registered")
     # ========== END Service 初始化 ==========

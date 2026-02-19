@@ -194,18 +194,24 @@ class TestBaseHandler(unittest.TestCase):
         self.assertIsNotNone(handler)
     
     def test_lifecycle_methods_exist(self):
-        """Test that lifecycle methods exist."""
+        """Test that unified lifecycle methods exist."""
         handler = BaseHandler()
-        self.assertTrue(hasattr(handler, 'on_init'))
-        self.assertTrue(hasattr(handler, 'on_destroy'))
-        self.assertTrue(callable(handler.on_init))
-        self.assertTrue(callable(handler.on_destroy))
-    
+        self.assertTrue(hasattr(handler, 'on_post_construct'))
+        self.assertTrue(hasattr(handler, 'on_startup'))
+        self.assertTrue(hasattr(handler, 'on_shutdown'))
+        self.assertTrue(hasattr(handler, 'on_pre_destroy'))
+        self.assertTrue(callable(handler.on_post_construct))
+        self.assertTrue(callable(handler.on_startup))
+        self.assertTrue(callable(handler.on_shutdown))
+        self.assertTrue(callable(handler.on_pre_destroy))
+
     def test_lifecycle_methods_default_behavior(self):
         """Test that lifecycle methods don't raise errors by default."""
         handler = BaseHandler()
-        handler.on_init()  # Should not raise
-        handler.on_destroy()  # Should not raise
+        handler.on_post_construct()  # Should not raise
+        handler.on_startup()  # Should not raise
+        handler.on_shutdown()  # Should not raise
+        handler.on_pre_destroy()  # Should not raise
 
 
 class TestBackwardCompatibility(unittest.TestCase):

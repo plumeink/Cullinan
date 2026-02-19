@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-"""测试 Service 生命周期集成到应用启动流程"""
+"""测试 Service 生命周期集成到应用启动流程 (使用 ApplicationContext)"""
 
 import asyncio
 import logging
-from cullinan.core import Inject
-from cullinan.service import service, Service, get_service_registry, reset_service_registry
-from cullinan.core.injection import get_injection_registry, reset_injection_registry
-from cullinan.core.lifecycle_enhanced import get_lifecycle_manager, reset_lifecycle_manager
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from cullinan.core import Inject, ApplicationContext, set_application_context
+from cullinan.core.pending import PendingRegistry
+from cullinan.service import service, Service
+from cullinan.core.lifecycle_enhanced import get_lifecycle_manager, reset_lifecycle_manager, LifecycleManager
 
 logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -16,18 +21,11 @@ def test_service_lifecycle_with_phase():
     """测试 Service 生命周期按 phase 顺序执行"""
 
     # Reset
-    reset_injection_registry()
-    reset_service_registry()
+    PendingRegistry.reset()
     reset_lifecycle_manager()
 
-    # Configure injection
-    injection_registry = get_injection_registry()
-    service_registry = get_service_registry()
-    lifecycle_manager = get_lifecycle_manager()
-    injection_registry.add_provider_registry(service_registry, priority=100)
-
     print("\n" + "="*70)
-    print("Service 生命周期测试（模拟应用启动流程）")
+    print("Service 生命周期测试（使用 ApplicationContext）")
     print("="*70 + "\n")
 
     startup_log = []
@@ -77,38 +75,26 @@ def test_service_lifecycle_with_phase():
             logger.info("[OK] UserService.on_shutdown() called")
 
     # 模拟应用启动流程
-    print("[1] 扫描和注册 Services...")
-    service_count = service_registry.count()
-    print(f"    找到 {service_count} 个 services\n")
+    print("[1] 创建 ApplicationContext 并 refresh...")
+    ctx = ApplicationContext()
+    set_application_context(ctx)
+    ctx.refresh()
 
-    print("[2] 实例化并注册到生命周期管理器...")
-    for service_name in service_registry.list_all():
-        service_instance = service_registry.get_instance(service_name)
-        metadata = service_registry.get_metadata(service_name)
-        dependencies = metadata.get('dependencies', []) if metadata else []
+    definitions = ctx.list_definitions()
+    print(f"    已注册 {len(definitions)} 个组件: {definitions}\n")
 
-        lifecycle_manager.register(
-            service_instance,
-            name=service_name,
-            dependencies=dependencies
-        )
-        print(f"    [OK] {service_name} 已注册")
-
-    print("\n[3] 执行生命周期启动...")
-    asyncio.run(lifecycle_manager.startup())
-
-    print("\n[4] 验证启动顺序...")
+    print("[2] 验证启动顺序...")
     expected_order = ['DatabaseService', 'BotService', 'UserService']
     assert startup_log == expected_order, f"启动顺序错误: {startup_log}"
     print(f"    [OK] 启动顺序正确: {' -> '.join(startup_log)}")
 
-    print("\n[5] 模拟 Web 服务器运行...")
+    print("\n[3] 模拟 Web 服务器运行...")
     print("    (在实际应用中，这里会启动 Tornado)")
 
-    print("\n[6] 执行生命周期关闭...")
-    asyncio.run(lifecycle_manager.shutdown())
+    print("\n[4] 执行 shutdown...")
+    ctx.shutdown()
 
-    print("\n[7] 验证关闭顺序（逆序）...")
+    print("\n[5] 验证关闭顺序（逆序）...")
     expected_shutdown = ['UserService', 'BotService', 'DatabaseService']
     assert shutdown_log == expected_shutdown, f"关闭顺序错误: {shutdown_log}"
     print(f"    [OK] 关闭顺序正确: {' -> '.join(shutdown_log)}")
@@ -131,14 +117,8 @@ def test_service_lifecycle_with_phase():
 def test_async_lifecycle_hooks():
     """测试异步生命周期钩子"""
 
-    reset_injection_registry()
-    reset_service_registry()
+    PendingRegistry.reset()
     reset_lifecycle_manager()
-
-    injection_registry = get_injection_registry()
-    service_registry = get_service_registry()
-    lifecycle_manager = get_lifecycle_manager()
-    injection_registry.add_provider_registry(service_registry, priority=100)
 
     print("\n" + "="*70)
     print("异步生命周期钩子测试")
@@ -167,21 +147,19 @@ def test_async_lifecycle_hooks():
             async_log.append('shutdown_complete')
             logger.info("BotService: 登出完成！")
 
-    # 注册
-    service_instance = service_registry.get_instance('AsyncBotService')
-    lifecycle_manager.register(service_instance, name='AsyncBotService')
-
-    # 启动
-    print("[1] 执行异步启动...")
-    asyncio.run(lifecycle_manager.startup())
+    # 创建 ApplicationContext
+    print("[1] 创建 ApplicationContext 并 refresh...")
+    ctx = ApplicationContext()
+    set_application_context(ctx)
+    ctx.refresh()
 
     assert 'startup_begin' in async_log
     assert 'startup_complete' in async_log
     print("    [OK] 异步启动钩子执行成功")
 
     # 关闭
-    print("\n[2] 执行异步关闭...")
-    asyncio.run(lifecycle_manager.shutdown())
+    print("\n[2] 执行 shutdown...")
+    ctx.shutdown()
 
     assert 'shutdown_begin' in async_log
     assert 'shutdown_complete' in async_log
@@ -197,7 +175,7 @@ def test_async_lifecycle_hooks():
 if __name__ == '__main__':
     try:
         print("\n" + "="*70)
-        print("Cullinan Service 生命周期集成测试")
+        print("Cullinan Service 生命周期集成测试 (使用 ApplicationContext)")
         print("="*70)
 
         success1 = test_service_lifecycle_with_phase()
@@ -209,8 +187,8 @@ if __name__ == '__main__':
             print("="*70)
             print("\n现在您的应用启动流程是:")
             print("  1. 扫描 Services 和 Controllers")
-            print("  2. 配置依赖注入")
-            print("  3. 实例化 Services")
+            print("  2. 创建 ApplicationContext")
+            print("  3. 调用 refresh() 处理所有组件")
             print("  4. 按 phase 顺序执行 on_startup")
             print("     - DatabaseService (phase=-100)")
             print("     - BotService (phase=-50) ← 您的 Bot 在这里启动")

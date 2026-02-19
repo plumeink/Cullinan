@@ -33,8 +33,8 @@ from cullinan.core import InjectByName, Inject, get_injection_registry
 
 @service
 class TestService(Service):
-    def on_init(self):
-        logger.info("TestService.on_init() called")
+    def on_startup(self):
+        logger.info("TestService.on_startup() called")
 
     def get_data(self):
         return "real_service_data"
@@ -94,14 +94,19 @@ else:
     print("  [WARN]️ Controller 未被标记为 injectable！")
 
 # ============================================================================
-# 场景 4: 初始化 Service
+# 场景 4: 初始化 Service（通过 ApplicationContext）
 # ============================================================================
-print("\n[场景 4] 初始化 Service")
+print("\n[场景 4] 初始化 Service（通过 ApplicationContext）")
+
+from cullinan.core import ApplicationContext, get_application_context, set_application_context
+
+# 创建并刷新 ApplicationContext（这会触发统一生命周期）
+ctx = ApplicationContext()
+set_application_context(ctx)
+ctx.refresh()
 
 from cullinan.service import get_service_registry
-
 service_registry = get_service_registry()
-service_registry.initialize_all()
 
 test_service_instance = service_registry.get_instance('TestService')
 print(f"[OK] TestService 已初始化: {test_service_instance}")

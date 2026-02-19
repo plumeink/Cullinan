@@ -12,19 +12,33 @@ from enum import Enum
 class LifecycleState(Enum):
     """Lifecycle states for managed components."""
     CREATED = "created"
-    INITIALIZING = "initializing"
-    INITIALIZED = "initialized"
-    DESTROYING = "destroying"
+    POST_CONSTRUCT = "post_construct"
+    STARTING = "starting"
+    RUNNING = "running"
+    STOPPING = "stopping"
+    PRE_DESTROY = "pre_destroy"
     DESTROYED = "destroyed"
 
 
 class LifecycleAware(Protocol):
-    """Protocol for components that have lifecycle methods."""
-    
-    def on_init(self) -> None:
-        """Called when component is initialized."""
+    """Protocol for components that have unified lifecycle methods.
+
+    Components use Duck Typing - no base class inheritance required.
+    Just implement the methods you need.
+    """
+
+    def on_post_construct(self) -> None:
+        """Called after dependency injection."""
         ...
     
-    def on_destroy(self) -> None:
-        """Called when component is being destroyed."""
+    def on_startup(self) -> None:
+        """Called during application startup."""
+        ...
+
+    def on_shutdown(self) -> None:
+        """Called during application shutdown."""
+        ...
+
+    def on_pre_destroy(self) -> None:
+        """Called before destruction."""
         ...

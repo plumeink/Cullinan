@@ -43,9 +43,12 @@ def diagnose_provider_sources():
     set_injection_executor(executor)
     print(f"3. InjectionExecutor initialized: {executor}")
 
-    # 3. 初始化服务
-    service_registry.initialize_all()
-    print(f"4. Services initialized")
+    # 3. 初始化服务（通过 ApplicationContext）
+    from cullinan.core import ApplicationContext, set_application_context
+    ctx = ApplicationContext()
+    set_application_context(ctx)
+    ctx.refresh()
+    print(f"4. Services initialized via unified lifecycle")
 
     # 4. 检查 provider sources
     print(f"\n=== Provider Sources ===")

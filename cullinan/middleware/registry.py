@@ -98,7 +98,7 @@ class MiddlewareRegistry:
     def initialize_all(self) -> None:
         """Initialize all registered middleware.
 
-        Calls on_init() on all middleware instances in priority order.
+        Calls unified lifecycle methods (on_post_construct, on_startup) on all middleware.
         """
         if self._initialized:
             logger.debug("Middleware already initialized")

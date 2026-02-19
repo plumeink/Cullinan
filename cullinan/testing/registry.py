@@ -5,7 +5,7 @@ Provides a separate registry instance for testing without affecting
 the global registry.
 """
 
-from typing import Type, Optional, List, Any
+from typing import Optional, List, Any
 import logging
 
 from cullinan.service import ServiceRegistry, Service
@@ -19,6 +19,14 @@ class TestRegistry(ServiceRegistry):
     Provides a clean registry that doesn't interfere with the global
     registry, making tests independent and repeatable.
     
+    Note: Lifecycle management is handled via Duck Typing. Components
+    do NOT need to inherit any base class. Just define the lifecycle
+    methods you need:
+    - on_post_construct(): Called after instance creation
+    - on_startup(): Called during application startup
+    - on_shutdown(): Called during application shutdown
+    - on_pre_destroy(): Called before destruction
+
     Usage:
         def test_user_service():
             # Create isolated registry
@@ -30,14 +38,13 @@ class TestRegistry(ServiceRegistry):
             # Register service under test
             registry.register('UserService', UserService, dependencies=['EmailService'])
             
-            # Initialize and test
-            registry.initialize_all()
+            # Get instance (lifecycle hooks called automatically via Duck Typing)
             user_svc = registry.get_instance('UserService')
             
             # Test...
             
             # Cleanup
-            registry.destroy_all()
+            registry.clear()
     """
     
     def __init__(self):

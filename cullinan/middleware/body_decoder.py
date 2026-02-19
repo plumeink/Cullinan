@@ -135,8 +135,8 @@ class BodyDecoderMiddleware(Middleware):
                 pass
         return 'utf-8'
 
-    def on_init(self):
-        """中间件初始化"""
+    def on_startup(self):
+        """中间件启动初始化"""
         logger.debug(
             f"BodyDecoderMiddleware initialized: enabled={self.enabled}, "
             f"fail_silently={self.fail_silently}, max_body_size={self.max_body_size}"

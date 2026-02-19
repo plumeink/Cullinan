@@ -415,33 +415,15 @@ def run(handlers=None):
         scan_service(modules)
         scan_controller(modules)
 
-    # 刷新 ApplicationContext（处理 PendingRegistry 中的所有组件）
+    # 刷新 ApplicationContext（处理 PendingRegistry 中的所有组件，调用生命周期钩子）
     logger.info("└---refreshing ApplicationContext (processing pending registrations)...")
     ctx.refresh()
 
     pending_count = PendingRegistry.get_instance().count
     logger.info(f"[OK] ApplicationContext refreshed with {pending_count} components")
 
-    # 获取所有注册的 service 并初始化
-    logger.info("└---initializing services...")
-    service_count = 0
-    for name in ctx.list_definitions():
-        try:
-            definition = ctx._definitions.get(name)
-            if definition and hasattr(definition, 'source') and 'service' in str(definition.source).lower():
-                instance = ctx.get(name)
-                # 调用生命周期方法
-                if hasattr(instance, 'on_startup') and callable(instance.on_startup):
-                    instance.on_startup()
-                    logger.debug(f"[OK] Called on_startup for {name}")
-                service_count += 1
-        except Exception as e:
-            logger.warning(f"[WARN] Failed to initialize {name}: {e}")
-
-    if service_count > 0:
-        logger.info(f"[OK] Initialized {service_count} services")
-    else:
-        logger.info("└---no services to initialize")
+    # 生命周期钩子已由 ApplicationContext.refresh() 统一调用
+    logger.info("└---lifecycle hooks executed by ApplicationContext")
     # ========== END IoC/DI 2.0 ==========
 
     sort_url()
