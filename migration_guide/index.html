@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cullinan-20-migration-guide" class="md-skip">
+        <a href="#cullinan-093-migration-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -1771,12 +1771,12 @@
 
 
 
-<h1 id="cullinan-20-migration-guide">Cullinan 2.0 Migration Guide<a class="headerlink" href="#cullinan-20-migration-guide" title="Permanent link">&para;</a></h1>
+<h1 id="cullinan-093-migration-guide">Cullinan 0.93 Migration Guide<a class="headerlink" href="#cullinan-093-migration-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Version</strong>: v0.90<br />
 <strong>Author</strong>: Plumeink</p>
 </blockquote>
-<p>This guide helps you migrate from Cullinan 1.x to 2.0 (0.90).</p>
+<p>This guide helps you migrate from Cullinan 1.x to 0.93 (0.90).</p>
 <h2 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <h3 id="1-single-entry-point">1. Single Entry Point<a class="headerlink" href="#1-single-entry-point" title="Permanent link">&para;</a></h3>
 <p><strong>Before (1.x):</strong>
@@ -1785,7 +1785,7 @@
 <span class="n">registry</span> <span class="o">=</span> <span class="n">get_injection_registry</span><span class="p">()</span>
 <span class="n">registry</span><span class="o">.</span><span class="n">add_provider_source</span><span class="p">(</span><span class="n">my_source</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>After (2.0):</strong>
+<p><strong>After (0.93):</strong>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
@@ -1798,12 +1798,12 @@
 <span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 </code></pre></div></p>
 <h3 id="2-registry-freeze">2. Registry Freeze<a class="headerlink" href="#2-registry-freeze" title="Permanent link">&para;</a></h3>
-<p>In 2.0, the registry is frozen after <code>refresh()</code>. Any attempt to register new dependencies will raise <code>RegistryFrozenError</code>.</p>
+<p>In 0.93, the registry is frozen after <code>refresh()</code>. Any attempt to register new dependencies will raise <code>RegistryFrozenError</code>.</p>
 <p><strong>Before (1.x):</strong>
 <div class="highlight"><pre><span></span><code><span class="c1"># Could register at any time</span>
 <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;NewService&#39;</span><span class="p">,</span> <span class="n">NewService</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>After (2.0):</strong>
+<p><strong>After (0.93):</strong>
 <div class="highlight"><pre><span></span><code><span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># OK before refresh</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
@@ -1815,7 +1815,7 @@
 <div class="highlight"><pre><span></span><code><span class="c1"># Might silently fail or return wrong instance</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScoped&#39;</span><span class="p">)</span>
 </code></pre></div></p>
-<p><strong>After (2.0):</strong>
+<p><strong>After (0.93):</strong>
 <div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">.</span><span class="n">enter_request_context</span><span class="p">()</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">instance</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScoped&#39;</span><span class="p">)</span>  <span class="c1"># OK</span>
@@ -1833,7 +1833,7 @@
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>  <span class="c1"># Generic message</span>
 </code></pre></div></p>
-<p><strong>After (2.0):</strong>
+<p><strong>After (0.93):</strong>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">DependencyNotFoundError</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -1849,7 +1849,7 @@
 <div class="highlight"><pre><span></span><code><span class="c1"># Unordered, inconsistent output</span>
 <span class="n">CircularDependencyError</span><span class="p">:</span> <span class="n">Circular</span> <span class="n">dependency</span> <span class="n">detected</span>
 </code></pre></div></p>
-<p><strong>After (2.0):</strong>
+<p><strong>After (0.93):</strong>
 <div class="highlight"><pre><span></span><code><span class="c1"># Stable, ordered chain</span>
 <span class="n">CircularDependencyError</span><span class="p">:</span> <span class="n">Circular</span> <span class="n">dependency</span> <span class="n">detected</span><span class="p">:</span> <span class="n">A</span> <span class="o">-&gt;</span> <span class="n">B</span> <span class="o">-&gt;</span> <span class="n">C</span> <span class="o">-&gt;</span> <span class="n">A</span>
 </code></pre></div></p>
@@ -1858,7 +1858,7 @@
 <div class="highlight"><pre><span></span><code><span class="c1"># Old imports (deprecated)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
 
-<span class="c1"># New imports (2.0)</span>
+<span class="c1"># New imports (0.93)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
 </code></pre></div>
 <h3 id="step-2-convert-service-registration">Step 2: Convert Service Registration<a class="headerlink" href="#step-2-convert-service-registration" title="Permanent link">&para;</a></h3>
@@ -1902,7 +1902,7 @@
             <span class="n">ctx</span><span class="o">.</span><span class="n">exit_request_context</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="deprecated-apis">Deprecated APIs<a class="headerlink" href="#deprecated-apis" title="Permanent link">&para;</a></h2>
-<p>The following APIs are deprecated in 2.0 and will be removed in 3.0:</p>
+<p>The following APIs are deprecated in 0.93 and will be removed in 3.0:</p>
 <table>
 <thead>
 <tr>
@@ -1942,7 +1942,7 @@
 </code></pre></div>
 <p><strong>Warning:</strong> Compatibility mode is for migration only. Always migrate to strict mode before production deployment.</p>
 <h2 id="testing-migration">Testing Migration<a class="headerlink" href="#testing-migration" title="Permanent link">&para;</a></h2>
-<p>Run all 2.0 tests to verify your migration:</p>
+<p>Run all 0.93 tests to verify your migration:</p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_ioc_di_v2_*.py<span class="w"> </span>-v
 </code></pre></div>
 <h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>

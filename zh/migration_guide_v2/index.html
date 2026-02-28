@@ -12,17 +12,13 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="/zh/zh/migration_guide/">
+        <link rel="canonical" href="/zh/zh/migration_guide_v2/">
       
       
-        <link rel="prev" href="../api_reference/">
-      
-      
-        <link rel="next" href="../import_migration_090/">
       
       
         
-          <link rel="alternate" href="../../migration_guide/" hreflang="en">
+          <link rel="alternate" href="../../migration_guide_v2/" hreflang="en">
         
           <link rel="alternate" href="./" hreflang="zh">
         
@@ -33,7 +29,7 @@
     
     
       
-        <title>迁移指南 - Cullinan Documentation</title>
+        <title>迁移指南: v0.9x → v0.93 - Cullinan Documentation</title>
       
     
     
@@ -74,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cullinan-093" class="md-skip">
+        <a href="#v09x-v093" class="md-skip">
           跳转至
         </a>
       
@@ -110,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              迁移指南
+              迁移指南: v0.9x → v0.93
             
           </span>
         </div>
@@ -131,7 +127,7 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../migration_guide/" hreflang="en" class="md-select__link">
+            <a href="../../migration_guide_v2/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
@@ -913,20 +909,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -947,7 +941,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -962,37 +956,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    迁移指南
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
         
   
   
@@ -1008,203 +975,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        破坏性变更
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="破坏性变更">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 单一入口
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 注册表冻结
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 作用域强制
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 结构化异常
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 循环依赖检测
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        迁移步骤
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="迁移步骤">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 1 步：更新导入
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 2 步：转换服务注册
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 3 步：更新应用启动
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 4 步：处理请求作用域
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        已弃用的 API
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        兼容模式
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        测试迁移
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        获取帮助
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1581,71 +1351,10 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        破坏性变更
+        变更总览
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="破坏性变更">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 单一入口
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 注册表冻结
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 作用域强制
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 结构化异常
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 循环依赖检测
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1653,68 +1362,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        迁移步骤
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="迁移步骤">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 1 步：更新导入
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 2 步：转换服务注册
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 3 步：更新应用启动
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 4 步：处理请求作用域
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        已弃用的 API
+        安装
       
     </span>
   </a>
@@ -1725,10 +1373,227 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        兼容模式
+        逐步迁移
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="逐步迁移">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 导入路径变更
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Controller 变更
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Controller 变更">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09xcontroller-tornado-selfwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x：Controller 方法使用 Tornado 的 self.write()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093controller-cullinanresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93：Controller 方法返回 CullinanResponse
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 响应对象迁移
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 运行应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 运行应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-tornado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x：仅 Tornado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93：选择你的引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 配置变更
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 中间件迁移
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 中间件迁移">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x：中间件注册但未接入请求管线
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93：中间件在洋葱管线中
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-openapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. OpenAPI 集成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. WebSocket 变更
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. WebSocket 变更">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-tornado-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x：仅 Tornado WebSocket
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-api-tornado-asgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93：相同 API，同时支持 Tornado 和 ASGI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 参数系统
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1736,10 +1601,38 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        测试迁移
+        架构对比
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="架构对比">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x 架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93 架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1747,7 +1640,18 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        获取帮助
+        破坏性变更
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        弃用时间表
       
     </span>
   </a>
@@ -1771,186 +1675,304 @@
 
 
 
-<h1 id="cullinan-093">Cullinan 0.93 迁移指南<a class="headerlink" href="#cullinan-093" title="Permanent link">&para;</a></h1>
+<h1 id="v09x-v093">迁移指南: v0.9x → v0.93<a class="headerlink" href="#v09x-v093" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>版本</strong>：v0.90<br />
-<strong>作者</strong>：Plumeink</p>
+<p><strong>Cullinan 框架</strong> — 从 v0.9x 升级到 v0.93 的完整迁移指南。</p>
 </blockquote>
-<p>本指南帮助您从 Cullinan 1.x 迁移到 0.93（0.90）。</p>
-<h2 id="_1">破坏性变更<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<h3 id="1">1. 单一入口<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
-<p><strong>之前（1.x）：</strong>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">get_service_registry</span>
-
-<span class="n">registry</span> <span class="o">=</span> <span class="n">get_injection_registry</span><span class="p">()</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">add_provider_source</span><span class="p">(</span><span class="n">my_source</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>之后（0.93）：</strong>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
-
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MyService&#39;</span><span class="p">,</span>
-    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">MyService</span><span class="p">(),</span>
-    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="s1">&#39;service:MyService&#39;</span>
-<span class="p">))</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-</code></pre></div></p>
-<h3 id="2">2. 注册表冻结<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
-<p>在 0.93 中，注册表在 <code>refresh()</code> 后被冻结。任何尝试注册新依赖的操作都会抛出 <code>RegistryFrozenError</code>。</p>
-<p><strong>之前（1.x）：</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># 可以随时注册</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;NewService&#39;</span><span class="p">,</span> <span class="n">NewService</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>之后（0.93）：</strong>
-<div class="highlight"><pre><span></span><code><span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># refresh 前可以</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># RegistryFrozenError!</span>
-</code></pre></div></p>
-<h3 id="3">3. 作用域强制<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
-<p>请求作用域依赖现在严格要求 <code>RequestContext</code>。</p>
-<p><strong>之前（1.x）：</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># 可能静默失败或返回错误实例</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScoped&#39;</span><span class="p">)</span>
-</code></pre></div></p>
-<p><strong>之后（0.93）：</strong>
-<div class="highlight"><pre><span></span><code><span class="n">ctx</span><span class="o">.</span><span class="n">enter_request_context</span><span class="p">()</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">instance</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScoped&#39;</span><span class="p">)</span>  <span class="c1"># 正常</span>
-<span class="k">finally</span><span class="p">:</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">exit_request_context</span><span class="p">()</span>
-
-<span class="c1"># 没有上下文：</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScoped&#39;</span><span class="p">)</span>  <span class="c1"># ScopeNotActiveError!</span>
-</code></pre></div></p>
-<h3 id="4">4. 结构化异常<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
-<p>所有异常现在都携带结构化诊断字段。</p>
-<p><strong>之前（1.x）：</strong>
-<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="p">:</span>
-    <span class="n">registry</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s1">&#39;Missing&#39;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>  <span class="c1"># 通用消息</span>
-</code></pre></div></p>
-<p><strong>之后（0.93）：</strong>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.diagnostics</span><span class="w"> </span><span class="kn">import</span> <span class="n">DependencyNotFoundError</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Missing&#39;</span><span class="p">)</span>
-<span class="k">except</span> <span class="n">DependencyNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">dependency_name</span><span class="p">)</span>      <span class="c1"># &#39;Missing&#39;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">resolution_path</span><span class="p">)</span>      <span class="c1"># [&#39;ParentService&#39;, &#39;Missing&#39;]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">candidate_sources</span><span class="p">)</span>    <span class="c1"># [{&#39;source&#39;: &#39;...&#39;, &#39;reason&#39;: &#39;...&#39;}]</span>
-</code></pre></div></p>
-<h3 id="5">5. 循环依赖检测<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
-<p>循环依赖现在产生稳定、有序的链路。</p>
-<p><strong>之前（1.x）：</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># 无序，不一致的输出</span>
-<span class="n">CircularDependencyError</span><span class="p">:</span> <span class="n">Circular</span> <span class="n">dependency</span> <span class="n">detected</span>
-</code></pre></div></p>
-<p><strong>之后（0.93）：</strong>
-<div class="highlight"><pre><span></span><code><span class="c1"># 稳定、有序的链路</span>
-<span class="n">CircularDependencyError</span><span class="p">:</span> <span class="n">检测到循环依赖</span><span class="p">:</span> <span class="n">A</span> <span class="o">-&gt;</span> <span class="n">B</span> <span class="o">-&gt;</span> <span class="n">C</span> <span class="o">-&gt;</span> <span class="n">A</span>
-</code></pre></div></p>
-<h2 id="_2">迁移步骤<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<h3 id="1_1">第 1 步：更新导入<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 旧导入（已弃用）</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injection_registry</span><span class="p">,</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
-
-<span class="c1"># 新导入（0.93）</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
-</code></pre></div>
-<h3 id="2_1">第 2 步：转换服务注册<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 旧风格</span>
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
-    <span class="n">user_repo</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-
-<span class="c1"># 新风格</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;UserService&#39;</span><span class="p">,</span>
-    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">UserService</span><span class="p">(</span><span class="n">user_repo</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;UserRepository&#39;</span><span class="p">)),</span>
-    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="s1">&#39;service:UserService&#39;</span>
-<span class="p">))</span>
-</code></pre></div>
-<h3 id="3_1">第 3 步：更新应用启动<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 旧风格（app.py）</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">CullinanApplication</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">CullinanApplication</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-
-<span class="c1"># 新风格</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span>
-
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="c1"># ... 注册定义 ...</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-<span class="c1"># ... 运行 tornado ...</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="4_1">第 4 步：处理请求作用域<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 在请求处理器中</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">MyHandler</span><span class="p">(</span><span class="n">RequestHandler</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">enter_request_context</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">service</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RequestScopedService&#39;</span><span class="p">)</span>
-            <span class="c1"># ... 使用服务 ...</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">exit_request_context</span><span class="p">()</span>
-</code></pre></div>
-<h2 id="api">已弃用的 API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
-<p>以下 API 在 0.93 中已弃用，将在 3.0 中移除：</p>
+<h2 id="_1">变更总览<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Cullinan v0.93 是一次重大架构重写，引入了以下变化：</p>
 <table>
 <thead>
 <tr>
-<th>已弃用 API</th>
-<th>替代方案</th>
+<th>特性</th>
+<th>v0.9x</th>
+<th>v0.93</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>get_injection_registry()</code></td>
-<td><code>ApplicationContext</code></td>
+<td><strong>HTTP 引擎</strong></td>
+<td>仅 Tornado</td>
+<td>Tornado 或 ASGI（可配置）</td>
 </tr>
 <tr>
-<td><code>get_service_registry()</code></td>
-<td><code>ApplicationContext.register()</code></td>
+<td><strong>请求处理</strong></td>
+<td>每个 URL 一个 Handler（Servlet-per-URL）</td>
+<td>单分发器（Spring 风格）</td>
 </tr>
 <tr>
-<td><code>@service</code> 装饰器（自动注入）</td>
-<td>显式 Definition 注册</td>
+<td><strong>请求对象</strong></td>
+<td><code>tornado.httputil.HTTPServerRequest</code></td>
+<td><code>CullinanRequest</code>（传输无关）</td>
 </tr>
 <tr>
-<td><code>Inject()</code> / <code>InjectByName()</code></td>
-<td>使用 <code>ctx.get()</code> 的 factory</td>
+<td><strong>响应对象</strong></td>
+<td><code>HttpResponse</code> + <code>self.write()</code></td>
+<td><code>CullinanResponse</code>（工厂方法）</td>
 </tr>
 <tr>
-<td><code>DependencyInjector</code></td>
-<td><code>ApplicationContext</code></td>
+<td><strong>路由</strong></td>
+<td>动态 <code>type('Servlet'...)</code> 类</td>
+<td>前缀树 Router</td>
+</tr>
+<tr>
+<td><strong>中间件</strong></td>
+<td>仅初始化，不在请求管线中</td>
+<td>洋葱模型管线，处理每个请求</td>
+</tr>
+<tr>
+<td><strong>Tornado 依赖</strong></td>
+<td>必需</td>
+<td>可选（<code>pip install cullinan[tornado]</code>）</td>
+</tr>
+<tr>
+<td><strong>ASGI 支持</strong></td>
+<td>无</td>
+<td>完整 ASGI 3.0（uvicorn/hypercorn）</td>
+</tr>
+<tr>
+<td><strong>WebSocket</strong></td>
+<td>仅 Tornado</td>
+<td>Tornado + ASGI</td>
+</tr>
+<tr>
+<td><strong>OpenAPI</strong></td>
+<td>无</td>
+<td>自动从路由生成</td>
 </tr>
 </tbody>
 </table>
-<h2 id="_3">兼容模式<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>迁移期间，您可以启用兼容模式（已弃用，将被移除）：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span>
+<h2 id="_2">安装<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Tornado 模式（默认，向后兼容）</span>
+pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o">[</span>tornado<span class="o">]</span>
 
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">set_strict_mode</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 允许一些旧行为</span>
+<span class="c1"># ASGI 模式（uvicorn）</span>
+pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o">[</span>asgi<span class="o">]</span>
+
+<span class="c1"># 完整安装</span>
+pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o">[</span>full<span class="o">]</span>
 </code></pre></div>
-<p><strong>警告：</strong> 兼容模式仅用于迁移。生产部署前务必迁移到严格模式。</p>
-<h2 id="_4">测试迁移<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<p>运行所有 0.93 测试以验证您的迁移：</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/test_ioc_di_v2_*.py<span class="w"> </span>-v
+<h2 id="_3">逐步迁移<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. 导入路径变更<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<p>所有现有导入仍然有效，新增了以下导入：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># v0.9x — 在 v0.93 中仍然有效</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="c1"># v0.93 — 新增可用导入</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CullinanRequest</span><span class="p">,</span> <span class="n">CullinanResponse</span><span class="p">,</span>     <span class="c1"># 统一请求/响应</span>
+    <span class="n">Router</span><span class="p">,</span> <span class="n">Dispatcher</span><span class="p">,</span>                     <span class="c1"># 网关层</span>
+    <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">CORSMiddleware</span><span class="p">,</span>      <span class="c1"># 中间件管线</span>
+    <span class="n">OpenAPIGenerator</span><span class="p">,</span>                       <span class="c1"># OpenAPI 规范</span>
+    <span class="n">TornadoAdapter</span><span class="p">,</span> <span class="n">ASGIAdapter</span><span class="p">,</span>            <span class="c1"># 服务器适配器</span>
+    <span class="n">get_asgi_app</span><span class="p">,</span>                           <span class="c1"># ASGI 便捷函数</span>
+<span class="p">)</span>
 </code></pre></div>
-<h2 id="_5">获取帮助<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../dependency_injection_guide/">依赖注入指南</a></li>
-<li><a href="../api_reference/">API 参考</a></li>
-<li><a href="https://github.com/your-repo/cullinan/issues">GitHub Issues</a></li>
-</ul>
+<h3 id="2-controller">2. Controller 变更<a class="headerlink" href="#2-controller" title="Permanent link">&para;</a></h3>
+<h4 id="v09xcontroller-tornado-selfwrite">v0.9x：Controller 方法使用 Tornado 的 <code>self.write()</code><a class="headerlink" href="#v09xcontroller-tornado-selfwrite" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># v0.9x — handler 直接操作 tornado 内部 API</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">url_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+        <span class="c1"># ... 业务逻辑 ...</span>
+        <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">user_data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="v093controller-cullinanresponse">v0.93：Controller 方法返回 <code>CullinanResponse</code><a class="headerlink" href="#v093controller-cullinanresponse" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># v0.93 — 传输无关，返回 CullinanResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">CullinanResponse</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;User not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>向后兼容</strong>：旧的 <code>HttpResponse</code> 返回类型仍然有效 — <code>Dispatcher</code> 会自动转换。</p>
+<h3 id="3">3. 响应对象迁移<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>v0.9x</th>
+<th>v0.93 等价写法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HttpResponse(body=data, status=200)</code></td>
+<td><code>CullinanResponse.json(data)</code></td>
+</tr>
+<tr>
+<td><code>HttpResponse(body="text", status=200)</code></td>
+<td><code>CullinanResponse.text("text")</code></td>
+</tr>
+<tr>
+<td><code>HttpResponse(body=data, status=404)</code></td>
+<td><code>CullinanResponse.error(404, "msg")</code></td>
+</tr>
+<tr>
+<td><code>return {"key": "value"}</code>（dict）</td>
+<td><code>return {"key": "value"}</code>（自动 JSON，仍有效）</td>
+</tr>
+<tr>
+<td><code>return None</code></td>
+<td><code>return None</code>（自动 204 No Content）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4">4. 运行应用<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<h4 id="v09x-tornado">v0.9x：仅 Tornado<a class="headerlink" href="#v09x-tornado" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+<span class="n">run</span><span class="p">()</span>  <span class="c1"># 在端口 4080 启动 Tornado</span>
+</code></pre></div>
+<h4 id="v093">v0.93：选择你的引擎<a class="headerlink" href="#v093" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+
+<span class="c1"># 方式 A：Tornado（默认，向后兼容）</span>
+<span class="n">run</span><span class="p">()</span>
+
+<span class="c1"># 方式 B：Tornado（显式指定）</span>
+<span class="n">run</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;tornado&#39;</span><span class="p">)</span>
+
+<span class="c1"># 方式 C：ASGI</span>
+<span class="n">run</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;asgi&#39;</span><span class="p">)</span>
+
+<span class="c1"># 方式 D：ASGI app 用于外部服务器</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_asgi_app</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">get_asgi_app</span><span class="p">()</span>
+<span class="c1"># 然后：uvicorn myapp:app</span>
+</code></pre></div>
+<p>环境变量：<code>CULLINAN_ENGINE=asgi</code>，或配置：<code>server_engine='asgi'</code>。</p>
+<h3 id="5">5. 配置变更<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+
+<span class="n">configure</span><span class="p">(</span>
+    <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;myapp&#39;</span><span class="p">],</span>
+    <span class="c1"># v0.93 新增选项：</span>
+    <span class="c1"># server_engine=&#39;tornado&#39;,        # &#39;tornado&#39; 或 &#39;asgi&#39;</span>
+    <span class="c1"># asgi_server=&#39;uvicorn&#39;,          # &#39;uvicorn&#39; 或 &#39;hypercorn&#39;</span>
+    <span class="c1"># route_trailing_slash=False,</span>
+    <span class="c1"># route_case_sensitive=True,</span>
+    <span class="c1"># debug=False,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="6">6. 中间件迁移<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<h4 id="v09x">v0.9x：中间件注册但未接入请求管线<a class="headerlink" href="#v09x" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">middleware</span>
+
+<span class="nd">@middleware</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="c1"># 启动时初始化，但不会在每个请求中调用</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h4 id="v093_1">v0.93：中间件在洋葱管线中<a class="headerlink" href="#v093_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">get_pipeline</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">GatewayMiddleware</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">call_next</span><span class="p">):</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="s1">&#39;Authorization&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Unauthorized&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_next</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<span class="c1"># 注册</span>
+<span class="n">get_pipeline</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AuthMiddleware</span><span class="p">())</span>
+</code></pre></div>
+<p><strong>向后兼容</strong>：旧的 <code>@middleware</code> 类通过 <code>LegacyMiddlewareBridge</code> 自动桥接。</p>
+<h3 id="7-openapi">7. OpenAPI 集成<a class="headerlink" href="#7-openapi" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIGenerator</span><span class="p">,</span> <span class="n">get_router</span>
+
+<span class="c1"># 从所有已注册路由自动生成规范</span>
+<span class="n">gen</span> <span class="o">=</span> <span class="n">OpenAPIGenerator</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;My API&#39;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s1">&#39;1.0.0&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;我的 API&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 注册 /openapi.json 和 /openapi.yaml 端点</span>
+<span class="n">gen</span><span class="o">.</span><span class="n">register_spec_routes</span><span class="p">()</span>
+
+<span class="c1"># 或以编程方式获取规范</span>
+<span class="n">spec_dict</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="n">json_str</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="8-websocket">8. WebSocket 变更<a class="headerlink" href="#8-websocket" title="Permanent link">&para;</a></h3>
+<h4 id="v09x-tornado-websocket">v0.9x：仅 Tornado WebSocket<a class="headerlink" href="#v09x-tornado-websocket" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nd">@websocket_handler</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/ws/chat&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChatHandler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;echo: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h4 id="v093-api-tornado-asgi">v0.93：相同 API，同时支持 Tornado 和 ASGI<a class="headerlink" href="#v093-api-tornado-asgi" title="Permanent link">&para;</a></h4>
+<p><code>@websocket_handler</code> API 不变。在 ASGI 模式下运行时，WebSocket 连接通过 ASGI WebSocket 协议原生处理。</p>
+<h3 id="9">9. 参数系统<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
+<p><code>cullinan.params</code> 系统（<code>Path</code>、<code>Query</code>、<code>Body</code>、<code>Header</code>）不变，在 v0.93 中工作方式完全相同。参数现在由 <code>Dispatcher</code> 而非 Tornado handler 解析。</p>
+<h2 id="_4">架构对比<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="v09x_1">v0.9x 架构<a class="headerlink" href="#v09x_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请求 → Tornado → 动态 Handler(每个URL) → Controller 方法 → self.write()
+</code></pre></div>
+<h3 id="v093_2">v0.93 架构<a class="headerlink" href="#v093_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请求 → 适配器(Tornado/ASGI) → CullinanRequest → 中间件管线
+  → Dispatcher → Router → Controller 方法 → CullinanResponse
+  → 适配器 → 原生响应
+</code></pre></div>
+<h2 id="_5">破坏性变更<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong><code>tornado</code> 不再是必需依赖</strong> — 如果需要请使用 <code>pip install cullinan[tornado]</code> 安装。</li>
+<li><strong><code>Handler</code> 基类</strong> 已弃用 — controller 不再继承 <code>tornado.web.RequestHandler</code>。</li>
+<li><strong>直接使用 Tornado API</strong>（controller 中的 <code>self.set_status()</code>、<code>self.write()</code>、<code>self.finish()</code>）已弃用 — 请使用 <code>CullinanResponse</code> 代替。</li>
+</ol>
+<h2 id="_6">弃用时间表<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>v0.93 状态</th>
+<th>计划移除</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Handler</code> 类</td>
+<td>弃用（警告）</td>
+<td>v3.0</td>
+</tr>
+<tr>
+<td><code>HttpResponse</code></td>
+<td>弃用（自动桥接）</td>
+<td>v3.0</td>
+</tr>
+<tr>
+<td><code>EncapsulationHandler.add_url()</code></td>
+<td>仅内部使用</td>
+<td>v3.0</td>
+</tr>
+<tr>
+<td>controller 中的 <code>self.write()</code></td>
+<td>弃用</td>
+<td>v3.0</td>
+</tr>
+<tr>
+<td>旧中间件（<code>Middleware</code> 基类）</td>
+<td>自动桥接</td>
+<td>v3.0</td>
+</tr>
+</tbody>
+</table>
 
 
 
