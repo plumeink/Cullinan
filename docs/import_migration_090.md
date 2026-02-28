@@ -16,7 +16,7 @@ Cullinan 0.90 introduces a reorganized `core/` module with clear separation of c
 
 ## Quick Migration Table
 
-### Core Container (2.0 API - Recommended)
+### Core Container (0.93 API - Recommended)
 
 | Old Import | New Import |
 |------------|------------|

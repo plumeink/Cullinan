@@ -5,7 +5,7 @@ This module defines the exception hierarchy for the core module,
 providing specific error types for registry, dependency injection,
 and lifecycle management operations.
 
-2.0 新增：结构化异常体系，支持诊断渲染。
+0.93 新增：结构化异常体系，支持诊断渲染。
 """
 
 
@@ -25,7 +25,7 @@ class RegistryError(CullinanCoreError):
 class RegistryFrozenError(RegistryError):
     """Exception raised when attempting to modify a frozen registry.
 
-    2.0 新增：refresh 后任何结构性写入必须抛出此异常。
+    0.93 新增：refresh 后任何结构性写入必须抛出此异常。
     """
 
     def __init__(self, message: str = "Registry 已冻结，禁止修改"):
@@ -36,7 +36,7 @@ class RegistryFrozenError(RegistryError):
 class DependencyResolutionError(CullinanCoreError):
     """Exception raised when dependencies cannot be resolved.
 
-    2.0 增强：携带结构化诊断字段。
+    0.93 增强：携带结构化诊断字段。
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class DependencyResolutionError(CullinanCoreError):
 class DependencyNotFoundError(DependencyResolutionError):
     """Exception raised when a required dependency is not found.
 
-    2.0 新增：明确的"依赖缺失"异常类型。
+    0.93 新增：明确的"依赖缺失"异常类型。
     """
     pass
 
@@ -72,7 +72,7 @@ class DependencyNotFoundError(DependencyResolutionError):
 class ConditionNotMetError(DependencyResolutionError):
     """Exception raised when dependency conditions are not met.
 
-    2.0 新增：条件不满足时的异常类型。
+    0.93 新增：条件不满足时的异常类型。
     """
 
     def __init__(
@@ -89,7 +89,7 @@ class ConditionNotMetError(DependencyResolutionError):
 class CircularDependencyError(DependencyResolutionError):
     """Exception raised when circular dependencies are detected.
 
-    2.0 增强：链路必须稳定有序。
+    0.93 增强：链路必须稳定有序。
     """
 
     def __init__(
@@ -110,7 +110,7 @@ class CircularDependencyError(DependencyResolutionError):
 class ScopeNotActiveError(DependencyResolutionError):
     """Exception raised when required scope is not active.
 
-    2.0 新增：request scope 在无 RequestContext 时必须抛出此异常。
+    0.93 新增：request scope 在无 RequestContext 时必须抛出此异常。
     """
 
     def __init__(
@@ -129,7 +129,7 @@ class ScopeNotActiveError(DependencyResolutionError):
 class CreationError(DependencyResolutionError):
     """Exception raised when instance creation fails.
 
-    2.0 新增：实例创建失败的异常类型，必须保留原始异常。
+    0.93 新增：实例创建失败的异常类型，必须保留原始异常。
     """
 
     def __init__(

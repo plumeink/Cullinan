@@ -98,6 +98,41 @@ class CullinanConfig:
         # END BACKWARD_COMPAT
         # ====================================================================
 
+        # ====================================================================
+        # v0.93: Server Engine Configuration
+        # ====================================================================
+
+        # Server engine: 'tornado' (default), 'asgi'
+        # Can also be set via env var CULLINAN_ENGINE
+        self.server_engine: str = 'tornado'
+
+        # ASGI server: 'uvicorn' (default), 'hypercorn'
+        self.asgi_server: str = 'uvicorn'
+
+        # Whether to enable the gateway middleware pipeline
+        self.enable_middleware_pipeline: bool = True
+
+        # Router configuration
+        self.route_trailing_slash: bool = False
+        self.route_case_sensitive: bool = True
+
+        # Debug mode (enables stack traces in error responses)
+        self.debug: bool = False
+
+        # OpenAPI auto-generation
+        # Set to True to auto-register /openapi.json and /openapi.yaml endpoints
+        # Can also be set via env var CULLINAN_OPENAPI_ENABLED=1
+        self.openapi_enabled: bool = True
+
+        # OpenAPI metadata
+        self.openapi_title: str = 'Cullinan API'
+        self.openapi_version: str = '1.0.0'
+        self.openapi_description: str = ''
+
+        # ====================================================================
+        # END v0.93
+        # ====================================================================
+
     def add_user_package(self, package: str):
         """添加用户包"""
         if package not in self.user_packages:
@@ -306,5 +341,4 @@ def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
 
     finally:
         del frame
-
 

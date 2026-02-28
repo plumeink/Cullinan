@@ -5,17 +5,10 @@ import os
 import importlib.util
 import logging
 import signal
+import sys
 
-import tornado.ioloop
-from cullinan.handler import get_handler_registry
 from dotenv import load_dotenv
 from pathlib import Path
-import tornado.ioloop
-import tornado.options
-import tornado.web
-import tornado.httpserver
-from tornado.options import define, options
-import sys
 
 # Import module scanning utilities (refactored for better maintainability)
 from cullinan.module_scanner import (
@@ -24,7 +17,7 @@ from cullinan.module_scanner import (
     file_list_func
 )
 
-# Module-level logger (FastAPI-style)
+# Module-level logger
 logger = logging.getLogger(__name__)
 
 
@@ -199,16 +192,6 @@ def scan_service(modules: list) -> None:
 
 
 
-def sort_url() -> None:
-    """Sort URL handlers with O(n log n) complexity instead of O(n³).
-    
-    Optimized version that uses the HandlerRegistry's built-in sort method.
-    Handlers with dynamic segments (e.g., ([a-zA-Z0-9-]+)) are prioritized lower than
-    static segments to ensure more specific routes match first.
-    """
-    registry = get_handler_registry()
-    registry.sort()
-
 
 def is_started_directly() -> bool:
     """Return True if the process was started directly (a __main__ frame exists).
@@ -357,13 +340,15 @@ def _register_explicit_classes():
 
 
 def run(handlers=None):
+    """Legacy entry point — delegates to ``cullinan.application.run()``.
+
+    This function performs the module scanning (services + controllers)
+    and then hands off to the gateway-based startup in ``application.py``.
+    """
     if handlers is None:
         handlers = []
-    # ensure console logging is available by default when the app hasn't configured logging
-    # ensure logging handlers are present when appropriate (may install console handler)
+    # ensure console logging is available by default
     installed_handler = _ensure_console_logging()
-    # If we installed a handler ourselves, temporarily set its formatter to '%(message)s'
-    # so the banner is emitted verbatim via logging (no print necessary). Restore afterwards.
     if installed_handler is not None:
         old_fmt = None
         try:
@@ -382,148 +367,56 @@ def run(handlers=None):
     load_dotenv(verbose=True)
     env_path = Path(os.getcwd()) / '.env'
     load_dotenv(dotenv_path=env_path)
-    settings = dict(
-        template_path=os.path.join(os.getcwd(), 'templates'),
-        static_path=os.path.join(os.getcwd(), 'static')
-    )
 
-    # IMPORTANT: Configure IoC/DI 2.0 system BEFORE scanning
-    # This ensures that when @service and @controller decorators execute,
-    # the components are collected in PendingRegistry
+    # Initialize IoC/DI 2.0
     logger.info("└---initializing IoC/DI 2.0...")
     from cullinan.core import ApplicationContext, PendingRegistry, set_application_context
     from cullinan.service.registry import get_service_registry
 
-    # Create ApplicationContext (will process PendingRegistry on refresh)
     ctx = ApplicationContext()
-    # 保存全局引用，供 ControllerRegistry 等组件使用
     set_application_context(ctx)
-
     logger.info("└---IoC/DI 2.0 initialized (ApplicationContext created)")
 
     # Register explicit services and controllers (if configured)
     _register_explicit_classes()
 
-    # Now scan services and controllers
+    # Scan services
     logger.info("└---scanning services...")
-    logger.info("...")
     service_modules = file_list_func()
-
     if not service_modules:
         logger.warning("[WARN] No modules found for service scanning!")
-        logger.warning("[WARN] This is expected in packaged environments without configuration.")
-        logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
     else:
         logger.info("└---found %d modules to scan", len(service_modules))
         scan_service(service_modules)
 
+    # Scan controllers
     logger.info("└---scanning controllers...")
-    logger.info("...")
     controller_modules = file_list_func()
-
     if not controller_modules:
         logger.warning("[WARN] No modules found for controller scanning!")
-        logger.warning("[WARN] This is expected in packaged environments without configuration.")
     else:
         logger.info("└---found %d modules to scan", len(controller_modules))
         scan_controller(controller_modules)
 
-    sort_url()
-
-    # ========== Service 初始化（扫描完成后） ==========
-    # 注意：Service 生命周期由 ApplicationContext.refresh() 统一管理
-    # 这里只是日志提示，不再手动调用 initialize_all()
+    # Service lifecycle
     logger.info("└---services initialized via ApplicationContext lifecycle...")
-    from cullinan.service import get_service_registry
+    from cullinan.service import get_service_registry as get_svc_reg
     from cullinan.core import get_application_context
 
-    service_registry = get_service_registry()
+    service_registry = get_svc_reg()
     service_count = service_registry.count()
-
     if service_count > 0:
         logger.info(f"└---found {service_count} registered services")
-        # 生命周期由 ApplicationContext.refresh() 统一调用
-        ctx = get_application_context()
-        if ctx and ctx.is_refreshed:
+        app_ctx = get_application_context()
+        if app_ctx and app_ctx.is_refreshed:
             logger.info(f"[OK] All {service_count} services managed by unified lifecycle")
-        else:
-            logger.debug("ApplicationContext not yet refreshed - lifecycle pending")
     else:
         logger.info("└---no services registered")
-    # ========== END Service 初始化 ==========
 
-    # Get handlers from registry
-    handler_registry = get_handler_registry()
-    registered_handlers = handler_registry.get_handlers()
-    
-    mapping = tornado.web.Application(
-        handlers=registered_handlers + handlers,
-        **settings
-    )
-    logger.info("└---loading controller finish\n")
-    define("port", default=os.getenv("SERVER_PORT", 4080), help="run on the given port", type=int)
-    logger.info("loading env finish\n")
-    http_server = tornado.httpserver.HTTPServer(mapping)
-    if os.getenv("SERVER_THREAD") is not None:
-        logger.info("server is starting")
-        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
-        http_server.bind(options.port)
-        http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
-    else:
-        http_server.listen(options.port)
-        logger.info("server is starting")
-        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
+    # Delegate to gateway-based startup
+    from cullinan.application import run as app_run
+    app_run(extra_handlers=handlers)
 
-    # Register signal handlers to allow graceful shutdown (SIGINT/SIGTERM)
-    try:
-        def _handle_signal(signum, frame):
-            logger.info("Received signal %s, stopping...", signum)
-            try:
-                # request the IOLoop to stop from its own thread
-                tornado.ioloop.IOLoop.current().add_callback(tornado.ioloop.IOLoop.current().stop)
-            except Exception:
-                try:
-                    tornado.ioloop.IOLoop.current().stop()
-                except Exception:
-                    pass
-
-        signal.signal(signal.SIGINT, _handle_signal)
-        try:
-            # SIGTERM may not exist on some Windows setups; ignore failures
-            signal.signal(signal.SIGTERM, _handle_signal)
-        except Exception:
-            pass
-    except Exception:
-        # best-effort: do not fail startup if signals can't be registered
-        pass
-
-    # Start the IOLoop and handle KeyboardInterrupt gracefully so closing
-    # the app doesn't produce a long traceback in normal shutdown.
-    try:
-        tornado.ioloop.IOLoop.current().start()
-    except KeyboardInterrupt:
-        logger.info("KeyboardInterrupt received, shutting down server...")
-    except Exception:
-        logger.exception("Exception running IOLoop")
-    finally:
-
-        # Stop accepting new connections and stop the IOLoop.
-        try:
-            http_server.stop()
-        except Exception:
-            pass
-        try:
-            io_loop = tornado.ioloop.IOLoop.current()
-            # ensure the loop is stopped
-            try:
-                io_loop.add_callback(io_loop.stop)
-            except Exception:
-                try:
-                    io_loop.stop()
-                except Exception:
-                    pass
-        except Exception:
-            pass
 
 
 async def _run_shutdown_sequence(server, loop, timeout_seconds: int):

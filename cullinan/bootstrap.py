@@ -8,7 +8,14 @@ import signal
 import asyncio
 import logging
 from typing import Optional, List, Callable
-import tornado.ioloop
+
+# Tornado import is now conditional
+_tornado_available = False
+try:
+    import tornado.ioloop
+    _tornado_available = True
+except ImportError:
+    pass
 
 from cullinan.service.registry import get_service_registry
 from cullinan.core import ApplicationContext, PendingRegistry
@@ -37,9 +44,27 @@ class CullinanApplication:
             shutdown_timeout: Graceful shutdown timeout in seconds
         """
         self._shutdown_timeout = shutdown_timeout
-        self._ioloop: Optional[tornado.ioloop.IOLoop] = None
+        self._ioloop = None
         self._shutdown_handlers: List[Callable] = []
         self._running = False
+
+    async def _run_asyncio(self) -> None:
+        """Run startup, wait, and shutdown in pure asyncio (no Tornado)."""
+        await self.startup()
+        try:
+            # Block until a shutdown signal or KeyboardInterrupt
+            stop_event = asyncio.Event()
+            loop = asyncio.get_event_loop()
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                try:
+                    loop.add_signal_handler(sig, stop_event.set)
+                except NotImplementedError:
+                    pass  # Windows
+            await stop_event.wait()
+        except (KeyboardInterrupt, asyncio.CancelledError):
+            pass
+        finally:
+            await self.shutdown()
 
     async def startup(self) -> None:
         """Execute application startup sequence.
@@ -139,43 +164,43 @@ class CullinanApplication:
         self._shutdown_handlers.append(handler)
 
     def run(self) -> None:
-        """Run the application with IOLoop.
+        """Run the application with IOLoop (Tornado) or asyncio event loop.
 
         This method:
         1. Executes startup
         2. Registers signal handlers
-        3. Starts the IOLoop
+        3. Starts the event loop
         4. Handles graceful shutdown on signals
         """
-        self._ioloop = tornado.ioloop.IOLoop.current()
+        if _tornado_available:
+            self._ioloop = tornado.ioloop.IOLoop.current()
+            logger.info("Initializing application...")
+            self._ioloop.run_sync(self.startup)
 
-        # Execute startup
-        logger.info("Initializing application...")
-        self._ioloop.run_sync(self.startup)
+            def signal_handler(signum, frame):
+                sig_name = signal.Signals(signum).name
+                logger.info(f"\n\nReceived signal {sig_name}, initiating graceful shutdown...")
 
-        # Register signal handlers for graceful shutdown
-        def signal_handler(signum, frame):
-            sig_name = signal.Signals(signum).name
-            logger.info(f"\n\nReceived signal {sig_name}, initiating graceful shutdown...")
+                async def _shutdown():
+                    await self.shutdown()
+                    self._ioloop.stop()
 
-            async def _shutdown():
-                await self.shutdown()
-                self._ioloop.stop()
+                self._ioloop.add_callback(_shutdown)
 
-            self._ioloop.add_callback(_shutdown)
+            signal.signal(signal.SIGINT, signal_handler)
+            signal.signal(signal.SIGTERM, signal_handler)
 
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGTERM, signal_handler)
-
-        # Start the IOLoop
-        logger.info("Starting IOLoop...\n")
-        try:
-            self._ioloop.start()
-        except KeyboardInterrupt:
-            # Already handled by signal handler
-            pass
-        finally:
-            logger.info("IOLoop stopped")
+            logger.info("Starting IOLoop...\n")
+            try:
+                self._ioloop.start()
+            except KeyboardInterrupt:
+                pass
+            finally:
+                logger.info("IOLoop stopped")
+        else:
+            # Non-Tornado fallback: use plain asyncio
+            logger.info("Initializing application (asyncio mode)...")
+            asyncio.run(self._run_asyncio())
 
 
 def create_app(shutdown_timeout: int = 30) -> CullinanApplication:

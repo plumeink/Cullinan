@@ -3,7 +3,7 @@
 
 作者：Plumeink
 
-本模块定义 2.0 架构的核心数据结构：
+本模块定义 0.93 架构的核心数据结构：
 - ScopeType：作用域枚举（SINGLETON/PROTOTYPE/REQUEST）
 - Definition：依赖定义（refresh 后不可变）
 """
@@ -30,7 +30,7 @@ class ScopeType(Enum):
 
 @dataclass(frozen=True)
 class Definition:
-    """依赖定义（2.0 核心数据结构）
+    """依赖定义（0.93 核心数据结构）
 
     refresh 后必须不可变（使用 frozen=True 强制）。
 

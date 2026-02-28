@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Complete Lifecycle Management System for Cullinan Framework
 
-Inspired by Spring Boot's lifecycle management, providing:
-- Multiple lifecycle phases (like Spring's @PostConstruct, @PreDestroy, etc.)
+Provides multi-phase lifecycle management for framework components:
+- Multiple lifecycle phases (PostConstruct, PreDestroy, etc.)
 - Dependency-based initialization order
 - Async and sync support
 - Phase control (startup priority)
@@ -10,11 +10,11 @@ Inspired by Spring Boot's lifecycle management, providing:
 
 Lifecycle Flow:
 1. CREATED - Bean instantiated, dependencies injected
-2. INITIALIZING - @PostConstruct equivalent (on_post_construct)
-3. STARTING - SmartLifecycle.start equivalent (on_startup)
+2. INITIALIZING - PostConstruct phase (on_post_construct)
+3. STARTING - Startup phase (on_startup)
 4. RUNNING - Fully initialized and ready
-5. STOPPING - SmartLifecycle.stop equivalent (on_shutdown)
-6. DESTROYED - @PreDestroy equivalent (on_pre_destroy)
+5. STOPPING - Shutdown phase (on_shutdown)
+6. DESTROYED - PreDestroy phase (on_pre_destroy)
 """
 
 from typing import Dict, List, Optional, Any, Callable, Set
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 class LifecyclePhase(Enum):
-    """Service lifecycle phases (matches Spring Boot lifecycle)"""
+    """Component lifecycle phases"""
     CREATED = "created"                    # Instance created, dependencies injected
     POST_CONSTRUCT = "post_construct"      # @PostConstruct phase
     STARTING = "starting"                  # SmartLifecycle.start phase
@@ -45,20 +45,18 @@ class LifecyclePhase(Enum):
 
 
 # ============================================================================
-# Lifecycle Interfaces (Like Spring's interfaces)
+# Lifecycle Interfaces
 # ============================================================================
 
 class LifecycleAware(ABC):
-    """Base interface for components with lifecycle awareness
+    """Base interface for components with lifecycle awareness.
 
-    Similar to Spring's InitializingBean and DisposableBean combined.
-    Subclasses can implement any/all of these methods.
+    Subclasses can implement any/all lifecycle hook methods.
     """
 
     def on_post_construct(self) -> None:
         """Called after construction and dependency injection.
 
-        Equivalent to @PostConstruct in Spring.
         Use for: Quick initialization, validation, setting up non-blocking resources.
         """
         pass
@@ -66,7 +64,6 @@ class LifecycleAware(ABC):
     def on_startup(self) -> None:
         """Called during application startup (before accepting requests).
 
-        Equivalent to SmartLifecycle.start() in Spring.
         Use for: Starting background tasks, warming up caches, connecting to services.
         """
         pass
@@ -74,7 +71,6 @@ class LifecycleAware(ABC):
     def on_pre_destroy(self) -> None:
         """Called before destruction (during shutdown).
 
-        Equivalent to @PreDestroy in Spring.
         Use for: Quick cleanup, saving state.
         """
         pass
@@ -82,7 +78,6 @@ class LifecycleAware(ABC):
     def on_shutdown(self) -> None:
         """Called during application shutdown.
 
-        Equivalent to SmartLifecycle.stop() in Spring.
         Use for: Graceful shutdown, flushing buffers, closing connections.
         """
         pass
@@ -106,7 +101,7 @@ class LifecycleAware(ABC):
 
 
 class SmartLifecycle(LifecycleAware):
-    """Extended lifecycle with phase control (like Spring's SmartLifecycle)
+    """Extended lifecycle with phase control.
 
     Allows controlling startup/shutdown order through phase numbers.
     Lower phase = starts earlier, stops later.
@@ -139,7 +134,7 @@ class SmartLifecycle(LifecycleAware):
 # ============================================================================
 
 class LifecycleManager:
-    """Manages component lifecycle with Spring Boot-like semantics.
+    """Manages component lifecycle.
 
     Features:
     - Dependency-ordered initialization

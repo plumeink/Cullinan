@@ -3,7 +3,7 @@
 
 作者：Plumeink
 
-本模块实现 2.0 架构的作用域管理：
+本模块实现 0.93 架构的作用域管理：
 - SingletonScope: 应用级单例缓存（线程安全）
 - PrototypeScope: 每次创建新实例
 - RequestScope: 基于 RequestContext 的请求级缓存
@@ -168,7 +168,7 @@ class RequestScope:
 class ScopeManager:
     """统一的作用域管理器
 
-    作为 2.0 架构中作用域的统一入口，负责：
+    作为 0.93 架构中作用域的统一入口，负责：
     - 管理不同类型的 Scope 实例
     - 根据 ScopeType 路由到对应的 Scope
     - 提供请求上下文的 enter/exit 接口

@@ -1,9 +1,9 @@
-# Cullinan 2.0 Migration Guide
+# Cullinan 0.93 Migration Guide
 
 > **Version**: v0.90  
 > **Author**: Plumeink
 
-This guide helps you migrate from Cullinan 1.x to 2.0 (0.90).
+This guide helps you migrate from Cullinan 1.x to 0.93 (0.90).
 
 ## Breaking Changes
 
@@ -17,7 +17,7 @@ registry = get_injection_registry()
 registry.add_provider_source(my_source)
 ```
 
-**After (2.0):**
+**After (0.93):**
 ```python
 from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
@@ -33,7 +33,7 @@ ctx.refresh()
 
 ### 2. Registry Freeze
 
-In 2.0, the registry is frozen after `refresh()`. Any attempt to register new dependencies will raise `RegistryFrozenError`.
+In 0.93, the registry is frozen after `refresh()`. Any attempt to register new dependencies will raise `RegistryFrozenError`.
 
 **Before (1.x):**
 ```python
@@ -41,7 +41,7 @@ In 2.0, the registry is frozen after `refresh()`. Any attempt to register new de
 registry.register('NewService', NewService)
 ```
 
-**After (2.0):**
+**After (0.93):**
 ```python
 ctx = ApplicationContext()
 ctx.register(...)  # OK before refresh
@@ -59,7 +59,7 @@ Request-scoped dependencies now strictly require a `RequestContext`.
 instance = registry.get('RequestScoped')
 ```
 
-**After (2.0):**
+**After (0.93):**
 ```python
 ctx.enter_request_context()
 try:
@@ -83,7 +83,7 @@ except Exception as e:
     print(str(e))  # Generic message
 ```
 
-**After (2.0):**
+**After (0.93):**
 ```python
 from cullinan.core.diagnostics import DependencyNotFoundError
 
@@ -105,7 +105,7 @@ Circular dependencies now produce stable, ordered chains.
 CircularDependencyError: Circular dependency detected
 ```
 
-**After (2.0):**
+**After (0.93):**
 ```python
 # Stable, ordered chain
 CircularDependencyError: Circular dependency detected: A -> B -> C -> A
@@ -119,7 +119,7 @@ CircularDependencyError: Circular dependency detected: A -> B -> C -> A
 # Old imports (deprecated)
 from cullinan.core import get_injection_registry, Inject, InjectByName
 
-# New imports (2.0)
+# New imports (0.93)
 from cullinan.core.container import ApplicationContext, Definition, ScopeType
 ```
 
@@ -174,7 +174,7 @@ class MyHandler(RequestHandler):
 
 ## Deprecated APIs
 
-The following APIs are deprecated in 2.0 and will be removed in 3.0:
+The following APIs are deprecated in 0.93 and will be removed in 3.0:
 
 | Deprecated API | Replacement |
 |----------------|-------------|
@@ -199,7 +199,7 @@ ctx.set_strict_mode(False)  # Allow some legacy behaviors
 
 ## Testing Migration
 
-Run all 2.0 tests to verify your migration:
+Run all 0.93 tests to verify your migration:
 
 ```bash
 python -m pytest tests/test_ioc_di_v2_*.py -v

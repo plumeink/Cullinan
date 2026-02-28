@@ -31,11 +31,9 @@ from .core import (
     Handler,
     HttpResponse,
     StatusResponse,
-    EncapsulationHandler,
 
     # Utility functions
     response_build,
-    url_resolver,
     request_resolver,
     header_resolver,
     request_handler,
@@ -90,11 +88,9 @@ __all__ = [
     'Handler',
     'HttpResponse',
     'StatusResponse',
-    'EncapsulationHandler',
 
     # Utility functions
     'response_build',
-    'url_resolver',
     'request_resolver',
     'header_resolver',
     'request_handler',

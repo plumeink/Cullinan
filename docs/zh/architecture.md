@@ -362,7 +362,7 @@ for point in points:
 
 ### 关键改进
 
-| 特性 | 0.83 (Legacy) | 0.90 (2.0) |
+| 特性 | 0.83 (Legacy) | 0.90 (0.93) |
 |------|---------------|------------|
 | 入口点 | 多个 (IoCFacade, Registries) | 单一 (ApplicationContext) |
 | 定义 | 可变 | 不可变（冻结） |

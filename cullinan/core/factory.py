@@ -3,7 +3,7 @@
 
 作者：Plumeink
 
-本模块实现 2.0 架构的 Factory 层：
+本模块实现 0.93 架构的 Factory 层：
 - 统一实例创建路径
 - 集成现有 InjectionExecutor/Injectable（如需要）
 - 条件过滤、循环依赖检测、scope 缓存

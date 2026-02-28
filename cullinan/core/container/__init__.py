@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC Container Module (2.0)
+"""Cullinan IoC Container Module (0.93)
 
 This module provides the core IoC/DI container components:
 - ApplicationContext: Single entry point for container operations

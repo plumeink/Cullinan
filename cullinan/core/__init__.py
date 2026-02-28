@@ -2,7 +2,7 @@
 """Core module for Cullinan framework.
 
 This module provides foundational components for the Cullinan framework:
-- ApplicationContext: Single entry point for IoC/DI (2.0)
+- ApplicationContext: Single entry point for IoC/DI (0.93)
 - Decorators: @service, @controller, @component
 - Dependency Injection: Inject, InjectByName, Lazy
 - Unified lifecycle management (all components share same lifecycle)
@@ -97,15 +97,15 @@ from .pending import PendingRegistry, PendingRegistration, ComponentType
 
 # injectable is now a no-op, classes are automatically injectable
 def injectable(cls):
-    """Compatibility decorator - no longer needed in 2.0.
+    """Compatibility decorator - no longer needed in 0.93.
 
-    In 2.0, all classes decorated with @service, @controller, or @component
+    In 0.93, all classes decorated with @service, @controller, or @component
     are automatically injectable. This function is kept for backward compatibility.
     """
     return cls
 
 def inject_constructor(cls):
-    """Compatibility decorator - no longer needed in 2.0."""
+    """Compatibility decorator - no longer needed in 0.93."""
     return cls
 
 # ============================================================================
@@ -116,17 +116,15 @@ _global_application_context = None
 
 
 def get_application_context():
-    """获取全局 ApplicationContext 实例。
-
+    """获取全局 ApplicationContext 实例�?
     Returns:
-        全局 ApplicationContext 实例，如果未设置则返回 None
+        全局 ApplicationContext 实例，如果未设置则返�?None
     """
     return _global_application_context
 
 
 def set_application_context(ctx) -> None:
-    """设置全局 ApplicationContext 实例。
-
+    """设置全局 ApplicationContext 实例�?
     Args:
         ctx: ApplicationContext 实例
     """
@@ -138,14 +136,14 @@ def set_application_context(ctx) -> None:
 _dummy_registry = None
 
 def get_injection_registry():
-    """Compatibility function - returns None in 2.0.
+    """Compatibility function - returns None in 0.93.
 
     Use ApplicationContext instead.
     """
     return _dummy_registry
 
 def reset_injection_registry():
-    """Compatibility function - no-op in 2.0."""
+    """Compatibility function - no-op in 0.93."""
     pass
 
 # InjectionRegistry compatibility class
@@ -153,7 +151,7 @@ class InjectionRegistry:
     """Compatibility class - use ApplicationContext instead."""
     pass
 
-__version__ = "0.90"
+__version__ = "0.93"
 
 __all__ = [
     # ========================================================================

@@ -3,7 +3,7 @@
 
 作者：Plumeink
 
-本模块实现 2.0 架构的核心：ApplicationContext。
+本模块实现 0.93 架构的核心：ApplicationContext。
 
 职责（按 2.6.3 Contract）：
 - register(definition): refresh 前允许，refresh 后抛 RegistryFrozenError
@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApplicationContext:
-    """2.0 唯一容器入口
+    """0.93 唯一容器入口
 
     所有注册、刷新、冻结、解析都必须通过此对象进行。
 

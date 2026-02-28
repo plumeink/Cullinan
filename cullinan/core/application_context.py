@@ -3,7 +3,7 @@
 
 作者：Plumeink
 
-本模块实现 2.0 架构的核心：ApplicationContext。
+本模块实现 0.93 架构的核心：ApplicationContext。
 
 职责（按 2.6.3 Contract）：
 - register(definition): refresh 前允许，refresh 后抛 RegistryFrozenError
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApplicationContext:
-    """2.0 唯一容器入口
+    """0.93 唯一容器入口
 
     所有注册、刷新、冻结、解析都必须通过此对象进行。
 
@@ -506,31 +506,52 @@ class ApplicationContext:
 
         logger.info(f"装饰器注册处理完成")
 
+    @staticmethod
+    def _unwrap_route_func(method_func):
+        """从路由装饰器包装中提取原始用户函数
+
+        路由装饰器（get_api/post_api 等）会将用户定义的方法包装为
+        异步 Tornado handler wrapper。在单分发器模式下，gateway dispatcher
+        直接调用原始函数并由自己负责参数解析和响应转换。
+
+        查找顺序：
+        1. __cullinan_original_func__ — 路由装饰器显式存储的原始函数
+        2. __wrapped__ — 标准包装协议
+        3. 返回原始 method_func 作为兜底
+
+        Args:
+            method_func: 可能被路由装饰器包装过的函数
+
+        Returns:
+            原始用户定义的函数
+        """
+        original = getattr(method_func, '__cullinan_original_func__', None)
+        if original is not None:
+            return original
+        wrapped = getattr(method_func, '__wrapped__', None)
+        if wrapped is not None:
+            return wrapped
+        return method_func
+
     def _register_controller_routes(self, cls: type, url_prefix: str) -> None:
-        """注册 Controller 的路由到 HandlerRegistry
+        """注册 Controller 的路由到 gateway Router
 
         扫描 Controller 类中被 @get_api/@post_api 等装饰的方法，
-        并注册到 Tornado 的 HandlerRegistry。
+        提取原始用户函数后注册到 gateway Router（v0.93 单分发器模式）。
+
+        gateway dispatcher 负责参数解析和响应转换，因此注册到 Router 的
+        handler 必须是用户定义的原始函数而非 Tornado handler wrapper。
 
         Args:
             cls: Controller 类
-            url_prefix: URL 前缀
+            url_prefix: URL 前缀（原始模板格式，如 /api/users/{id}）
         """
         try:
-            from cullinan.controller.core import (
-                EncapsulationHandler,
-                url_resolver,
-                _controller_decoration_context,
-            )
-            from cullinan.handler import get_handler_registry
+            from cullinan.controller.core import _controller_decoration_context
             from cullinan.controller.registry import get_controller_registry
+            from cullinan.gateway import get_router
 
-            # 解析 URL 参数
-            url_params = None
-            if url_prefix:
-                parsed_prefix, url_params = url_resolver(url_prefix)
-            else:
-                parsed_prefix = url_prefix
+            gateway_router = get_router()
 
             # 获取在类定义时收集的方法（通过 add_func）
             func_list = _controller_decoration_context.get() or []
@@ -544,11 +565,15 @@ class ApplicationContext:
                     attr = getattr(cls, attr_name, None)
                     if not callable(attr):
                         continue
-                    wrapped = getattr(attr, '__wrapped__', None)
-                    if wrapped is None:
-                        continue
+                    # 检查是否有路由元数据（直接或通过包装）
                     route_url = getattr(attr, '__cullinan_url__', None)
                     route_type = getattr(attr, '__cullinan_method__', None)
+                    if route_url is None or route_type is None:
+                        # 尝试从 __wrapped__ 或 __cullinan_original_func__ 获取
+                        inner = getattr(attr, '__cullinan_original_func__', None) or getattr(attr, '__wrapped__', None)
+                        if inner is not None:
+                            route_url = getattr(inner, '__cullinan_url__', route_url)
+                            route_type = getattr(inner, '__cullinan_method__', route_type)
                     if route_url is not None and route_type is not None:
                         func_list.append((route_url, attr, route_type))
 
@@ -561,11 +586,19 @@ class ApplicationContext:
             controller_name = cls.__name__
             controller_registry.register(controller_name, cls, url_prefix=url_prefix)
 
-            # 注册每个路由方法
+            # 注册每个路由方法到 gateway Router
             for method_url, method_func, http_method in func_list:
                 full_url = url_prefix + method_url
 
-                # 注册到 ControllerRegistry
+                # 提取原始用户函数用于 gateway 分发
+                original_func = self._unwrap_route_func(method_func)
+
+                # 优先使用原始函数上的 URL 模板（包含 {param} 占位符）
+                original_url = getattr(original_func, '__cullinan_url__', None)
+                if original_url is not None:
+                    full_url = url_prefix + original_url
+
+                # 注册到 ControllerRegistry（保留 wrapper 用于可能的旧路径）
                 controller_registry.register_method(
                     controller_name,
                     method_url,
@@ -573,15 +606,20 @@ class ApplicationContext:
                     method_func
                 )
 
-                # 注册到 HandlerRegistry（Tornado 路由）
-                handler = EncapsulationHandler.add_url(full_url, method_func)
-                setattr(handler, http_method + '_controller_factory', cls)
-                setattr(handler, http_method + '_controller_url_param_key_list', url_params)
+                # 注册到 gateway Router（使用原始函数，由 dispatcher 负责参数解析）
+                gateway_router.add_route(
+                    method=http_method.upper(),
+                    path=full_url,
+                    handler=original_func,
+                    controller_cls=cls,
+                    controller_method_name=getattr(original_func, '__name__', ''),
+                )
 
             logger.debug(f"注册 Controller: {controller_name} 包含 {len(func_list)} 个路由")
 
         except Exception as e:
             logger.warning(f"注册 Controller {cls.__name__} 路由失败: {e}")
+
 
     def _create_class_instance(self, cls: type) -> object:
         """创建类实例并注入依赖

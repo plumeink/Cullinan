@@ -246,7 +246,7 @@ def websocket_handler(url: Optional[str] = None, **options) -> Callable:
                 pass
     """
     def decorator(handler_class: Type[Any]) -> Type[Any]:
-        # 1. Mark as injectable (compatibility - no-op in 2.0)
+        # 1. Mark as injectable (compatibility - no-op in 0.93)
         from cullinan.core import injectable
         handler_class = injectable(handler_class)
 

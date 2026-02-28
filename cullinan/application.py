@@ -5,26 +5,31 @@ import os
 import importlib.util
 import logging
 import signal
-
-import tornado.ioloop
-from cullinan.handler import get_handler_registry
-from dotenv import load_dotenv
-from pathlib import Path
-import tornado.ioloop
-import tornado.options
-import tornado.web
-import tornado.httpserver
-from tornado.options import define, options
 import sys
 
-# Import module scanning utilities (refactored for better maintainability)
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Tornado imports are now conditional — only loaded when engine='tornado'
+# This allows the framework to run without tornado installed (ASGI mode)
+_tornado_available = False
+try:
+    import tornado.ioloop
+    import tornado.options
+    import tornado.web
+    import tornado.httpserver
+    from tornado.options import define, options
+    _tornado_available = True
+except ImportError:
+    pass
+
 from cullinan.module_scanner import (
     is_pyinstaller_frozen,
     is_nuitka_compiled,
     file_list_func
 )
 
-# Module-level logger (FastAPI-style)
+# Module-level logger
 logger = logging.getLogger(__name__)
 
 
@@ -199,16 +204,6 @@ def scan_service(modules: list) -> None:
 
 
 
-def sort_url() -> None:
-    """Sort URL handlers with O(n log n) complexity instead of O(n³).
-    
-    Optimized version that uses the HandlerRegistry's built-in sort method.
-    Handlers with dynamic segments (e.g., ([a-zA-Z0-9-]+)) are prioritized lower than
-    static segments to ensure more specific routes match first.
-    """
-    registry = get_handler_registry()
-    registry.sort()
-
 
 def is_started_directly() -> bool:
     """Return True if the process was started directly (a __main__ frame exists).
@@ -356,14 +351,146 @@ def _register_explicit_classes():
                 )
 
 
-def run(handlers=None):
+def _init_framework():
+    """Common initialization logic shared by all engine modes.
+
+    Returns:
+        Tuple of (ctx, pending_count) — ApplicationContext and the count of
+        processed pending registrations.
+    """
+    logger.info("loading env...")
+    load_dotenv()
+    load_dotenv(verbose=True)
+    env_path = Path(os.getcwd()) / '.env'
+    load_dotenv(dotenv_path=env_path)
+
+    # ========== IoC/DI 2.0: 使用 ApplicationContext 作为唯一入口 ==========
+    logger.info("└---initializing IoC/DI 2.0 ApplicationContext...")
+    from cullinan.core import ApplicationContext, set_application_context
+    from cullinan.core.pending import PendingRegistry
+
+    ctx = ApplicationContext()
+    set_application_context(ctx)
+
+    _register_explicit_classes()
+
+    logger.info("└---scanning modules...")
+    modules = file_list_func()
+
+    if not modules:
+        logger.warning("[WARN] No modules found for scanning!")
+        logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
+    else:
+        logger.info("└---found %d modules to scan", len(modules))
+        scan_service(modules)
+        scan_controller(modules)
+
+    logger.info("└---refreshing ApplicationContext...")
+    ctx.refresh()
+
+    pending_count = PendingRegistry.get_instance().count
+    logger.info(f"[OK] ApplicationContext refreshed with {pending_count} components")
+    logger.info("└---lifecycle hooks executed by ApplicationContext")
+
+    return ctx, pending_count
+
+
+def _setup_middleware_pipeline():
+    """Wire legacy @middleware-registered middleware into the gateway pipeline."""
+    try:
+        from cullinan.gateway import get_pipeline, AccessLogMiddleware, LegacyMiddlewareBridge
+        from cullinan.middleware import get_middleware_registry
+
+        pipeline = get_pipeline()
+
+        # Add built-in access log middleware
+        pipeline.add(AccessLogMiddleware())
+
+        # Bridge legacy middleware
+        mw_registry = get_middleware_registry()
+        registered = mw_registry.get_registered_middleware()
+        if registered:
+            chain = mw_registry.get_middleware_chain()
+            pipeline.add(LegacyMiddlewareBridge(chain))
+            logger.info("└---bridged %d legacy middleware into gateway pipeline", len(registered))
+    except Exception as exc:
+        logger.debug("Middleware pipeline setup skipped: %s", exc)
+
+
+def _setup_openapi():
+    """Auto-register OpenAPI spec endpoints if enabled.
+
+    Reads configuration from CullinanConfig and environment variables:
+    - CULLINAN_OPENAPI_ENABLED: '1'/'true' to enable (default: enabled)
+    - CULLINAN_OPENAPI_TITLE: API title
+    - CULLINAN_OPENAPI_VERSION: API version
+
+    Registers /openapi.json and /openapi.yaml GET endpoints.
+    """
+    try:
+        # Check config
+        enabled = True
+        title = 'Cullinan API'
+        version = '1.0.0'
+        description = ''
+
+        try:
+            from cullinan.config import get_config
+            cfg = get_config()
+            enabled = getattr(cfg, 'openapi_enabled', True)
+            title = getattr(cfg, 'openapi_title', title)
+            version = getattr(cfg, 'openapi_version', version)
+            description = getattr(cfg, 'openapi_description', description)
+        except Exception:
+            pass
+
+        # Environment variable override
+        env_enabled = os.getenv('CULLINAN_OPENAPI_ENABLED', '').strip().lower()
+        if env_enabled in ('0', 'false', 'no', 'off'):
+            enabled = False
+        elif env_enabled in ('1', 'true', 'yes', 'on'):
+            enabled = True
+
+        env_title = os.getenv('CULLINAN_OPENAPI_TITLE', '').strip()
+        if env_title:
+            title = env_title
+        env_version = os.getenv('CULLINAN_OPENAPI_VERSION', '').strip()
+        if env_version:
+            version = env_version
+
+        if not enabled:
+            logger.debug("OpenAPI auto-generation disabled")
+            return
+
+        from cullinan.gateway.openapi import OpenAPIGenerator
+        from cullinan.gateway import get_router
+
+        generator = OpenAPIGenerator(
+            router=get_router(),
+            title=title,
+            version=version,
+            description=description,
+        )
+        generator.register_spec_routes()
+        logger.info("└---OpenAPI endpoints registered: /openapi.json, /openapi.yaml")
+
+    except Exception as exc:
+        logger.debug("OpenAPI setup skipped: %s", exc)
+
+
+def run(handlers=None, engine=None):
+    """Start the Cullinan application.
+
+    Args:
+        handlers: Extra (url, handler_class) pairs for Tornado mode.
+        engine: Server engine — ``'tornado'`` (default), ``'asgi'``, or ``'auto'``.
+                Can also be set via env-var ``CULLINAN_ENGINE`` or
+                ``CullinanConfig.server_engine``.
+    """
     if handlers is None:
         handlers = []
-    # ensure console logging is available by default when the app hasn't configured logging
-    # ensure logging handlers are present when appropriate (may install console handler)
+
     installed_handler = _ensure_console_logging()
-    # If we installed a handler ourselves, temporarily set its formatter to '%(message)s'
-    # so the banner is emitted verbatim via logging (no print necessary). Restore afterwards.
     if installed_handler is not None:
         old_fmt = None
         try:
@@ -377,129 +504,152 @@ def run(handlers=None):
                 pass
     else:
         logger.info(BANNER)
-    logger.info("loading env...")
-    load_dotenv()
-    load_dotenv(verbose=True)
-    env_path = Path(os.getcwd()) / '.env'
-    load_dotenv(dotenv_path=env_path)
-    settings = dict(
-        template_path=os.path.join(os.getcwd(), 'templates'),
-        static_path=os.path.join(os.getcwd(), 'static')
-    )
 
-    # ========== IoC/DI 2.0: 使用 ApplicationContext 作为唯一入口 ==========
-    logger.info("└---initializing IoC/DI 2.0 ApplicationContext...")
-    from cullinan.core import ApplicationContext, set_application_context
-    from cullinan.core.pending import PendingRegistry, ComponentType
-
-    # 创建全局 ApplicationContext
-    ctx = ApplicationContext()
-    # 保存全局引用，供 ControllerRegistry 等组件使用
-    set_application_context(ctx)
-
-    # Register explicit services and controllers (if configured)
-    _register_explicit_classes()
-
-    # 扫描模块（触发装饰器执行，收集到 PendingRegistry）
-    logger.info("└---scanning modules...")
-    logger.info("...")
-    modules = file_list_func()
-
-    if not modules:
-        logger.warning("[WARN] No modules found for scanning!")
-        logger.warning("[WARN] This is expected in packaged environments without configuration.")
-        logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
-    else:
-        logger.info("└---found %d modules to scan", len(modules))
-        # 扫描 service 和 controller（装饰器会将组件注册到 PendingRegistry）
-        scan_service(modules)
-        scan_controller(modules)
-
-    # 刷新 ApplicationContext（处理 PendingRegistry 中的所有组件，调用生命周期钩子）
-    logger.info("└---refreshing ApplicationContext (processing pending registrations)...")
-    ctx.refresh()
-
-    pending_count = PendingRegistry.get_instance().count
-    logger.info(f"[OK] ApplicationContext refreshed with {pending_count} components")
-
-    # 生命周期钩子已由 ApplicationContext.refresh() 统一调用
-    logger.info("└---lifecycle hooks executed by ApplicationContext")
-    # ========== END IoC/DI 2.0 ==========
-
-    sort_url()
-
-    # Get handlers from registry
-    handler_registry = get_handler_registry()
-    registered_handlers = handler_registry.get_handlers()
-    
-    mapping = tornado.web.Application(
-        handlers=registered_handlers + handlers,
-        **settings
-    )
-    logger.info("└---loading controller finish\n")
-    define("port", default=os.getenv("SERVER_PORT", 4080), help="run on the given port", type=int)
-    logger.info("loading env finish\n")
-    http_server = tornado.httpserver.HTTPServer(mapping)
-    if os.getenv("SERVER_THREAD") is not None:
-        logger.info("server is starting")
-        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
-        http_server.bind(options.port)
-        http_server.start(int(os.getenv("SERVER_THREAD")) | 0)
-    else:
-        http_server.listen(options.port)
-        logger.info("server is starting")
-        logger.info("port is %s", str(os.getenv("SERVER_PORT", 4080)))
-
-    # Register signal handlers to allow graceful shutdown (SIGINT/SIGTERM)
-    try:
-        def _handle_signal(signum, frame):
-            logger.info("Received signal %s, stopping...", signum)
-            try:
-                # request the IOLoop to stop from its own thread
-                tornado.ioloop.IOLoop.current().add_callback(tornado.ioloop.IOLoop.current().stop)
-            except Exception:
-                try:
-                    tornado.ioloop.IOLoop.current().stop()
-                except Exception:
-                    pass
-
-        signal.signal(signal.SIGINT, _handle_signal)
+    # Determine engine
+    if engine is None:
+        engine = os.getenv('CULLINAN_ENGINE', '').strip().lower() or None
+    if engine is None:
         try:
-            # SIGTERM may not exist on some Windows setups; ignore failures
-            signal.signal(signal.SIGTERM, _handle_signal)
+            from cullinan.config import get_config
+            engine = getattr(get_config(), 'server_engine', 'tornado')
         except Exception:
-            pass
+            engine = 'tornado'
+
+    ctx, pending_count = _init_framework()
+    _setup_middleware_pipeline()
+    _setup_openapi()
+
+    port = int(os.getenv("SERVER_PORT", 4080))
+    host = os.getenv("SERVER_HOST", "0.0.0.0")
+
+    if engine == 'asgi':
+        _run_asgi(host, port)
+    else:
+        # Default: tornado (backward-compatible)
+        _run_tornado(host, port, handlers)
+
+
+def _run_tornado(host: str, port: int, extra_handlers: list):
+    """Start the server using the Tornado adapter (single-handler gateway mode)."""
+    if not _tornado_available:
+        raise ImportError(
+            "Tornado is required for engine='tornado'. Install it with: pip install tornado"
+        )
+
+    from cullinan.gateway import get_dispatcher, get_router
+    from cullinan.adapter import TornadoAdapter
+
+    # Collect global headers from legacy HeaderRegistry
+    global_headers = []
+    try:
+        from cullinan.controller.core import get_header_registry
+        hr = get_header_registry()
+        if hr.has_headers():
+            global_headers = hr.get_headers()
     except Exception:
-        # best-effort: do not fail startup if signals can't be registered
         pass
 
-    # Start the IOLoop and handle KeyboardInterrupt gracefully so closing
-    # the app doesn't produce a long traceback in normal shutdown.
-    try:
-        tornado.ioloop.IOLoop.current().start()
-    except KeyboardInterrupt:
-        logger.info("KeyboardInterrupt received, shutting down server...")
-    except Exception:
-        logger.exception("Exception running IOLoop")
-    finally:
+    settings = dict(
+        template_path=os.path.join(os.getcwd(), 'templates'),
+        static_path=os.path.join(os.getcwd(), 'static'),
+    )
 
-        # Stop accepting new connections and stop the IOLoop.
+    dispatcher = get_dispatcher()
+    router = get_router()
+
+    logger.info("└---gateway router: %d routes registered", router.route_count())
+    logger.info("└---starting Tornado (single-handler gateway mode)")
+
+    adapter = TornadoAdapter(
+        dispatcher=dispatcher,
+        settings=settings,
+        global_headers=global_headers,
+        extra_handlers=extra_handlers,
+    )
+
+    try:
+        define("port", default=port, help="run on the given port", type=int)
+    except Exception:
+        pass  # already defined (e.g. during tests or hot-reload)
+    logger.info("server is starting")
+    logger.info("port is %s", str(port))
+
+    adapter.run(host=host, port=port)
+
+
+def _run_asgi(host: str, port: int):
+    """Start the server using the ASGI adapter."""
+    from cullinan.gateway import get_dispatcher
+    from cullinan.adapter import ASGIAdapter
+
+    global_headers = []
+    try:
+        from cullinan.controller.core import get_header_registry
+        hr = get_header_registry()
+        if hr.has_headers():
+            global_headers = hr.get_headers()
+    except Exception:
+        pass
+
+    dispatcher = get_dispatcher()
+
+    logger.info("└---starting ASGI server")
+
+    adapter = ASGIAdapter(
+        dispatcher=dispatcher,
+        global_headers=global_headers,
+    )
+
+    adapter.run(host=host, port=port)
+
+
+def get_asgi_app():
+    """Create and return an ASGI application callable.
+
+    This function performs full framework initialization and returns an ASGI 3.0
+    app that can be served by uvicorn, hypercorn, or any ASGI server::
+
+        # myapp.py
+        from cullinan.application import get_asgi_app
+        app = get_asgi_app()
+
+        # Then: uvicorn myapp:app
+    """
+    installed_handler = _ensure_console_logging()
+    if installed_handler is not None:
+        old_fmt = getattr(installed_handler, 'formatter', None)
         try:
-            http_server.stop()
-        except Exception:
-            pass
-        try:
-            io_loop = tornado.ioloop.IOLoop.current()
-            # ensure the loop is stopped
+            installed_handler.setFormatter(logging.Formatter('%(message)s'))
+            logger.info(BANNER)
+        finally:
             try:
-                io_loop.add_callback(io_loop.stop)
+                installed_handler.setFormatter(old_fmt)
             except Exception:
-                try:
-                    io_loop.stop()
-                except Exception:
-                    pass
-        except Exception:
-            pass
+                pass
+    else:
+        logger.info(BANNER)
+
+    _init_framework()
+    _setup_middleware_pipeline()
+    _setup_openapi()
+
+    from cullinan.gateway import get_dispatcher
+    from cullinan.adapter import ASGIAdapter
+
+    global_headers = []
+    try:
+        from cullinan.controller.core import get_header_registry
+        hr = get_header_registry()
+        if hr.has_headers():
+            global_headers = hr.get_headers()
+    except Exception:
+        pass
+
+    adapter = ASGIAdapter(
+        dispatcher=get_dispatcher(),
+        global_headers=global_headers,
+    )
+    return adapter.create_app()
 
 
 async def _run_shutdown_sequence(server, loop, timeout_seconds: int):

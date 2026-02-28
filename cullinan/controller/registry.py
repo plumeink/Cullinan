@@ -65,7 +65,7 @@ class ControllerRegistry(Registry[Type[Any]], ProviderSource):
         # 线程锁（确保单例的线程安全）
         self._instance_lock = threading.RLock()
 
-        # In 2.0, we no longer auto-register to InjectionRegistry
+        # In 0.93, we no longer auto-register to InjectionRegistry
         # ApplicationContext handles all dependency injection
         logger.debug("ControllerRegistry initialized")
 

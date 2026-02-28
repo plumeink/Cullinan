@@ -21,7 +21,6 @@ from cullinan.exceptions import (
 )
 from cullinan.logging_utils import should_log, log_if_enabled
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol, List
-from cullinan.handler import get_handler_registry
 
 # New parameter system imports
 from cullinan.params import Param, DynamicBody, ParamResolver, ResolveError
@@ -44,7 +43,7 @@ access_logger = logging.getLogger('cullinan.access')
 # Registry Pattern Integration (Direct Registry Usage)
 # ============================================================================
 # Global lists have been completely replaced with registry pattern.
-# Use get_handler_registry(), get_header_registry(), and get_controller_registry() for all operations.
+# Use get_header_registry() and get_controller_registry() for all operations.
 
 # Context variable for controller method collection during decoration (thread-safe)
 # This is used during controller class decoration to collect methods
@@ -347,67 +346,6 @@ class EncapsulationHandler(object):
 
         return inner
 
-    @staticmethod
-    def add_url(url: str, f: Callable) -> object:
-        # create servlet type plainly
-        servlet = type('Servlet' + url.replace('/', ''), (Handler,), {})
-        # attach the handler function as an instance method via set_fragment_method
-        
-        # Check if URL already exists in registry
-        registry = get_handler_registry()
-        handlers = registry.get_handlers()
-        
-        if len(handlers) == 0:
-            EncapsulationHandler.set_fragment_method(servlet, f)
-            servlet.f = types.MethodType(f, servlet)
-            registry.register(url, servlet)
-            return servlet
-        else:
-            # Find existing handler for this URL
-            for handler_url, handler_servlet in handlers:
-                if url == handler_url:
-                    EncapsulationHandler.set_fragment_method(handler_servlet, f)
-                    handler_servlet.f = types.MethodType(f, handler_servlet)
-                    return handler_servlet
-            else:
-                # URL not found, register new handler
-                EncapsulationHandler.set_fragment_method(servlet, f)
-                servlet.f = types.MethodType(f, servlet)
-                registry.register(url, servlet)
-                return servlet
-
-    @staticmethod
-    def add_url_ws(url: str, cls: Callable) -> object:
-        servlet = type('Servlet' + url.replace('/', ''), (tornado.websocket.WebSocketHandler,), {})
-        # Use new service registry - provide instance dict access for backward compatibility
-        service_registry = get_service_registry()
-        setattr(servlet, 'service', service_registry.list_instances())
-        
-        # Check if URL already exists in registry
-        registry = get_handler_registry()
-        handlers = registry.get_handlers()
-        
-        if len(handlers) == 0:
-            for item in dir(cls):
-                if not item.startswith('__') and not item.endswith('__'):
-                    setattr(servlet, item, cls.__dict__[item])
-            registry.register(url, servlet)
-            return servlet
-        else:
-            # Find existing handler for this URL
-            for handler_url, handler_servlet in handlers:
-                if url == handler_url:
-                    for i in dir(cls):
-                        if not i.startswith('__') and not i.endswith('__'):
-                            setattr(handler_servlet, i, cls.__dict__[i])
-                    return handler_servlet
-            else:
-                # URL not found, register new handler
-                for item in dir(cls):
-                    if not item.startswith('__') and not item.endswith('__'):
-                        setattr(servlet, item, cls.__dict__[item])
-                registry.register(url, servlet)
-                return servlet
 
 
 class Handler(tornado.web.RequestHandler):
@@ -1003,13 +941,16 @@ def get_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
+        original_url = local_url  # preserve original template for gateway Router
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
-        # Attach URL param keys to original function for new param system
+        # Attach URL param keys and original template to function
         setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+        setattr(func, '__cullinan_url__', original_url)
+        setattr(func, '__cullinan_method__', 'get')
 
-        @EncapsulationHandler.add_func(url=local_url, type='get')
+        @EncapsulationHandler.add_func(url=original_url, type='get')
         async def get(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
@@ -1031,9 +972,11 @@ def get_api(**kwargs: Any) -> Callable:
                                   url_param_keys=url_param_key_list,
                                   url_param_values=args)
 
-        # Task: attach route metadata for fallback scanning
+        # Attach route metadata and original function reference for gateway dispatcher
         setattr(get, '__cullinan_url__', local_url)
         setattr(get, '__cullinan_method__', 'get')
+        setattr(get, '__cullinan_original_func__', func)
+        setattr(get, '__wrapped__', func)
 
         return get
 
@@ -1044,13 +987,15 @@ def post_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
+        original_url = local_url
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
-        # Attach URL param keys to original function for new param system
         setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+        setattr(func, '__cullinan_url__', original_url)
+        setattr(func, '__cullinan_method__', 'post')
 
-        @EncapsulationHandler.add_func(url=local_url, type='post')
+        @EncapsulationHandler.add_func(url=original_url, type='post')
         async def post(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
@@ -1075,8 +1020,11 @@ def post_api(**kwargs: Any) -> Callable:
                                   url_param_keys=url_param_key_list,
                                   url_param_values=args)
 
+        # Attach route metadata and original function reference for gateway dispatcher
         setattr(post, '__cullinan_url__', local_url)
         setattr(post, '__cullinan_method__', 'post')
+        setattr(post, '__cullinan_original_func__', func)
+        setattr(post, '__wrapped__', func)
 
         return post
 
@@ -1087,13 +1035,15 @@ def patch_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
+        original_url = local_url
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
-        # Attach URL param keys to original function for new param system
         setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+        setattr(func, '__cullinan_url__', original_url)
+        setattr(func, '__cullinan_method__', 'patch')
 
-        @EncapsulationHandler.add_func(url=local_url, type='patch')
+        @EncapsulationHandler.add_func(url=original_url, type='patch')
         async def patch(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
@@ -1117,8 +1067,11 @@ def patch_api(**kwargs: Any) -> Callable:
                                   url_param_keys=url_param_key_list,
                                   url_param_values=args)
 
+        # Attach route metadata and original function reference for gateway dispatcher
         setattr(patch, '__cullinan_url__', local_url)
         setattr(patch, '__cullinan_method__', 'patch')
+        setattr(patch, '__cullinan_original_func__', func)
+        setattr(patch, '__wrapped__', func)
 
         return patch
 
@@ -1129,13 +1082,15 @@ def delete_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
+        original_url = local_url
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
-        # Attach URL param keys to original function for new param system
         setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+        setattr(func, '__cullinan_url__', original_url)
+        setattr(func, '__cullinan_method__', 'delete')
 
-        @EncapsulationHandler.add_func(url=local_url, type='delete')
+        @EncapsulationHandler.add_func(url=original_url, type='delete')
         async def delete(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
@@ -1156,8 +1111,11 @@ def delete_api(**kwargs: Any) -> Callable:
                                   url_param_keys=url_param_key_list,
                                   url_param_values=args)
 
+        # Attach route metadata and original function reference for gateway dispatcher
         setattr(delete, '__cullinan_url__', local_url)
         setattr(delete, '__cullinan_method__', 'delete')
+        setattr(delete, '__cullinan_original_func__', func)
+        setattr(delete, '__wrapped__', func)
 
         return delete
 
@@ -1168,13 +1126,15 @@ def put_api(**kwargs: Any) -> Callable:
     def inner(func):
         url_param_key_list = []
         local_url = kwargs.get('url', '')
+        original_url = local_url
         if local_url.find("{") != -1:
             local_url, url_param_key_list = url_resolver(local_url)
 
-        # Attach URL param keys to original function for new param system
         setattr(func, '__cullinan_url_param_keys__', url_param_key_list)
+        setattr(func, '__cullinan_url__', original_url)
+        setattr(func, '__cullinan_method__', 'put')
 
-        @EncapsulationHandler.add_func(url=local_url, type='put')
+        @EncapsulationHandler.add_func(url=original_url, type='put')
         async def put(self, *args):
             # Conditional logging: only log if INFO level is enabled
             if logger.isEnabledFor(logging.INFO):
@@ -1195,8 +1155,11 @@ def put_api(**kwargs: Any) -> Callable:
                                   url_param_keys=url_param_key_list,
                                   url_param_values=args)
 
+        # Attach route metadata and original function reference for gateway dispatcher
         setattr(put, '__cullinan_url__', local_url)
         setattr(put, '__cullinan_method__', 'put')
+        setattr(put, '__cullinan_original_func__', func)
+        setattr(put, '__wrapped__', func)
 
         return put
 

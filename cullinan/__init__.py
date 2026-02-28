@@ -67,13 +67,6 @@ from cullinan.service import (
     reset_service_registry,
 )
 
-# Export handler module
-from cullinan.handler import (
-    HandlerRegistry,
-    get_handler_registry,
-    reset_handler_registry,
-    BaseHandler,
-)
 
 # Export middleware module
 from cullinan.middleware import (
@@ -162,6 +155,33 @@ from cullinan.middleware import (
     set_decoded_body,
 )
 
+# Export gateway module (v0.93 transport-agnostic layer)
+from cullinan.gateway import (
+    CullinanRequest,
+    CullinanResponse,
+    Router,
+    Dispatcher,
+    MiddlewarePipeline,
+    GatewayMiddleware,
+    CORSMiddleware,
+    RequestTimingMiddleware,
+    AccessLogMiddleware,
+    ExceptionHandler,
+    OpenAPIGenerator,
+    get_router,
+    get_dispatcher,
+    get_pipeline,
+    get_exception_handler,
+    reset_gateway,
+)
+
+# Export adapter module (v0.93 server runtime adapters)
+from cullinan.adapter import ServerAdapter, ASGIAdapter
+try:
+    from cullinan.adapter import TornadoAdapter
+except (ImportError, TypeError):
+    TornadoAdapter = None  # type: ignore[assignment,misc]
+
 # Export controller registry and decorators from controller package
 # Note: 'controller' is both a package and a decorator function
 # To avoid naming conflicts in Nuitka and other packagers:
@@ -185,7 +205,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.90'
+__version__ = '0.93a1'
 
 __all__ = [
     # Configuration
@@ -214,12 +234,6 @@ __all__ = [
     'service',
     'get_service_registry',
     'reset_service_registry',
-    
-    # Handler layer
-    'HandlerRegistry',
-    'get_handler_registry',
-    'reset_handler_registry',
-    'BaseHandler',
     
     # Middleware
     'Middleware',
@@ -292,6 +306,29 @@ __all__ = [
     'get_decoded_body',
     'set_decoded_body',
 
+    # Gateway module (v0.93)
+    'CullinanRequest',
+    'CullinanResponse',
+    'Router',
+    'Dispatcher',
+    'MiddlewarePipeline',
+    'GatewayMiddleware',
+    'CORSMiddleware',
+    'RequestTimingMiddleware',
+    'AccessLogMiddleware',
+    'ExceptionHandler',
+    'OpenAPIGenerator',
+    'get_router',
+    'get_dispatcher',
+    'get_pipeline',
+    'get_exception_handler',
+    'reset_gateway',
+
+    # Adapter module (v0.93)
+    'ServerAdapter',
+    'TornadoAdapter',
+    'ASGIAdapter',
+
     # Controller module (import controller decorator from cullinan.controller)
     'ControllerRegistry',
     'get_controller_registry',
@@ -336,6 +373,9 @@ __all__ = [
     'service',
     'controller',
     'component',
+
+    # Application helpers
+    'get_asgi_app',
 ]
 
 # ============================================================================
@@ -346,4 +386,7 @@ __all__ = [
 # ============================================================================
 from cullinan.core.decorators import service, controller, component
 from cullinan.core.decorators import Inject, InjectByName, Lazy
+
+# Export get_asgi_app for convenient ASGI deployment
+from cullinan.application import get_asgi_app
 

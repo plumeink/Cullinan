@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Request context management for Cullinan framework.
 
-Provides thread-safe context management for request-scoped data,
-similar to Flask's request context or FastAPI's dependencies.
+Provides thread-safe context management for request-scoped data
+using ``contextvars`` for async safety.
 """
 
 import threading

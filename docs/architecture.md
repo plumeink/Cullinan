@@ -361,7 +361,7 @@ for point in points:
 
 ### Key Improvements
 
-| Feature | 0.83 (Legacy) | 0.90 (2.0) |
+| Feature | 0.83 (Legacy) | 0.90 (0.93) |
 |---------|---------------|------------|
 | Entry Point | Multiple (IoCFacade, Registries) | Single (ApplicationContext) |
 | Definition | Mutable | Immutable (frozen) |

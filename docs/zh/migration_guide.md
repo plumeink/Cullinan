@@ -1,9 +1,9 @@
-# Cullinan 2.0 迁移指南
+# Cullinan 0.93 迁移指南
 
 > **版本**：v0.90  
 > **作者**：Plumeink
 
-本指南帮助您从 Cullinan 1.x 迁移到 2.0（0.90）。
+本指南帮助您从 Cullinan 1.x 迁移到 0.93（0.90）。
 
 ## 破坏性变更
 
@@ -17,7 +17,7 @@ registry = get_injection_registry()
 registry.add_provider_source(my_source)
 ```
 
-**之后（2.0）：**
+**之后（0.93）：**
 ```python
 from cullinan.core.container import ApplicationContext, Definition, ScopeType
 
@@ -33,7 +33,7 @@ ctx.refresh()
 
 ### 2. 注册表冻结
 
-在 2.0 中，注册表在 `refresh()` 后被冻结。任何尝试注册新依赖的操作都会抛出 `RegistryFrozenError`。
+在 0.93 中，注册表在 `refresh()` 后被冻结。任何尝试注册新依赖的操作都会抛出 `RegistryFrozenError`。
 
 **之前（1.x）：**
 ```python
@@ -41,7 +41,7 @@ ctx.refresh()
 registry.register('NewService', NewService)
 ```
 
-**之后（2.0）：**
+**之后（0.93）：**
 ```python
 ctx = ApplicationContext()
 ctx.register(...)  # refresh 前可以
@@ -59,7 +59,7 @@ ctx.register(...)  # RegistryFrozenError!
 instance = registry.get('RequestScoped')
 ```
 
-**之后（2.0）：**
+**之后（0.93）：**
 ```python
 ctx.enter_request_context()
 try:
@@ -83,7 +83,7 @@ except Exception as e:
     print(str(e))  # 通用消息
 ```
 
-**之后（2.0）：**
+**之后（0.93）：**
 ```python
 from cullinan.core.diagnostics import DependencyNotFoundError
 
@@ -105,7 +105,7 @@ except DependencyNotFoundError as e:
 CircularDependencyError: Circular dependency detected
 ```
 
-**之后（2.0）：**
+**之后（0.93）：**
 ```python
 # 稳定、有序的链路
 CircularDependencyError: 检测到循环依赖: A -> B -> C -> A
@@ -119,7 +119,7 @@ CircularDependencyError: 检测到循环依赖: A -> B -> C -> A
 # 旧导入（已弃用）
 from cullinan.core import get_injection_registry, Inject, InjectByName
 
-# 新导入（2.0）
+# 新导入（0.93）
 from cullinan.core.container import ApplicationContext, Definition, ScopeType
 ```
 
@@ -174,7 +174,7 @@ class MyHandler(RequestHandler):
 
 ## 已弃用的 API
 
-以下 API 在 2.0 中已弃用，将在 3.0 中移除：
+以下 API 在 0.93 中已弃用，将在 3.0 中移除：
 
 | 已弃用 API | 替代方案 |
 |------------|----------|
@@ -199,7 +199,7 @@ ctx.set_strict_mode(False)  # 允许一些旧行为
 
 ## 测试迁移
 
-运行所有 2.0 测试以验证您的迁移：
+运行所有 0.93 测试以验证您的迁移：
 
 ```bash
 python -m pytest tests/test_ioc_di_v2_*.py -v

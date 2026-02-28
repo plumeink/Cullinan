@@ -1,7 +1,7 @@
 """Controller + DI + Middleware example (doc copy)
 
 **DEPRECATED (v0.90)**: This example uses the legacy 1.x DI API.
-For the new 2.0 API, see the ApplicationContext-based examples in:
+For the new 0.93 API, see the ApplicationContext-based examples in:
 - docs/wiki/ioc_di_v2.md
 - docs/migration_guide_v2.md
 

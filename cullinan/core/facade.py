@@ -87,7 +87,7 @@ class IoCFacade:
     def _auto_discover_registries(self) -> None:
         """Auto-discover registry instances from the framework."""
         try:
-            # In 2.0, injection_registry is no longer used
+            # In 0.93, injection_registry is no longer used
             # We keep this for compatibility but it returns None
             if not self._injection_registry:
                 self._injection_registry = None
