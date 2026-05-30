@@ -22,9 +22,12 @@ on:
 permissions:
   contents: write
   pages: write
+  id-token: write
 
 jobs:
   docs:
+    outputs:
+      deploy_site: ${{ steps.deploy_gate.outputs.deploy_site }}
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: '3.10'
@@ -88,7 +91,7 @@ jobs:
             "event_name": event_name,
             "is_pre": str(is_pre).lower(),
             "channel": channel,
-            "should_deploy": str(event_name == "push" and channel in {"stable", "pre"}).lower(),
+            "should_deploy": str(event_name in {"push", "workflow_dispatch"} and channel in {"stable", "pre"}).lower(),
           }
 
           github_output = pathlib.Path(os.environ["GITHUB_OUTPUT"])
@@ -198,12 +201,20 @@ jobs:
           echo "published pre=${{ steps.published.outputs.pre_version }}"
           echo "publish pre?=${{ steps.precheck.outputs.should_publish_pre }}"
 
-      - name: Publish docs to gh-pages
-        if: steps.channel.outputs.should_deploy == 'true' && (steps.channel.outputs.channel == 'stable' || steps.precheck.outputs.should_publish_pre == 'true')
+      - name: Mark deploy eligibility
+        id: deploy_gate
+        shell: bash
+        run: |
+          deploy_site=false
+          if [ "${{ steps.channel.outputs.should_deploy }}" = "true" ] && { [ "${{ steps.channel.outputs.channel }}" = "stable" ] || [ "${{ steps.precheck.outputs.should_publish_pre }}" = "true" ]; }; then
+            deploy_site=true
+          fi
+          echo "deploy_site=${deploy_site}" >> "$GITHUB_OUTPUT"
+
+      - name: Assemble docs payload
+        if: steps.deploy_gate.outputs.deploy_site == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANNEL: ${{ steps.channel.outputs.channel }}
-          CURRENT_VERSION: ${{ steps.channel.outputs.version }}
           STABLE_VERSION: ${{ steps.channel.outputs.channel == 'stable' && steps.channel.outputs.version || steps.published.outputs.stable_version }}
           PRE_VERSION: ${{ steps.channel.outputs.channel == 'pre' && steps.channel.outputs.version || steps.published.outputs.pre_version }}
         shell: bash
@@ -262,13 +273,40 @@ jobs:
           pathlib.Path(".gh-pages/.nojekyll").write_text("", encoding="utf-8")
           PY
 
+      - name: Sync gh-pages branch
+        if: steps.deploy_gate.outputs.deploy_site == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+          CURRENT_VERSION: ${{ steps.channel.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
           cd .gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           if git diff --cached --quiet; then
-            echo "No documentation changes to publish."
+            echo "No gh-pages branch changes to push."
             exit 0
           fi
           git commit -m "docs: publish ${CHANNEL} ${CURRENT_VERSION}"
           git push origin gh-pages
+
+      - name: Upload Pages artifact
+        if: steps.deploy_gate.outputs.deploy_site == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .gh-pages
+
+  deploy:
+    if: needs.docs.outputs.deploy_site == 'true'
+    needs: docs
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
