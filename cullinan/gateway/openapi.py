@@ -150,24 +150,24 @@ class OpenAPIGenerator:
         generator = self  # capture reference
 
         async def _serve_json(request: Any) -> Any:
-            from .response import CullinanResponse
-            return CullinanResponse(
+            from .web_core import WebResponse
+            return WebResponse(
                 body=generator.to_json(),
                 status_code=200,
                 content_type='application/json',
             )
 
         async def _serve_yaml(request: Any) -> Any:
-            from .response import CullinanResponse
+            from .web_core import WebResponse
             try:
                 content = generator.to_yaml()
-                return CullinanResponse(
+                return WebResponse(
                     body=content,
                     status_code=200,
                     content_type='text/yaml; charset=utf-8',
                 )
             except ImportError:
-                return CullinanResponse.error(
+                return WebResponse.error(
                     501, 'YAML output requires PyYAML: pip install pyyaml'
                 )
 
@@ -463,4 +463,3 @@ class OpenAPIGenerator:
             schema['maxLength'] = param_spec.max_length
         if getattr(param_spec, 'regex', None) is not None:
             schema['pattern'] = param_spec.regex
-

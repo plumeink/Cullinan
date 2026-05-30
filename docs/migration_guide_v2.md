@@ -10,8 +10,8 @@ Cullinan v0.93 is a major architectural rewrite introducing:
 |---------|-------|------|
 | **HTTP Engine** | Tornado only | Tornado or ASGI (configurable) |
 | **Request Handling** | One Handler per URL (Servlet-per-URL) | Single Dispatcher (Spring-style) |
-| **Request Object** | `tornado.httputil.HTTPServerRequest` | `CullinanRequest` (transport-agnostic) |
-| **Response Object** | `HttpResponse` + `self.write()` | `CullinanResponse` (factory methods) |
+| **Request Object** | `tornado.httputil.HTTPServerRequest` | `WebRequest` (transport-agnostic) |
+| **Response Object** | `HttpResponse` + `self.write()` | `WebResponse` (factory methods) |
 | **Routing** | Dynamic `type('Servlet'...)` classes | Prefix-tree Router |
 | **Middleware** | Init-only, not in request pipeline | Onion-model pipeline for every request |
 | **Tornado Dependency** | Required | Optional (`pip install cullinan[tornado]`) |
@@ -36,7 +36,7 @@ pip install cullinan[full]
 
 ### 1. Import Path Changes
 
-All existing imports remain valid. New imports are added:
+Keep existing controller/service imports as-is, but use the new Web entry names:
 
 ```python
 # v0.9x — still works in v0.93
@@ -46,11 +46,11 @@ from cullinan.core import Inject
 
 # v0.93 — new imports available
 from cullinan import (
-    CullinanRequest, CullinanResponse,     # Unified request/response
+    WebRequest, WebResponse,               # Unified request/response
     Router, Dispatcher,                     # Gateway layer
     GatewayMiddleware, CORSMiddleware,      # Middleware pipeline
     OpenAPIGenerator,                       # OpenAPI spec
-    TornadoAdapter, ASGIAdapter,            # Server adapters
+    TornadoAdapter, ASGIAdapter, WebAdapter,# Server adapters
     get_asgi_app,                           # ASGI convenience
 )
 ```
@@ -70,11 +70,11 @@ class UserController:
         return HttpResponse(body=user_data, status=200)
 ```
 
-#### v0.93: Controller methods return `CullinanResponse`
+#### v0.93: Controller methods return `WebResponse`
 
 ```python
-# v0.93 — transport-agnostic, returns CullinanResponse
-from cullinan import CullinanResponse
+# v0.93 — transport-agnostic, returns WebResponse
+from cullinan import WebResponse
 
 @controller(url='/api/users')
 class UserController:
@@ -84,8 +84,8 @@ class UserController:
     async def get_user(self, id):
         user = self.user_service.get_by_id(id)
         if not user:
-            return CullinanResponse.error(404, "User not found")
-        return CullinanResponse.json(user)
+            return WebResponse.error(404, "User not found")
+        return WebResponse.json(user)
 ```
 
 **Backward compatibility**: The old `HttpResponse` return type still works — the `Dispatcher` auto-converts it.
@@ -94,9 +94,9 @@ class UserController:
 
 | v0.9x | v0.93 Equivalent |
 |-------|-----------------|
-| `HttpResponse(body=data, status=200)` | `CullinanResponse.json(data)` |
-| `HttpResponse(body="text", status=200)` | `CullinanResponse.text("text")` |
-| `HttpResponse(body=data, status=404)` | `CullinanResponse.error(404, "msg")` |
+| `HttpResponse(body=data, status=200)` | `WebResponse.json(data)` |
+| `HttpResponse(body="text", status=200)` | `WebResponse.text("text")` |
+| `HttpResponse(body=data, status=404)` | `WebResponse.error(404, "msg")` |
 | `return {"key": "value"}` (dict) | `return {"key": "value"}` (auto-JSON, still works) |
 | `return None` | `return None` (auto 204 No Content) |
 
@@ -170,7 +170,7 @@ class AuthMiddleware(GatewayMiddleware):
     async def __call__(self, request, call_next):
         token = request.get_header('Authorization')
         if not token:
-            return CullinanResponse.error(401, "Unauthorized")
+            return WebResponse.error(401, "Unauthorized")
         response = await call_next(request)
         return response
 
@@ -234,8 +234,8 @@ Request → Tornado → Dynamic Handler(per-URL) → Controller method → self.
 ### v0.93 Architecture
 
 ```
-Request → Adapter(Tornado/ASGI) → CullinanRequest → Middleware Pipeline
-  → Dispatcher → Router → Controller method → CullinanResponse
+Request → Adapter(Tornado/ASGI) → WebRequest → Middleware Pipeline
+  → Dispatcher → Router → Controller method → WebResponse
   → Adapter → Native Response
 ```
 
@@ -243,7 +243,7 @@ Request → Adapter(Tornado/ASGI) → CullinanRequest → Middleware Pipeline
 
 1. **`tornado` is no longer a required dependency** — install with `pip install cullinan[tornado]` if you need it.
 2. **`Handler` base class** is deprecated — controllers no longer inherit from `tornado.web.RequestHandler`.
-3. **Direct Tornado API usage** (`self.set_status()`, `self.write()`, `self.finish()`) in controllers is deprecated — use `CullinanResponse` instead.
+3. **Direct Tornado API usage** (`self.set_status()`, `self.write()`, `self.finish()`) in controllers is deprecated — use `WebResponse` instead.
 
 ## Deprecation Timeline
 
@@ -254,4 +254,3 @@ Request → Adapter(Tornado/ASGI) → CullinanRequest → Middleware Pipeline
 | `EncapsulationHandler.add_url()` | Internal only | v3.0 |
 | `self.write()` in controllers | Deprecated | v3.0 |
 | Old middleware (`Middleware` base) | Auto-bridged | v3.0 |
-

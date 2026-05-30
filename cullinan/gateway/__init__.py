@@ -2,8 +2,8 @@
 """Cullinan Gateway Module
 
 The gateway layer provides the transport-agnostic HTTP abstraction:
-- CullinanRequest  – unified request object
-- CullinanResponse – unified response object
+- WebRequest      – unified request object
+- WebResponse     – unified response object
 - Router           – prefix-tree route matching
 - Dispatcher       – single entry-point request dispatcher
 - MiddlewarePipeline – onion-model middleware chain
@@ -12,11 +12,20 @@ The gateway layer provides the transport-agnostic HTTP abstraction:
 Author: Plumeink
 """
 
-from .request import CullinanRequest
-from .response import CullinanResponse
+from .web_core import (
+    HeaderPolicy,
+    ResponseCookie,
+    WebCookies,
+    WebExchange,
+    WebHeaders,
+    WebRequest,
+    WebResponse,
+)
 from .route_types import RouteEntry, RouteMatch, RouteGroup, HTTP_METHODS
 from .router import Router
 from .dispatcher import Dispatcher
+from .invocation import HandlerMethod, ReturnValueHandler, ExceptionResolver
+from .runtime import WebRuntime, WebRuntimeConfig, WebRuntimeState
 from .pipeline import (
     MiddlewarePipeline,
     GatewayMiddleware,
@@ -38,8 +47,13 @@ from .globals import (
 
 __all__ = [
     # Request / Response
-    'CullinanRequest',
-    'CullinanResponse',
+    'WebRequest',
+    'WebResponse',
+    'WebHeaders',
+    'WebCookies',
+    'ResponseCookie',
+    'WebExchange',
+    'HeaderPolicy',
     # Routing
     'Router',
     'RouteEntry',
@@ -48,6 +62,9 @@ __all__ = [
     'HTTP_METHODS',
     # Dispatch
     'Dispatcher',
+    'HandlerMethod',
+    'ReturnValueHandler',
+    'ExceptionResolver',
     # Pipeline
     'MiddlewarePipeline',
     'GatewayMiddleware',
@@ -58,6 +75,9 @@ __all__ = [
     'LegacyMiddlewareBridge',
     # Exception handling
     'ExceptionHandler',
+    'WebRuntime',
+    'WebRuntimeConfig',
+    'WebRuntimeState',
     # OpenAPI
     'OpenAPIGenerator',
     # Global accessors
@@ -67,4 +87,3 @@ __all__ = [
     'get_exception_handler',
     'reset_gateway',
 ]
-

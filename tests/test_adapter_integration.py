@@ -2,7 +2,7 @@
 """End-to-end test for TornadoAdapter and ASGIAdapter.
 
 Tests the full request lifecycle:
-  Native Request → Adapter → CullinanRequest → Dispatcher → CullinanResponse → Native Response
+  Native Request → Adapter → WebRequest → Dispatcher → WebResponse → Native Response
 """
 import asyncio
 import json
@@ -12,7 +12,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import (
-    CullinanRequest, CullinanResponse, Router, Dispatcher,
+    WebRequest, WebResponse, Router, Dispatcher,
     MiddlewarePipeline, GatewayMiddleware,
 )
 
@@ -41,14 +41,14 @@ async def main():
 
     async def hello_handler(request):
         name = request.path_params.get('name', 'world')
-        return CullinanResponse.json({"message": f"Hello, {name}!"})
+        return WebResponse.json({"message": f"Hello, {name}!"})
 
     async def echo_body(request):
         data = await request.json() if request.body else {}
-        return CullinanResponse.json({"echo": data}, status_code=200)
+        return WebResponse.json({"echo": data}, status_code=200)
 
     async def query_test(request):
-        return CullinanResponse.json({"params": dict(request.query_params)})
+        return WebResponse.json({"params": dict(request.query_params)})
 
     async def error_handler(request):
         raise ValueError("intentional error")
@@ -179,11 +179,11 @@ async def main():
     # ====================================================================
     print("\n--- 3. Error Handling ---")
 
-    req_err = CullinanRequest(method='GET', path='/error')
+    req_err = WebRequest(method='GET', path='/error')
     resp_err = await dispatcher.dispatch(req_err)
     check("Error handler status 400 (ValueError)", resp_err.status_code == 400)
 
-    req_404 = CullinanRequest(method='GET', path='/does-not-exist')
+    req_404 = WebRequest(method='GET', path='/does-not-exist')
     resp_404 = await dispatcher.dispatch(req_404)
     check("404 for unknown route", resp_404.status_code == 404)
 
@@ -236,4 +236,3 @@ async def main():
 if __name__ == '__main__':
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
-

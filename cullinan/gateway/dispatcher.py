@@ -5,14 +5,14 @@ Every HTTP request is funnelled through ``Dispatcher.dispatch()`` regardless
 of the underlying server (Tornado / ASGI).
 
 Lifecycle:
-    1. Adapter converts native request → ``CullinanRequest``
-    2. ``Dispatcher.dispatch(cullinan_request)`` is called
+    1. Adapter converts native request → ``WebRequest``
+    2. ``Dispatcher.dispatch(web_request)`` is called
     3. Middleware pipeline runs (onion model)
     4. Router matches the request
     5. Parameter resolution (leveraging existing ``cullinan.params``)
     6. Controller method invocation (with DI)
-    7. Response assembly → ``CullinanResponse``
-    8. Adapter converts ``CullinanResponse`` → native response
+    7. Response assembly → ``WebResponse``
+    8. Adapter converts ``WebResponse`` → native response
 
 Author: Plumeink
 """
@@ -22,12 +22,12 @@ import json
 import logging
 from typing import Any, Callable, Dict, Optional, Tuple, Type
 
-from .request import CullinanRequest
-from .response import CullinanResponse
+from .invocation import ExceptionResolver, HandlerMethod, ReturnValueHandler
 from .router import Router
 from .pipeline import MiddlewarePipeline
 from .exception_handler import ExceptionHandler
 from .route_types import RouteMatch
+from .web_core import HeaderPolicy, WebRequest, WebResponse
 
 logger = logging.getLogger(__name__)
 
@@ -46,18 +46,24 @@ class Dispatcher:
         router: Optional[Router] = None,
         pipeline: Optional[MiddlewarePipeline] = None,
         exception_handler: Optional[ExceptionHandler] = None,
+        header_policy: Optional[HeaderPolicy] = None,
+        return_value_handler: Optional[ReturnValueHandler] = None,
+        exception_resolver: Optional[ExceptionResolver] = None,
         debug: bool = False,
     ) -> None:
         self.router: Router = router or Router()
         self.pipeline: MiddlewarePipeline = pipeline or MiddlewarePipeline()
         self.exception_handler: ExceptionHandler = exception_handler or ExceptionHandler(debug=debug)
+        self.header_policy: HeaderPolicy = header_policy or HeaderPolicy()
+        self.return_value_handler: ReturnValueHandler = return_value_handler or ReturnValueHandler()
+        self.exception_resolver: ExceptionResolver = exception_resolver or ExceptionResolver(self.exception_handler)
         self._debug: bool = debug
 
     # ------------------------------------------------------------------
     # Main dispatch entry point
     # ------------------------------------------------------------------
 
-    async def dispatch(self, request: CullinanRequest) -> CullinanResponse:
+    async def dispatch(self, request: WebRequest) -> WebResponse:
         """Dispatch a request through the full pipeline.
 
         This is THE single entry point that every adapter calls.
@@ -66,18 +72,18 @@ class Dispatcher:
             request: The unified request object.
 
         Returns:
-            A ``CullinanResponse`` ready for the adapter to serialise.
+            A ``WebResponse`` ready for the adapter to serialise.
         """
         try:
             return await self.pipeline.execute(request, self._core_dispatch)
         except Exception as exc:
-            return await self.exception_handler.handle(request, exc)
+            return await self.exception_resolver.resolve(request, exc)
 
     # ------------------------------------------------------------------
     # Core dispatch logic (called inside the pipeline)
     # ------------------------------------------------------------------
 
-    async def _core_dispatch(self, request: CullinanRequest) -> CullinanResponse:
+    async def _core_dispatch(self, request: WebRequest) -> WebResponse:
         """Route → resolve params → invoke controller → build response.
 
         This method sits at the centre of the onion; all middleware have
@@ -88,8 +94,8 @@ class Dispatcher:
         if match is None:
             # Try OPTIONS for CORS pre-flight (auto-allow if any route exists for this path)
             if request.method == 'OPTIONS':
-                return CullinanResponse(status_code=204)
-            return CullinanResponse.error(404, f'No route for {request.method} {request.path}')
+                return WebResponse(status_code=204)
+            return WebResponse.error(404, f'No route for {request.method} {request.path}')
 
         # 2. Inject path params into request
         request.path_params = match.path_params
@@ -98,15 +104,15 @@ class Dispatcher:
         handler = entry.handler
 
         if handler is None:
-            return CullinanResponse.error(500, 'Route matched but no handler registered')
+            return WebResponse.error(500, 'Route matched but no handler registered')
 
         # 3. Resolve parameters and invoke handler
         try:
             response = await self._invoke_handler(request, match)
         except Exception as exc:
-            return await self.exception_handler.handle(request, exc)
+            response = await self.exception_resolver.resolve(request, exc)
 
-        return response
+        return self.header_policy.apply(request, response)
 
     # ------------------------------------------------------------------
     # Handler invocation
@@ -114,20 +120,21 @@ class Dispatcher:
 
     async def _invoke_handler(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         match: RouteMatch,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Resolve parameters and call the matched handler.
 
         Supports:
         - Plain functions
         - Bound controller methods (via DI singleton lookup)
         - Both sync and async handlers
-        - Return types: CullinanResponse, dict, str, None
+        - Return types: WebResponse, dict, str, None
         """
         entry = match.entry
         handler = entry.handler
         controller_cls = entry.controller_cls
+        handler_method = HandlerMethod(handler=handler, controller=controller_cls, route=entry)
 
         # Determine the actual callable and 'self' (if controller method)
         controller_instance = None
@@ -141,15 +148,15 @@ class Dispatcher:
 
         # Invoke
         if controller_instance is not None:
-            result = handler(controller_instance, *args, **kwargs)
+            result = handler_method.handler(controller_instance, *args, **kwargs)
         else:
-            result = handler(*args, **kwargs)
+            result = handler_method.handler(*args, **kwargs)
 
         if inspect.isawaitable(result):
             result = await result
 
-        # Convert result → CullinanResponse
-        return self._coerce_response(result)
+        # Convert result → WebResponse
+        return self.return_value_handler.handle(result)
 
     # ------------------------------------------------------------------
     # Parameter resolution
@@ -158,7 +165,7 @@ class Dispatcher:
     async def _resolve_params(
         self,
         handler: Callable,
-        request: CullinanRequest,
+        request: WebRequest,
         path_params: Dict[str, str],
         controller_instance: Optional[Any],
     ) -> Tuple[list, dict]:
@@ -206,7 +213,7 @@ class Dispatcher:
     async def _resolve_new_params(
         self,
         handler: Callable,
-        request: CullinanRequest,
+        request: WebRequest,
         path_params: Dict[str, str],
         analysis: Dict[str, Dict],
         params: list,
@@ -214,7 +221,7 @@ class Dispatcher:
         """Resolve using ``cullinan.params.ParamResolver``."""
         from cullinan.params import ParamResolver
 
-        # Build data sources from CullinanRequest
+        # Build data sources from WebRequest
         query_dict = dict(request.query_params)
         body_dict: Dict[str, Any] = {}
         headers_dict: Dict[str, str] = dict(request.headers.items()) if request.headers else {}
@@ -229,7 +236,7 @@ class Dispatcher:
 
         resolved = ParamResolver.resolve(
             func=handler,
-            request=request,  # CullinanRequest (has .body for RawBody support)
+            request=request,
             url_params=path_params,
             query_params=query_dict,
             body_data=body_dict,
@@ -249,14 +256,14 @@ class Dispatcher:
 
     async def _resolve_convention_params(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         path_params: Dict[str, str],
         params: list,
     ) -> Tuple[list, dict]:
         """Convention-based parameter resolution.
 
         Maps parameter names to request data:
-        - ``request`` / ``req``       → CullinanRequest
+        - ``request`` / ``req``       → WebRequest
         - ``url_params``              → path_params dict
         - ``path_params``             → path_params dict
         - ``query_params``            → query_params dict
@@ -307,7 +314,7 @@ class Dispatcher:
         return args, {}
 
     @staticmethod
-    async def _parse_body(request: CullinanRequest) -> Any:
+    async def _parse_body(request: WebRequest) -> Any:
         """Parse body as JSON or form data."""
         if request.is_json:
             try:
@@ -351,73 +358,3 @@ class Dispatcher:
         # Last resort: create a fresh instance
         logger.warning('Creating ad-hoc controller instance for %s', controller_cls.__name__)
         return controller_cls()
-
-    # ------------------------------------------------------------------
-    # Response coercion
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _coerce_response(result: Any) -> CullinanResponse:
-        """Convert a handler return value into a ``CullinanResponse``.
-
-        Accepted return types:
-        - ``CullinanResponse``   → used directly
-        - ``dict`` / ``list``    → JSON 200
-        - ``str``                → text 200
-        - ``bytes``              → binary 200
-        - ``None``               → 204 No Content
-        - Legacy ``HttpResponse``→ bridge
-        - ``tuple``              → (body, status) or (body, status, headers)
-        """
-        if isinstance(result, CullinanResponse):
-            return result
-
-        if result is None:
-            return CullinanResponse.no_content()
-
-        if isinstance(result, tuple):
-            return _coerce_tuple(result)
-
-        if isinstance(result, (dict, list)):
-            return CullinanResponse.json(result)
-
-        if isinstance(result, str):
-            return CullinanResponse.text(result)
-
-        if isinstance(result, bytes):
-            return CullinanResponse(body=result, content_type='application/octet-stream')
-
-        # Legacy HttpResponse bridge
-        if hasattr(result, 'get_status') and hasattr(result, 'get_body') and hasattr(result, 'get_headers'):
-            resp = CullinanResponse(
-                body=result.get_body(),
-                status_code=result.get_status(),
-            )
-            for h in (result.get_headers() or []):
-                if isinstance(h, (list, tuple)) and len(h) >= 2:
-                    resp.add_header(str(h[0]), str(h[1]))
-            return resp
-
-        # Fallback: JSON-encode anything else
-        return CullinanResponse.json(result)
-
-
-def _coerce_tuple(t: tuple) -> CullinanResponse:
-    """Handle tuple returns: (body,), (body, status), (body, status, headers)."""
-    if len(t) == 1:
-        return Dispatcher._coerce_response(t[0])
-    if len(t) == 2:
-        body, status = t
-        resp = Dispatcher._coerce_response(body)
-        resp.status_code = int(status)
-        return resp
-    if len(t) >= 3:
-        body, status, headers = t[0], t[1], t[2]
-        resp = Dispatcher._coerce_response(body)
-        resp.status_code = int(status)
-        if isinstance(headers, dict):
-            for k, v in headers.items():
-                resp.set_header(k, v)
-        return resp
-    return CullinanResponse.no_content()
-

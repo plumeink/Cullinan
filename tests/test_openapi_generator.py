@@ -8,7 +8,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cullinan.gateway import Router, CullinanRequest, CullinanResponse, Dispatcher
+from cullinan.gateway import Router, WebRequest, WebResponse, Dispatcher
 from cullinan.gateway.openapi import OpenAPIGenerator
 
 passed = 0
@@ -40,15 +40,15 @@ async def main():
 
         Returns a paginated list of user objects.
         """
-        return CullinanResponse.json({"users": []})
+        return WebResponse.json({"users": []})
 
     async def get_user(request):
         """Get a single user by ID."""
-        return CullinanResponse.json({})
+        return WebResponse.json({})
 
     async def create_user(request):
         """Create a new user."""
-        return CullinanResponse.json({}, status_code=201)
+        return WebResponse.json({}, status_code=201)
 
     router.add_route('GET', '/api/users', handler=list_users)
     router.add_route('GET', '/api/users/{id}', handler=get_user)
@@ -153,7 +153,7 @@ async def main():
 
     # Dispatch to /openapi.json
     dispatcher = Dispatcher(router=router)
-    req = CullinanRequest(method='GET', path='/openapi.json')
+    req = WebRequest(method='GET', path='/openapi.json')
     resp = await dispatcher.dispatch(req)
     check("GET /openapi.json status 200", resp.status_code == 200)
     body = resp.render_body()
@@ -199,4 +199,3 @@ async def main():
 if __name__ == '__main__':
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
-

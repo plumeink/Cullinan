@@ -2,7 +2,7 @@
 """Cullinan Global Exception Handler
 
 Catches exceptions during request dispatching and converts them
-into structured ``CullinanResponse`` objects.
+into structured ``WebResponse`` objects.
 
 Author: Plumeink
 """
@@ -11,8 +11,7 @@ import logging
 import traceback
 from typing import Any, Callable, Dict, List, Optional, Type
 
-from .request import CullinanRequest
-from .response import CullinanResponse
+from .web_core import WebRequest, WebResponse
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class ExceptionHandler:
 
         @handler.register(ValueError)
         def handle_value_error(request, exc):
-            return CullinanResponse.error(400, str(exc))
+            return WebResponse.error(400, str(exc))
 
         response = await handler.handle(request, some_exception)
     """
@@ -57,7 +56,7 @@ class ExceptionHandler:
 
             @exc_handler.register(PermissionError)
             def handle_permission(request, exc):
-                return CullinanResponse.error(403, 'Forbidden')
+                return WebResponse.error(403, 'Forbidden')
         """
         def decorator(fn: Callable) -> Callable:
             self._handlers[exc_type] = fn
@@ -74,9 +73,9 @@ class ExceptionHandler:
 
     async def handle(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         exc: Exception,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Convert an exception to a response.
 
         Resolution order:
@@ -89,7 +88,7 @@ class ExceptionHandler:
             exc: The exception instance.
 
         Returns:
-            A ``CullinanResponse``.
+            A ``WebResponse``.
         """
         # 1. Exact match
         handler = self._handlers.get(type(exc))
@@ -108,19 +107,19 @@ class ExceptionHandler:
     async def _invoke(
         self,
         handler: Callable,
-        request: CullinanRequest,
+        request: WebRequest,
         exc: Exception,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Invoke a registered handler (sync or async)."""
         import inspect
         try:
             result = handler(request, exc)
             if inspect.isawaitable(result):
                 result = await result
-            if isinstance(result, CullinanResponse):
+            if isinstance(result, WebResponse):
                 return result
             # If handler returned something else, wrap it
-            return CullinanResponse.json(result)
+            return WebResponse.json(result)
         except Exception as inner:
             logger.error(
                 'Exception handler itself raised: %s',
@@ -131,9 +130,9 @@ class ExceptionHandler:
 
     def _default_handler(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         exc: Exception,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Built-in fallback: returns 500 with optional debug info."""
         from cullinan.exceptions import CullinanError
 
@@ -181,9 +180,8 @@ class ExceptionHandler:
                 type(exc), exc, exc.__traceback__,
             )
 
-        return CullinanResponse(
+        return WebResponse(
             body=payload,
             status_code=status,
             content_type='application/json',
         )
-

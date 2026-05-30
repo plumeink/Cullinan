@@ -11,7 +11,8 @@ Supported adapters:
 Author: Plumeink
 """
 
-from .base import ServerAdapter
+from .base import WebAdapter
+from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter, WebDriver
 from .asgi_adapter import ASGIAdapter
 
 # TornadoAdapter requires tornado — import conditionally
@@ -21,8 +22,11 @@ except ImportError:
     TornadoAdapter = None  # type: ignore[assignment,misc]
 
 __all__ = [
-    'ServerAdapter',
+    'WebAdapter',
+    'WebDriver',
+    'DriverCapabilities',
+    'DriverRequestAdapter',
+    'DriverResponseWriter',
     'TornadoAdapter',
     'ASGIAdapter',
 ]
-

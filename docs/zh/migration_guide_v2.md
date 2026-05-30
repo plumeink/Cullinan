@@ -10,8 +10,8 @@ Cullinan v0.93 是一次重大架构重写，引入了以下变化：
 |------|-------|------|
 | **HTTP 引擎** | 仅 Tornado | Tornado 或 ASGI（可配置） |
 | **请求处理** | 每个 URL 一个 Handler（Servlet-per-URL） | 单分发器（Spring 风格） |
-| **请求对象** | `tornado.httputil.HTTPServerRequest` | `CullinanRequest`（传输无关） |
-| **响应对象** | `HttpResponse` + `self.write()` | `CullinanResponse`（工厂方法） |
+| **请求对象** | `tornado.httputil.HTTPServerRequest` | `WebRequest`（传输无关） |
+| **响应对象** | `HttpResponse` + `self.write()` | `WebResponse`（工厂方法） |
 | **路由** | 动态 `type('Servlet'...)` 类 | 前缀树 Router |
 | **中间件** | 仅初始化，不在请求管线中 | 洋葱模型管线，处理每个请求 |
 | **Tornado 依赖** | 必需 | 可选（`pip install cullinan[tornado]`） |
@@ -36,7 +36,7 @@ pip install cullinan[full]
 
 ### 1. 导入路径变更
 
-所有现有导入仍然有效，新增了以下导入：
+保留 controller/service 侧原有导入方式，但 Web 层统一使用新的入口命名：
 
 ```python
 # v0.9x — 在 v0.93 中仍然有效
@@ -46,11 +46,11 @@ from cullinan.core import Inject
 
 # v0.93 — 新增可用导入
 from cullinan import (
-    CullinanRequest, CullinanResponse,     # 统一请求/响应
+    WebRequest, WebResponse,               # 统一请求/响应
     Router, Dispatcher,                     # 网关层
     GatewayMiddleware, CORSMiddleware,      # 中间件管线
     OpenAPIGenerator,                       # OpenAPI 规范
-    TornadoAdapter, ASGIAdapter,            # 服务器适配器
+    TornadoAdapter, ASGIAdapter, WebAdapter,# 服务器适配器
     get_asgi_app,                           # ASGI 便捷函数
 )
 ```
@@ -70,11 +70,11 @@ class UserController:
         return HttpResponse(body=user_data, status=200)
 ```
 
-#### v0.93：Controller 方法返回 `CullinanResponse`
+#### v0.93：Controller 方法返回 `WebResponse`
 
 ```python
-# v0.93 — 传输无关，返回 CullinanResponse
-from cullinan import CullinanResponse
+# v0.93 — 传输无关，返回 WebResponse
+from cullinan import WebResponse
 
 @controller(url='/api/users')
 class UserController:
@@ -84,8 +84,8 @@ class UserController:
     async def get_user(self, id):
         user = self.user_service.get_by_id(id)
         if not user:
-            return CullinanResponse.error(404, "User not found")
-        return CullinanResponse.json(user)
+            return WebResponse.error(404, "User not found")
+        return WebResponse.json(user)
 ```
 
 **向后兼容**：旧的 `HttpResponse` 返回类型仍然有效 — `Dispatcher` 会自动转换。
@@ -94,9 +94,9 @@ class UserController:
 
 | v0.9x | v0.93 等价写法 |
 |-------|-------------|
-| `HttpResponse(body=data, status=200)` | `CullinanResponse.json(data)` |
-| `HttpResponse(body="text", status=200)` | `CullinanResponse.text("text")` |
-| `HttpResponse(body=data, status=404)` | `CullinanResponse.error(404, "msg")` |
+| `HttpResponse(body=data, status=200)` | `WebResponse.json(data)` |
+| `HttpResponse(body="text", status=200)` | `WebResponse.text("text")` |
+| `HttpResponse(body=data, status=404)` | `WebResponse.error(404, "msg")` |
 | `return {"key": "value"}`（dict） | `return {"key": "value"}`（自动 JSON，仍有效） |
 | `return None` | `return None`（自动 204 No Content） |
 
@@ -170,7 +170,7 @@ class AuthMiddleware(GatewayMiddleware):
     async def __call__(self, request, call_next):
         token = request.get_header('Authorization')
         if not token:
-            return CullinanResponse.error(401, "Unauthorized")
+            return WebResponse.error(401, "Unauthorized")
         response = await call_next(request)
         return response
 
@@ -234,8 +234,8 @@ class ChatHandler:
 ### v0.93 架构
 
 ```
-请求 → 适配器(Tornado/ASGI) → CullinanRequest → 中间件管线
-  → Dispatcher → Router → Controller 方法 → CullinanResponse
+请求 → 适配器(Tornado/ASGI) → WebRequest → 中间件管线
+  → Dispatcher → Router → Controller 方法 → WebResponse
   → 适配器 → 原生响应
 ```
 
@@ -243,7 +243,7 @@ class ChatHandler:
 
 1. **`tornado` 不再是必需依赖** — 如果需要请使用 `pip install cullinan[tornado]` 安装。
 2. **`Handler` 基类** 已弃用 — controller 不再继承 `tornado.web.RequestHandler`。
-3. **直接使用 Tornado API**（controller 中的 `self.set_status()`、`self.write()`、`self.finish()`）已弃用 — 请使用 `CullinanResponse` 代替。
+3. **直接使用 Tornado API**（controller 中的 `self.set_status()`、`self.write()`、`self.finish()`）已弃用 — 请使用 `WebResponse` 代替。
 
 ## 弃用时间表
 
@@ -254,4 +254,3 @@ class ChatHandler:
 | `EncapsulationHandler.add_url()` | 仅内部使用 | v3.0 |
 | controller 中的 `self.write()` | 弃用 | v3.0 |
 | 旧中间件（`Middleware` 基类） | 自动桥接 | v3.0 |
-

@@ -12,13 +12,12 @@ import logging
 import time
 from typing import Any, Callable, Awaitable, List, Optional, Type
 
-from .request import CullinanRequest
-from .response import CullinanResponse
+from .web_core import WebRequest, WebResponse
 
 logger = logging.getLogger(__name__)
 
 # Type alias for the "next" callable in the pipeline
-HandlerCallable = Callable[[CullinanRequest], Awaitable[CullinanResponse]]
+HandlerCallable = Callable[[WebRequest], Awaitable[WebResponse]]
 
 
 class GatewayMiddleware:
@@ -40,9 +39,9 @@ class GatewayMiddleware:
 
     async def __call__(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         call_next: HandlerCallable,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Process the request.
 
         Default implementation simply forwards to the next handler.
@@ -88,9 +87,9 @@ class MiddlewarePipeline:
 
     async def execute(
         self,
-        request: CullinanRequest,
+        request: WebRequest,
         final_handler: HandlerCallable,
-    ) -> CullinanResponse:
+    ) -> WebResponse:
         """Run the full pipeline and return the final response.
 
         Args:
@@ -117,7 +116,7 @@ class MiddlewarePipeline:
 
 def _wrap(mw: GatewayMiddleware, next_handler: HandlerCallable) -> HandlerCallable:
     """Create a closure that calls ``mw(request, next_handler)``."""
-    async def _inner(request: CullinanRequest) -> CullinanResponse:
+    async def _inner(request: WebRequest) -> WebResponse:
         return await mw(request, next_handler)
     return _inner
 
@@ -153,10 +152,10 @@ class CORSMiddleware(GatewayMiddleware):
         self._credentials = allow_credentials
         self._max_age = str(max_age)
 
-    async def __call__(self, request: CullinanRequest, call_next: HandlerCallable) -> CullinanResponse:
+    async def __call__(self, request: WebRequest, call_next: HandlerCallable) -> WebResponse:
         # Preflight
         if request.method == 'OPTIONS':
-            resp = CullinanResponse(status_code=204)
+            resp = WebResponse(status_code=204)
             self._set_cors_headers(resp)
             return resp
 
@@ -164,7 +163,7 @@ class CORSMiddleware(GatewayMiddleware):
         self._set_cors_headers(resp)
         return resp
 
-    def _set_cors_headers(self, resp: CullinanResponse) -> None:
+    def _set_cors_headers(self, resp: WebResponse) -> None:
         resp.set_header('Access-Control-Allow-Origin', self._origins)
         resp.set_header('Access-Control-Allow-Methods', self._methods)
         resp.set_header('Access-Control-Allow-Headers', self._headers)
@@ -176,7 +175,7 @@ class CORSMiddleware(GatewayMiddleware):
 class RequestTimingMiddleware(GatewayMiddleware):
     """Adds an ``X-Response-Time`` header with the request duration."""
 
-    async def __call__(self, request: CullinanRequest, call_next: HandlerCallable) -> CullinanResponse:
+    async def __call__(self, request: WebRequest, call_next: HandlerCallable) -> WebResponse:
         start = time.perf_counter()
         resp = await call_next(request)
         elapsed = time.perf_counter() - start
@@ -190,9 +189,9 @@ class AccessLogMiddleware(GatewayMiddleware):
     def __init__(self, log_name: str = 'cullinan.access') -> None:
         self._logger = logging.getLogger(log_name)
 
-    async def __call__(self, request: CullinanRequest, call_next: HandlerCallable) -> CullinanResponse:
+    async def __call__(self, request: WebRequest, call_next: HandlerCallable) -> WebResponse:
         start = time.perf_counter()
-        resp: Optional[CullinanResponse] = None
+        resp: Optional[WebResponse] = None
         try:
             resp = await call_next(request)
             return resp
@@ -224,16 +223,15 @@ class LegacyMiddlewareBridge(GatewayMiddleware):
         """
         self._chain = legacy_chain
 
-    async def __call__(self, request: CullinanRequest, call_next: HandlerCallable) -> CullinanResponse:
+    async def __call__(self, request: WebRequest, call_next: HandlerCallable) -> WebResponse:
         # Process request through legacy chain
         processed = self._chain.process_request(request)
         if processed is None:
             # Short-circuited by legacy middleware
-            return CullinanResponse.error(403, 'Request rejected by middleware')
+            return WebResponse.error(403, 'Request rejected by middleware')
 
         resp = await call_next(request)
 
         # Process response through legacy chain (reverse)
         self._chain.process_response(request, resp)
         return resp
-

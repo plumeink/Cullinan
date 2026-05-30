@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Cullinan v0.93 â€?Developer Experience Test
+"""Cullinan v0.93 - Developer Experience Test
 
 Simulates the typical developer workflow with the new architecture:
 1. Define a service with @service
@@ -8,7 +8,7 @@ Simulates the typical developer workflow with the new architecture:
 4. Dispatch requests through the full stack
 5. Verify responses
 
-This test does NOT start a real HTTP server â€?it exercises the entire
+This test does NOT start a real HTTP server - it exercises the entire
 dispatch pipeline in-process.
 """
 import asyncio
@@ -18,7 +18,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import (
-    CullinanRequest, CullinanResponse, Router, Dispatcher,
+    WebRequest, WebResponse, Router, Dispatcher,
     MiddlewarePipeline, GatewayMiddleware, CORSMiddleware,
 )
 
@@ -66,37 +66,37 @@ user_service = UserService()
 
 
 async def list_users_handler(request):
-    """GET /api/users â€?list all users."""
+    """GET /api/users - list all users."""
     users = user_service.list_users()
-    return CullinanResponse.json({"users": users, "count": len(users)})
+    return WebResponse.json({"users": users, "count": len(users)})
 
 
 async def get_user_handler(request):
-    """GET /api/users/{id} â€?get a single user."""
+    """GET /api/users/{id} - get a single user."""
     uid = request.path_params.get("id")
     user = user_service.get_user(uid)
     if user is None:
-        return CullinanResponse.error(404, f"User {uid} not found")
-    return CullinanResponse.json(user)
+        return WebResponse.error(404, f"User {uid} not found")
+    return WebResponse.json(user)
 
 
 async def create_user_handler(request):
-    """POST /api/users â€?create a new user."""
+    """POST /api/users - create a new user."""
     body = await request.json()
     if not body or "name" not in body:
-        return CullinanResponse.error(400, "Missing required field: name")
+        return WebResponse.error(400, "Missing required field: name")
     user = user_service.create_user(body)
-    return CullinanResponse.json(user, status_code=201)
+    return WebResponse.json(user, status_code=201)
 
 
 async def health_handler(request):
-    """GET /health â€?health check."""
+    """GET /health - health check."""
     return {"status": "healthy", "version": "0.93"}
 
 
 async def main():
     print("=" * 60)
-    print("Cullinan v0.93 â€?Developer Experience Test")
+    print("Cullinan v0.93 - Developer Experience Test")
     print("=" * 60)
 
     # ====================================================================
@@ -133,7 +133,7 @@ async def main():
     # 2. GET /health
     # ====================================================================
     print("\n--- 2. GET /health ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/health"))
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/health"))
     check("Health status 200", resp.status_code == 200)
     body = resp.get_body()
     check("Health body", body.get("status") == "healthy")
@@ -144,7 +144,7 @@ async def main():
     # 3. GET /api/users
     # ====================================================================
     print("\n--- 3. GET /api/users ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/api/users"))
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/api/users"))
     check("List users status 200", resp.status_code == 200)
     body = resp.get_body()
     check("List users count", body.get("count") == 2)
@@ -154,7 +154,7 @@ async def main():
     # 4. GET /api/users/1
     # ====================================================================
     print("\n--- 4. GET /api/users/1 ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/api/users/1"))
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/api/users/1"))
     check("Get user status 200", resp.status_code == 200)
     body = resp.get_body()
     check("Get user name", body.get("name") == "Alice")
@@ -164,7 +164,7 @@ async def main():
     # 5. GET /api/users/999 (not found)
     # ====================================================================
     print("\n--- 5. GET /api/users/999 ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/api/users/999"))
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/api/users/999"))
     check("User not found status 404", resp.status_code == 404)
 
     # ====================================================================
@@ -172,7 +172,7 @@ async def main():
     # ====================================================================
     print("\n--- 6. POST /api/users ---")
     import json
-    resp = await dispatcher.dispatch(CullinanRequest(
+    resp = await dispatcher.dispatch(WebRequest(
         method="POST",
         path="/api/users",
         headers={"Content-Type": "application/json"},
@@ -187,7 +187,7 @@ async def main():
     # 7. POST /api/users (invalid - no name)
     # ====================================================================
     print("\n--- 7. POST /api/users (invalid) ---")
-    resp = await dispatcher.dispatch(CullinanRequest(
+    resp = await dispatcher.dispatch(WebRequest(
         method="POST",
         path="/api/users",
         headers={"Content-Type": "application/json"},
@@ -199,7 +199,7 @@ async def main():
     # 8. OPTIONS (CORS preflight)
     # ====================================================================
     print("\n--- 8. OPTIONS /api/users (CORS) ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="OPTIONS", path="/api/users"))
+    resp = await dispatcher.dispatch(WebRequest(method="OPTIONS", path="/api/users"))
     check("OPTIONS status 204", resp.status_code == 204)
     check("OPTIONS CORS origin", resp.get_header("Access-Control-Allow-Origin") == "https://example.com")
 
@@ -207,15 +207,15 @@ async def main():
     # 9. 404 on unknown route
     # ====================================================================
     print("\n--- 9. Unknown route ---")
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/nonexistent"))
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/nonexistent"))
     check("Unknown route 404", resp.status_code == 404)
 
     # ====================================================================
     # 10. Verify dict return auto-coercion
     # ====================================================================
     print("\n--- 10. Auto-coercion ---")
-    # health_handler returns a plain dict â€?should auto-coerce to JSON 200
-    resp = await dispatcher.dispatch(CullinanRequest(method="GET", path="/health"))
+    # health_handler returns a plain dict - should auto-coerce to JSON 200
+    resp = await dispatcher.dispatch(WebRequest(method="GET", path="/health"))
     check("Dict auto-coercion status", resp.status_code == 200)
     check("Dict auto-coercion body type", isinstance(resp.get_body(), dict))
 
@@ -266,4 +266,3 @@ async def main():
 if __name__ == "__main__":
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
-

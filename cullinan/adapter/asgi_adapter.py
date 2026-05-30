@@ -18,10 +18,10 @@ import asyncio
 import logging
 from typing import Any, Callable, Dict, List, Optional
 
+from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter
 from cullinan.gateway.dispatcher import Dispatcher
-from cullinan.gateway.request import CullinanRequest
-from cullinan.gateway.response import CullinanResponse
-from .base import ServerAdapter
+from cullinan.gateway.web_core import WebRequest, WebResponse
+from .base import WebAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +31,11 @@ Receive = Callable[..., Any]
 Send = Callable[..., Any]
 
 
-class ASGIAdapter(ServerAdapter):
+class ASGIAdapter(WebAdapter):
     """ASGI 3.0 adapter for the Cullinan Dispatcher.
 
     Creates an ASGI application callable (``async def app(scope, receive, send)``)
-    that converts ASGI events into ``CullinanRequest`` / ``CullinanResponse``.
+    that converts ASGI events into ``WebRequest`` / ``WebResponse``.
 
     Usage::
 
@@ -52,20 +52,36 @@ class ASGIAdapter(ServerAdapter):
         self,
         dispatcher: Dispatcher,
         global_headers: Optional[list] = None,
+        runtime: Any = None,
     ) -> None:
-        super().__init__(dispatcher)
+        super().__init__(dispatcher, runtime=runtime)
         self._global_headers: list = global_headers or []
         self._asgi_app: Optional[Callable] = None
+        self._request_adapter = ASGIRequestAdapter()
+        self._response_writer = ASGIResponseWriter(global_headers=self._global_headers)
+
+    def capabilities(self) -> DriverCapabilities:
+        return DriverCapabilities(
+            supports_http=True,
+            supports_websocket=True,
+            supports_lifespan=True,
+            supports_streaming_request=True,
+            supports_streaming_response=True,
+            supports_multipart=True,
+        )
+
+    def create_request_adapter(self) -> DriverRequestAdapter:
+        return self._request_adapter
+
+    def create_response_writer(self) -> DriverResponseWriter:
+        return self._response_writer
 
     def create_app(self) -> Callable:
         """Create and return the ASGI 3.0 application callable."""
 
-        dispatcher = self._dispatcher
-        global_headers = self._global_headers
-
         async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
             if scope['type'] == 'http':
-                await _handle_http(scope, receive, send, dispatcher, global_headers)
+                await _handle_http(scope, receive, send, self)
             elif scope['type'] == 'websocket':
                 await _handle_websocket(scope, receive, send)
             elif scope['type'] == 'lifespan':
@@ -129,8 +145,7 @@ async def _handle_http(
     scope: Scope,
     receive: Receive,
     send: Send,
-    dispatcher: Dispatcher,
-    global_headers: list,
+    adapter: ASGIAdapter,
 ) -> None:
     """Handle an ASGI HTTP request.
 
@@ -139,6 +154,9 @@ async def _handle_http(
     ASGI server.
     """
     try:
+        runtime = adapter.runtime
+        if runtime is not None:
+            runtime.begin_request()
         # 1. Read full body
         body = b''
         while True:
@@ -147,14 +165,16 @@ async def _handle_http(
             if not message.get('more_body', False):
                 break
 
-        # 2. Build CullinanRequest from ASGI scope
-        request = _build_request_from_scope(scope, body)
+        # 2. Build WebRequest from ASGI scope
+        request = await adapter.create_request_adapter().build_request(scope, body)
+        if runtime is not None:
+            request.attributes['runtime'] = runtime
 
         # 3. Dispatch
-        response = await dispatcher.dispatch(request)
+        response = await adapter.dispatcher.dispatch(request)
 
         # 4. Send response via ASGI
-        await _send_response(send, response, global_headers)
+        await adapter.create_response_writer().write_response(response, send)
 
     except Exception as exc:
         logger.exception('Uncaught error in ASGI HTTP handler')
@@ -175,6 +195,10 @@ async def _handle_http(
             })
         except Exception:
             pass
+    finally:
+        runtime = adapter.runtime
+        if runtime is not None:
+            runtime.end_request()
 
 
 async def _handle_lifespan(scope: Scope, receive: Receive, send: Send) -> None:
@@ -218,12 +242,12 @@ async def _handle_lifespan(scope: Scope, receive: Receive, send: Send) -> None:
             return
 
 
-def _build_request_from_scope(scope: Scope, body: bytes) -> CullinanRequest:
-    """Convert an ASGI scope + body into a ``CullinanRequest``."""
+def _build_request_from_scope(scope: Scope, body: bytes) -> WebRequest:
+    """Convert an ASGI scope + body into a ``WebRequest``."""
     # Headers: list of [name_bytes, value_bytes]
-    headers: Dict[str, str] = {}
+    headers: List[tuple] = []
     for name_bytes, value_bytes in scope.get('headers', []):
-        headers[name_bytes.decode('latin-1')] = value_bytes.decode('latin-1')
+        headers.append((name_bytes.decode('latin-1'), value_bytes.decode('latin-1')))
 
     # Query string
     query_string = scope.get('query_string', b'')
@@ -250,7 +274,10 @@ def _build_request_from_scope(scope: Scope, body: bytes) -> CullinanRequest:
 
     # Cookies (parse from Cookie header)
     cookies: Dict[str, str] = {}
-    cookie_header = headers.get('cookie', '')
+    cookie_header = ''
+    for name, value in headers:
+        if name.lower() == 'cookie':
+            cookie_header = value
     if cookie_header:
         for part in cookie_header.split(';'):
             part = part.strip()
@@ -258,7 +285,7 @@ def _build_request_from_scope(scope: Scope, body: bytes) -> CullinanRequest:
                 k, v = part.split('=', 1)
                 cookies[k.strip()] = v.strip()
 
-    return CullinanRequest(
+    return WebRequest(
         method=scope.get('method', 'GET'),
         path=path,
         headers=headers,
@@ -273,12 +300,25 @@ def _build_request_from_scope(scope: Scope, body: bytes) -> CullinanRequest:
     )
 
 
+class ASGIRequestAdapter(DriverRequestAdapter):
+    async def build_request(self, scope: Scope, body: bytes) -> WebRequest:
+        return _build_request_from_scope(scope, body)
+
+
+class ASGIResponseWriter(DriverResponseWriter):
+    def __init__(self, global_headers: Optional[list] = None) -> None:
+        self._global_headers = global_headers or []
+
+    async def write_response(self, response: WebResponse, send: Send) -> None:
+        await _send_response(send, response, self._global_headers)
+
+
 async def _send_response(
     send: Send,
-    response: CullinanResponse,
+    response: WebResponse,
     global_headers: list,
 ) -> None:
-    """Send a ``CullinanResponse`` via ASGI ``send()``."""
+    """Send a ``WebResponse`` via ASGI ``send()``."""
     # Build header list
     raw_headers: List[List[bytes]] = []
 
@@ -288,13 +328,8 @@ async def _send_response(
             raw_headers.append([str(h[0]).encode('latin-1'), str(h[1]).encode('latin-1')])
 
     # Response headers
-    for name, value in response.headers:
+    for name, value in response.iter_headers(include_content_type=True):
         raw_headers.append([name.encode('latin-1'), value.encode('latin-1')])
-
-    # Content-Type
-    ct = response.content_type
-    if ct:
-        raw_headers.append([b'content-type', ct.encode('latin-1')])
 
     body = b''
     try:
@@ -302,6 +337,14 @@ async def _send_response(
     except Exception as exc:
         logger.error('Failed to render response body: %s', exc)
         body = b'{"error":"Response serialization error","status":500}'
+        response = WebResponse.error(500, 'Response serialization error')
+        raw_headers = [
+            [str(h[0]).encode('latin-1'), str(h[1]).encode('latin-1')]
+            for h in global_headers
+            if isinstance(h, (list, tuple)) and len(h) >= 2
+        ]
+        for name, value in response.iter_headers(include_content_type=True):
+            raw_headers.append([name.encode('latin-1'), value.encode('latin-1')])
 
     # Content-Length
     raw_headers.append([b'content-length', str(len(body)).encode('latin-1')])
@@ -446,4 +489,3 @@ def _create_ws_handler_instance(handler_cls: type) -> Any:
         pass
     # Fallback: plain instantiation
     return handler_cls()
-

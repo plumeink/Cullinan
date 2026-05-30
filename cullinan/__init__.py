@@ -157,8 +157,12 @@ from cullinan.middleware import (
 
 # Export gateway module (v0.93 transport-agnostic layer)
 from cullinan.gateway import (
-    CullinanRequest,
-    CullinanResponse,
+    WebRequest,
+    WebResponse,
+    WebHeaders,
+    WebCookies,
+    WebExchange,
+    HeaderPolicy,
     Router,
     Dispatcher,
     MiddlewarePipeline,
@@ -167,6 +171,9 @@ from cullinan.gateway import (
     RequestTimingMiddleware,
     AccessLogMiddleware,
     ExceptionHandler,
+    WebRuntime,
+    WebRuntimeConfig,
+    WebRuntimeState,
     OpenAPIGenerator,
     get_router,
     get_dispatcher,
@@ -176,7 +183,7 @@ from cullinan.gateway import (
 )
 
 # Export adapter module (v0.93 server runtime adapters)
-from cullinan.adapter import ServerAdapter, ASGIAdapter
+from cullinan.adapter import WebAdapter, ASGIAdapter
 try:
     from cullinan.adapter import TornadoAdapter
 except (ImportError, TypeError):
@@ -306,9 +313,13 @@ __all__ = [
     'get_decoded_body',
     'set_decoded_body',
 
-    # Gateway module (v0.93)
-    'CullinanRequest',
-    'CullinanResponse',
+    # Gateway module
+    'WebRequest',
+    'WebResponse',
+    'WebHeaders',
+    'WebCookies',
+    'WebExchange',
+    'HeaderPolicy',
     'Router',
     'Dispatcher',
     'MiddlewarePipeline',
@@ -317,6 +328,9 @@ __all__ = [
     'RequestTimingMiddleware',
     'AccessLogMiddleware',
     'ExceptionHandler',
+    'WebRuntime',
+    'WebRuntimeConfig',
+    'WebRuntimeState',
     'OpenAPIGenerator',
     'get_router',
     'get_dispatcher',
@@ -324,8 +338,8 @@ __all__ = [
     'get_exception_handler',
     'reset_gateway',
 
-    # Adapter module (v0.93)
-    'ServerAdapter',
+    # Adapter module
+    'WebAdapter',
     'TornadoAdapter',
     'ASGIAdapter',
 
@@ -389,4 +403,3 @@ from cullinan.core.decorators import Inject, InjectByName, Lazy
 
 # Export get_asgi_app for convenient ASGI deployment
 from cullinan.application import get_asgi_app
-

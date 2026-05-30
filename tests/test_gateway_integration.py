@@ -5,7 +5,7 @@ Tests:
 1. Router registration and matching
 2. Dispatcher end-to-end dispatch (request → response)
 3. Middleware pipeline execution
-4. CullinanRequest / CullinanResponse construction
+4. WebRequest / WebResponse construction
 5. Exception handler
 6. Response coercion (dict, str, tuple, None, legacy HttpResponse)
 """
@@ -17,7 +17,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import (
-    CullinanRequest, CullinanResponse, Router, Dispatcher,
+    WebRequest, WebResponse, Router, Dispatcher, ReturnValueHandler,
     MiddlewarePipeline, GatewayMiddleware, ExceptionHandler,
     CORSMiddleware, RequestTimingMiddleware,
 )
@@ -47,18 +47,18 @@ async def main():
     router = Router()
 
     async def list_users(request):
-        return CullinanResponse.json({"users": []})
+        return WebResponse.json({"users": []})
 
     async def get_user(request):
-        return CullinanResponse.json({"id": request.path_params.get("id")})
+        return WebResponse.json({"id": request.path_params.get("id")})
 
     async def create_user(request):
-        return CullinanResponse.json({"created": True}, status_code=201)
+        return WebResponse.json({"created": True}, status_code=201)
 
     router.add_route('GET', '/api/users', handler=list_users)
     router.add_route('GET', '/api/users/{id}', handler=get_user)
     router.add_route('POST', '/api/users', handler=create_user)
-    router.add_route('GET', '/health', handler=lambda r: CullinanResponse.text("OK"))
+    router.add_route('GET', '/health', handler=lambda r: WebResponse.text("OK"))
 
     check("Route count", router.route_count() == 4)
 
@@ -78,10 +78,10 @@ async def main():
     check("No match for unknown path", m5 is None)
 
     # ====================================================================
-    # 2. CullinanRequest tests
+    # 2. WebRequest tests
     # ====================================================================
-    print("\n--- 2. CullinanRequest ---")
-    req = CullinanRequest(
+    print("\n--- 2. WebRequest ---")
+    req = WebRequest(
         method='POST',
         path='/api/users',
         headers={'Content-Type': 'application/json', 'Authorization': 'Bearer tok'},
@@ -100,25 +100,25 @@ async def main():
     check("Client IP", req.client_ip == '192.168.1.1')
 
     # ====================================================================
-    # 3. CullinanResponse tests
+    # 3. WebResponse tests
     # ====================================================================
-    print("\n--- 3. CullinanResponse ---")
-    resp = CullinanResponse.json({"msg": "hello"}, status_code=200)
+    print("\n--- 3. WebResponse ---")
+    resp = WebResponse.json({"msg": "hello"}, status_code=200)
     check("JSON response status", resp.status_code == 200)
     check("JSON response content-type", resp.content_type == 'application/json')
     check("JSON response render", b'"msg": "hello"' in resp.render_body())
 
-    resp2 = CullinanResponse.text("Hello World")
+    resp2 = WebResponse.text("Hello World")
     check("Text response", resp2.render_body() == b'Hello World')
 
-    resp3 = CullinanResponse.error(404, "Not Found", {"path": "/unknown"})
+    resp3 = WebResponse.error(404, "Not Found", {"path": "/unknown"})
     check("Error response status", resp3.status_code == 404)
 
-    resp4 = CullinanResponse.redirect("/new-location")
+    resp4 = WebResponse.redirect("/new-location")
     check("Redirect status", resp4.status_code == 302)
     check("Redirect header", resp4.get_header('Location') == '/new-location')
 
-    resp5 = CullinanResponse.no_content()
+    resp5 = WebResponse.no_content()
     check("No content status", resp5.status_code == 204)
 
     # Legacy compat
@@ -160,9 +160,9 @@ async def main():
 
     async def final_handler(request):
         execution_log.append('handler')
-        return CullinanResponse.json({"ok": True})
+        return WebResponse.json({"ok": True})
 
-    test_req = CullinanRequest(method='GET', path='/test')
+    test_req = WebRequest(method='GET', path='/test')
     result = await pipeline.execute(test_req, final_handler)
 
     check("Pipeline execution order", execution_log == ['pre', 'handler', 'post'])
@@ -176,17 +176,17 @@ async def main():
 
     dispatcher = Dispatcher(router=router, debug=True)
 
-    req_list = CullinanRequest(method='GET', path='/api/users')
+    req_list = WebRequest(method='GET', path='/api/users')
     resp_list = await dispatcher.dispatch(req_list)
     check("Dispatch GET /api/users", resp_list.status_code == 200)
 
-    req_get = CullinanRequest(method='GET', path='/api/users/99')
+    req_get = WebRequest(method='GET', path='/api/users/99')
     resp_get = await dispatcher.dispatch(req_get)
     check("Dispatch GET /api/users/99", resp_get.status_code == 200)
     body = resp_get.get_body()
     check("Dispatch path param extracted", body.get("id") == "99" if isinstance(body, dict) else False)
 
-    req_404 = CullinanRequest(method='GET', path='/nonexistent')
+    req_404 = WebRequest(method='GET', path='/nonexistent')
     resp_404 = await dispatcher.dispatch(req_404)
     check("Dispatch 404", resp_404.status_code == 404)
 
@@ -199,9 +199,9 @@ async def main():
 
     @exc_handler.register(ValueError)
     def handle_value_error(request, exc):
-        return CullinanResponse.error(400, str(exc))
+        return WebResponse.error(400, str(exc))
 
-    test_req2 = CullinanRequest(method='GET', path='/test')
+    test_req2 = WebRequest(method='GET', path='/test')
     resp_ve = await exc_handler.handle(test_req2, ValueError("bad input"))
     check("Exception handler ValueError", resp_ve.status_code == 400)
 
@@ -212,11 +212,12 @@ async def main():
     # 7. Response coercion
     # ====================================================================
     print("\n--- 7. Response Coercion ---")
-    check("Coerce dict", Dispatcher._coerce_response({"a": 1}).status_code == 200)
-    check("Coerce str", Dispatcher._coerce_response("hello").render_body() == b'hello')
-    check("Coerce None", Dispatcher._coerce_response(None).status_code == 204)
-    check("Coerce tuple (body, status)", Dispatcher._coerce_response(({"a": 1}, 201)).status_code == 201)
-    check("Coerce bytes", Dispatcher._coerce_response(b'\x00\x01').render_body() == b'\x00\x01')
+    return_value_handler = ReturnValueHandler()
+    check("Coerce dict", return_value_handler.handle({"a": 1}).status_code == 200)
+    check("Coerce str", return_value_handler.handle("hello").render_body() == b'hello')
+    check("Coerce None", return_value_handler.handle(None).status_code == 204)
+    check("Coerce tuple (body, status)", return_value_handler.handle(({"a": 1}, 201)).status_code == 201)
+    check("Coerce bytes", return_value_handler.handle(b'\x00\x01').render_body() == b'\x00\x01')
 
     # Legacy HttpResponse bridge
     class FakeOldResponse:
@@ -224,7 +225,7 @@ async def main():
         def get_body(self): return '{"legacy": true}'
         def get_headers(self): return [['X-Legacy', 'yes']]
 
-    coerced = Dispatcher._coerce_response(FakeOldResponse())
+    coerced = return_value_handler.handle(FakeOldResponse())
     check("Coerce legacy HttpResponse", coerced.status_code == 200)
     check("Coerce legacy headers", coerced.get_header('X-Legacy') == 'yes')
 
@@ -240,4 +241,3 @@ async def main():
 if __name__ == '__main__':
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
-

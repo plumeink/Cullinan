@@ -18,10 +18,10 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter
 from cullinan.gateway.dispatcher import Dispatcher
-from cullinan.gateway.request import CullinanRequest
-from cullinan.gateway.response import CullinanResponse
-from .base import ServerAdapter
+from cullinan.gateway.web_core import WebRequest, WebResponse
+from .base import WebAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +37,12 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
     # __init__() (via clear()), which runs *before* initialize().
     # Without these defaults the first access would raise AttributeError.
     _dispatcher: Dispatcher = None  # type: ignore[assignment]
+    _adapter: "TornadoAdapter" = None  # type: ignore[assignment]
     _global_headers: list = []
 
-    def initialize(self, dispatcher: Dispatcher, global_headers: list = None) -> None:  # type: ignore[override]
+    def initialize(self, dispatcher: Dispatcher, adapter: "TornadoAdapter", global_headers: list = None) -> None:  # type: ignore[override]
         self._dispatcher = dispatcher
+        self._adapter = adapter
         self._global_headers = global_headers or []
 
     # Accept every HTTP method
@@ -52,9 +54,14 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
         error page is never triggered unexpectedly.
         """
         try:
-            request = self._build_cullinan_request()
+            runtime = self._adapter.runtime
+            if runtime is not None:
+                runtime.begin_request()
+            request = self._adapter.create_request_adapter().build_request(self)
+            if runtime is not None:
+                request.attributes['runtime'] = runtime
             response = await self._dispatcher.dispatch(request)
-            self._write_cullinan_response(response)
+            self._adapter.create_response_writer().write_response(response, self)
         except Exception:
             # If the response has not been started yet, write a generic 500.
             # If finish() was already called, silently swallow — the client
@@ -67,6 +74,10 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
                 except Exception:
                     pass
             logger.exception('Uncaught error in _CullinanTornadoHandler._handle')
+        finally:
+            runtime = self._adapter.runtime
+            if runtime is not None:
+                runtime.end_request()
 
     # Map all standard methods to _handle
     async def get(self, *_args: Any, **_kwargs: Any) -> None:
@@ -94,88 +105,11 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
     # Request conversion
     # ------------------------------------------------------------------
 
-    def _build_cullinan_request(self) -> CullinanRequest:
-        """Convert the Tornado request into a ``CullinanRequest``."""
-        tr = self.request  # tornado.httputil.HTTPServerRequest
-
-        headers: Dict[str, str] = {}
-        for name, value in tr.headers.get_all():
-            headers[name] = value
-
-        # Parse cookies
-        cookies: Dict[str, str] = {}
-        for k, morsel in self.cookies.items():
-            cookies[k] = morsel.value
-
-        scheme = tr.protocol or 'http'
-        host = tr.host or 'localhost'
-        port = 80
-        if ':' in host:
-            host_part, port_str = host.rsplit(':', 1)
-            try:
-                port = int(port_str)
-                host = host_part
-            except ValueError:
-                pass
-
-        query_string = ''
-        if '?' in tr.uri:
-            query_string = tr.uri.split('?', 1)[1]
-
-        return CullinanRequest(
-            method=tr.method,
-            path=tr.path,
-            headers=headers,
-            body=tr.body or b'',
-            query_string=query_string,
-            client_ip=tr.remote_ip or '127.0.0.1',
-            scheme=scheme,
-            server_host=host,
-            server_port=port,
-            full_url=tr.full_url(),
-            cookies=cookies,
-        )
-
-    # ------------------------------------------------------------------
-    # Response conversion
-    # ------------------------------------------------------------------
-
-    def _write_cullinan_response(self, resp: CullinanResponse) -> None:
-        """Write a ``CullinanResponse`` onto the Tornado response.
-
-        Guards against double-finish and connection-close scenarios.
-        """
-        if self._finished:
-            return
-
-        # Global headers
-        for h in self._global_headers:
-            if isinstance(h, (list, tuple)) and len(h) >= 2:
-                self.set_header(str(h[0]), str(h[1]))
-
-        # Response headers
-        for name, value in resp.headers:
-            self.set_header(name, value)
-
-        # Content-Type
-        ct = resp.content_type
-        if ct:
-            self.set_header('Content-Type', ct)
-
-        self.set_status(resp.status_code)
-
-        body_bytes = resp.render_body()
-        if body_bytes:
-            self.write(body_bytes)
-
-        if not self._finished:
-            self.finish()
-
     def write_error(self, status_code: int = 500, **kwargs: Any) -> None:
         """Override Tornado's default HTML error page.
 
         Produces a JSON error body consistent with
-        ``CullinanResponse.error()``.
+        ``WebResponse.error()``.
         """
         reason = self._reason if hasattr(self, '_reason') else 'Server Error'
         payload = {'error': reason, 'status': status_code}
@@ -205,7 +139,7 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
                 self.set_header(str(h[0]), str(h[1]))
 
 
-class TornadoAdapter(ServerAdapter):
+class TornadoAdapter(WebAdapter):
     """Tornado runtime adapter — single-handler mode.
 
     Creates a ``tornado.web.Application`` with one catch-all route that
@@ -223,13 +157,31 @@ class TornadoAdapter(ServerAdapter):
         settings: Optional[Dict[str, Any]] = None,
         global_headers: Optional[list] = None,
         extra_handlers: Optional[list] = None,
+        runtime: Any = None,
     ) -> None:
-        super().__init__(dispatcher)
+        super().__init__(dispatcher, runtime=runtime)
         self._settings: Dict[str, Any] = settings or {}
         self._global_headers: list = global_headers or []
         self._extra_handlers: list = extra_handlers or []
         self._http_server: Optional[tornado.httpserver.HTTPServer] = None
         self._app: Optional[tornado.web.Application] = None
+        self._request_adapter = TornadoRequestAdapter()
+        self._response_writer = TornadoResponseWriter(global_headers=self._global_headers)
+
+    def capabilities(self) -> DriverCapabilities:
+        return DriverCapabilities(
+            supports_http=True,
+            supports_websocket=True,
+            supports_streaming_request=False,
+            supports_streaming_response=False,
+            supports_multipart=True,
+        )
+
+    def create_request_adapter(self) -> DriverRequestAdapter:
+        return self._request_adapter
+
+    def create_response_writer(self) -> DriverResponseWriter:
+        return self._response_writer
 
     def create_app(self) -> tornado.web.Application:
         """Create a ``tornado.web.Application`` with a catch-all handler."""
@@ -250,7 +202,8 @@ class TornadoAdapter(ServerAdapter):
         # The catch-all handler — MUST be last
         handlers.append(
             (r'.*', _CullinanTornadoHandler, {
-                'dispatcher': self._dispatcher,
+                'dispatcher': self.dispatcher,
+                'adapter': self,
                 'global_headers': self._global_headers,
             })
         )
@@ -321,3 +274,66 @@ class TornadoAdapter(ServerAdapter):
             except Exception:
                 pass
 
+
+class TornadoRequestAdapter(DriverRequestAdapter):
+    def build_request(self, handler: _CullinanTornadoHandler) -> WebRequest:  # type: ignore[override]
+        tr = handler.request
+        headers = [(name, value) for name, value in tr.headers.get_all()]
+
+        cookies: Dict[str, str] = {name: morsel.value for name, morsel in handler.cookies.items()}
+
+        scheme = tr.protocol or 'http'
+        host = tr.host or 'localhost'
+        port = 80
+        if ':' in host:
+            host_part, port_str = host.rsplit(':', 1)
+            try:
+                port = int(port_str)
+                host = host_part
+            except ValueError:
+                pass
+
+        query_string = tr.uri.split('?', 1)[1] if '?' in tr.uri else ''
+
+        return WebRequest(
+            method=tr.method,
+            path=tr.path,
+            headers=headers,
+            body=tr.body or b'',
+            query_string=query_string,
+            client_ip=tr.remote_ip or '127.0.0.1',
+            scheme=scheme,
+            server_host=host,
+            server_port=port,
+            full_url=tr.full_url(),
+            cookies=cookies,
+        )
+
+
+class TornadoResponseWriter(DriverResponseWriter):
+    def __init__(self, global_headers: Optional[list] = None) -> None:
+        self._global_headers = global_headers or []
+
+    def write_response(self, response: WebResponse, handler: _CullinanTornadoHandler) -> None:  # type: ignore[override]
+        if handler._finished:
+            return
+
+        for h in self._global_headers:
+            if isinstance(h, (list, tuple)) and len(h) >= 2:
+                handler.set_header(str(h[0]), str(h[1]))
+
+        seen_headers = set()
+        for name, value in response.iter_headers(include_content_type=True):
+            lower = name.lower()
+            if lower == 'set-cookie' or lower in seen_headers:
+                handler.add_header(name, value)
+            else:
+                handler.set_header(name, value)
+                seen_headers.add(lower)
+
+        handler.set_status(response.status_code)
+        body_bytes = response.render_body()
+        if body_bytes:
+            handler.write(body_bytes)
+        if not handler._finished:
+            handler.finish()
