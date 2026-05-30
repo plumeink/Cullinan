@@ -7,54 +7,47 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/modules/service.md"
-related_tests: ["tests/test_provider_system.py"]
+related_tests: ["tests/integration/test_service_lifecycle_integration.py"]
 related_examples: []
-estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+estimate_pd: 1.0
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
 # cullinan.service
 
-> **Note (v0.90)**: Services can now be registered via `ApplicationContext`.
-> For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
+`cullinan.service` exposes the primary service decorator plus convenience re-exports for dependency markers.
 
-Summary: Service registration and provider patterns. Document how services are provided, scoped, and injected.
+## Main exports
 
-## Public API (auto-generated)
+- `service`
+- `Service`
+- `Inject`
+- `InjectByName`
+- `Lazy`
 
-<!-- generated: docs/work/generated_modules/cullinan_service.md -->
+Compatibility registry exports:
 
-### cullinan.service
+- `ServiceRegistry`
+- `get_service_registry()`
+- `reset_service_registry()`
 
-| Name | Kind | Signature / Value |
-| --- | --- | --- |
-| `Service` | class | `Service()` |
-| `ServiceRegistry` | class | `ServiceRegistry()` |
-| `get_service_registry` | function | `get_service_registry() -> cullinan.service.registry.ServiceRegistry` |
-| `reset_service_registry` | function | `reset_service_registry() -> None` |
-| `service` | function | `service(cls: Optional[Type[cullinan.service.base.Service]] = None, *, dependencies: Optional[List[str]] = None)` |
-
-## Example: register and use a service
+## Example
 
 ```python
-from cullinan.service import Service, service, get_service_registry
+from cullinan.service import Service, service
+from cullinan.core import Inject
 
 @service
-class DatabaseService(Service):
-    def __init__(self):
-        self.connection = "db_connection_mock"
-    
-    def query(self, sql):
-        return f"Result for: {sql}"
+class UserService(Service):
+    repo: UserRepository = Inject()
 
-# Service is auto-registered via @service decorator
-registry = get_service_registry()
-db_service = registry.get('DatabaseService')
-result = db_service.query("SELECT * FROM users")
-print(result)  # Output: Result for: SELECT * FROM users
+    def get_user(self, user_id: int):
+        return self.repo.find_by_id(user_id)
 ```
 
-Notes:
-- Use the `@service` decorator to register services automatically during module scanning or explicit initialization.
-- Services are typically long-lived (singleton-scoped by default unless configured otherwise).
-- Access services via `get_service_registry()` or through DI injection in controllers/handlers.
+For most code, use `@service` plus dependency markers and let the active `ApplicationContext` manage creation and lifecycle.
+
+## See also
+
+- [Dependency Injection Guide](../dependency_injection_guide.md)
+- [Application Lifecycle](../wiki/lifecycle.md)

@@ -160,53 +160,37 @@ Then visit `http://localhost:4080/hello` in your browser.
 4. **Shutdown**: Graceful shutdown on SIGINT/SIGTERM
 
 ### Dependency Injection
-Cullinan provides built-in IoC/DI support. 
+Cullinan provides built-in IoC/DI support through the unified `ApplicationContext` model.
 
-#### Decorators Explained: `@injectable` vs `@controller()`
+#### Recommended runtime model
 
-**`@injectable`** - General-purpose dependency injection decorator
-- Applicable to any class that needs dependency injection (Service, Repository, utility classes, etc.)
-- Must be manually applied, does not auto-register to any registry
-- Automatically injects marked dependencies after class instantiation
-- Use cases: Service layer, Repository layer, utility classes, etc.
-
-**`@controller()`** - Controller-specific auto-registration decorator
-- Specifically for HTTP Controller classes
-- **Automatically applies `@injectable`**, no need to add manually
-- Auto-registers Controller and its routes to ControllerRegistry
-- Auto-scans methods decorated with `@get_api`, `@post_api`, etc.
-- Use cases: HTTP Controllers only
+- Use `@service` for business services
+- Use `@controller` for HTTP controllers
+- Use `Inject()` for type-based injection
+- Use `InjectByName()` when name-based lookup is more convenient
+- Treat `ApplicationContext` as the single runtime container entrypoint
 
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
+from cullinan.core import Inject
 from cullinan.params import Path
 
-# Service uses @service (inherits from Service base class)
 @service
 class UserService(Service):
     def get_user(self, user_id):
         return {'id': user_id, 'name': 'John'}
 
-# Repository uses @injectable
-@injectable
-class UserRepository:
-    def find_by_id(self, user_id):
-        return {'id': user_id}
-
-# Controller uses @controller() - automatically includes @injectable
 @controller(url='/api/users')
 class UserController:
-    # Dependency injection in Controller
-    user_service = InjectByName('UserService')
-    
+    user_service: UserService = Inject()
+
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
 ```
-    
-**Important:** Do **not** use `@injectable` on Controllers, as `@controller()` already includes it automatically.
+
+**Compatibility note:** `injectable` and `inject_constructor` still exist as compatibility shims, but new code should not use them as the primary pattern.
 
 ---
 
@@ -311,66 +295,68 @@ For a deeper dive into URL patterns and all decorator options, see `docs/wiki/re
 
 #### Recommended Dependency Injection Approaches
 
-**Approach 1: InjectByName (Recommended, Simplest)**
+**Approach 1: Inject (Recommended)**
 
-Inject by name without importing dependencies, avoiding circular import issues:
+Prefer typed `Inject()` when the dependency type is easy to import:
 
 ```python
+from cullinan.core import Inject
 from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
 
 @service
 class DatabaseService(Service):
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
-class UserRepository:
-    # Recommended: InjectByName doesn't need type annotation, just use string name
+@service
+class UserRepository(Service):
+    db: DatabaseService = Inject()
+
+    def get_users(self):
+        return self.db.query("SELECT * FROM users")
+```
+
+**Approach 2: InjectByName**
+
+Inject by name without importing dependencies, avoiding circular import issues:
+
+```python
+from cullinan.service import Service, service
+from cullinan.core import InjectByName
+
+@service
+class DatabaseService(Service):
+    def query(self, sql):
+        return f"Results for: {sql}"
+
+@service
+class UserRepository(Service):
     db = InjectByName('DatabaseService')
     
     def get_users(self):
         return self.db.query("SELECT * FROM users")
 ```
 
-**Approach 2: Inject + TYPE_CHECKING (IDE autocomplete support)**
+**Approach 3: Inject + TYPE_CHECKING (IDE autocomplete support)**
 
 If you need IDE autocomplete and type checking, use `Inject` with TYPE_CHECKING:
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import injectable, Inject
+from cullinan.core import Inject
 from cullinan.service import Service, service
 
 # TYPE_CHECKING imports are not executed at runtime, avoiding circular imports
 if TYPE_CHECKING:
-    from cullinan.service import DatabaseService
+    from my_project.services import DatabaseService
 
 @service
 class DatabaseService(Service):
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
-class UserRepository:
-    # With TYPE_CHECKING import, you get IDE autocomplete support
-    db: 'DatabaseService' = Inject()
-    
-    def get_users(self):
-        # IDE can suggest db.query method
-        return self.db.query("SELECT * FROM users")
-```
-
-**Approach 3: Inject + Pure String Annotation (No IDE autocomplete)**
-
-If you don't need IDE autocomplete, use string annotations directly:
-
-```python
-from cullinan.core import injectable, Inject
-
-@injectable
-class UserRepository:
-    # Pure string annotation, no import needed, but no IDE autocomplete
+@service
+class UserRepository(Service):
     db: 'DatabaseService' = Inject()
     
     def get_users(self):
@@ -378,9 +364,9 @@ class UserRepository:
 ```
 
 **Summary:**
-- **InjectByName**: Recommended for most cases, simple and straightforward, no type annotation needed
-- **Inject + TYPE_CHECKING**: Best for development experience, provides IDE autocomplete
-- **Inject + String annotation**: Simplest but no IDE support
+- **Inject**: Best default when importing the type is straightforward
+- **InjectByName**: Useful for decoupling or avoiding circular imports
+- **Inject + TYPE_CHECKING**: Best for strong editor support without runtime import coupling
 
 For detailed information on injection patterns, see `docs/wiki/injection.md`.
 

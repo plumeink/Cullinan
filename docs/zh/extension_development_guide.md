@@ -1,6 +1,6 @@
 # Cullinan 扩展开发指南
 
-> **版本**：v0.92+  
+> **版本**：v0.93a1  
 > **作者**：Plumeink  
 > **最后更新**：2026-02-19
 
@@ -263,29 +263,26 @@ class LazyProvider(Provider):
 ### 注册自定义 Provider
 
 ```python
-from cullinan.service import service, Service
-from cullinan.core.injection import get_injection_registry
+from cullinan.core import ApplicationContext, Definition, ScopeType
 
-@service
-class ProviderRegistryService(Service):
-    def on_startup(self):
-        """在应用启动时注册自定义 Provider"""
-        registry = get_injection_registry()
-        
-        # 注册工厂 Provider
-        factory_provider = FactoryProvider(
-            factory=lambda: MyClass(),
-            name='MyClassFactory'
-        )
-        registry.register_provider('MyClass', factory_provider)
-        
-        # 注册延迟 Provider
-        lazy_provider = LazyProvider(
-            factory=lambda: HeavyClass(),
-            name='HeavyClassLazy'
-        )
-        registry.register_provider('HeavyClass', lazy_provider)
+ctx = ApplicationContext()
+
+ctx.register(Definition(
+    name="MyClass",
+    factory=lambda c: MyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:MyClass",
+))
+
+ctx.register(Definition(
+    name="HeavyClass",
+    factory=lambda c: HeavyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:HeavyClass",
+))
 ```
+
+对新扩展来说，优先通过 `ApplicationContext` 注册 `Definition` 或显式 factory，而不是直接修改旧注入 registry。
 
 ### 完整示例
 
@@ -554,10 +551,9 @@ A: 中间件本身不支持自动注入，但可以手动获取：
 @middleware(priority=100)
 class ServiceAwareMiddleware(Middleware):
     def on_startup(self):
-        # 从 ServiceRegistry 获取服务
-        from cullinan.service import get_service_registry
-        registry = get_service_registry()
-        self.user_service = registry.get_instance('UserService')
+        # 从当前活动的 ApplicationContext 解析服务
+        from cullinan.core import get_application_context
+        self.user_service = get_application_context().get('UserService')
     
     def process_request(self, handler):
         # 使用服务
@@ -671,7 +667,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**版本**：v0.92  
+**版本**：v0.93a1  
 **作者**：Plumeink  
-**最后更新**：2026-02-19
-
+**最后更新**：2026-05-30

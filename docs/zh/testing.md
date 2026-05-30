@@ -7,127 +7,83 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/testing.md"
-related_tests: ["tests/*"]
+related_tests: ["tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
 related_examples: []
-estimate_pd: 1.0
-last_updated: "2025-12-25T00:00:00Z"
+estimate_pd: 1.5
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
 # 测试与验证
 
-本文说明如何运行现有测试集、添加新的测试、使用示例进行烟雾测试，以及在 CI 中集成测试执行。示例命令覆盖 Windows（PowerShell）、Linux 和 macOS。
+本文说明测试体系整合后的当前仓库测试工作流。
 
-## 前置条件
+## 仓库正式入口
 
-- Python 3.8 或更高版本
-- Git
-- 已克隆并可用的 Cullinan 仓库（环境准备可参考 `docs/build_run.md`）
-
-## 运行测试集
-
-在以可编辑模式安装 Cullinan 之后（参见 `docs/build_run.md`），可以使用 `pytest` 运行测试。
-
-在所有平台上：
-
-```bash
-pytest -q
-```
-
-如果倾向于通过 Python 模块方式调用，也可以使用：
-
-```bash
-python -m pytest -q
-```
-
-在 Windows 上，常见的做法是使用 `py` 启动器：
+请使用仓库虚拟环境执行：
 
 ```powershell
-py -3 -m pytest -q
+.venv\Scripts\python -m pytest
 ```
 
-## 运行单个测试模块
+这就是当前仓库在测试清理后的正式命令。
 
-要运行单个测试文件（例如 `tests/test_core_injection.py`）：
+## 测试发现配置
 
-在所有平台上：
+`pytest.ini` 定义了仓库默认规则：
 
-```bash
-pytest tests/test_core_injection.py -q
+```ini
+[pytest]
+testpaths = tests
+python_files = test_*.py
+addopts = -ra
 ```
 
-或使用 Python 模块方式：
+`tests/conftest.py` 会把仓库根目录加入 `sys.path`，因此新测试不应再重复写本地 `sys.path.insert(...)` 引导代码。
 
-```bash
-python -m pytest tests/test_core_injection.py -q
-```
+## 测试目录结构
 
-## 添加新测试
+测试按主题组织：
 
-在为新特性或缺陷修复添加测试时，建议遵循以下原则：
+- `tests/core`
+- `tests/di`
+- `tests/web`
+- `tests/integration`
+- `tests/regression`
+- `tests/compat`
+- `tests/helpers`
 
-1. 将测试文件放置在 `tests/` 目录下。
-2. 使用具有描述性的测试名称，并将相关测试组织在同一模块中。
-3. 优先采用 `pytest` 风格的测试（函数或测试类），与现有测试集保持一致。
-4. 确保测试具有确定性，不依赖外部服务，除非明确标注。
+新增测试时，优先放入最接近的现有主题目录，而不是继续创建零散的顶层文件。
 
-## 使用示例进行烟雾测试
+## 运行定向测试
 
-Cullinan 在 `examples/` 目录下提供了可运行示例，可作为烟雾测试使用。
-
-### 示例：Hello HTTP
-
-在 Windows（PowerShell）中：
+示例：
 
 ```powershell
-python examples\hello_http.py
+.venv\Scripts\python -m pytest tests\web\test_web_runtime.py -q
+.venv\Scripts\python -m pytest tests\di\test_core_constructor_injection.py -q
 ```
 
-在 Linux / macOS 中：
+通用的 `python -m pytest` 也可运行，但当前仓库文档标准统一使用 Windows 下的 `.venv\Scripts\python` 形式。
 
-```bash
-python examples/hello_http.py
-```
+## 当前约定
 
-然后在浏览器中访问 `http://localhost:4080/hello`，验证服务是否正常响应。
+1. 使用标准 pytest 测试与普通 `assert` 断言。
+2. 避免脚本式的 “return True/False” 验证文件。
+3. 需要共享初始化时，优先复用 `tests/conftest.py` 与 `tests/helpers/`。
+4. 测试若修改全局 registry 或活动应用上下文，必须自行完成隔离与清理。
 
-### 示例：中间件演示
+## 测试覆盖范围
 
-在 Windows（PowerShell）中：
+当前测试集覆盖：
 
-```powershell
-python examples\middleware_demo.py
-```
+- 容器与生命周期行为
+- 兼容层语义
+- gateway / Web Runtime 行为
+- 控制器路由与参数处理
+- 集成与回归场景
 
-在 Linux / macOS 中：
+## 相关文档
 
-```bash
-python examples/middleware_demo.py
-```
-
-日志输出将展示中间件和注入的服务如何参与请求处理。具体时间戳和 ID 会因运行环境不同而有所差异。
-
-## 在 CI 中集成测试
-
-在 CI 流水线中，通常需要执行以下步骤：
-
-1. 准备 Python 运行环境。
-2. 以可编辑模式安装依赖（可选安装开发额外依赖）。
-3. 使用 `pytest` 运行测试集。
-
-bash 风格的典型命令序列（可根据 CI 系统进行调整）：
-
-```bash
-python -m pip install -U pip
-pip install -e .[dev]
-pytest -q
-```
-
-在基于 Windows 的 CI 环境中使用 PowerShell 时，可使用类似命令：
-
-```powershell
-python -m pip install -U pip
-pip install -e .[dev]
-py -3 -m pytest -q
-```
-
-可根据 CI 提供商与具体环境调整命令与选项。
+- [运行时整合概览](runtime_updates_v093.md)
+- [架构设计](architecture.md)
+- [Web Runtime 指南](web_runtime_guide.md)

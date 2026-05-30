@@ -10,27 +10,41 @@ translation_pair: "docs/zh/README.md"
 related_tests: []
 related_examples: []
 estimate_pd: 0.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
 # Cullinan Documentation
 
-Welcome — this site contains the Cullinan framework documentation.
+Welcome to the Cullinan documentation site.
 
-> **Version 0.90a5**: Enhanced parameter system with `FileInfo`, `FileList`, `@field_validator`, `@validated_dataclass`, `ResponseSerializer`, and **pluggable model handlers** for Pydantic integration. See [Parameter System Guide](parameter_system_guide.md).
+> **Current version: 0.93a1**. The current documentation reflects the unified `cullinan.core` container facade, the transport-agnostic Web Runtime (`WebRequest` / `WebResponse` / `WebAdapter`), and the pytest-based test suite layout.
 
-Use the navigation to the left to get started. Key areas:
+## Key updates
 
-- **Getting Started** — quick start and minimal app examples
-- **Architecture** — system overview and diagrams
-- **Wiki** — injection, lifecycle, middleware, extensions
-  - [Dependency Injection Guide](dependency_injection_guide.md) — DI system documentation
-  - [Parameter System Guide](parameter_system_guide.md) — Type-safe parameter system (v0.90+)
-  - [RESTful API Guide](wiki/restful_api.md) — HTTP routing and parameter handling
-  - [Migration Guide](import_migration_090.md) — upgrade from 0.83
-- **Modules** — per-module API and examples
-- **Examples** — runnable examples in the `examples/` directory
-- **API Reference** — detailed API documentation
+- [Runtime consolidation overview](runtime_updates_v093.md) — summary of the IoC/DI, Web Runtime, and testing updates
+- [Architecture](architecture.md) — current framework architecture and execution flow
+- [Dependency Injection Guide](dependency_injection_guide.md) — recommended DI usage and compatibility notes
+- [Web Runtime Guide](web_runtime_guide.md) — transport-agnostic request/response runtime and adapters
+- [Testing & Verification](testing.md) — repository test entrypoint, layout, and conventions
 
-For more information, visit our [GitHub repository](https://github.com/plumeink/Cullinan).
+## Wiki
 
+- [IoC & DI (Injection)](wiki/injection.md) — quick reference for injection patterns
+- [Application Lifecycle](wiki/lifecycle.md) — startup, refresh, request scope, and shutdown
+- [RESTful API](wiki/restful_api.md) — controller routing plus the current Web Runtime response model
+
+## Additional references
+
+- [Parameter System Guide](parameter_system_guide.md)
+- [Build & Run](build_run.md)
+- [Modules](modules/)
+- [Examples](examples/)
+- [API Reference](api_reference.md)
+
+## Language navigation
+
+- English documents live under `docs/`
+- Chinese documents live under `docs/zh/`
+- Updated pages are maintained as translation pairs with matching relative paths
+
+For source code and release history, visit the [GitHub repository](https://github.com/plumeink/Cullinan).

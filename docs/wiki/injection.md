@@ -1,195 +1,69 @@
-title: "IoC & DI (Injection)"
-slug: "injection"
-module: ["cullinan.core"]
-tags: ["ioc", "di", "injection"]
+title: "IoC & DI"
+slug: "wiki-ioc-di"
+module: ["ioc", "di"]
+tags: ["wiki", "ioc", "di"]
 author: "Plumeink"
 reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/wiki/injection.md"
-related_tests: ["tests/test_core_injection.py"]
-related_examples: ["examples/ioc_facade_demo.py"]
-estimate_pd: 2.0
-last_updated: "2025-12-26T00:00:00Z"
+related_tests: ["tests/di/test_core_constructor_injection.py"]
+related_examples: []
+estimate_pd: 1.0
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# IoC & DI (Injection)
+# IoC & DI
 
-> **Version**: v0.90  
-> **Author**: Plumeink
+Cullinan's current dependency model is unified around `ApplicationContext` and the public `cullinan.core` facade.
 
-This page documents the IoC (Inversion of Control) and DI (Dependency Injection) system used by Cullinan. For the complete architecture overview, see [Architecture](../architecture.md). For migration from previous versions, see [Migration Guide](../migration_guide.md).
+## Preferred programming model
 
-## Key Concepts
+- register business types with `@service` and `@controller`
+- inject dependencies with `Inject()`
+- use `InjectByName()` only when name-based lookup is the better fit
+- use `ApplicationContext` directly for explicit integration or custom definitions
 
-### Inversion of Control (IoC)
-
-IoC is a design principle where the control of object creation and lifecycle is transferred from the application code to a framework or container.
-
-### Dependency Injection (DI)
-
-DI is a technique for achieving IoC. Dependencies are "injected" into a class rather than being created by the class itself.
-
-## Recommended Usage (Decorator-Based)
-
-### 1. Define a Service
-
-```python
-from cullinan.service import service, Service
-
-@service
-class DatabaseService(Service):
-    def __init__(self):
-        super().__init__()
-        self.connection = None
-    
-    def on_startup(self):
-        """Called during application startup"""
-        self.connection = create_connection()
-    
-    def on_shutdown(self):
-        """Called during application shutdown"""
-        if self.connection:
-            self.connection.close()
-    
-    def query(self, sql: str):
-        return self.connection.execute(sql)
-```
-
-### 2. Inject Dependencies
-
-```python
-from cullinan.service import service, Service
-from cullinan.core import Inject
-
-@service
-class UserService(Service):
-    # Automatic injection via type annotation
-    database: DatabaseService = Inject()
-    
-    def get_user(self, user_id: int):
-        return self.database.query(f"SELECT * FROM users WHERE id={user_id}")
-```
-
-### 3. Use in Controllers
+## Example
 
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.service import service
 
-@controller(url='/api/users')
+@service
+class UserService:
+    def get_user(self, user_id: int):
+        return {"id": user_id}
+
+@controller(url="/users")
 class UserController:
     user_service: UserService = Inject()
-    
-    @get_api(url='/{user_id}')
-    async def get_user(self, user_id: int = Path()):
+
+    @get_api(url="/{user_id}")
+    async def get_user(self, user_id: int):
         return self.user_service.get_user(user_id)
 ```
 
-## Injection Methods
+## Runtime model
 
-### Inject() - Type Annotation Injection (Recommended)
+- decorators produce container definitions
+- `ApplicationContext.refresh()` materializes eager parts of the graph
+- lifecycle hooks run on managed components
+- request-scoped resolution is tied to the active request context
 
-Best IDE support and type safety.
+## Compatibility layer
 
-```python
-from cullinan.core import Inject
+Older constructor-injection helpers still exist, but only as compatibility shims:
 
-@service
-class MyService(Service):
-    # Infers dependency name from type annotation
-    database: DatabaseService = Inject()
-    
-    # Optional dependency
-    cache: CacheService = Inject(required=False)
-```
+- `injectable` — no-op compatibility decorator
+- `inject_constructor` — no-op compatibility decorator
+- `get_injection_registry()` — returns `None`
+- `reset_injection_registry()` — safe no-op
 
-### InjectByName() - String Name Injection
+New code should not build on those APIs.
 
-No need to import dependency classes, avoids circular imports.
+## See also
 
-```python
-from cullinan.controller import controller
-from cullinan.core import InjectByName
-
-@controller(url='/api')
-class MyController:
-    # Explicit name
-    user_service = InjectByName('UserService')
-    
-    # Auto-infer name (snake_case -> PascalCase)
-    email_service = InjectByName()  # -> EmailService
-```
-
-## Lifecycle Hooks
-
-Services support lifecycle hooks for initialization and cleanup (Duck Typing - no base class inheritance required):
-
-```python
-@service
-class MyService(Service):
-    def get_phase(self) -> int:
-        """Initialization order (lower = earlier)"""
-        return 0
-    
-    def on_post_construct(self):
-        """Called after dependency injection"""
-        pass
-    
-    def on_startup(self):
-        """Called during application startup"""
-        pass
-    
-    def on_shutdown(self):
-        """Called during application shutdown"""
-        pass
-    
-    def on_pre_destroy(self):
-        """Called before destruction"""
-        pass
-```
-
-## Advanced: ApplicationContext (For Complex Scenarios)
-
-For advanced use cases like third-party integration or custom factories:
-
-```python
-from cullinan.core.container import ApplicationContext, Definition, ScopeType
-
-ctx = ApplicationContext()
-
-ctx.register(Definition(
-    name='CustomService',
-    factory=lambda c: CustomService(c.get('Dependency')),
-    scope=ScopeType.SINGLETON,
-    source='custom:CustomService'
-))
-
-ctx.refresh()  # Freeze registry
-service = ctx.get('CustomService')
-```
-
-## Best Practices
-
-1. **Use decorators for services and controllers** - Let the framework handle registration
-2. **Use `Inject()` for type-safe injection** - Better IDE support and refactoring
-3. **Use `InjectByName()` to avoid circular imports** - When you can't import the type
-4. **Implement lifecycle hooks properly** - Clean initialization and shutdown
-5. **Keep services focused** - Single responsibility principle
-
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| Dependency is None | Ensure the service is decorated with `@service` |
-| Service not found | Check the service name matches (case-sensitive) |
-| Circular dependency | Use `InjectByName()` with lazy resolution |
-| Injection not working | Ensure the class extends `Service` or `Controller` |
-
-## See Also
-
-- [Architecture](../architecture.md) - System architecture overview
-- [Decorators](decorators.md) - All available decorators
-- [Lifecycle](lifecycle.md) - Service lifecycle management
-- [Migration Guide](../migration_guide.md) - Migrating from older versions
+- [Dependency Injection Guide](../dependency_injection_guide.md)
+- [Application Lifecycle](lifecycle.md)

@@ -1,6 +1,6 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.92+  
+> **Version**: v0.93a1  
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
 
@@ -263,29 +263,26 @@ class LazyProvider(Provider):
 ### Register Custom Provider
 
 ```python
-from cullinan.service import service, Service
-from cullinan.core.injection import get_injection_registry
+from cullinan.core import ApplicationContext, Definition, ScopeType
 
-@service
-class ProviderRegistryService(Service):
-    def on_startup(self):
-        """Register custom Providers during application startup"""
-        registry = get_injection_registry()
-        
-        # Register factory Provider
-        factory_provider = FactoryProvider(
-            factory=lambda: MyClass(),
-            name='MyClassFactory'
-        )
-        registry.register_provider('MyClass', factory_provider)
-        
-        # Register lazy Provider
-        lazy_provider = LazyProvider(
-            factory=lambda: HeavyClass(),
-            name='HeavyClassLazy'
-        )
-        registry.register_provider('HeavyClass', lazy_provider)
+ctx = ApplicationContext()
+
+ctx.register(Definition(
+    name="MyClass",
+    factory=lambda c: MyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:MyClass",
+))
+
+ctx.register(Definition(
+    name="HeavyClass",
+    factory=lambda c: HeavyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:HeavyClass",
+))
 ```
+
+For new extensions, prefer registering `Definition` objects or explicit factories through `ApplicationContext` instead of mutating the legacy injection registry directly.
 
 ### Complete Example
 
@@ -554,10 +551,9 @@ A: Middleware doesn't support automatic injection, but you can manually retrieve
 @middleware(priority=100)
 class ServiceAwareMiddleware(Middleware):
     def on_startup(self):
-        # Get service from ServiceRegistry
-        from cullinan.service import get_service_registry
-        registry = get_service_registry()
-        self.user_service = registry.get_instance('UserService')
+        # Resolve service from the active ApplicationContext
+        from cullinan.core import get_application_context
+        self.user_service = get_application_context().get('UserService')
     
     def process_request(self, handler):
         # Use service
@@ -671,7 +667,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.92  
+**Version**: v0.93a1  
 **Author**: Plumeink  
-**Last Updated**: 2026-02-19
-
+**Last Updated**: 2026-05-30

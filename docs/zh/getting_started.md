@@ -160,53 +160,37 @@ python minimal_app.py
 4. **关闭**：在 SIGINT/SIGTERM 信号时优雅关闭
 
 ### 依赖注入
-Cullinan 提供内置的 IoC/DI 支持。
+Cullinan 通过统一的 `ApplicationContext` 模型提供内置 IoC/DI 支持。
 
-#### 注解说明：`@injectable` vs `@controller()`
+#### 推荐运行时模型
 
-**`@injectable`** - 通用依赖注入注解
-- 适用于任何需要依赖注入的类（Service、Repository、普通类等）
-- 需要手动使用，不会自动注册到任何注册表
-- 在类实例化后自动注入标记的依赖
-- 使用场景：Service 层、Repository 层、工具类等
-
-**`@controller()`** - Controller 专用自注册注解
-- 专门用于 HTTP Controller 类
-- **自动调用 `@injectable`**，无需手动添加
-- 自动注册 Controller 及其路由到 ControllerRegistry
-- 自动扫描类中的 `@get_api`、`@post_api` 等方法装饰器
-- 使用场景：仅用于 HTTP Controller
+- 业务服务使用 `@service`
+- HTTP 控制器使用 `@controller`
+- 按类型注入优先使用 `Inject()`
+- 按名称解析更方便时使用 `InjectByName()`
+- 将 `ApplicationContext` 视为唯一运行时容器入口
 
 ```python
 from cullinan.controller import controller, get_api
 from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
+from cullinan.core import Inject
 from cullinan.params import Path
 
-# Service 使用 @service (继承自 Service 基类)
 @service
 class UserService(Service):
     def get_user(self, user_id):
         return {'id': user_id, 'name': 'John'}
 
-# Repository 使用 @injectable
-@injectable
-class UserRepository:
-    def find_by_id(self, user_id):
-        return {'id': user_id}
-
-# Controller 使用 @controller() - 自动包含 @injectable
 @controller(url='/api/users')
 class UserController:
-    # 控制器中使用依赖注入
-    user_service = InjectByName('UserService')
-    
+    user_service: UserService = Inject()
+
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
 ```
 
-**重要：** 在 Controller 中**不要**重复使用 `@injectable`，因为 `@controller()` 已经自动包含了它。
+**兼容性说明：** `injectable` 和 `inject_constructor` 仍然存在，但只是兼容 shim；新代码不应再把它们作为主要模式。
 
 ---
 
@@ -311,66 +295,68 @@ class UserController:
 
 #### 推荐的依赖注入方式
 
-**方式一：InjectByName（推荐，最简单）**
+**方式一：Inject（推荐）**
 
-按名称注入，无需导入依赖类，避免循环导入问题：
+当依赖类型容易导入时，优先使用带类型的 `Inject()`：
 
 ```python
+from cullinan.core import Inject
 from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
 
 @service
 class DatabaseService(Service):
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
-class UserRepository:
-    # 推荐：InjectByName 不需要类型注解，直接使用字符串名称
+@service
+class UserRepository(Service):
+    db: DatabaseService = Inject()
+
+    def get_users(self):
+        return self.db.query("SELECT * FROM users")
+```
+
+**方式二：InjectByName**
+
+按名称注入，无需导入依赖类，避免循环导入问题：
+
+```python
+from cullinan.service import Service, service
+from cullinan.core import InjectByName
+
+@service
+class DatabaseService(Service):
+    def query(self, sql):
+        return f"Results for: {sql}"
+
+@service
+class UserRepository(Service):
     db = InjectByName('DatabaseService')
     
     def get_users(self):
         return self.db.query("SELECT * FROM users")
 ```
 
-**方式二：Inject + TYPE_CHECKING（支持 IDE 联想）**
+**方式三：Inject + TYPE_CHECKING（支持 IDE 联想）**
 
 如果需要 IDE 自动补全和类型检查，可以使用 `Inject` 配合 TYPE_CHECKING：
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import injectable, Inject
+from cullinan.core import Inject
 from cullinan.service import Service, service
 
 # TYPE_CHECKING 块中的导入不会在运行时执行，避免循环导入
 if TYPE_CHECKING:
-    from cullinan.service import DatabaseService
+    from my_project.services import DatabaseService
 
 @service
 class DatabaseService(Service):
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
-class UserRepository:
-    # 使用 TYPE_CHECKING 导入类型后，可以获得 IDE 联想支持
-    db: 'DatabaseService' = Inject()
-    
-    def get_users(self):
-        # IDE 可以提示 db.query 方法
-        return self.db.query("SELECT * FROM users")
-```
-
-**方式三：Inject + 纯字符串注解（无 IDE 联想）**
-
-如果不需要 IDE 联想，也可以直接使用字符串注解：
-
-```python
-from cullinan.core import injectable, Inject
-
-@injectable
-class UserRepository:
-    # 纯字符串注解，无需导入，但也没有 IDE 联想
+@service
+class UserRepository(Service):
     db: 'DatabaseService' = Inject()
     
     def get_users(self):
@@ -378,9 +364,9 @@ class UserRepository:
 ```
 
 **总结：**
-- **InjectByName**：推荐用于大多数场景，简单直接，无需类型注解
-- **Inject + TYPE_CHECKING**：适合需要 IDE 联想的场景，开发体验更好
-- **Inject + 字符串注解**：最简单但无 IDE 支持
+- **Inject**：依赖类型容易导入时的默认首选
+- **InjectByName**：适合解耦或规避循环导入
+- **Inject + TYPE_CHECKING**：兼顾运行时解耦与编辑器类型支持
 
 有关注入模式的详细信息，请参阅 `docs/wiki/injection.md`。
 

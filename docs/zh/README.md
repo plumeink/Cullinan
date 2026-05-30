@@ -10,27 +10,41 @@ translation_pair: "docs/README.md"
 related_tests: []
 related_examples: []
 estimate_pd: 0.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
 # Cullinan 文档
 
-欢迎查阅 Cullinan 框架文档。
+欢迎使用 Cullinan 文档站点。
 
-> **版本 0.90a5**：增强的参数系统，支持 `FileInfo`、`FileList`、`@field_validator`、`@validated_dataclass`、`ResponseSerializer`，以及用于 Pydantic 集成的**可插拔模型处理器**。请参阅 [参数系统指南](parameter_system_guide.md)。
+> **当前版本：0.93a1**。当前文档已对齐统一的 `cullinan.core` 容器门面、传输无关的 Web Runtime（`WebRequest` / `WebResponse` / `WebAdapter`）以及基于 pytest 的测试体系。
 
-请使用左侧导航栏快速访问以下主要内容：
+## 重点更新
 
-- **快速开始** — 快速入门和最小应用示例
-- **架构设计** — 系统概览和架构图
-- **维基** — 注入、生命周期、中间件、扩展
-  - [依赖注入指南](dependency_injection_guide.md) — DI 系统文档
-  - [参数系统指南](parameter_system_guide.md) — 类型安全参数系统 (v0.90+)
-  - [RESTful API 指南](wiki/restful_api.md) — HTTP 路由和参数处理
-  - [迁移指南](import_migration_090.md) — 从 0.83 升级
-- **模块** — 各模块的 API 和示例
-- **示例** — `examples/` 目录下的可运行示例
-- **API 参考** — 详细的 API 文档
+- [运行时整合概览](runtime_updates_v093.md) —— 汇总 IoC/DI、Web Runtime、测试优化三次更新
+- [架构设计](architecture.md) —— 当前框架架构与执行流程
+- [依赖注入指南](dependency_injection_guide.md) —— 推荐 DI 用法与兼容层说明
+- [Web Runtime 指南](web_runtime_guide.md) —— 传输无关的请求/响应运行时与适配器
+- [测试与验证](testing.md) —— 仓库测试入口、目录结构与约定
 
-了解更多信息，请访问我们的 [GitHub 仓库](https://github.com/plumeink/Cullinan)。
+## Wiki
 
+- [IoC 与 DI（注入）](wiki/injection.md) —— 注入模式速查
+- [应用生命周期](wiki/lifecycle.md) —— 启动、refresh、请求作用域与关闭流程
+- [RESTful API](wiki/restful_api.md) —— 控制器路由与当前 Web Runtime 响应模型
+
+## 其他参考
+
+- [参数系统指南](parameter_system_guide.md)
+- [构建与运行](build_run.md)
+- [模块文档](modules/)
+- [示例](examples/)
+- [API 参考](api_reference.md)
+
+## 语言导航
+
+- 英文文档位于 `docs/`
+- 中文文档位于 `docs/zh/`
+- 更新页面按相同相对路径维护中英配对
+
+源码与发布历史请访问 [GitHub 仓库](https://github.com/plumeink/Cullinan)。
