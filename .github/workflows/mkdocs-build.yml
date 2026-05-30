@@ -1,54 +1,274 @@
-name: Build and Validate Docs
+name: Build and Publish Docs
 
 on:
   push:
     paths:
       - 'docs/**'
+      - 'overrides/**'
       - '.github/workflows/**'
       - 'mkdocs.yml'
+      - 'setup.py'
+      - 'cullinan/__init__.py'
   pull_request:
     paths:
       - 'docs/**'
+      - 'overrides/**'
       - '.github/workflows/**'
       - 'mkdocs.yml'
+      - 'setup.py'
+      - 'cullinan/__init__.py'
+  workflow_dispatch:
 
-# Give this workflow permission to write Pages so it can deploy
 permissions:
   contents: write
   pages: write
 
 jobs:
-  build:
+  docs:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: '3.10'
+      NODE_VERSION: '18'
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Detect documentation release channel
+        id: channel
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          setup_text = pathlib.Path("setup.py").read_text(encoding="utf-8")
+          init_text = pathlib.Path("cullinan/__init__.py").read_text(encoding="utf-8")
+
+          setup_match = re.search(r"version\s*=\s*['\"]([^'\"]+)['\"]", setup_text)
+          init_match = re.search(r"__version__\s*=\s*['\"]([^'\"]+)['\"]", init_text)
+
+          if not setup_match or not init_match:
+            raise SystemExit("Unable to detect package version from setup.py or cullinan/__init__.py")
+
+          setup_version = setup_match.group(1)
+          init_version = init_match.group(1)
+
+          if setup_version != init_version:
+            raise SystemExit(f"Version mismatch: setup.py={setup_version}, cullinan/__init__.py={init_version}")
+
+          version = setup_version
+          branch = os.environ.get("GITHUB_REF_NAME", "")
+          event_name = os.environ.get("GITHUB_EVENT_NAME", "")
+          is_pre = "a" in version
+          is_main = branch == "main"
+
+          if is_main and not is_pre:
+            channel = "stable"
+          elif (not is_main) and is_pre:
+            channel = "pre"
+          else:
+            channel = "skip"
+
+          outputs = {
+            "version": version,
+            "branch": branch,
+            "event_name": event_name,
+            "is_pre": str(is_pre).lower(),
+            "channel": channel,
+            "should_deploy": str(event_name == "push" and channel in {"stable", "pre"}).lower(),
+          }
+
+          github_output = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as fh:
+            for key, value in outputs.items():
+              fh.write(f"{key}={value}\n")
+          PY
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install mkdocs==1.6.1 mkdocs-material==9.7.0 mkdocs-mermaid2-plugin==1.2.3 mkdocs-static-i18n
+          python -m pip install mkdocs==1.6.1 mkdocs-material==9.7.0 mkdocs-mermaid2-plugin==1.2.3 mkdocs-static-i18n packaging
           npm install -g markdownlint-cli
-      - name: "Debug: show mkdocs / i18n versions and config"
-        run: |
-          python -m pip show mkdocs mkdocs-static-i18n mkdocs-material || true
-          mkdocs --version || true
-          cat mkdocs.yml || true
+
       - name: Lint markdown
         run: |
           markdownlint "docs/**/*.md" || true
+
+      - name: Prepare gh-pages workspace
+        if: steps.channel.outputs.should_deploy == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git clone --branch gh-pages --depth 1 "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .gh-pages
+          else
+            mkdir -p .gh-pages
+            cd .gh-pages
+            git init
+            git checkout --orphan gh-pages
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            touch .nojekyll
+            git add .nojekyll
+            git commit -m "Initialize gh-pages"
+            git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+
+      - name: Load published doc versions
+        id: published
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+
+          data = {}
+          versions_file = pathlib.Path(".gh-pages/versions.json")
+          if versions_file.exists():
+            data = json.loads(versions_file.read_text(encoding="utf-8"))
+
+          stable_version = data.get("stable", {}).get("version", "")
+          pre_version = data.get("pre", {}).get("version", "")
+
+          github_output = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as fh:
+            fh.write(f"stable_version={stable_version}\n")
+            fh.write(f"pre_version={pre_version}\n")
+          PY
+
+      - name: Decide whether current pre-release is the newest
+        id: precheck
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          from packaging.version import Version
+
+          channel = os.environ.get("CHANNEL", "skip")
+          current_version = os.environ.get("CURRENT_VERSION", "")
+          published_pre = os.environ.get("PUBLISHED_PRE", "")
+
+          should_publish_pre = True
+          if channel == "pre" and published_pre:
+            should_publish_pre = Version(current_version) > Version(published_pre)
+
+          github_output = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as fh:
+            fh.write(f"should_publish_pre={str(should_publish_pre).lower()}\n")
+          PY
+        env:
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+          CURRENT_VERSION: ${{ steps.channel.outputs.version }}
+          PUBLISHED_PRE: ${{ steps.published.outputs.pre_version }}
+
       - name: Build site
+        env:
+          DOCS_CHANNEL: ${{ steps.channel.outputs.channel == 'pre' && 'pre' || 'stable' }}
+          DOCS_CURRENT_VERSION: ${{ steps.channel.outputs.version }}
+          DOCS_STABLE_VERSION: ${{ steps.channel.outputs.channel == 'stable' && steps.channel.outputs.version || steps.published.outputs.stable_version }}
+          DOCS_STABLE_URL: /
+          DOCS_PRE_VERSION: ${{ steps.channel.outputs.channel == 'pre' && steps.channel.outputs.version || steps.published.outputs.pre_version }}
+          DOCS_PRE_URL: /pre/
+          DOCS_PRE_AVAILABLE: ${{ (steps.channel.outputs.channel == 'pre' || steps.published.outputs.pre_version != '') && 'true' || 'false' }}
         run: |
           mkdocs build --strict
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
+
+      - name: Debug build metadata
+        run: |
+          echo "channel=${{ steps.channel.outputs.channel }}"
+          echo "version=${{ steps.channel.outputs.version }}"
+          echo "published stable=${{ steps.published.outputs.stable_version }}"
+          echo "published pre=${{ steps.published.outputs.pre_version }}"
+          echo "publish pre?=${{ steps.precheck.outputs.should_publish_pre }}"
+
+      - name: Publish docs to gh-pages
+        if: steps.channel.outputs.should_deploy == 'true' && (steps.channel.outputs.channel == 'stable' || steps.precheck.outputs.should_publish_pre == 'true')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANNEL: ${{ steps.channel.outputs.channel }}
+          CURRENT_VERSION: ${{ steps.channel.outputs.version }}
+          STABLE_VERSION: ${{ steps.channel.outputs.channel == 'stable' && steps.channel.outputs.version || steps.published.outputs.stable_version }}
+          PRE_VERSION: ${{ steps.channel.outputs.channel == 'pre' && steps.channel.outputs.version || steps.published.outputs.pre_version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s dotglob nullglob
+
+          mkdir -p .deploy-tmp
+
+          if [ "$CHANNEL" = "stable" ]; then
+            if [ -d .gh-pages/pre ]; then
+              mv .gh-pages/pre .deploy-tmp/pre
+            fi
+            if [ -f .gh-pages/CNAME ]; then
+              mv .gh-pages/CNAME .deploy-tmp/CNAME
+            fi
+            if [ -f .gh-pages/versions.json ]; then
+              mv .gh-pages/versions.json .deploy-tmp/versions.json
+            fi
+            rm -rf .gh-pages/*
+            cp -R site/. .gh-pages/
+            if [ -d .deploy-tmp/pre ]; then
+              mv .deploy-tmp/pre .gh-pages/pre
+            fi
+            if [ -f .deploy-tmp/CNAME ]; then
+              mv .deploy-tmp/CNAME .gh-pages/CNAME
+            fi
+          else
+            rm -rf .gh-pages/pre
+            mkdir -p .gh-pages/pre
+            cp -R site/. .gh-pages/pre/
+          fi
+
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          from datetime import datetime, timezone
+
+          payload = {
+            "stable": {
+              "version": os.environ.get("STABLE_VERSION", ""),
+              "path": "/",
+            },
+            "pre": {
+              "version": os.environ.get("PRE_VERSION", ""),
+              "path": "/pre/",
+            },
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+          }
+
+          pathlib.Path(".gh-pages/versions.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+          )
+          pathlib.Path(".gh-pages/.nojekyll").write_text("", encoding="utf-8")
+          PY
+
+          cd .gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No documentation changes to publish."
+            exit 0
+          fi
+          git commit -m "docs: publish ${CHANNEL} ${CURRENT_VERSION}"
+          git push origin gh-pages
