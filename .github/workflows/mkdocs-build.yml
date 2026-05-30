@@ -50,6 +50,8 @@ jobs:
 
       - name: Detect documentation release channel
         id: channel
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch || github.event.repository.master_branch || 'main' }}
         shell: bash
         run: |
           python - <<'PY'
@@ -75,12 +77,13 @@ jobs:
           version = setup_version
           branch = os.environ.get("GITHUB_REF_NAME", "")
           event_name = os.environ.get("GITHUB_EVENT_NAME", "")
+          default_branch = os.environ.get("DEFAULT_BRANCH", "main")
           is_pre = "a" in version
-          is_main = branch == "main"
+          is_default_branch = branch == default_branch
 
-          if is_main and not is_pre:
+          if is_default_branch and not is_pre:
             channel = "stable"
-          elif (not is_main) and is_pre:
+          elif (not is_default_branch) and is_pre:
             channel = "pre"
           else:
             channel = "skip"
@@ -88,6 +91,7 @@ jobs:
           outputs = {
             "version": version,
             "branch": branch,
+            "default_branch": default_branch,
             "event_name": event_name,
             "is_pre": str(is_pre).lower(),
             "channel": channel,
@@ -197,6 +201,7 @@ jobs:
         run: |
           echo "channel=${{ steps.channel.outputs.channel }}"
           echo "version=${{ steps.channel.outputs.version }}"
+          echo "default branch=${{ steps.channel.outputs.default_branch }}"
           echo "published stable=${{ steps.published.outputs.stable_version }}"
           echo "published pre=${{ steps.published.outputs.pre_version }}"
           echo "publish pre?=${{ steps.precheck.outputs.should_publish_pre }}"
@@ -206,21 +211,32 @@ jobs:
         shell: bash
         run: |
           deploy_site=false
-          if [ "${{ steps.channel.outputs.should_deploy }}" = "true" ] && { [ "${{ steps.channel.outputs.channel }}" = "stable" ] || [ "${{ steps.precheck.outputs.should_publish_pre }}" = "true" ]; }; then
+          sync_branch=false
+          if [ "${{ steps.channel.outputs.should_deploy }}" = "true" ]; then
             deploy_site=true
+            if [ "${{ steps.channel.outputs.channel }}" = "stable" ] || [ "${{ steps.precheck.outputs.should_publish_pre }}" = "true" ]; then
+              sync_branch=true
+            fi
           fi
           echo "deploy_site=${deploy_site}" >> "$GITHUB_OUTPUT"
+          echo "sync_branch=${sync_branch}" >> "$GITHUB_OUTPUT"
 
       - name: Assemble docs payload
         if: steps.deploy_gate.outputs.deploy_site == 'true'
         env:
           CHANNEL: ${{ steps.channel.outputs.channel }}
+          SYNC_BRANCH: ${{ steps.deploy_gate.outputs.sync_branch }}
           STABLE_VERSION: ${{ steps.channel.outputs.channel == 'stable' && steps.channel.outputs.version || steps.published.outputs.stable_version }}
           PRE_VERSION: ${{ steps.channel.outputs.channel == 'pre' && steps.channel.outputs.version || steps.published.outputs.pre_version }}
         shell: bash
         run: |
           set -euo pipefail
           shopt -s dotglob nullglob
+
+          if [ "$SYNC_BRANCH" != "true" ]; then
+            echo "Using existing gh-pages content for Pages redeploy."
+            exit 0
+          fi
 
           mkdir -p .deploy-tmp
 
@@ -274,7 +290,7 @@ jobs:
           PY
 
       - name: Sync gh-pages branch
-        if: steps.deploy_gate.outputs.deploy_site == 'true'
+        if: steps.deploy_gate.outputs.sync_branch == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANNEL: ${{ steps.channel.outputs.channel }}
