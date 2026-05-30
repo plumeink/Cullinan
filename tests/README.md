@@ -1,207 +1,49 @@
-# Cullinan Test Suite
+# Cullinan 测试目录
 
-This directory contains all test files for the Cullinan framework.
+`tests\` 现在按职责分层，`pytest` 是唯一正式入口。
 
-## Running Tests
+## 运行方式
 
-### From Project Root
+在仓库根目录执行：
 
-Run all tests:
-```bash
-python tests/run_tests.py
+```powershell
+.venv\Scripts\python -m pytest
 ```
 
-Run tests with verbose output:
-```bash
-python tests/run_tests.py --verbose
+按目录执行：
+
+```powershell
+.venv\Scripts\python -m pytest tests\core
+.venv\Scripts\python -m pytest tests\di
+.venv\Scripts\python -m pytest tests\web
+.venv\Scripts\python -m pytest tests\integration
+.venv\Scripts\python -m pytest tests\regression
+.venv\Scripts\python -m pytest tests\compat
 ```
 
-Generate coverage report:
-```bash
-python tests/run_tests.py --coverage
-```
+## 目录结构
 
-Quick test (skip time-consuming tests):
-```bash
-python tests/run_tests.py --quick
-```
-
-Check test dependencies:
-```bash
-python tests/run_tests.py --check-deps
-```
-
-### Using pytest (Alternative)
-
-If you have pytest installed:
-```bash
-pytest tests/
-```
-
-With coverage:
-```bash
-pytest --cov=cullinan tests/
-```
-
-### Using unittest Directly
-
-```bash
-python -m unittest discover -s tests -p "test_*.py"
-```
-
-## Test Structure
-
-```
+```text
 tests/
-├── run_tests.py                    # Main test runner script
-├── test_application_coverage.py    # Application module tests
-├── test_async_support.py           # Async functionality tests
-├── test_compatibility.py           # Backward compatibility tests
-├── test_config_coverage.py         # Configuration tests
-├── test_controller_coverage.py     # Controller tests
-├── test_core.py                    # Core functionality tests
-├── test_core_module.py             # Core module tests
-├── test_exceptions_logging.py      # Exception & logging tests
-├── test_handler_module.py          # Handler module tests
-├── test_middleware.py              # Middleware tests
-├── test_module_scanner.py          # Module scanner tests
-├── test_packaging.py               # Packaging tests
-├── test_performance.py             # Performance benchmarks
-├── test_registry.py                # Registry pattern tests
-├── test_service_enhanced.py        # Enhanced service layer tests
-└── test_testing_utilities.py       # Testing utilities tests
+├── compat/        # 兼容性与历史 API 行为
+├── core/          # 核心模块、配置、扫描、异常与基础行为
+├── di/            # IoC / DI、容器、生命周期、注册表
+├── integration/   # 跨模块集成测试
+├── regression/    # 历史缺陷回归与边界场景
+├── web/           # Web runtime、请求处理、参数/模型/编解码
+├── helpers/       # 共享 helper（非测试入口）
+└── conftest.py    # 共享 pytest 启动配置
 ```
 
-## Test Categories
+## 约定
 
-### Core Tests
-- `test_core.py` - Core framework functionality
-- `test_core_module.py` - Core module (registry, DI, lifecycle)
-- `test_application_coverage.py` - Application class
+1. 正式测试文件统一命名为 `test_*.py`。
+2. 新增测试时优先放入对应领域目录；只有跨模块场景才放 `integration`。
+3. 不再保留 `run_*`、`quick_*`、`verify_*`、`diagnose_*` 这类脚本式主线测试。
+4. 若需要共享测试工具，放到 `tests\helpers\`，不要直接作为测试入口执行。
 
-### Feature Tests
-- `test_service_enhanced.py` - Service layer with DI
-- `test_registry.py` - Registry pattern
-- `test_controller_coverage.py` - Controller decorators
-- `test_handler_module.py` - HTTP handlers
-- `test_middleware.py` - Middleware chain
+## 编写建议
 
-### Quality Tests
-- `test_compatibility.py` - Backward compatibility
-- `test_async_support.py` - Async/await support
-- `test_performance.py` - Performance benchmarks
-- `test_packaging.py` - Packaging with Nuitka/PyInstaller
-
-### Utility Tests
-- `test_module_scanner.py` - Module discovery
-- `test_exceptions_logging.py` - Error handling
-- `test_config_coverage.py` - Configuration system
-- `test_testing_utilities.py` - Testing framework
-
-## Writing Tests
-
-### Test File Naming
-- All test files must start with `test_`
-- Example: `test_feature_name.py`
-
-### Test Class Naming
-- Test classes should start with `Test`
-- Example: `class TestServiceLayer(unittest.TestCase):`
-
-### Test Method Naming
-- Test methods must start with `test_`
-- Use descriptive names: `test_service_with_dependencies()`
-
-### Example Test
-
-```python
-import unittest
-from cullinan import service, Service
-
-class TestMyFeature(unittest.TestCase):
-    def setUp(self):
-        """Set up test fixtures"""
-        pass
-    
-    def tearDown(self):
-        """Clean up after tests"""
-        pass
-    
-    def test_feature_works(self):
-        """Test that feature works correctly"""
-        # Arrange
-        expected = "result"
-        
-        # Act
-        actual = my_feature()
-        
-        # Assert
-        self.assertEqual(actual, expected)
-```
-
-## Test Dependencies
-
-Required for running tests:
-- Python 3.7+
-- unittest (built-in)
-
-Optional for enhanced testing:
-- `coverage` - for coverage reports
-- `pytest` - alternative test runner
-- `colorama` - colored output (recommended)
-
-Install optional dependencies:
-```bash
-pip install coverage pytest colorama
-```
-
-## Continuous Integration
-
-Tests are automatically run on:
-- Push to main branch
-- Pull requests
-- Scheduled nightly builds
-
-## Coverage Goals
-
-- **Overall**: > 80%
-- **Core modules**: > 90%
-- **New features**: 100%
-
-## Troubleshooting
-
-### Import Errors
-If you get import errors, make sure you're running from the project root:
-```bash
-cd /path/to/Cullinan
-python tests/run_tests.py
-```
-
-### Module Not Found
-Ensure the project is installed in development mode:
-```bash
-pip install -e .
-```
-
-### Test Failures
-1. Check if all dependencies are installed
-2. Run with `--verbose` for detailed output
-3. Run individual test files to isolate issues:
-   ```bash
-   python -m unittest tests.test_core
-   ```
-
-## Contributing Tests
-
-When adding new features:
-1. Write tests first (TDD approach recommended)
-2. Ensure tests pass locally
-3. Add test file to this directory
-4. Update this README if adding new test category
-5. Maintain > 80% coverage
-
----
-
-**Last Updated**: November 11, 2025  
-**Maintained By**: Cullinan Development Team
-
+1. 优先编写可直接被 `pytest` 收集的测试函数或 `unittest.TestCase`。
+2. 避免依赖 `if __name__ == "__main__"`、`print("[PASS]")`、`return True/False` 的手工执行模式。
+3. 需要仓库根路径时，依赖 `tests\conftest.py` 提供的统一路径注入，不要在新文件里重复硬编码路径。
