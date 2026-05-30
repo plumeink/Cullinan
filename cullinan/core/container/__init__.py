@@ -1,29 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC Container Module (0.93)
+"""兼容导入入口，统一转发到 cullinan.core。"""
 
-This module provides the core IoC/DI container components:
-- ApplicationContext: Single entry point for container operations
-- Definition: Immutable dependency definition
-- ScopeType: Scope enumeration (SINGLETON/PROTOTYPE/REQUEST)
-- ScopeManager: Unified scope management
-- Factory: Unified instance creation
-
-Author: Plumeink
-"""
-
-from .context import ApplicationContext
-from .definitions import Definition, ScopeType
-from .scope import ScopeManager, SingletonScope, PrototypeScope, RequestScope
-from .factory import Factory
+from ..application_context import ApplicationContext, ContainerState
+from ..definitions import Definition, ScopeType
+from ..factory import Factory
+from ..scope_manager import ScopeManager, SingletonScope, PrototypeScope, RequestScope
 
 __all__ = [
-    'ApplicationContext',
-    'Definition',
-    'ScopeType',
-    'ScopeManager',
-    'SingletonScope',
-    'PrototypeScope',
-    'RequestScope',
-    'Factory',
+    "ApplicationContext",
+    "ContainerState",
+    "Definition",
+    "ScopeType",
+    "ScopeManager",
+    "SingletonScope",
+    "PrototypeScope",
+    "RequestScope",
+    "Factory",
 ]
-

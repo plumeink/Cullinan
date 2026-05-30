@@ -1,202 +1,163 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC/DI 2.0 - ApplicationContext 唯一容器入口
+"""Cullinan IoC/DI 统一根容器实现。"""
 
-作者：Plumeink
+from __future__ import annotations
 
-本模块实现 0.93 架构的核心：ApplicationContext。
-
-职责（按 2.6.3 Contract）：
-- register(definition): refresh 前允许，refresh 后抛 RegistryFrozenError
-- refresh(): 构建管线，末尾 freeze，调用 on_post_construct 和 on_startup
-- get(name): 严格语义，失败必抛结构化异常
-- try_get(name): 缺失/条件不满足返回 None，系统错误仍抛异常
-- shutdown(): 统一调度 on_shutdown 和 on_pre_destroy
-"""
-
-import threading
-import logging
 import asyncio
 import inspect
-from typing import Dict, Optional, List, Any, Set
+import logging
+import threading
+import time
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
-from .definitions import Definition
-from .scope_manager import ScopeManager
+from .definition_registry import DefinitionRegistry
+from .definitions import Definition, ScopeType
 from .exceptions import (
-    RegistryFrozenError,
-    DependencyNotFoundError,
     CircularDependencyError,
-    CreationError,
     ConditionNotMetError,
+    CreationError,
+    DependencyNotFoundError,
     LifecycleError,
+    RegistryFrozenError,
 )
 from .diagnostics import (
     format_circular_dependency_error,
     format_missing_dependency_error,
 )
-from .lifecycle_enhanced import LifecycleAware, SmartLifecycle, LifecyclePhase
+from .lifecycle_enhanced import LifecyclePhase
+from .scope_manager import ScopeManager
 
 logger = logging.getLogger(__name__)
 
 
+class ContainerState(Enum):
+    """根容器状态。"""
+
+    CREATED = "created"
+    REGISTERING = "registering"
+    VALIDATING = "validating"
+    WARMING_UP = "warming_up"
+    ACTIVE = "active"
+    DRAINING = "draining"
+    CLOSED = "closed"
+
+
 class ApplicationContext:
-    """0.93 唯一容器入口
+    """统一根容器。
 
-    所有注册、刷新、冻结、解析都必须通过此对象进行。
-
-    Usage:
-        ctx = ApplicationContext()
-        ctx.register(Definition(name='UserService', ...))
-        ctx.refresh()
-
-        user_service = ctx.get('UserService')
-
-        ctx.shutdown()
+    保留历史 ``ApplicationContext`` API，同时内部实现切换为单根容器模型。
     """
 
     __slots__ = (
-        '_definitions',
-        '_frozen',
-        '_refreshed',
-        '_scope_manager',
-        '_lock',
-        '_resolving_stack',
-        '_shutdown_handlers',
-        '_lifecycle_instances',  # 需要生命周期管理的实例
-        '_lifecycle_phases',     # 每个实例的当前生命周期阶段
-        '_startup_order',        # 启动顺序（用于反向关闭）
+        "_definition_registry",
+        "_scope_manager",
+        "_lock",
+        "_resolving_stack",
+        "_shutdown_handlers",
+        "_lifecycle_instances",
+        "_lifecycle_phases",
+        "_startup_order",
+        "_state",
+        "_id",
+        "_health_checks",
     )
 
-    def __init__(self):
-        """初始化 ApplicationContext"""
-        self._definitions: Dict[str, Definition] = {}
-        self._frozen: bool = False
-        self._refreshed: bool = False
-        self._scope_manager: ScopeManager = ScopeManager()
+    def __init__(self, container_id: Optional[str] = None):
+        self._definition_registry = DefinitionRegistry()
+        self._scope_manager = ScopeManager(root_id=container_id or hex(id(self)))
         self._lock = threading.RLock()
-        # 用于循环依赖检测的线程本地栈（使用 list 保证有序）
         self._resolving_stack: List[str] = []
-        # shutdown 回调
         self._shutdown_handlers: List[Any] = []
-        # 生命周期管理
-        self._lifecycle_instances: Dict[str, Any] = {}  # name -> instance
-        self._lifecycle_phases: Dict[str, LifecyclePhase] = {}  # name -> phase
-        self._startup_order: List[str] = []  # 启动顺序
+        self._lifecycle_instances: Dict[str, Any] = {}
+        self._lifecycle_phases: Dict[str, LifecyclePhase] = {}
+        self._startup_order: List[str] = []
+        self._state = ContainerState.CREATED
+        self._id = self._scope_manager.root_id
+        self._health_checks: List[Any] = []
 
     # ========================================================================
     # 注册 API
     # ========================================================================
 
     def register(self, definition: Definition) -> None:
-        """注册 Definition
-
-        Args:
-            definition: 要注册的定义
-
-        Raises:
-            RegistryFrozenError: 如果 registry 已冻结
-            ValueError: 如果 name 重复
-        """
         with self._lock:
-            if self._frozen:
+            if self._definition_registry.is_frozen:
                 raise RegistryFrozenError(
                     f"无法注册 '{definition.name}'：Registry 已冻结（refresh 后禁止修改）"
                 )
-
-            if definition.name in self._definitions:
-                raise ValueError(f"Definition '{definition.name}' 已存在，禁止重复注册")
-
-            self._definitions[definition.name] = definition
-            logger.debug(f"注册 Definition: {definition.name} (scope={definition.scope.name}, source={definition.source})")
+            if self._state == ContainerState.CREATED:
+                self._state = ContainerState.REGISTERING
+            self._definition_registry.register(definition)
 
     def register_all(self, definitions: List[Definition]) -> None:
-        """批量注册 Definitions
-
-        Args:
-            definitions: 要注册的定义列表
-        """
         for definition in definitions:
             self.register(definition)
+
+    def add_health_check(self, callback) -> None:
+        self._health_checks.append(callback)
 
     # ========================================================================
     # 生命周期 API
     # ========================================================================
 
     def refresh(self) -> None:
-        """刷新容器：构建管线、初始化 eager 实例、调用生命周期钩子、冻结 registry
-
-        调用后：
-        - registry 被冻结，禁止任何结构性写入
-        - eager=True 的 definition 会被预创建
-        - PendingRegistry 中的装饰器注册会被处理
-        - 所有组件的 on_post_construct 和 on_startup 会被调用
-        """
         with self._lock:
-            if self._refreshed:
+            if self._state == ContainerState.ACTIVE:
                 logger.warning("ApplicationContext.refresh() 已被调用过，跳过")
                 return
+            if self._state == ContainerState.CLOSED:
+                raise LifecycleError("已关闭的 ApplicationContext 不能再次 refresh")
+
+            if self._state == ContainerState.CREATED:
+                self._state = ContainerState.REGISTERING
 
             logger.info("ApplicationContext.refresh() 开始")
-
-            # 0. 处理装饰器收集的待注册组件
             self._process_pending_registrations()
+            self._state = ContainerState.VALIDATING
+            self._validate_definitions()
+            self._state = ContainerState.WARMING_UP
+            self._warm_up()
+            self._definition_registry.freeze()
+            self._run_health_checks()
+            self._state = ContainerState.ACTIVE
+            logger.info(
+                "ApplicationContext.refresh() 完成，共注册 %s 个 Definition",
+                self.definition_count,
+            )
 
-            # 1. 验证 dependencies 是否存在环（eager 初始化排序）
-            self._validate_dependencies()
+    def begin_draining(self) -> None:
+        with self._lock:
+            if self._state == ContainerState.CLOSED:
+                return
+            self._state = ContainerState.DRAINING
+            self._scope_manager.begin_drain()
 
-            # 2. 预创建 eager 实例
-            self._initialize_eager_definitions()
+    def shutdown(self, timeout: float = 30.0) -> None:
+        with self._lock:
+            if self._state == ContainerState.CLOSED:
+                return
+            self.begin_draining()
 
-            # 3. 冻结 registry
-            self._frozen = True
-            self._refreshed = True
-
-            # 4. 执行生命周期启动（所有 singleton 组件）
-            self._execute_lifecycle_startup()
-
-            logger.info(f"ApplicationContext.refresh() 完成，共注册 {len(self._definitions)} 个 Definition")
-
-    def shutdown(self) -> None:
-        """关闭容器：调用所有组件的生命周期钩子，执行 shutdown 回调，清理资源
-
-        执行顺序（按启动逆序）：
-        1. on_shutdown / on_shutdown_async
-        2. on_pre_destroy / on_pre_destroy_async
-        3. 自定义 shutdown handlers
-        4. 清理 scope 缓存
-        """
-        logger.info("ApplicationContext.shutdown() 开始")
-
-        # 1. 执行生命周期关闭
+        self._await_request_drained(timeout)
         self._execute_lifecycle_shutdown()
 
-        # 2. 执行自定义 shutdown handlers
         for handler in self._shutdown_handlers:
             try:
                 result = handler()
                 if inspect.iscoroutine(result):
-                    try:
-                        loop = asyncio.get_event_loop()
-                        if loop.is_running():
-                            asyncio.ensure_future(result)
-                        else:
-                            loop.run_until_complete(result)
-                    except RuntimeError:
-                        asyncio.run(result)
-            except Exception as e:
-                logger.error(f"Shutdown handler 执行失败: {e}")
+                    self._run_coroutine(result)
+            except Exception as exc:
+                logger.error("Shutdown handler 执行失败: %s", exc)
 
-        # 3. 清理 scope 缓存
         self._scope_manager.clear_all()
-
-        # 4. 清理生命周期跟踪
         self._lifecycle_instances.clear()
         self._lifecycle_phases.clear()
         self._startup_order.clear()
-
+        self._state = ContainerState.CLOSED
         logger.info("ApplicationContext.shutdown() 完成")
 
     def add_shutdown_handler(self, handler) -> None:
-        """添加 shutdown 回调"""
         self._shutdown_handlers.append(handler)
 
     # ========================================================================
@@ -204,87 +165,54 @@ class ApplicationContext:
     # ========================================================================
 
     def get(self, name: str) -> Any:
-        """解析依赖（严格语义）
-
-        Args:
-            name: 依赖名称
-
-        Returns:
-            解析得到的实例
-
-        Raises:
-            DependencyNotFoundError: 依赖不存在
-            ConditionNotMetError: 条件不满足
-            CircularDependencyError: 循环依赖
-            CreationError: 创建失败
-        """
-        definition = self._definitions.get(name)
+        definition = self._definition_registry.get(name)
         if definition is None:
             raise DependencyNotFoundError(
                 message=format_missing_dependency_error(
                     dependency_name=name,
-                    available_sources=list(self._definitions.keys())
+                    available_sources=self.list_definitions(),
                 ),
                 dependency_name=name,
                 candidate_sources=[
-                    {'source': n, 'reason': 'name_mismatch'}
-                    for n in self._definitions.keys()
-                ]
+                    {"source": definition_name, "reason": "name_mismatch"}
+                    for definition_name in self.list_definitions()
+                ],
             )
-
         return self._resolve(definition)
 
     def try_get(self, name: str) -> Optional[Any]:
-        """尝试解析依赖（可选语义）
-
-        Args:
-            name: 依赖名称
-
-        Returns:
-            解析得到的实例，或 None（如果不存在或条件不满足）
-
-        Raises:
-            CircularDependencyError: 循环依赖（系统错误，仍抛出）
-            CreationError: 创建失败（系统错误，仍抛出）
-        """
-        definition = self._definitions.get(name)
+        definition = self._definition_registry.get(name)
         if definition is None:
             return None
-
-        # 检查条件
         if not definition.check_conditions(self):
-            logger.debug(f"try_get('{name}'): 条件不满足，返回 None")
+            logger.debug("try_get('%s'): 条件不满足，返回 None", name)
             return None
-
-        # 系统错误仍然抛出
         return self._resolve(definition)
 
     def has(self, name: str) -> bool:
-        """检查是否存在指定的 Definition"""
-        return name in self._definitions
+        return self._definition_registry.has(name)
 
     def get_definition(self, name: str) -> Optional[Definition]:
-        """获取 Definition（不解析实例）"""
-        return self._definitions.get(name)
+        return self._definition_registry.get(name)
 
     def list_definitions(self) -> List[str]:
-        """列出所有已注册的 Definition 名称"""
-        return list(self._definitions.keys())
+        return self._definition_registry.list_names()
 
     # ========================================================================
     # Request Context 代理
     # ========================================================================
 
-    def enter_request_context(self) -> Dict[str, Any]:
-        """进入请求上下文"""
+    def enter_request_context(self):
+        if self._state != ContainerState.ACTIVE:
+            raise LifecycleError(
+                f"容器状态为 {self._state.value}，当前不接受新的请求作用域"
+            )
         return self._scope_manager.enter_request_context()
 
     def exit_request_context(self) -> None:
-        """退出请求上下文"""
         self._scope_manager.exit_request_context()
 
     def is_request_active(self) -> bool:
-        """检查请求上下文是否活跃"""
         return self._scope_manager.is_request_active()
 
     # ========================================================================
@@ -292,102 +220,102 @@ class ApplicationContext:
     # ========================================================================
 
     @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def state(self) -> ContainerState:
+        return self._state
+
+    @property
     def is_frozen(self) -> bool:
-        """Registry 是否已冻结"""
-        return self._frozen
+        return self._definition_registry.is_frozen
 
     @property
     def is_refreshed(self) -> bool:
-        """是否已 refresh"""
-        return self._refreshed
+        return self._state in {
+            ContainerState.WARMING_UP,
+            ContainerState.ACTIVE,
+            ContainerState.DRAINING,
+            ContainerState.CLOSED,
+        }
 
     @property
     def definition_count(self) -> int:
-        """已注册的 Definition 数量"""
-        return len(self._definitions)
+        return self._definition_registry.count
+
+    @property
+    def active_request_count(self) -> int:
+        return self._scope_manager.active_request_count
 
     # ========================================================================
     # 内部方法
     # ========================================================================
 
     def _resolve(self, definition: Definition) -> Any:
-        """内部解析方法
-
-        Args:
-            definition: 要解析的定义
-
-        Returns:
-            实例对象
-        """
         name = definition.name
-
-        # 1. 循环依赖检测（有序链）
         if name in self._resolving_stack:
-            # 构建循环链路
             cycle_start = self._resolving_stack.index(name)
             chain = self._resolving_stack[cycle_start:] + [name]
             raise CircularDependencyError(
                 message=format_circular_dependency_error(chain),
                 dependency_chain=chain,
-                dependency_name=name
+                dependency_name=name,
             )
 
-        # 2. 条件检查
         if not definition.check_conditions(self):
-            failed = [f"condition_{i}" for i in range(len(definition.conditions))]
             raise ConditionNotMetError(
                 message=f"依赖 '{name}' 的条件不满足",
                 dependency_name=name,
-                failed_conditions=failed
+                failed_conditions=[f"condition_{index}" for index, _ in enumerate(definition.conditions)],
             )
 
-        # 3. 通过 ScopeManager 获取/创建实例
+        if (
+            definition.scope == ScopeType.REQUEST
+            and any(
+                self._definition_registry.get(parent_name)
+                and self._definition_registry.get(parent_name).scope == ScopeType.SINGLETON
+                for parent_name in self._resolving_stack
+            )
+        ):
+            raise CreationError(
+                message=f"singleton 组件不能直接依赖 request 作用域组件 '{name}'",
+                dependency_name=name,
+            )
+
         self._resolving_stack.append(name)
         try:
-            instance = self._scope_manager.get(
+            return self._scope_manager.get(
                 scope_type=definition.scope,
                 name=name,
-                factory=lambda: self._create_instance(definition)
+                factory=lambda: self._create_instance(definition),
             )
-            return instance
         finally:
             self._resolving_stack.pop()
 
     def _create_instance(self, definition: Definition) -> Any:
-        """调用 factory 创建实例
-
-        Args:
-            definition: 定义
-
-        Returns:
-            创建的实例
-
-        Raises:
-            CreationError: 创建失败
-            CircularDependencyError: 循环依赖（直接传播，不包装）
-        """
         try:
             instance = definition.factory(self)
             if instance is None:
                 raise CreationError(
                     message=f"依赖 '{definition.name}' 的 factory 返回了 None",
-                    dependency_name=definition.name
+                    dependency_name=definition.name,
                 )
-            logger.debug(f"创建实例: {definition.name} (scope={definition.scope.name})")
             return instance
         except (CreationError, CircularDependencyError, ConditionNotMetError):
-            # 这些异常直接传播，不包装
             raise
-        except Exception as e:
+        except Exception as exc:
             raise CreationError(
-                message=f"创建依赖 '{definition.name}' 失败: {e}",
+                message=f"创建依赖 '{definition.name}' 失败: {exc}",
                 dependency_name=definition.name,
-                cause=e
-            )
+                cause=exc,
+            ) from exc
+
+    def _validate_definitions(self) -> None:
+        self._validate_dependencies()
+        self._validate_scope_constraints()
 
     def _validate_dependencies(self) -> None:
-        """验证 dependencies 是否存在环"""
-        # 简单拓扑排序检测
         visited: Set[str] = set()
         path: List[str] = []
 
@@ -398,570 +326,426 @@ class ApplicationContext:
                 raise CircularDependencyError(
                     message=format_circular_dependency_error(chain),
                     dependency_chain=chain,
-                    dependency_name=name
+                    dependency_name=name,
                 )
-
             if name in visited:
                 return
 
-            definition = self._definitions.get(name)
+            definition = self._definition_registry.get(name)
             if definition is None:
                 return
 
             path.append(name)
-            if definition.dependencies:
-                for dep in definition.dependencies:
-                    visit(dep)
+            for dep_name in definition.dependencies:
+                if not self._definition_registry.has(dep_name):
+                    raise DependencyNotFoundError(
+                        message=f"依赖 '{definition.name}' 缺少被声明的组件 '{dep_name}'",
+                        dependency_name=dep_name,
+                        candidate_sources=[],
+                    )
+                visit(dep_name)
             path.pop()
             visited.add(name)
 
-        for name in self._definitions:
+        for name in self._definition_registry.list_names():
             visit(name)
 
-    def _initialize_eager_definitions(self) -> None:
-        """初始化 eager=True 的 Definition"""
-        eager_definitions = [
-            d for d in self._definitions.values() if d.eager
-        ]
+    def _validate_scope_constraints(self) -> None:
+        for definition in self._definition_registry.values():
+            if definition.scope != ScopeType.SINGLETON:
+                continue
+            for dep_name in definition.dependencies:
+                dependency = self._definition_registry.get(dep_name)
+                if dependency and dependency.scope == ScopeType.REQUEST:
+                    raise LifecycleError(
+                        f"singleton 组件 '{definition.name}' 不能直接依赖 request 组件 '{dep_name}'"
+                    )
 
-        if not eager_definitions:
-            return
+    def _warm_up(self) -> None:
+        for definition_name in self._ordered_definition_names(self._warmup_candidates()):
+            definition = self._definition_registry.get(definition_name)
+            if definition is None:
+                continue
+            self._resolve(definition)
+        self._execute_lifecycle_startup()
 
-        logger.info(f"预创建 {len(eager_definitions)} 个 eager Definition")
+    def _warmup_candidates(self) -> List[str]:
+        candidates: List[str] = []
+        for definition in self._definition_registry.values():
+            if definition.scope != ScopeType.SINGLETON:
+                continue
+            if definition.eager or definition.healthcheck is not None or self._definition_has_lifecycle(definition):
+                candidates.append(definition.name)
+        return candidates
 
-        for definition in eager_definitions:
-            try:
-                self._resolve(definition)
-            except Exception as e:
-                logger.error(f"预创建 '{definition.name}' 失败: {e}")
-                raise
+    def _ordered_definition_names(self, names: List[str]) -> List[str]:
+        selected = set(names)
+        ordered: List[str] = []
+        temporary: Set[str] = set()
+        permanent: Set[str] = set()
+
+        def visit(name: str) -> None:
+            if name in permanent:
+                return
+            if name in temporary:
+                cycle = list(temporary) + [name]
+                raise CircularDependencyError(
+                    message=format_circular_dependency_error(cycle),
+                    dependency_chain=cycle,
+                    dependency_name=name,
+                )
+            temporary.add(name)
+            definition = self._definition_registry.get(name)
+            if definition is not None:
+                for dep_name in definition.dependencies:
+                    if dep_name in selected:
+                        visit(dep_name)
+            temporary.remove(name)
+            permanent.add(name)
+            ordered.append(name)
+
+        for name in names:
+            visit(name)
+        return ordered
 
     def _process_pending_registrations(self) -> None:
-        """处理所有待注册的装饰器组件
-
-        从 PendingRegistry 获取所有待注册项，转换为 Definition 并注册。
-        对于 Controller，还会注册路由到 HandlerRegistry。
-        处理完成后清空并冻结 PendingRegistry。
-        """
-        from .pending import PendingRegistry, ComponentType
-        from .definitions import ScopeType
+        from .pending import PendingRegistry
 
         pending = PendingRegistry.get_instance()
-        registrations = pending.get_all()
-
+        registrations = pending.drain()
         if not registrations:
-            logger.debug("没有待处理的装饰器注册")
+            pending.freeze()
             return
 
-        logger.info(f"处理 {len(registrations)} 个装饰器注册")
-
-        for reg in registrations:
-            # 转换 scope 字符串到枚举
+        for registration in registrations:
             try:
-                scope = ScopeType[reg.scope.upper()]
+                scope = ScopeType[registration.scope.upper()]
             except KeyError:
-                logger.warning(f"未知 scope '{reg.scope}'，使用 SINGLETON")
+                logger.warning("未知 scope '%s'，使用 SINGLETON", registration.scope)
                 scope = ScopeType.SINGLETON
 
-            # 为类创建工厂函数
-            cls = reg.cls
-
-            def create_factory(target_cls):
-                """创建工厂闭包"""
-                def factory(ctx: 'ApplicationContext') -> object:
-                    return self._create_class_instance(target_cls)
-                return factory
-
-            # 创建 Definition
+            cls = registration.cls
             definition = Definition(
-                name=reg.name,
+                name=registration.name,
                 type_=cls,
                 scope=scope,
-                factory=create_factory(cls),
-                source=reg.get_source_location(),
-                dependencies=reg.dependencies,
-                conditions=reg.conditions if reg.conditions else [],
+                factory=self._build_class_factory(cls),
+                source=registration.get_source_location(),
+                dependencies=registration.dependencies or (),
+                conditions=registration.conditions,
+                tags={"component_type": registration.component_type.value},
             )
 
-            # 注册到内部定义表（不走 register 方法，避免冻结检查）
-            if reg.name in self._definitions:
-                logger.warning(f"Definition '{reg.name}' 已存在，跳过装饰器注册")
-                continue
+            if self._definition_registry.has(registration.name):
+                raise ValueError(f"Definition '{registration.name}' 已存在，禁止重复注册")
 
-            self._definitions[reg.name] = definition
+            self._definition_registry.register(definition)
 
-            # ========== 特殊处理 Controller：注册路由 ==========
-            if reg.component_type == ComponentType.CONTROLLER:
-                self._register_controller_routes(cls, reg.url_prefix or "")
-            # ========== END 特殊处理 ==========
+            if registration.component_type.value == "controller":
+                self._register_controller_routes(cls, registration.url_prefix or "")
 
-            logger.debug(
-                f"从装饰器注册: {reg.name} "
-                f"(type={reg.component_type.value}, scope={scope.name})"
-            )
-
-        # 清空并冻结 PendingRegistry
-        pending.clear()
         pending.freeze()
 
-        logger.info(f"装饰器注册处理完成")
+    def _build_class_factory(self, target_cls):
+        def factory(ctx: "ApplicationContext") -> object:
+            return ctx._create_class_instance(target_cls)
+
+        return factory
 
     @staticmethod
     def _unwrap_route_func(method_func):
-        """从路由装饰器包装中提取原始用户函数
-
-        路由装饰器（get_api/post_api 等）会将用户定义的方法包装为
-        异步 Tornado handler wrapper。在单分发器模式下，gateway dispatcher
-        直接调用原始函数并由自己负责参数解析和响应转换。
-
-        查找顺序：
-        1. __cullinan_original_func__ — 路由装饰器显式存储的原始函数
-        2. __wrapped__ — 标准包装协议
-        3. 返回原始 method_func 作为兜底
-
-        Args:
-            method_func: 可能被路由装饰器包装过的函数
-
-        Returns:
-            原始用户定义的函数
-        """
-        original = getattr(method_func, '__cullinan_original_func__', None)
+        original = getattr(method_func, "__cullinan_original_func__", None)
         if original is not None:
             return original
-        wrapped = getattr(method_func, '__wrapped__', None)
+        wrapped = getattr(method_func, "__wrapped__", None)
         if wrapped is not None:
             return wrapped
         return method_func
 
     def _register_controller_routes(self, cls: type, url_prefix: str) -> None:
-        """注册 Controller 的路由到 gateway Router
-
-        扫描 Controller 类中被 @get_api/@post_api 等装饰的方法，
-        提取原始用户函数后注册到 gateway Router（v0.93 单分发器模式）。
-
-        gateway dispatcher 负责参数解析和响应转换，因此注册到 Router 的
-        handler 必须是用户定义的原始函数而非 Tornado handler wrapper。
-
-        Args:
-            cls: Controller 类
-            url_prefix: URL 前缀（原始模板格式，如 /api/users/{id}）
-        """
         try:
             from cullinan.controller.core import _controller_decoration_context
             from cullinan.controller.registry import get_controller_registry
             from cullinan.gateway import get_router
+            from cullinan.handler import get_handler_registry
 
             gateway_router = get_router()
-
-            # 获取在类定义时收集的方法（通过 add_func）
+            handler_registry = get_handler_registry()
             func_list = _controller_decoration_context.get() or []
             _controller_decoration_context.set([])
 
-            # 扫描类的所有属性，查找被装饰的方法（fallback）
             if not func_list:
                 for attr_name in dir(cls):
-                    if attr_name.startswith('_'):
+                    if attr_name.startswith("_"):
                         continue
                     attr = getattr(cls, attr_name, None)
                     if not callable(attr):
                         continue
-                    # 检查是否有路由元数据（直接或通过包装）
-                    route_url = getattr(attr, '__cullinan_url__', None)
-                    route_type = getattr(attr, '__cullinan_method__', None)
+                    route_url = getattr(attr, "__cullinan_url__", None)
+                    route_type = getattr(attr, "__cullinan_method__", None)
                     if route_url is None or route_type is None:
-                        # 尝试从 __wrapped__ 或 __cullinan_original_func__ 获取
-                        inner = getattr(attr, '__cullinan_original_func__', None) or getattr(attr, '__wrapped__', None)
+                        inner = getattr(attr, "__cullinan_original_func__", None) or getattr(attr, "__wrapped__", None)
                         if inner is not None:
-                            route_url = getattr(inner, '__cullinan_url__', route_url)
-                            route_type = getattr(inner, '__cullinan_method__', route_type)
+                            route_url = getattr(inner, "__cullinan_url__", route_url)
+                            route_type = getattr(inner, "__cullinan_method__", route_type)
                     if route_url is not None and route_type is not None:
                         func_list.append((route_url, attr, route_type))
 
             if not func_list:
-                logger.debug(f"Controller {cls.__name__} 没有路由方法")
                 return
 
-            # 注册到 ControllerRegistry
             controller_registry = get_controller_registry()
             controller_name = cls.__name__
             controller_registry.register(controller_name, cls, url_prefix=url_prefix)
 
-            # 注册每个路由方法到 gateway Router
             for method_url, method_func, http_method in func_list:
-                full_url = url_prefix + method_url
-
-                # 提取原始用户函数用于 gateway 分发
                 original_func = self._unwrap_route_func(method_func)
+                original_url = getattr(original_func, "__cullinan_url__", None)
+                full_url = url_prefix + (original_url if original_url is not None else method_url)
 
-                # 优先使用原始函数上的 URL 模板（包含 {param} 占位符）
-                original_url = getattr(original_func, '__cullinan_url__', None)
-                if original_url is not None:
-                    full_url = url_prefix + original_url
-
-                # 注册到 ControllerRegistry（保留 wrapper 用于可能的旧路径）
                 controller_registry.register_method(
                     controller_name,
                     method_url,
                     http_method,
-                    method_func
+                    method_func,
                 )
 
-                # 注册到 gateway Router（使用原始函数，由 dispatcher 负责参数解析）
                 gateway_router.add_route(
                     method=http_method.upper(),
                     path=full_url,
                     handler=original_func,
                     controller_cls=cls,
-                    controller_method_name=getattr(original_func, '__name__', ''),
+                    controller_method_name=getattr(original_func, "__name__", ""),
                 )
-
-            logger.debug(f"注册 Controller: {controller_name} 包含 {len(func_list)} 个路由")
-
-        except Exception as e:
-            logger.warning(f"注册 Controller {cls.__name__} 路由失败: {e}")
-
+                handler_registry.register(full_url, original_func)
+        except Exception as exc:
+            logger.warning("注册 Controller %s 路由失败: %s", cls.__name__, exc)
 
     def _create_class_instance(self, cls: type) -> object:
-        """创建类实例并注入依赖
-
-        Args:
-            cls: 要实例化的类
-
-        Returns:
-            创建的实例
-        """
         from .decorators import Inject, InjectByName, Lazy, get_injection_markers
 
-        # 创建实例
         instance = cls()
-
-        # 获取注入标记
         markers = get_injection_markers(cls)
-
-        # 获取类型注解
-        type_hints = {}
         try:
             import typing
+
             type_hints = typing.get_type_hints(cls)
         except Exception:
-            type_hints = getattr(cls, '__annotations__', {})
+            type_hints = getattr(cls, "__annotations__", {})
 
-        # 处理每个注入点
         for attr_name, marker in markers.items():
             if isinstance(marker, Lazy):
-                # 延迟注入：创建属性代理
                 dep_name = marker.name or self._infer_dependency_name(attr_name, type_hints.get(attr_name))
-                self._setup_lazy_injection(instance, attr_name, dep_name)
+                setattr(instance, attr_name, _LazyProxy(self, dep_name))
             elif isinstance(marker, InjectByName):
-                # 按名称注入
                 dep_name = marker.name or self._infer_dependency_name(attr_name, None)
                 dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
                 setattr(instance, attr_name, dep_instance)
             elif isinstance(marker, Inject):
-                # 按类型注入
                 type_hint = type_hints.get(attr_name)
-                if type_hint:
-                    dep_name = type_hint.__name__ if hasattr(type_hint, '__name__') else str(type_hint)
-                else:
-                    dep_name = self._infer_dependency_name(attr_name, None)
+                dep_name = self._infer_dependency_name(attr_name, type_hint)
                 dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
                 setattr(instance, attr_name, dep_instance)
 
         return instance
 
-    def _infer_dependency_name(self, attr_name: str, type_hint) -> str:
-        """从属性名推断依赖名称
-
-        Args:
-            attr_name: 属性名 (如 user_service)
-            type_hint: 类型注解
-
-        Returns:
-            推断的依赖名称 (如 UserService)
-        """
-        if type_hint and hasattr(type_hint, '__name__'):
+    @staticmethod
+    def _infer_dependency_name(attr_name: str, type_hint) -> str:
+        if type_hint and hasattr(type_hint, "__name__"):
             return type_hint.__name__
+        parts = attr_name.split("_")
+        return "".join(part.capitalize() for part in parts)
 
-        # 下划线命名转 PascalCase: user_service -> UserService
-        parts = attr_name.split('_')
-        return ''.join(part.capitalize() for part in parts)
+    def _definition_has_lifecycle(self, definition: Definition) -> bool:
+        target_cls = definition.type_
+        if target_cls is None:
+            return False
+        lifecycle_methods = (
+            "on_post_construct",
+            "on_post_construct_async",
+            "on_startup",
+            "on_startup_async",
+            "on_shutdown",
+            "on_shutdown_async",
+            "on_pre_destroy",
+            "on_pre_destroy_async",
+        )
+        for method_name in lifecycle_methods:
+            if self._is_class_method_overridden(target_cls, method_name):
+                return True
+        return False
 
-    def _setup_lazy_injection(self, instance: object, attr_name: str, dep_name: str) -> None:
-        """设置延迟注入
-
-        使用属性描述符实现首次访问时解析依赖。
-
-        Args:
-            instance: 目标实例
-            attr_name: 属性名
-            dep_name: 依赖名称
-        """
-        ctx = self
-        resolved_attr = f'_lazy_{attr_name}_resolved'
-        cache_attr = f'_lazy_{attr_name}_cache'
-
-        # 初始化标记
-        setattr(instance, resolved_attr, False)
-        setattr(instance, cache_attr, None)
-
-        # 保存原始类，用于设置描述符
-        original_class = type(instance)
-
-        # 创建 getter
-        def lazy_getter(self):
-            if not getattr(self, resolved_attr, False):
-                setattr(self, cache_attr, ctx.get(dep_name))
-                setattr(self, resolved_attr, True)
-            return getattr(self, cache_attr)
-
-        # 将延迟获取函数绑定到实例
-        # 使用 __dict__ 避免触发 __getattribute__
-        bound_getter = lambda: lazy_getter(instance)
-        instance.__dict__[attr_name] = property(lambda s: bound_getter())
-
-    # ========================================================================
-    # 统一生命周期管理方法
-    # ========================================================================
+    @staticmethod
+    def _is_class_method_overridden(target_cls: type, method_name: str) -> bool:
+        for cls in target_cls.__mro__:
+            if method_name not in cls.__dict__:
+                continue
+            if cls.__name__ in ("LifecycleAware", "SmartLifecycle", "object"):
+                return False
+            return True
+        return False
 
     def _execute_lifecycle_startup(self) -> None:
-        """执行所有组件的启动生命周期
-
-        按 phase 顺序执行：
-        1. on_post_construct / on_post_construct_async
-        2. on_startup / on_startup_async
-
-        较低的 phase 值先执行。
-        """
-        # 收集所有 singleton 实例及其 phase
-        instances_with_phase: List[tuple] = []
-
-        for name, definition in self._definitions.items():
-            # 只处理 singleton scope 的组件
-            from .definitions import ScopeType
-            if definition.scope != ScopeType.SINGLETON:
+        instances_with_phase = []
+        for definition_name in self._ordered_definition_names(self._warmup_candidates()):
+            definition = self._definition_registry.get(definition_name)
+            if definition is None or definition.scope != ScopeType.SINGLETON:
                 continue
-
-            # 尝试获取实例（可能已在 eager 阶段创建）
-            try:
-                instance = self._scope_manager.get(
-                    scope_type=definition.scope,
-                    name=name,
-                    factory=lambda: self._create_instance(definition)
-                )
-            except Exception as e:
-                logger.warning(f"跳过组件 {name} 的生命周期启动: {e}")
+            if not self._scope_manager.has(ScopeType.SINGLETON, definition_name):
                 continue
-
-            if instance is None:
+            instance = self._scope_manager.get(
+                scope_type=ScopeType.SINGLETON,
+                name=definition_name,
+                factory=lambda: self._create_instance(definition),
+            )
+            if not self._instance_has_lifecycle(instance):
                 continue
-
-            # 获取 phase（Duck Typing：只要有 get_phase 方法就调用）
             phase = 0
-            if hasattr(instance, 'get_phase') and callable(getattr(instance, 'get_phase')):
+            if hasattr(instance, "get_phase") and callable(getattr(instance, "get_phase")):
                 try:
                     phase = instance.get_phase()
                 except Exception:
                     phase = 0
+            instances_with_phase.append((definition_name, instance, phase))
 
-            instances_with_phase.append((name, instance, phase))
-
-        # 按 phase 排序（较低的先执行）
-        instances_with_phase.sort(key=lambda x: x[2])
-
-        # 记录启动顺序（用于关闭时反向执行）
+        instances_with_phase.sort(key=lambda item: item[2])
         self._startup_order = [name for name, _, _ in instances_with_phase]
 
-        logger.debug(f"生命周期启动顺序: {' -> '.join(self._startup_order)}")
-
-        # 执行 POST_CONSTRUCT 阶段
-        for name, instance, phase in instances_with_phase:
+        for name, instance, _ in instances_with_phase:
             self._lifecycle_instances[name] = instance
             self._lifecycle_phases[name] = LifecyclePhase.POST_CONSTRUCT
+            self._call_lifecycle_method(name, instance, "on_post_construct", "on_post_construct_async")
 
-            # Duck Typing: 只要有方法就调用，不需要继承特定基类
-            self._call_lifecycle_method(name, instance, 'on_post_construct', 'on_post_construct_async')
-
-        # 执行 STARTING 阶段
-        for name, instance, phase in instances_with_phase:
+        for name, instance, _ in instances_with_phase:
             self._lifecycle_phases[name] = LifecyclePhase.STARTING
-
-            # Duck Typing: 只要有方法就调用，不需要继承特定基类
-            self._call_lifecycle_method(name, instance, 'on_startup', 'on_startup_async')
-
+            self._call_lifecycle_method(name, instance, "on_startup", "on_startup_async")
             self._lifecycle_phases[name] = LifecyclePhase.RUNNING
 
-        logger.info(f"生命周期启动完成，共 {len(instances_with_phase)} 个组件")
-
     def _execute_lifecycle_shutdown(self) -> None:
-        """执行所有组件的关闭生命周期
-
-        按启动顺序的逆序执行：
-        1. on_shutdown / on_shutdown_async
-        2. on_pre_destroy / on_pre_destroy_async
-        """
-        # 按启动顺序的逆序执行
         shutdown_order = list(reversed(self._startup_order))
-
-        logger.debug(f"生命周期关闭顺序: {' -> '.join(shutdown_order)}")
-
-        # 执行 STOPPING 阶段
         for name in shutdown_order:
             instance = self._lifecycle_instances.get(name)
             if instance is None:
                 continue
-
             self._lifecycle_phases[name] = LifecyclePhase.STOPPING
+            self._call_lifecycle_method(name, instance, "on_shutdown", "on_shutdown_async")
 
-            # Duck Typing: 只要有方法就调用，不需要继承特定基类
-            self._call_lifecycle_method(name, instance, 'on_shutdown', 'on_shutdown_async')
-
-        # 执行 PRE_DESTROY 阶段
         for name in shutdown_order:
             instance = self._lifecycle_instances.get(name)
             if instance is None:
                 continue
-
             self._lifecycle_phases[name] = LifecyclePhase.PRE_DESTROY
-
-            # Duck Typing: 只要有方法就调用，不需要继承特定基类
-            self._call_lifecycle_method(name, instance, 'on_pre_destroy', 'on_pre_destroy_async')
-
+            self._call_lifecycle_method(name, instance, "on_pre_destroy", "on_pre_destroy_async")
             self._lifecycle_phases[name] = LifecyclePhase.DESTROYED
 
-        logger.info(f"生命周期关闭完成，共 {len(shutdown_order)} 个组件")
-
-    def _call_lifecycle_method(self, name: str, instance: Any,
-                                sync_method: str, async_method: str) -> None:
-        """调用组件的生命周期方法（Duck Typing）
-
-        优先调用 async 版本，然后调用 sync 版本。
-        处理 sync 方法返回 coroutine 的情况。
-
-        使用 Duck Typing：只要实例有对应方法就调用，不需要继承任何基类。
-
-        Args:
-            name: 组件名称
-            instance: 组件实例
-            sync_method: 同步方法名
-            async_method: 异步方法名
-        """
-        # 检查 async 方法是否存在且被用户定义
+    def _call_lifecycle_method(self, name: str, instance: Any, sync_method: str, async_method: str) -> None:
         async_func = getattr(instance, async_method, None)
         if async_func and callable(async_func) and self._is_user_defined_method(instance, async_method):
             try:
-                logger.debug(f"  {name}.{async_method}()")
-                coro = async_func()
-                self._run_coroutine(coro)
-            except Exception as e:
-                logger.error(f"  [FAIL] {name}.{async_method}(): {e}")
+                self._run_coroutine(async_func())
+            except Exception as exc:
+                logger.error("生命周期方法 %s.%s 执行失败: %s", name, async_method, exc)
 
-        # 检查 sync 方法是否存在且被用户定义
         sync_func = getattr(instance, sync_method, None)
         if sync_func and callable(sync_func) and self._is_user_defined_method(instance, sync_method):
             try:
-                logger.debug(f"  {name}.{sync_method}()")
                 result = sync_func()
-                # 处理 async def 方法（返回 coroutine）
                 if inspect.iscoroutine(result):
                     self._run_coroutine(result)
-            except Exception as e:
-                logger.error(f"  [FAIL] {name}.{sync_method}(): {e}")
+            except Exception as exc:
+                logger.error("生命周期方法 %s.%s 执行失败: %s", name, sync_method, exc)
 
     def _is_user_defined_method(self, instance: Any, method_name: str) -> bool:
-        """检查方法是否由用户定义（非继承自基类的空方法）
+        return self._is_class_method_overridden(type(instance), method_name)
 
-        使用 Duck Typing 方式检测：
-        1. 如果类没有继承 LifecycleAware/SmartLifecycle，直接返回 True
-        2. 如果继承了，检查方法是否被重写
+    @staticmethod
+    def _instance_has_lifecycle(instance: Any) -> bool:
+        for method_name in (
+            "on_post_construct",
+            "on_post_construct_async",
+            "on_startup",
+            "on_startup_async",
+            "on_shutdown",
+            "on_shutdown_async",
+            "on_pre_destroy",
+            "on_pre_destroy_async",
+        ):
+            method = getattr(instance, method_name, None)
+            if method and callable(method):
+                if type(instance).__name__ in ("LifecycleAware", "SmartLifecycle"):
+                    continue
+                return True
+        return False
 
-        Args:
-            instance: 实例
-            method_name: 方法名
-
-        Returns:
-            True 如果方法由用户定义
-        """
-        method = getattr(instance, method_name, None)
-        if not method or not callable(method):
-            return False
-
-        # 获取方法所属的类
-        try:
-            if hasattr(method, '__func__'):
-                # 对于绑定方法，获取其底层函数
-                method_func = method.__func__
-            else:
-                method_func = method
-
-            # 找到定义这个方法的类
-            for cls in type(instance).__mro__:
-                if method_name in cls.__dict__:
-                    # 如果是在 LifecycleAware 或 SmartLifecycle 中定义的，
-                    # 说明是空实现，返回 False
-                    if cls.__name__ in ('LifecycleAware', 'SmartLifecycle', 'Service'):
-                        # 但如果用户类也定义了同名方法（覆盖），则返回 True
-                        # 继续检查是否有更具体的子类定义了它
-                        continue
-                    return True
-            return False
-        except (AttributeError, TypeError):
-            # 如果检查失败，假设用户定义了
-            return True
-
-    def _is_method_overridden(self, instance: Any, method_name: str, base_class: type) -> bool:
-        """检查方法是否被子类重写（保留用于兼容）
-
-        Args:
-            instance: 实例
-            method_name: 方法名
-            base_class: 基类
-
-        Returns:
-            True 如果方法被重写
-        """
-        return self._is_user_defined_method(instance, method_name)
-
-    def _run_coroutine(self, coro) -> None:
-        """运行 coroutine
-
-        尝试在当前事件循环运行，如果没有则创建新的。
-
-        Args:
-            coro: coroutine 对象
-        """
+    @staticmethod
+    def _run_coroutine(coro) -> None:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                # 在运行中的循环里调度
                 asyncio.ensure_future(coro)
             else:
                 loop.run_until_complete(coro)
         except RuntimeError:
-            # 没有事件循环，创建新的
             asyncio.run(coro)
 
+    def _await_request_drained(self, timeout: float) -> None:
+        deadline = time.monotonic() + max(timeout, 0)
+        while self.active_request_count > 0:
+            if time.monotonic() >= deadline:
+                logger.warning(
+                    "等待请求作用域清退超时，root=%s remaining=%s",
+                    self.id,
+                    self.active_request_count,
+                )
+                break
+            time.sleep(0.01)
+
+    def _run_health_checks(self) -> None:
+        for definition in self._definition_registry.values():
+            callback = definition.healthcheck
+            if callback is None:
+                continue
+            instance = self.get(definition.name)
+            result = callback(self, instance)
+            if inspect.iscoroutine(result):
+                result = asyncio.run(result)
+            if result is False:
+                raise LifecycleError(f"组件 '{definition.name}' 健康检查失败")
+
+        for callback in self._health_checks:
+            result = callback(self)
+            if inspect.iscoroutine(result):
+                result = asyncio.run(result)
+            if result is False:
+                raise LifecycleError("容器健康检查失败")
+
     def get_lifecycle_phase(self, name: str) -> Optional[LifecyclePhase]:
-        """获取组件的当前生命周期阶段
-
-        Args:
-            name: 组件名称
-
-        Returns:
-            生命周期阶段，如果未找到则返回 None
-        """
         return self._lifecycle_phases.get(name)
 
     def is_component_running(self, name: str) -> bool:
-        """检查组件是否处于 RUNNING 状态
-
-        Args:
-            name: 组件名称
-
-        Returns:
-            True 如果组件正在运行
-        """
         return self._lifecycle_phases.get(name) == LifecyclePhase.RUNNING
 
 
-__all__ = ['ApplicationContext']
+class _LazyProxy:
+    __slots__ = ("_ctx", "_dep_name", "_resolved", "_value")
 
+    def __init__(self, ctx: ApplicationContext, dep_name: str):
+        self._ctx = ctx
+        self._dep_name = dep_name
+        self._resolved = False
+        self._value = None
+
+    def _resolve(self):
+        if not self._resolved:
+            self._value = self._ctx.get(self._dep_name)
+            self._resolved = True
+        return self._value
+
+    def __getattr__(self, item):
+        return getattr(self._resolve(), item)
+
+    def __call__(self, *args, **kwargs):
+        return self._resolve()(*args, **kwargs)
+
+
+__all__ = ["ApplicationContext", "ContainerState"]

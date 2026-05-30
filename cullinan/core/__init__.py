@@ -12,6 +12,7 @@ Version: 0.90
 """
 
 from .registry import Registry, SimpleRegistry
+from .container_manager import ContainerManager, get_container_manager
 # Import unified lifecycle from lifecycle_enhanced (the single source of truth)
 from .lifecycle_enhanced import (
     LifecycleAware,
@@ -51,7 +52,7 @@ from .exceptions import (
 # ============================================================================
 
 # ApplicationContext - Single Entry Point
-from .application_context import ApplicationContext
+from .application_context import ApplicationContext, ContainerState
 
 # Definitions and Scope
 from .definitions import Definition, ScopeType
@@ -112,24 +113,18 @@ def inject_constructor(cls):
 # Global ApplicationContext Access
 # ============================================================================
 
-_global_application_context = None
-
-
 def get_application_context():
-    """获取全局 ApplicationContext 实例�?
-    Returns:
-        全局 ApplicationContext 实例，如果未设置则返�?None
-    """
-    return _global_application_context
+    """获取当前活动根容器。"""
+    return get_container_manager().get_active_root()
 
 
 def set_application_context(ctx) -> None:
-    """设置全局 ApplicationContext 实例�?
-    Args:
-        ctx: ApplicationContext 实例
-    """
-    global _global_application_context
-    _global_application_context = ctx
+    """设置或清除当前全局根容器引用。"""
+    manager = get_container_manager()
+    if ctx is None:
+        manager.clear()
+        return
+    manager.bind(ctx)
 
 
 # Provide dummy registry functions for compatibility
@@ -160,6 +155,9 @@ __all__ = [
 
     # Application Context (Single Entry Point)
     'ApplicationContext',
+    'ContainerState',
+    'ContainerManager',
+    'get_container_manager',
     'get_application_context',
     'set_application_context',
     'Definition',
