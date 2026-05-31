@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -476,15 +476,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-web-runtime-consolidation" class="md-nav__link">
+  <a href="#2-application-first-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Web Runtime consolidation
+        2. Application-first runtime
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Web Runtime consolidation">
+    <nav class="md-nav" aria-label="2. Application-first runtime">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -515,19 +515,58 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-test-suite-optimization" class="md-nav__link">
+  <a href="#3-web-runtime-consolidation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Test-suite optimization
+        3. Web Runtime consolidation
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Test-suite optimization">
+    <nav class="md-nav" aria-label="3. Web Runtime consolidation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#what-changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-implication_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration implication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-test-suite-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Test-suite alignment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Test-suite alignment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         What changed
@@ -697,6 +736,41 @@
     
   
     Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
   
 
     
@@ -1706,15 +1780,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-web-runtime-consolidation" class="md-nav__link">
+  <a href="#2-application-first-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Web Runtime consolidation
+        2. Application-first runtime
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Web Runtime consolidation">
+    <nav class="md-nav" aria-label="2. Application-first runtime">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1745,19 +1819,58 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-test-suite-optimization" class="md-nav__link">
+  <a href="#3-web-runtime-consolidation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Test-suite optimization
+        3. Web Runtime consolidation
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Test-suite optimization">
+    <nav class="md-nav" aria-label="3. Web Runtime consolidation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#what-changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-implication_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration implication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-test-suite-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Test-suite alignment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Test-suite alignment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         What changed
@@ -1812,7 +1925,7 @@
 
 
 <h1 id="runtime-consolidation-overview">Runtime consolidation overview<a class="headerlink" href="#runtime-consolidation-overview" title="Permanent link">&para;</a></h1>
-<p>This page summarizes the three major updates currently reflected in the codebase and documentation.</p>
+<p>This page summarizes the four major updates currently reflected in the codebase and documentation.</p>
 <h2 id="1-iocdi-consolidation">1. IoC/DI consolidation<a class="headerlink" href="#1-iocdi-consolidation" title="Permanent link">&para;</a></h2>
 <p>The container model is now centered on <code>ApplicationContext</code> and publicly surfaced through <code>cullinan.core</code>.</p>
 <h3 id="what-changed">What changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
@@ -1828,25 +1941,42 @@
 <li><code>Inject()</code> and <code>InjectByName()</code></li>
 <li><code>ApplicationContext</code> for explicit registration or integration work</li>
 </ul>
-<h2 id="2-web-runtime-consolidation">2. Web Runtime consolidation<a class="headerlink" href="#2-web-runtime-consolidation" title="Permanent link">&para;</a></h2>
-<p>The web stack was reorganized around a transport-agnostic runtime in <code>cullinan.gateway</code>.</p>
+<h2 id="2-application-first-runtime">2. Application-first runtime<a class="headerlink" href="#2-application-first-runtime" title="Permanent link">&para;</a></h2>
+<p>Cullinan now exposes an application-first bootstrap model in <code>cullinan.application_model</code>
+and re-exports it from <code>cullinan</code>.</p>
 <h3 id="what-changed_1">What changed<a class="headerlink" href="#what-changed_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Application.run(RootModule)</code> builds, validates, warms, and activates a root module</li>
+<li><code>@module</code> defines module imports, owned packages, warmup hooks, and health checks</li>
+<li>component discovery rebuilds pending registrations from decorator metadata instead of
+  relying on one-shot import timing</li>
+<li><code>current_app()</code> prefers the request-bound application snapshot while an older runtime drains</li>
+</ul>
+<h3 id="migration-implication">Migration implication<a class="headerlink" href="#migration-implication" title="Permanent link">&para;</a></h3>
+<p>New bootstrap code should prefer <code>Application</code> + <code>@module</code>. Keep using
+<code>ApplicationContext</code> for low-level container work and use the legacy
+<code>cullinan.application.run()</code> entrypoint only when compatibility matters.</p>
+<h2 id="3-web-runtime-consolidation">3. Web Runtime consolidation<a class="headerlink" href="#3-web-runtime-consolidation" title="Permanent link">&para;</a></h2>
+<p>The web stack was reorganized around a transport-agnostic runtime in <code>cullinan.gateway</code>.</p>
+<h3 id="what-changed_2">What changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>WebRequest</code>, <code>WebResponse</code>, and <code>WebAdapter</code> define the current public HTTP abstraction</li>
 <li><code>Router</code>, <code>Dispatcher</code>, <code>MiddlewarePipeline</code>, and <code>ExceptionHandler</code> now live behind the gateway facade</li>
 <li><code>cullinan.gateway.web_core</code> owns the shared request/response model</li>
 <li>adapters are separated into <code>cullinan.adapter</code> (<code>TornadoAdapter</code>, <code>ASGIAdapter</code>)</li>
 </ul>
-<h3 id="migration-implication">Migration implication<a class="headerlink" href="#migration-implication" title="Permanent link">&para;</a></h3>
+<h3 id="migration-implication_1">Migration implication<a class="headerlink" href="#migration-implication_1" title="Permanent link">&para;</a></h3>
 <p>Use the unified Web Runtime names in new code. The old request / response / adapter names are no longer the primary public surface.</p>
-<h2 id="3-test-suite-optimization">3. Test-suite optimization<a class="headerlink" href="#3-test-suite-optimization" title="Permanent link">&para;</a></h2>
-<p>The repository test workflow was cleaned up and normalized around pytest.</p>
-<h3 id="what-changed_2">What changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
+<h2 id="4-test-suite-alignment">4. Test-suite alignment<a class="headerlink" href="#4-test-suite-alignment" title="Permanent link">&para;</a></h2>
+<p>The repository test workflow continues to converge on pytest, and the new
+application-model and adapter coverage now lives in regular collected tests.</p>
+<h3 id="what-changed_3">What changed<a class="headerlink" href="#what-changed_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>a single formal entrypoint: <code>.venv\Scripts\python -m pytest</code></li>
 <li>test discovery is defined by <code>pytest.ini</code></li>
 <li>topic-based suite layout under <code>tests/</code></li>
-<li>old script-style verification files were removed or converted to real pytest tests</li>
+<li>new and refreshed coverage uses real pytest tests under <code>tests/core</code> and <code>tests/integration</code></li>
+<li>some historical script-style files still remain and are being migrated incrementally</li>
 </ul>
 <h3 id="current-directories">Current directories<a class="headerlink" href="#current-directories" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1860,6 +1990,7 @@
 <h2 id="where-to-read-next">Where to read next<a class="headerlink" href="#where-to-read-next" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../architecture/">Architecture</a></li>
+<li><a href="../wiki/application_runtime/">Application Runtime Model</a></li>
 <li><a href="../dependency_injection_guide/">Dependency Injection Guide</a></li>
 <li><a href="../web_runtime_guide/">Web Runtime Guide</a></li>
 <li><a href="../testing/">Testing &amp; Verification</a></li>
@@ -1932,7 +2063,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

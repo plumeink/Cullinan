@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -532,10 +532,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-core-container" class="md-nav__link">
+  <a href="#1-application-orchestration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Core container
+        1. Application orchestration
       
     </span>
   </a>
@@ -543,10 +543,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-service-layer" class="md-nav__link">
+  <a href="#2-core-container" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Service layer
+        2. Core container
       
     </span>
   </a>
@@ -554,10 +554,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-controller-layer" class="md-nav__link">
+  <a href="#3-service-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Controller layer
+        3. Service layer
       
     </span>
   </a>
@@ -565,10 +565,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-web-runtime" class="md-nav__link">
+  <a href="#4-controller-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Web Runtime
+        4. Controller layer
       
     </span>
   </a>
@@ -576,10 +576,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-adapters" class="md-nav__link">
+  <a href="#5-web-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Adapters
+        5. Web Runtime
       
     </span>
   </a>
@@ -587,10 +587,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-parameters-and-model-binding" class="md-nav__link">
+  <a href="#6-adapters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Parameters and model binding
+        6. Adapters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-parameters-and-model-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Parameters and model binding
       
     </span>
   </a>
@@ -665,6 +676,41 @@
     
   
     Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
   
 
     
@@ -1647,10 +1693,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-core-container" class="md-nav__link">
+  <a href="#1-application-orchestration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Core container
+        1. Application orchestration
       
     </span>
   </a>
@@ -1658,10 +1704,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-service-layer" class="md-nav__link">
+  <a href="#2-core-container" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Service layer
+        2. Core container
       
     </span>
   </a>
@@ -1669,10 +1715,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-controller-layer" class="md-nav__link">
+  <a href="#3-service-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Controller layer
+        3. Service layer
       
     </span>
   </a>
@@ -1680,10 +1726,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-web-runtime" class="md-nav__link">
+  <a href="#4-controller-layer" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Web Runtime
+        4. Controller layer
       
     </span>
   </a>
@@ -1691,10 +1737,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-adapters" class="md-nav__link">
+  <a href="#5-web-runtime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Adapters
+        5. Web Runtime
       
     </span>
   </a>
@@ -1702,10 +1748,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-parameters-and-model-binding" class="md-nav__link">
+  <a href="#6-adapters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Parameters and model binding
+        6. Adapters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-parameters-and-model-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Parameters and model binding
       
     </span>
   </a>
@@ -1748,37 +1805,43 @@
 <h1 id="components">Components<a class="headerlink" href="#components" title="Permanent link">&para;</a></h1>
 <p>This page gives a current high-level map of Cullinan's main runtime components.</p>
 <h2 id="runtime-overview">Runtime overview<a class="headerlink" href="#runtime-overview" title="Permanent link">&para;</a></h2>
-<h3 id="1-core-container">1. Core container<a class="headerlink" href="#1-core-container" title="Permanent link">&para;</a></h3>
+<h3 id="1-application-orchestration">1. Application orchestration<a class="headerlink" href="#1-application-orchestration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Responsibility: module graph discovery, ownership resolution, runtime activation, draining, and active-app lookup</li>
+<li>Main package: <code>cullinan.application_model</code></li>
+<li>Key APIs: <code>Application</code>, <code>module</code>, <code>current_app</code>, <code>Runtime</code></li>
+</ul>
+<h3 id="2-core-container">2. Core container<a class="headerlink" href="#2-core-container" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: dependency registration, resolution, scopes, lifecycle, request context</li>
 <li>Main package: <code>cullinan.core</code></li>
 <li>Key APIs: <code>ApplicationContext</code>, <code>Definition</code>, <code>ScopeType</code>, <code>Inject</code>, <code>InjectByName</code></li>
 </ul>
-<h3 id="2-service-layer">2. Service layer<a class="headerlink" href="#2-service-layer" title="Permanent link">&para;</a></h3>
+<h3 id="3-service-layer">3. Service layer<a class="headerlink" href="#3-service-layer" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: business logic and long-lived framework-managed services</li>
 <li>Main package: <code>cullinan.service</code></li>
 <li>Key APIs: <code>service</code>, <code>Service</code></li>
 </ul>
-<h3 id="3-controller-layer">3. Controller layer<a class="headerlink" href="#3-controller-layer" title="Permanent link">&para;</a></h3>
+<h3 id="4-controller-layer">4. Controller layer<a class="headerlink" href="#4-controller-layer" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: route declaration and handler methods</li>
 <li>Main package: <code>cullinan.controller</code></li>
 <li>Key APIs: <code>controller</code>, <code>get_api</code>, <code>post_api</code>, <code>response_build</code></li>
 </ul>
-<h3 id="4-web-runtime">4. Web Runtime<a class="headerlink" href="#4-web-runtime" title="Permanent link">&para;</a></h3>
+<h3 id="5-web-runtime">5. Web Runtime<a class="headerlink" href="#5-web-runtime" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: normalized request/response model, routing, dispatch, middleware, exceptions</li>
 <li>Main package: <code>cullinan.gateway</code></li>
 <li>Key APIs: <code>WebRequest</code>, <code>WebResponse</code>, <code>Router</code>, <code>Dispatcher</code>, <code>MiddlewarePipeline</code>, <code>WebRuntime</code></li>
 </ul>
-<h3 id="5-adapters">5. Adapters<a class="headerlink" href="#5-adapters" title="Permanent link">&para;</a></h3>
+<h3 id="6-adapters">6. Adapters<a class="headerlink" href="#6-adapters" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: bind the Web Runtime to a specific server environment</li>
 <li>Main package: <code>cullinan.adapter</code></li>
 <li>Key APIs: <code>WebAdapter</code>, <code>TornadoAdapter</code>, <code>ASGIAdapter</code></li>
 </ul>
-<h3 id="6-parameters-and-model-binding">6. Parameters and model binding<a class="headerlink" href="#6-parameters-and-model-binding" title="Permanent link">&para;</a></h3>
+<h3 id="7-parameters-and-model-binding">7. Parameters and model binding<a class="headerlink" href="#7-parameters-and-model-binding" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: map path/query/body/header/file inputs into handler arguments</li>
 <li>Main package: <code>cullinan.params</code></li>
@@ -1787,6 +1850,7 @@
 <h2 id="suggested-reading-order">Suggested reading order<a class="headerlink" href="#suggested-reading-order" title="Permanent link">&para;</a></h2>
 <ol>
 <li><a href="../../architecture/">Architecture</a></li>
+<li><a href="../application_runtime/">Application Runtime Model</a></li>
 <li><a href="../../dependency_injection_guide/">Dependency Injection Guide</a></li>
 <li><a href="../../web_runtime_guide/">Web Runtime Guide</a></li>
 <li><a href="../../testing/">Testing &amp; Verification</a></li>
@@ -1859,7 +1923,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -515,6 +515,41 @@
     
   
     Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
   
 
     
@@ -1712,12 +1747,13 @@
 
 
 <h1 id="testing-verification">Testing &amp; Verification<a class="headerlink" href="#testing-verification" title="Permanent link">&para;</a></h1>
-<p>This page describes the current repository test workflow after the test-suite consolidation.</p>
+<p>This page describes the current repository test workflow after the latest
+application-model and adapter test refresh.</p>
 <h2 id="official-repository-entrypoint">Official repository entrypoint<a class="headerlink" href="#official-repository-entrypoint" title="Permanent link">&para;</a></h2>
 <p>Use the repository virtual environment and run:</p>
 <div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span>
 </code></pre></div>
-<p>That is the formal command used by the repository after the testing cleanup.</p>
+<p>That is the formal repository command for full-suite verification.</p>
 <h2 id="test-discovery-configuration">Test discovery configuration<a class="headerlink" href="#test-discovery-configuration" title="Permanent link">&para;</a></h2>
 <p><code>pytest.ini</code> defines the repository defaults:</p>
 <div class="highlight"><pre><span></span><code><span class="k">[pytest]</span>
@@ -1747,22 +1783,30 @@
 <h2 id="current-conventions">Current conventions<a class="headerlink" href="#current-conventions" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Write standard pytest tests with plain <code>assert</code> statements.</li>
-<li>Avoid script-style "return True/False" validation files.</li>
+<li>New and refreshed suites should be pytest-native, even if some historical files still keep migration shims.</li>
 <li>Reuse shared setup from <code>tests/conftest.py</code> and <code>tests/helpers/</code> when appropriate.</li>
 <li>Keep tests deterministic and isolated; clear global registries or active application context when a test mutates them.</li>
 </ol>
 <h2 id="scope-covered-by-the-test-suite">Scope covered by the test suite<a class="headerlink" href="#scope-covered-by-the-test-suite" title="Permanent link">&para;</a></h2>
 <p>The current suite covers:</p>
 <ul>
+<li>application-first bootstrap, module ownership resolution, and runtime switching</li>
 <li>container and lifecycle behavior</li>
 <li>compatibility shims</li>
 <li>gateway / Web Runtime behavior</li>
 <li>controller routing and parameter handling</li>
 <li>integration and regression scenarios</li>
 </ul>
+<p>Representative files:</p>
+<ul>
+<li><code>tests/core/test_application_model_refactor.py</code></li>
+<li><code>tests/core/test_decorators.py</code></li>
+<li><code>tests/integration/test_adapter_integration.py</code></li>
+</ul>
 <h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../runtime_updates_v093/">Runtime consolidation overview</a></li>
+<li><a href="../wiki/application_runtime/">Application Runtime Model</a></li>
 <li><a href="../architecture/">Architecture</a></li>
 <li><a href="../web_runtime_guide/">Web Runtime Guide</a></li>
 </ul>
@@ -1834,7 +1878,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

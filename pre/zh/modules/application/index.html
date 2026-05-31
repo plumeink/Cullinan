@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -542,6 +542,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../../wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用运行时
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../wiki/lifecycle/" class="md-nav__link">
         
   
@@ -850,27 +885,54 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="示例">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hello-http" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hello HTTP（烟雾测试示例）
+        推荐启动方式
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块归属
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime 切换
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        兼容性说明
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        相关文档
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1572,27 +1634,54 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="示例">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hello-http" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hello HTTP（烟雾测试示例）
+        推荐启动方式
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块归属
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime 切换
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        兼容性说明
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        相关文档
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1614,33 +1703,61 @@
 
 
 <h1 id="cullinanapplication">cullinan.application<a class="headerlink" href="#cullinanapplication" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>说明（v0.90）</strong>：新的 IoC/DI 2.0 架构请参阅 <a href="../../dependency_injection_guide/">依赖注入指南</a>。</p>
-</blockquote>
-<p>摘要：<code>cullinan.application</code> 模块文档占位。包含公有类、典型用法，及相关测试/示例链接。</p>
-<p>建议记录的公有符号：Application，start，stop</p>
-<p>示例用法：</p>
-<p>（占位：展示典型 Application 使用的最小代码片段）</p>
-<h2 id="_1">示例<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<h3 id="hello-http">Hello HTTP（烟雾测试示例）<a class="headerlink" href="#hello-http" title="Permanent link">&para;</a></h3>
-<p>仓库包含一个最小示例 <code>examples/hello_http.py</code>，用于文档中的烟雾测试。该示例<strong>不使用 <code>application.run()</code></strong>，而是直接通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。</p>
-<blockquote>
-<p><strong>注意</strong>：此示例的输出与使用 <code>application.run()</code> 启动的常规应用不同。<code>application.run()</code> 会显示 Cullinan 框架 banner、扫描服务和控制器，并保持服务器运行直到手动停止（Ctrl+C）。</p>
-</blockquote>
-<p>PowerShell（Windows）运行命令：</p>
-<div class="highlight"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">-U</span> <span class="n">pip</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">cullinan</span> <span class="n">tornado</span>
-<span class="n">python</span> <span class="n">examples</span><span class="p">\</span><span class="n">hello_http</span><span class="p">.</span><span class="n">py</span>
+<p><code>cullinan.application</code> 现在提供推荐的 application-first 启动面：</p>
+<ul>
+<li><code>Application.run(RootModule)</code>：构建、预热并激活根模块</li>
+<li><code>@module</code>：声明根模块、功能模块和共享模块及其导入关系</li>
+<li><code>current_app()</code>：返回当前活动应用；当旧 runtime 正在 draining 时，会优先返回请求绑定的应用快照</li>
+<li>旧的 <code>run(handlers=None, engine=None)</code> 入口仍保留，用于兼容已有调用</li>
+</ul>
+<h2 id="_1">推荐启动方式<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GreetingService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
+
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/api&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GreetingController</span><span class="p">:</span>
+    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/whoami&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whoami</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="n">current_app</span><span class="p">()</span><span class="o">.</span><span class="n">root_module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">greeting_service</span><span class="o">.</span><span class="n">greet</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+
+<span class="nd">@module</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RootModule</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">RootModule</span><span class="p">)</span>
 </code></pre></div>
-<p>观察到的输出（节选）：</p>
-<div class="highlight"><pre><span></span><code>INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+<h2 id="_2">模块归属<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p><code>@module</code> 基于 Python 包归属发现组件。若某个组件同时匹配多个模块包，启动会立即失败；对有意共享的重叠区域，请用 <code>ownership_overrides</code> 显式指定归属。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@module</span><span class="p">(</span>
+    <span class="n">imports</span><span class="o">=</span><span class="p">[</span><span class="n">SharedModule</span><span class="p">,</span> <span class="n">OrdersModule</span><span class="p">],</span>
+    <span class="n">ownership_overrides</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;myapp.shared&quot;</span><span class="p">:</span> <span class="n">SharedModule</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RootModule</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
-<p>说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出），但<strong>不代表 <code>application.run()</code> 的实际行为</strong>。</p>
+<h2 id="runtime">Runtime 切换<a class="headerlink" href="#runtime" title="Permanent link">&para;</a></h2>
+<p><code>Application.reload()</code> 会先构建新的候选 runtime，完成校验与预热，再原子切换当前活动应用。旧 runtime 会进入 draining 状态，而 <code>current_app()</code> 在请求结束前仍会返回该请求绑定的旧应用快照。</p>
+<h2 id="_3">兼容性说明<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p><code>ApplicationContext</code> 仍然是底层容器 / 运行时原语。已有依赖 <code>register()</code>、<code>refresh()</code>、<code>get()</code> 或旧 <code>cullinan.application.run()</code> 的代码仍可继续工作，但新的应用装配应优先使用 <code>Application</code> + <code>@module</code>。</p>
+<h2 id="_4">相关文档<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../wiki/application_runtime/">应用运行时模型</a></li>
+<li><a href="../../wiki/lifecycle/">应用生命周期</a></li>
+</ul>
 
 
 
@@ -1709,7 +1826,7 @@ INFO:__main__:IOLoop stopped, exiting
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>

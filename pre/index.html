@@ -90,10 +90,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -611,6 +611,41 @@
     
   
     Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
   
 
     
@@ -1644,12 +1679,13 @@
 <h1 id="cullinan-documentation">Cullinan Documentation<a class="headerlink" href="#cullinan-documentation" title="Permanent link">&para;</a></h1>
 <p>Welcome to the Cullinan documentation site.</p>
 <blockquote>
-<p><strong>Current version: 0.93a1</strong>. The current documentation reflects the unified <code>cullinan.core</code> container facade, the transport-agnostic Web Runtime (<code>WebRequest</code> / <code>WebResponse</code> / <code>WebAdapter</code>), and the pytest-based test suite layout.</p>
+<p><strong>Current version: 0.93a3</strong>. The current documentation reflects the application-first bootstrap (<code>Application</code> + <code>@module</code>), the unified <code>cullinan.core</code> container facade, the transport-agnostic Web Runtime (<code>WebRequest</code> / <code>WebResponse</code> / <code>WebAdapter</code>), and the current pytest-led test workflow.</p>
 </blockquote>
 <h2 id="key-updates">Key updates<a class="headerlink" href="#key-updates" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="runtime_updates_v093/">Runtime consolidation overview</a> — summary of the IoC/DI, Web Runtime, and testing updates</li>
+<li><a href="runtime_updates_v093/">Runtime consolidation overview</a> — summary of the IoC/DI, application runtime, Web Runtime, and testing updates</li>
 <li><a href="architecture/">Architecture</a> — current framework architecture and execution flow</li>
+<li><a href="wiki/application_runtime/">Application runtime model</a> — module graph, ownership, activation, reload, and draining semantics</li>
 <li><a href="dependency_injection_guide/">Dependency Injection Guide</a> — recommended DI usage and compatibility notes</li>
 <li><a href="web_runtime_guide/">Web Runtime Guide</a> — transport-agnostic request/response runtime and adapters</li>
 <li><a href="testing/">Testing &amp; Verification</a> — repository test entrypoint, layout, and conventions</li>
@@ -1657,6 +1693,7 @@
 <h2 id="wiki">Wiki<a class="headerlink" href="#wiki" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="wiki/injection/">IoC &amp; DI (Injection)</a> — quick reference for injection patterns</li>
+<li><a href="wiki/application_runtime/">Application Runtime Model</a> — <code>Application.run()</code>, <code>@module</code>, ownership, and runtime switching</li>
 <li><a href="wiki/lifecycle/">Application Lifecycle</a> — startup, refresh, request scope, and shutdown</li>
 <li><a href="wiki/restful_api/">RESTful API</a> — controller routing plus the current Web Runtime response model</li>
 </ul>
@@ -1743,7 +1780,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="assets/javascripts/bundle.e71a0d61.min.js"></script>

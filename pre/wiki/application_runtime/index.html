@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="zh" class="no-js">
+<html lang="en" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -9,22 +9,22 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration">
       
       
-        <meta name="author" content="Plumeink">
+        <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/zh/zh/quick_reference_di/">
+        <link rel="canonical" href="/wiki/application_runtime/">
       
       
-        <link rel="prev" href="../web_runtime_guide/">
+        <link rel="prev" href="../injection/">
       
       
-        <link rel="next" href="../parameter_system_guide/">
+        <link rel="next" href="../lifecycle/">
       
       
         
-          <link rel="alternate" href="../../quick_reference_di/" hreflang="en">
+          <link rel="alternate" href="./" hreflang="en">
         
-          <link rel="alternate" href="./" hreflang="zh">
+          <link rel="alternate" href="../../zh/wiki/application_runtime/" hreflang="zh">
         
       
       
@@ -33,7 +33,7 @@
     
     
       
-        <title>DI 快速参考 - Cullinan Documentation</title>
+        <title>"Application Runtime Model" - Cullinan Documentation</title>
       
     
     
@@ -76,8 +76,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#cullinan" class="md-skip">
-          跳转至
+        <a href="#application-runtime-model" class="md-skip">
+          Skip to content
         </a>
       
     </div>
@@ -125,8 +125,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="页眉">
-    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              DI 快速参考
+              "Application Runtime Model"
             
           </span>
         </div>
@@ -160,20 +160,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="选择当前语言">
+    <button class="md-header__button md-icon" aria-label="Select language">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../quick_reference_di/" hreflang="en" class="md-select__link">
+            <a href="./" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="./" hreflang="zh" class="md-select__link">
+            <a href="../../zh/wiki/application_runtime/" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -194,16 +194,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="查找">
+      <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -214,7 +214,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            正在初始化搜索引擎
+            Initializing search
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -248,9 +248,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../.." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -268,14 +268,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    首页
+    Home
   
 
     
@@ -302,14 +302,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting_started/" class="md-nav__link">
+      <a href="../../getting_started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    快速开始
+    Getting Started
   
 
     
@@ -336,14 +336,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    架构设计
+    Architecture
   
 
     
@@ -363,14 +363,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../runtime_updates_v093/" class="md-nav__link">
+      <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    运行时整合
+    Runtime Consolidation
   
 
     
@@ -394,18 +394,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -415,7 +417,7 @@
   <span class="md-ellipsis">
     
   
-    维基
+    Wiki
   
 
     
@@ -426,12 +428,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
-    维基
+    Wiki
   
 
           </label>
@@ -444,14 +446,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/components/" class="md-nav__link">
+      <a href="../components/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    组件
+    Components
   
 
     
@@ -479,14 +481,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/decorators/" class="md-nav__link">
+      <a href="../decorators/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    装饰器
+    Decorators
   
 
     
@@ -507,14 +509,226 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/injection/" class="md-nav__link">
+      <a href="../injection/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    注入
+    Injection
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core concepts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typical-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical bootstrap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-graph-and-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module graph and ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-and-activation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build and activation flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reload-and-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload and draining
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapters-and-request-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapters and request binding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-applicationcontext-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use ApplicationContext directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle
   
 
     
@@ -542,14 +756,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/application_runtime/" class="md-nav__link">
+      <a href="../middleware/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    应用运行时
+    Middleware
   
 
     
@@ -577,14 +791,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/lifecycle/" class="md-nav__link">
+      <a href="../extensions/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    生命周期
+    Extensions
   
 
     
@@ -612,77 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/middleware/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    中间件
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../wiki/extensions/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    扩展
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../wiki/restful_api/" class="md-nav__link">
+      <a href="../restful_api/" class="md-nav__link">
         
   
   
@@ -742,7 +886,7 @@
   <span class="md-ellipsis">
     
   
-    模块
+    Modules
   
 
     
@@ -758,7 +902,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    模块
+    Modules
   
 
           </label>
@@ -771,14 +915,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
+      <a href="../../modules/app/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    应用
+    app
   
 
     
@@ -806,14 +950,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/application/" class="md-nav__link">
+      <a href="../../modules/application/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    应用程序
+    application
   
 
     
@@ -841,14 +985,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/core/" class="md-nav__link">
+      <a href="../../modules/core/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    核心
+    core
   
 
     
@@ -876,14 +1020,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/controller/" class="md-nav__link">
+      <a href="../../modules/controller/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    控制器
+    controller
   
 
     
@@ -911,14 +1055,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/service/" class="md-nav__link">
+      <a href="../../modules/service/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    服务
+    service
   
 
     
@@ -953,14 +1097,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+      <a href="../../examples/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    示例
+    Examples
   
 
     
@@ -987,14 +1131,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
+      <a href="../../api_reference/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    API 参考
+    API Reference
   
 
     
@@ -1018,20 +1162,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
           <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
@@ -1041,7 +1183,7 @@
   <span class="md-ellipsis">
     
   
-    指南
+    Guides
   
 
     
@@ -1052,12 +1194,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
-    指南
+    Guides
   
 
           </label>
@@ -1070,14 +1212,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration_guide/" class="md-nav__link">
+      <a href="../../migration_guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    迁移指南
+    Migration Guide
   
 
     
@@ -1098,14 +1240,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration_guide_v2/" class="md-nav__link">
+      <a href="../../migration_guide_v2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    迁移指南 v2
+    Migration Guide v2
   
 
     
@@ -1126,14 +1268,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../import_migration_090/" class="md-nav__link">
+      <a href="../../import_migration_090/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    0.90 导入迁移
+    Import Migration 0.90
   
 
     
@@ -1154,14 +1296,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../dependency_injection_guide/" class="md-nav__link">
+      <a href="../../dependency_injection_guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    依赖注入指南
+    Dependency Injection Guide
   
 
     
@@ -1182,14 +1324,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../web_runtime_guide/" class="md-nav__link">
+      <a href="../../web_runtime_guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Web Runtime 指南
+    Web Runtime Guide
   
 
     
@@ -1214,44 +1356,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DI 快速参考
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../quick_reference_di/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    DI 快速参考
+    DI Quick Reference
   
 
     
@@ -1260,148 +1375,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        基本用法
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="基本用法">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 定义服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-controller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 注入服务到 Controller
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 使用注入的服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        打包应用配置
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="打包应用配置">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        使用显式注册（推荐）
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pyinstaller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PyInstaller 配置
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nuitka" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nuitka 配置
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排查
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        另请参阅
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1414,14 +1387,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../parameter_system_guide/" class="md-nav__link">
+      <a href="../../parameter_system_guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    参数系统指南
+    Parameter System Guide
   
 
     
@@ -1449,14 +1422,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../extension_development_guide/" class="md-nav__link">
+      <a href="../../extension_development_guide/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    扩展开发
+    Extension Development
   
 
     
@@ -1477,14 +1450,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../quick_start_extensions/" class="md-nav__link">
+      <a href="../../quick_start_extensions/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    扩展快速入门
+    Quick Start Extensions
   
 
     
@@ -1530,7 +1503,7 @@
   <span class="md-ellipsis">
     
   
-    开发
+    Development
   
 
     
@@ -1546,7 +1519,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    开发
+    Development
   
 
           </label>
@@ -1559,14 +1532,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_run/" class="md-nav__link">
+      <a href="../../build_run/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    构建与运行
+    Build & Run
   
 
     
@@ -1594,14 +1567,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../../testing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    测试
+    Testing
   
 
     
@@ -1629,14 +1602,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    贡献指南
+    Contributing
   
 
     
@@ -1677,7 +1650,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="目录">
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
   
@@ -1686,115 +1659,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      目录
+      Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#core-concepts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        基本用法
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="基本用法">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 定义服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-controller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 注入服务到 Controller
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 使用注入的服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        打包应用配置
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="打包应用配置">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        使用显式注册（推荐）
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pyinstaller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PyInstaller 配置
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nuitka" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nuitka 配置
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排查
+        Core concepts
       
     </span>
   </a>
@@ -1802,10 +1675,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#typical-bootstrap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        另请参阅
+        Typical bootstrap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-graph-and-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module graph and ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-and-activation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build and activation flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reload-and-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload and draining
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapters-and-request-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapters and request binding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-applicationcontext-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use ApplicationContext directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
       
     </span>
   </a>
@@ -1829,121 +1768,92 @@
 
 
 
-<h1 id="cullinan">Cullinan 依赖注入快速参考<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>版本</strong>: v0.90<br />
-<strong>作者</strong>: Plumeink</p>
-</blockquote>
-<h2 id="_1">基本用法<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<h3 id="1">1. 定义服务<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<h1 id="application-runtime-model">Application Runtime Model<a class="headerlink" href="#application-runtime-model" title="Permanent link">&para;</a></h1>
+<p>This page explains the application-first runtime introduced around
+<code>cullinan.application_model</code> and re-exported from <code>cullinan</code>.</p>
+<h2 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>Application</code> owns one root module graph, one <code>ApplicationContext</code>, and one <code>WebRuntime</code></li>
+<li><code>@module</code> declares module imports, owned Python packages, warmup hooks, and health checks</li>
+<li><code>Runtime</code> is the mutable record for a validated / warmed application candidate</li>
+<li><code>current_app()</code> resolves the active application and prefers the request-bound snapshot during draining</li>
+</ul>
+<h2 id="typical-bootstrap">Typical bootstrap<a class="headerlink" href="#typical-bootstrap" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;UserService&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GreetingService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/api&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GreetingController</span><span class="p">:</span>
+    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/whoami&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whoami</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">greeting_service</span><span class="o">.</span><span class="n">greet</span><span class="p">()}</span>
+
+
+<span class="nd">@module</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RootModule</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">RootModule</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="2-controller">2. 注入服务到 Controller<a class="headerlink" href="#2-controller" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
-
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="c1"># 方式1: 类型注解（推荐）</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-
-    <span class="c1"># 方式2: 显式指定名称</span>
-    <span class="n">auth_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;AuthService&#39;</span><span class="p">)</span>
-
-    <span class="c1"># 方式3: 可选依赖</span>
-    <span class="n">cache_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;CacheService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="3">3. 使用注入的服务<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/users/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">user</span>
-</code></pre></div>
-<h2 id="_2">打包应用配置<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<h3 id="_3">使用显式注册（推荐）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.service.user_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserService</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.service.auth_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthService</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">my_app.controller.user_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserController</span>
-
-<span class="c1"># 在 run() 之前配置</span>
-<span class="n">configure</span><span class="p">(</span>
-    <span class="n">explicit_services</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">UserService</span><span class="p">,</span>
-        <span class="n">AuthService</span><span class="p">,</span>
-    <span class="p">],</span>
-    <span class="n">explicit_controllers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">UserController</span><span class="p">,</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
-<span class="n">run</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="pyinstaller">PyInstaller 配置<a class="headerlink" href="#pyinstaller" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># your_app.spec</span>
-<span class="n">hiddenimports</span><span class="o">=</span><span class="p">[</span>
-    <span class="s1">&#39;my_app.service.user_service&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;my_app.service.auth_service&#39;</span><span class="p">,</span>
-<span class="p">],</span>
-<span class="n">datas</span><span class="o">=</span><span class="p">[</span>
-    <span class="p">(</span><span class="s1">&#39;my_app&#39;</span><span class="p">,</span> <span class="s1">&#39;my_app&#39;</span><span class="p">),</span>
-<span class="p">],</span>
-</code></pre></div>
-<h3 id="nuitka">Nuitka 配置<a class="headerlink" href="#nuitka" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>nuitka<span class="w"> </span>--include-package<span class="o">=</span>my_app<span class="w"> </span><span class="se">\</span>
-<span class="w">       </span>--include-module<span class="o">=</span>my_app.service.user_service<span class="w"> </span><span class="se">\</span>
-<span class="w">       </span>your_app.py
-</code></pre></div>
-<h2 id="_4">故障排查<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>依赖为 None</td>
-<td>确保服务使用 <code>@service</code> 装饰器</td>
-</tr>
-<tr>
-<td>找不到服务</td>
-<td>检查服务名称是否匹配（区分大小写）</td>
-</tr>
-<tr>
-<td>循环依赖</td>
-<td>使用 <code>InjectByName()</code> 进行延迟解析</td>
-</tr>
-<tr>
-<td>注入不生效</td>
-<td>确保类继承自 <code>Service</code> 或 <code>Controller</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="_5">另请参阅<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h2 id="module-graph-and-ownership">Module graph and ownership<a class="headerlink" href="#module-graph-and-ownership" title="Permanent link">&para;</a></h2>
+<p>Each module contributes:</p>
 <ul>
-<li><a href="../dependency_injection_guide/">依赖注入指南</a> - 完整 DI 文档</li>
-<li><a href="../architecture/">架构设计</a> - 系统架构概览</li>
-<li><a href="../migration_guide/">迁移指南</a> - 从旧版本迁移</li>
+<li><code>imports</code> — child or sibling modules included in the root graph</li>
+<li><code>packages</code> — Python package prefixes owned by that module</li>
+<li><code>ownership_overrides</code> — explicit ownership for intentionally shared packages</li>
+<li><code>warmup</code> / <code>health_checks</code> — hooks that run during build and validation</li>
+</ul>
+<p>Component ownership is resolved from decorator metadata captured on
+<code>@service</code>, <code>@controller</code>, <code>@component</code>, and <code>@provider</code>. If the same component
+matches multiple module package prefixes at the same depth, startup fails until
+you provide <code>ownership_overrides</code>.</p>
+<h2 id="build-and-activation-flow">Build and activation flow<a class="headerlink" href="#build-and-activation-flow" title="Permanent link">&para;</a></h2>
+<p><code>Application.run()</code> performs these stages:</p>
+<ol>
+<li>Discover the module graph and import owned Python modules.</li>
+<li>Rebuild pending registrations from decorator metadata.</li>
+<li>Assemble an <code>ApplicationContext</code> and <code>WebRuntime</code>.</li>
+<li>Validate, refresh, and warm the runtime.</li>
+<li>Atomically bind the new application as active.</li>
+</ol>
+<h2 id="reload-and-draining">Reload and draining<a class="headerlink" href="#reload-and-draining" title="Permanent link">&para;</a></h2>
+<p><code>Application.reload()</code> creates a fresh application candidate from the same root
+module. If activation succeeds:</p>
+<ol>
+<li>the new runtime becomes active immediately</li>
+<li>the previous runtime enters <code>DRAINING</code></li>
+<li>in-flight requests keep their request-bound app snapshot</li>
+<li>the old runtime closes only after request counts drop to zero</li>
+</ol>
+<p>This is why <code>current_app()</code> may return an older application inside a draining
+request even after a newer runtime is already active globally.</p>
+<h2 id="adapters-and-request-binding">Adapters and request binding<a class="headerlink" href="#adapters-and-request-binding" title="Permanent link">&para;</a></h2>
+<p><code>ASGIAdapter</code> and <code>TornadoAdapter</code> bind the runtime into the current request
+context before dispatch. That request binding enables:</p>
+<ul>
+<li>request-scoped dependency resolution against the correct application</li>
+<li><code>current_app()</code> inside controllers and middleware</li>
+<li>safe draining while older requests are still finishing</li>
+</ul>
+<h2 id="when-to-use-applicationcontext-directly">When to use ApplicationContext directly<a class="headerlink" href="#when-to-use-applicationcontext-directly" title="Permanent link">&para;</a></h2>
+<p>Keep using <code>ApplicationContext</code> directly when you need low-level container
+integration, explicit registration, or non-module bootstrapping. For new app
+startup, prefer <code>Application</code> + <code>@module</code>.</p>
+<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../modules/application/">cullinan.application module</a></li>
+<li><a href="../lifecycle/">Application Lifecycle</a></li>
+<li><a href="../components/">Components</a></li>
 </ul>
 
 
@@ -1951,6 +1861,9 @@
 
 
 
+
+  
+  
 
 
 
@@ -2010,7 +1923,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

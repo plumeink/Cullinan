@@ -15,7 +15,7 @@
         <link rel="canonical" href="/zh/zh/wiki/lifecycle/">
       
       
-        <link rel="prev" href="../injection/">
+        <link rel="prev" href="../application_runtime/">
       
       
         <link rel="next" href="../middleware/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -541,6 +541,41 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用运行时
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -655,6 +690,17 @@
     <span class="md-ellipsis">
       
         请求作用域
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reload-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload 与 draining
       
     </span>
   </a>
@@ -1651,6 +1697,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reload-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload 与 draining
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1690,14 +1747,16 @@
 
 
 <h1 id="_1">应用生命周期<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>Cullinan 的生命周期由当前活动的 <code>ApplicationContext</code> 驱动。</p>
+<p>Cullinan 的生命周期现在通常由当前活动的 <code>Application</code> 驱动；它会装配并持有
+一个 <code>ApplicationContext</code> 和一个 <code>WebRuntime</code>。</p>
 <h2 id="_2">主要阶段<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>创建上下文</strong> —— 实例化 <code>ApplicationContext</code></li>
-<li><strong>注册组件</strong> —— 通过装饰器、扫描器或显式 Definition 完成注册</li>
-<li><strong>Refresh</strong> —— 调用 <code>ctx.refresh()</code> 构建 eager 状态并执行启动钩子</li>
-<li><strong>处理请求</strong> —— request scope 与中间件围绕活动上下文运行</li>
-<li><strong>Shutdown</strong> —— 调用 <code>ctx.shutdown()</code> 执行销毁钩子并释放受管状态</li>
+<li><strong>发现模块</strong> —— <code>Application.run()</code> 收集根模块图及其声明的包归属</li>
+<li><strong>装配运行时</strong> —— 创建 <code>ApplicationContext</code> 与 <code>WebRuntime</code> 候选实例</li>
+<li><strong>校验与预热</strong> —— 执行健康检查、<code>refresh()</code>、router/dispatcher 绑定与 warmup hooks</li>
+<li><strong>激活</strong> —— 原子切换活动运行时，并让旧运行时进入 draining</li>
+<li><strong>处理请求</strong> —— request scope 与中间件围绕请求绑定的应用快照运行</li>
+<li><strong>Drain 与关闭</strong> —— 待飞行中的请求完成后，旧上下文执行 shutdown，运行时关闭</li>
 </ol>
 <h2 id="_3">生命周期钩子<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>受管组件可实现：</p>
@@ -1711,12 +1770,19 @@
 <h2 id="_4">顺序控制<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>若组件必须先于其他组件启动或延后关闭，可实现 <code>get_phase()</code>。较低 phase 会更早启动、但在关闭时更晚执行。</p>
 <h2 id="_5">请求作用域<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>request scope 依赖绑定到当前请求上下文。框架会在请求处理前后自动创建和释放该上下文。</p>
+<p>request scope 依赖绑定到当前请求上下文。适配器会在分发前把活动 runtime
+绑定到请求上下文，并在分发结束后释放。运行时切换期间，<code>current_app()</code> 会在
+该请求结束前持续返回请求绑定的应用快照。</p>
+<h2 id="reload-draining">Reload 与 draining<a class="headerlink" href="#reload-draining" title="Permanent link">&para;</a></h2>
+<p><code>Application.reload()</code> 会先构建新的候选运行时，只有在校验与预热成功后才切换为
+活动运行时。旧运行时会进入 <code>DRAINING</code>，继续服务已有请求，并在请求计数归零后
+真正关闭。</p>
 <h2 id="_6">中间件桥接<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>应用启动阶段可把旧式 middleware 注册桥接进 gateway pipeline，使历史模块仍能参与请求处理，而新代码统一走 Web Runtime。</p>
 <h2 id="_7">另见<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../injection/">IoC 与 DI</a></li>
+<li><a href="../application_runtime/">应用运行时模型</a></li>
 <li><a href="../../web_runtime_guide/">Web Runtime 指南</a></li>
 </ul>
 
@@ -1787,7 +1853,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>

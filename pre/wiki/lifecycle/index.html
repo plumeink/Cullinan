@@ -15,7 +15,7 @@
         <link rel="canonical" href="/wiki/lifecycle/">
       
       
-        <link rel="prev" href="../injection/">
+        <link rel="prev" href="../application_runtime/">
       
       
         <link rel="next" href="../middleware/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a2"
+      data-current-version="0.93a3"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a2"
+      data-pre-version="0.93a3"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -541,6 +541,41 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -655,6 +690,17 @@
     <span class="md-ellipsis">
       
         Request scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reload-and-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload and draining
       
     </span>
   </a>
@@ -1651,6 +1697,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reload-and-draining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reload and draining
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#middleware-bridge" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1690,14 +1747,16 @@
 
 
 <h1 id="application-lifecycle">Application Lifecycle<a class="headerlink" href="#application-lifecycle" title="Permanent link">&para;</a></h1>
-<p>Cullinan's lifecycle is driven by the active <code>ApplicationContext</code>.</p>
+<p>Cullinan's lifecycle is now usually driven by the active <code>Application</code>, which
+assembles and owns an <code>ApplicationContext</code> plus a <code>WebRuntime</code>.</p>
 <h2 id="main-phases">Main phases<a class="headerlink" href="#main-phases" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Create context</strong> — instantiate <code>ApplicationContext</code></li>
-<li><strong>Register components</strong> — decorators, scanners, or explicit definitions</li>
-<li><strong>Refresh</strong> — call <code>ctx.refresh()</code> to build eager state and run startup hooks</li>
-<li><strong>Serve requests</strong> — request scope and middleware operate against the active context</li>
-<li><strong>Shutdown</strong> — call <code>ctx.shutdown()</code> to run teardown hooks and release managed state</li>
+<li><strong>Discover modules</strong> — <code>Application.run()</code> collects the root module graph and owned packages</li>
+<li><strong>Assemble runtime</strong> — create an <code>ApplicationContext</code> and <code>WebRuntime</code> candidate</li>
+<li><strong>Validate and warm</strong> — run health checks, <code>refresh()</code>, router/dispatcher wiring, and warmup hooks</li>
+<li><strong>Activate</strong> — atomically switch the active runtime and begin draining the previous one</li>
+<li><strong>Serve requests</strong> — request scope and middleware operate against the request-bound application snapshot</li>
+<li><strong>Drain and close</strong> — once in-flight requests finish, the old context shuts down and the runtime closes</li>
 </ol>
 <h2 id="lifecycle-hooks">Lifecycle hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">&para;</a></h2>
 <p>Managed components may implement:</p>
@@ -1711,12 +1770,21 @@
 <h2 id="ordering">Ordering<a class="headerlink" href="#ordering" title="Permanent link">&para;</a></h2>
 <p>If a component must start or stop before others, implement <code>get_phase()</code>. Lower phases execute earlier on startup and later on shutdown.</p>
 <h2 id="request-scope">Request scope<a class="headerlink" href="#request-scope" title="Permanent link">&para;</a></h2>
-<p>Request-scoped dependencies are resolved against the current request context. The framework creates and tears down that context around request handling.</p>
+<p>Request-scoped dependencies are resolved against the current request context.
+Adapters bind the active runtime into that request context before dispatch and
+release it afterward. During runtime replacement, <code>current_app()</code> keeps
+returning the request-bound snapshot until that request finishes.</p>
+<h2 id="reload-and-draining">Reload and draining<a class="headerlink" href="#reload-and-draining" title="Permanent link">&para;</a></h2>
+<p><code>Application.reload()</code> builds a fresh candidate runtime and activates it only
+after validation and warmup succeed. The previous runtime moves to
+<code>DRAINING</code>, keeps serving in-flight requests, and closes only after request
+counts reach zero.</p>
 <h2 id="middleware-bridge">Middleware bridge<a class="headerlink" href="#middleware-bridge" title="Permanent link">&para;</a></h2>
 <p>Application bootstrap can bridge older middleware registrations into the gateway pipeline so legacy modules continue to participate in request processing while new code uses the unified Web Runtime.</p>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../injection/">IoC &amp; DI</a></li>
+<li><a href="../application_runtime/">Application Runtime Model</a></li>
 <li><a href="../../web_runtime_guide/">Web Runtime Guide</a></li>
 </ul>
 
@@ -1787,7 +1855,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a2", "pre_is_available": true, "pre_label": "0.93a2", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a3", "pre_is_available": true, "pre_label": "0.93a3", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
