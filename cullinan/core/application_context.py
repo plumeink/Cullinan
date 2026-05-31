@@ -18,6 +18,7 @@ from .exceptions import (
     ConditionNotMetError,
     CreationError,
     DependencyNotFoundError,
+    DependencyTypeResolutionError,
     LifecycleError,
     RegistryFrozenError,
 )
@@ -312,8 +313,47 @@ class ApplicationContext:
             ) from exc
 
     def _validate_definitions(self) -> None:
+        self._validate_injection_contracts()
         self._validate_dependencies()
         self._validate_scope_constraints()
+
+    def _validate_injection_contracts(self) -> None:
+        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+
+        for definition in self._definition_registry.values():
+            target_cls = definition.type_
+            if target_cls is None or not inspect.isclass(target_cls):
+                continue
+
+            markers = get_injection_markers(target_cls)
+            if not markers:
+                continue
+
+            type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(target_cls)
+
+            for attr_name, marker in markers.items():
+                dep_name = self._resolve_marker_dependency_name(
+                    owner_cls=target_cls,
+                    attr_name=attr_name,
+                    marker=marker,
+                    type_hints=type_hints,
+                    raw_annotations=raw_annotations,
+                    type_hint_error=type_hint_error,
+                )
+                required = getattr(marker, "required", True)
+                if required and not self._definition_registry.has(dep_name):
+                    raise DependencyNotFoundError(
+                        message=(
+                            f"组件 '{definition.name}' 的依赖字段 '{attr_name}' 需要组件 "
+                            f"'{dep_name}'，但该组件未注册"
+                        ),
+                        dependency_name=dep_name,
+                        injection_point=f"{target_cls.__module__}.{target_cls.__name__}.{attr_name}",
+                        candidate_sources=[
+                            {"source": candidate, "reason": "name_mismatch"}
+                            for candidate in self.list_definitions()
+                        ],
+                    )
 
     def _validate_dependencies(self) -> None:
         visited: Set[str] = set()
@@ -526,33 +566,149 @@ class ApplicationContext:
 
         instance = cls()
         markers = get_injection_markers(cls)
-        try:
-            import typing
-
-            type_hints = typing.get_type_hints(cls)
-        except Exception:
-            type_hints = getattr(cls, "__annotations__", {})
+        type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(cls)
 
         for attr_name, marker in markers.items():
             if isinstance(marker, Lazy):
-                dep_name = marker.name or self._infer_dependency_name(attr_name, type_hints.get(attr_name))
+                dep_name = self._resolve_marker_dependency_name(
+                    owner_cls=cls,
+                    attr_name=attr_name,
+                    marker=marker,
+                    type_hints=type_hints,
+                    raw_annotations=raw_annotations,
+                    type_hint_error=type_hint_error,
+                )
                 setattr(instance, attr_name, _LazyProxy(self, dep_name))
             elif isinstance(marker, InjectByName):
-                dep_name = marker.name or self._infer_dependency_name(attr_name, None)
+                dep_name = self._resolve_marker_dependency_name(
+                    owner_cls=cls,
+                    attr_name=attr_name,
+                    marker=marker,
+                    type_hints=type_hints,
+                    raw_annotations=raw_annotations,
+                    type_hint_error=type_hint_error,
+                )
                 dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
                 setattr(instance, attr_name, dep_instance)
             elif isinstance(marker, Inject):
-                type_hint = type_hints.get(attr_name)
-                dep_name = self._infer_dependency_name(attr_name, type_hint)
+                dep_name = self._resolve_marker_dependency_name(
+                    owner_cls=cls,
+                    attr_name=attr_name,
+                    marker=marker,
+                    type_hints=type_hints,
+                    raw_annotations=raw_annotations,
+                    type_hint_error=type_hint_error,
+                )
                 dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
                 setattr(instance, attr_name, dep_instance)
 
         return instance
 
     @staticmethod
+    def _get_class_type_hints(cls: type):
+        import typing
+
+        raw_annotations = dict(getattr(cls, "__annotations__", {}) or {})
+        try:
+            return typing.get_type_hints(cls), raw_annotations, None
+        except Exception as exc:
+            return {}, raw_annotations, exc
+
+    @staticmethod
+    def _describe_dependency_target(type_hint, raw_annotation) -> Optional[str]:
+        import typing
+
+        if type_hint is not None:
+            if hasattr(type_hint, "__name__"):
+                return type_hint.__name__
+            origin = typing.get_origin(type_hint)
+            if origin is typing.Union:
+                non_none_args = [
+                    arg for arg in typing.get_args(type_hint) if arg is not type(None)
+                ]
+                if len(non_none_args) == 1:
+                    return ApplicationContext._describe_dependency_target(non_none_args[0], None)
+            if origin is typing.Annotated:
+                annotated_args = typing.get_args(type_hint)
+                if annotated_args:
+                    return ApplicationContext._describe_dependency_target(annotated_args[0], None)
+
+        if isinstance(raw_annotation, str):
+            return raw_annotation
+        if hasattr(raw_annotation, "__forward_arg__"):
+            return raw_annotation.__forward_arg__
+        if hasattr(raw_annotation, "__name__"):
+            return raw_annotation.__name__
+        if raw_annotation is not None:
+            return str(raw_annotation)
+        return None
+
+    def _resolve_marker_dependency_name(
+        self,
+        *,
+        owner_cls: type,
+        attr_name: str,
+        marker,
+        type_hints: Dict[str, Any],
+        raw_annotations: Dict[str, Any],
+        type_hint_error: Optional[Exception],
+    ) -> str:
+        from .decorators import InjectByName
+
+        if isinstance(marker, InjectByName):
+            return marker.name or self._infer_dependency_name(attr_name, None)
+
+        explicit_name = getattr(marker, "name", None)
+        if explicit_name:
+            return explicit_name
+
+        type_hint = type_hints.get(attr_name)
+        raw_annotation = raw_annotations.get(attr_name)
+        expected_type_name = self._describe_dependency_target(type_hint, raw_annotation)
+        if expected_type_name and type_hint is not None:
+            return expected_type_name
+
+        fallback_candidate = self._infer_dependency_name(attr_name, None)
+        message = (
+            f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 类型解析失败；"
+            f"期望类型: '{expected_type_name or '<unknown>'}'。"
+            f"检测到属性名回退候选 '{attr_name} -> {fallback_candidate}'，该回退已被禁止。"
+        )
+        if type_hint_error is not None:
+            message = (
+                f"{message} 原始异常: {type(type_hint_error).__name__}: {type_hint_error}"
+            )
+
+        raise DependencyTypeResolutionError(
+            message=message,
+            dependency_name=expected_type_name or fallback_candidate,
+            injection_point=f"{owner_cls.__module__}.{owner_cls.__name__}.{attr_name}",
+            expected_type_name=expected_type_name,
+            fallback_candidate=fallback_candidate,
+            candidate_sources=[
+                {"source": fallback_candidate, "reason": "forbidden_attribute_name_fallback"}
+            ],
+            cause=type_hint_error,
+        )
+
+    @staticmethod
     def _infer_dependency_name(attr_name: str, type_hint) -> str:
+        import typing
+
         if type_hint and hasattr(type_hint, "__name__"):
             return type_hint.__name__
+        if type_hint:
+            origin = typing.get_origin(type_hint)
+            if origin is typing.Union:
+                non_none_args = [
+                    arg for arg in typing.get_args(type_hint) if arg is not type(None)
+                ]
+                if len(non_none_args) == 1 and hasattr(non_none_args[0], "__name__"):
+                    return non_none_args[0].__name__
+            if origin is typing.Annotated:
+                annotated_args = typing.get_args(type_hint)
+                if annotated_args and hasattr(annotated_args[0], "__name__"):
+                    return annotated_args[0].__name__
         parts = attr_name.split("_")
         return "".join(part.capitalize() for part in parts)
 

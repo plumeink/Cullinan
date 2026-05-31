@@ -69,6 +69,28 @@ class DependencyNotFoundError(DependencyResolutionError):
     pass
 
 
+class DependencyTypeResolutionError(DependencyResolutionError):
+    """Exception raised when a dependency type hint cannot be resolved safely."""
+
+    def __init__(
+        self,
+        message: str,
+        dependency_name: Optional[str] = None,
+        injection_point: Optional[str] = None,
+        expected_type_name: Optional[str] = None,
+        fallback_candidate: Optional[str] = None,
+        **kwargs
+    ):
+        super().__init__(
+            message,
+            dependency_name=dependency_name,
+            injection_point=injection_point,
+            **kwargs,
+        )
+        self.expected_type_name = expected_type_name
+        self.fallback_candidate = fallback_candidate
+
+
 class ConditionNotMetError(DependencyResolutionError):
     """Exception raised when dependency conditions are not met.
 

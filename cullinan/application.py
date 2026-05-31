@@ -4,8 +4,10 @@ import inspect
 import os
 import importlib.util
 import logging
+from dataclasses import dataclass
 import signal
 import sys
+from typing import List, Optional
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -29,12 +31,22 @@ from cullinan.module_scanner import (
     file_list_func
 )
 from cullinan.application_model import Application, Module, Runtime, current_app, module
+from cullinan.exceptions import PackageDiscoveryError
 
 # Module-level logger
 logger = logging.getLogger(__name__)
 
 
-def reflect_module(module_name: str, func: str) -> None:
+@dataclass(frozen=True)
+class ModuleReflectionResult:
+    module_name: str
+    func: str
+    imported: bool
+    strategy: str
+    error: Optional[str] = None
+
+
+def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
     """Import a module by dotted name and optionally call a function on it.
 
     - If `func` is 'nobody' or 'controller' we only import the module (decorators will run at import).
@@ -47,7 +59,13 @@ def reflect_module(module_name: str, func: str) -> None:
         func: Function name to call after import, or 'nobody'/'controller' to skip calling
     """
     if not module_name:
-        return
+        return ModuleReflectionResult(
+            module_name="",
+            func=func,
+            imported=False,
+            strategy="invalid",
+            error="empty module name",
+        )
 
     # sanitize package-style paths that may come from file-system discovery
     if module_name.endswith('.py'):
@@ -55,21 +73,38 @@ def reflect_module(module_name: str, func: str) -> None:
     module_name = module_name.strip('.')
 
     if not module_name:
-        return
+        return ModuleReflectionResult(
+            module_name="",
+            func=func,
+            imported=False,
+            strategy="invalid",
+            error="empty module name",
+        )
 
     logger.debug("Reflecting module: %s (func: %s)", module_name, func)
 
     mod = None
+    strategy = "unknown"
+    errors: List[str] = []
+
+    def _record_error(stage: str, exc: Exception) -> None:
+        errors.append(f"{stage}: {type(exc).__name__}: {exc}")
 
     # 策略0: 优先检查 sys.modules（Nuitka 环境下模块通常已加载）
     if module_name in sys.modules:
         mod = sys.modules[module_name]
+        strategy = "sys.modules"
         logger.info("[OK] Found in sys.modules: %s", module_name)
 
         # 对于 controller 和 service，模块已加载意味着装饰器已执行
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module already loaded (decorators executed): %s", module_name)
-            return
+            return ModuleReflectionResult(
+                module_name=module_name,
+                func=func,
+                imported=True,
+                strategy=strategy,
+            )
 
         # 继续调用函数（如果需要）
         if func not in ('nobody', 'controller'):
@@ -79,21 +114,35 @@ def reflect_module(module_name: str, func: str) -> None:
                     fn()
                     logger.debug("[OK] Called function: %s.%s", module_name, func)
             except Exception as e:
+                _record_error("call", e)
                 logger.debug("[FAIL] Error calling %s.%s: %s", module_name, func, str(e))
-        return
+        return ModuleReflectionResult(
+            module_name=module_name,
+            func=func,
+            imported=True,
+            strategy=strategy,
+            error="; ".join(errors) if errors else None,
+        )
 
     # 策略1: 标准导入（适用于所有环境）
     try:
         mod = importlib.import_module(module_name)
+        strategy = "importlib"
         logger.info("[OK] Successfully imported: %s", module_name)
 
         # 对于 controller 和 service，导入即可（装饰器会执行）
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module imported (decorators executed): %s", module_name)
-            return
+            return ModuleReflectionResult(
+                module_name=module_name,
+                func=func,
+                imported=True,
+                strategy=strategy,
+            )
 
     except ImportError as e:
         error_msg = str(e)
+        _record_error("import", e)
         logger.warning("[FAIL] Import failed for %s: %s", module_name, error_msg)
 
         # 策略2: 尝试相对导入（Nuitka 编译后可能需要）
@@ -106,30 +155,53 @@ def reflect_module(module_name: str, func: str) -> None:
                     parent = importlib.import_module(parent_pkg)
                     if hasattr(parent, mod_part):
                         mod = getattr(parent, mod_part)
+                        strategy = "parent-attribute"
                         logger.info("[OK] Imported as attribute: %s from %s", mod_part, parent_pkg)
 
                         if func in ('nobody', 'controller'):
-                            return
+                            return ModuleReflectionResult(
+                                module_name=module_name,
+                                func=func,
+                                imported=True,
+                                strategy=strategy,
+                                error="; ".join(errors) if errors else None,
+                            )
                     else:
                         # 尝试使用 __import__ 的 fromlist 参数
                         try:
                             mod = __import__(module_name, fromlist=[mod_part])
+                            strategy = "__import__"
                             logger.info("[OK] Imported using __import__: %s", module_name)
 
                             if func in ('nobody', 'controller'):
-                                return
+                                return ModuleReflectionResult(
+                                    module_name=module_name,
+                                    func=func,
+                                    imported=True,
+                                    strategy=strategy,
+                                    error="; ".join(errors) if errors else None,
+                                )
                         except Exception as e2:
+                            _record_error("__import__", e2)
                             logger.debug("[FAIL] __import__ also failed: %s", str(e2))
                 except Exception as e3:
+                    _record_error("relative-import", e3)
                     logger.debug("[FAIL] Relative import failed: %s", str(e3))
 
         # 策略3: 从 sys.modules 获取（可能已被打包工具预加载）
         if module_name in sys.modules:
             mod = sys.modules[module_name]
+            strategy = "sys.modules"
             logger.info("[OK] Found in sys.modules: %s", module_name)
 
             if func in ('nobody', 'controller'):
-                return
+                return ModuleReflectionResult(
+                    module_name=module_name,
+                    func=func,
+                    imported=True,
+                    strategy=strategy,
+                    error="; ".join(errors) if errors else None,
+                )
 
         # 策略4: 尝试通过文件路径导入（最后手段）
         elif is_pyinstaller_frozen() or is_nuitka_compiled():
@@ -154,22 +226,43 @@ def reflect_module(module_name: str, func: str) -> None:
                             mod = importlib.util.module_from_spec(spec)
                             sys.modules[module_name] = mod  # 注册到 sys.modules
                             spec.loader.exec_module(mod)
+                            strategy = "file"
                             logger.info("[OK] Imported from file: %s", module_path)
                             break
                     except Exception as import_ex:
+                        _record_error("file-import", import_ex)
                         logger.warning("[FAIL] Failed to import from file %s: %s", module_path, str(import_ex))
     except Exception as e:
+        _record_error("unexpected-import", e)
         logger.warning("[FAIL] Unexpected error importing %s: %s", module_name, str(e))
-        return
+        return ModuleReflectionResult(
+            module_name=module_name,
+            func=func,
+            imported=False,
+            strategy=strategy,
+            error="; ".join(errors) if errors else str(e),
+        )
 
     if mod is None:
         logger.warning("[FAIL] Could not import module: %s", module_name)
-        return
+        return ModuleReflectionResult(
+            module_name=module_name,
+            func=func,
+            imported=False,
+            strategy=strategy,
+            error="; ".join(errors) if errors else "Could not import module",
+        )
 
     # 对于 controller 和 service，只需导入即可（装饰器会在导入时执行）
     if func in ('nobody', 'controller'):
         logger.debug("[OK] Module imported (decorators executed): %s", module_name)
-        return
+        return ModuleReflectionResult(
+            module_name=module_name,
+            func=func,
+            imported=True,
+            strategy=strategy,
+            error="; ".join(errors) if errors else None,
+        )
 
     # 调用指定的函数（如果存在）
     try:
@@ -178,30 +271,113 @@ def reflect_module(module_name: str, func: str) -> None:
             fn()
             logger.debug("[OK] Called function: %s.%s", module_name, func)
     except Exception as e:
+        _record_error("call", e)
         logger.debug("[FAIL] Error calling %s.%s: %s", module_name, func, str(e))
-        return
+        return ModuleReflectionResult(
+            module_name=module_name,
+            func=func,
+            imported=True,
+            strategy=strategy,
+            error="; ".join(errors),
+        )
+
+    return ModuleReflectionResult(
+        module_name=module_name,
+        func=func,
+        imported=True,
+        strategy=strategy,
+        error="; ".join(errors) if errors else None,
+    )
 
 
 
-def scan_controller(modules: list) -> None:
+def scan_controller(modules: list) -> List[ModuleReflectionResult]:
     """Scan and import controller modules to register their handlers.
     
     Args:
         modules: List of dotted module names to scan
     """
-    for mod in modules:
-        reflect_module(mod, 'controller')
+    return [reflect_module(mod, 'controller') for mod in modules]
 
 
 
-def scan_service(modules: list) -> None:
+def scan_service(modules: list) -> List[ModuleReflectionResult]:
     """Scan and import service modules to register their services.
     
     Args:
         modules: List of dotted module names to scan
     """
-    for mod in modules:
-        reflect_module(mod, 'nobody')
+    return [reflect_module(mod, 'nobody') for mod in modules]
+
+
+def _validate_component_scan_results(
+    modules: List[str],
+    scan_results: List[ModuleReflectionResult],
+) -> None:
+    from cullinan.core.decorators import get_component_registration_metadata
+    from cullinan.core.pending import PendingRegistry
+
+    import_failures = {}
+    for result in scan_results:
+        if not result.imported:
+            import_failures[result.module_name] = result.error or "unknown import failure"
+
+    pending = PendingRegistry.get_instance()
+    registered_components = {
+        (
+            registration.source_module or registration.cls.__module__,
+            registration.name,
+            registration.component_type.value,
+        )
+        for registration in pending.get_all()
+    }
+    missing_registrations = []
+
+    for module_name in {result.module_name for result in scan_results if result.imported}:
+        module = sys.modules.get(module_name)
+        if module is None:
+            continue
+        for _, cls in inspect.getmembers(module, inspect.isclass):
+            if cls.__module__ != module_name:
+                continue
+            metadata = get_component_registration_metadata(cls)
+            if metadata is None:
+                continue
+            component_key = (
+                metadata["source_module"] or cls.__module__,
+                metadata["name"],
+                metadata["component_type"].value,
+            )
+            if component_key in registered_components:
+                continue
+            missing_registrations.append({
+                "module": module_name,
+                "component": metadata["name"],
+                "class": cls.__name__,
+                "component_type": metadata["component_type"].value,
+            })
+
+    if import_failures or missing_registrations:
+        failure_lines = []
+        if import_failures:
+            failure_lines.append("导入失败模块:")
+            for module_name, error in sorted(import_failures.items()):
+                failure_lines.append(f"- {module_name}: {error}")
+        if missing_registrations:
+            failure_lines.append("已导入但未进入 PendingRegistry 的装饰器组件:")
+            for item in missing_registrations:
+                failure_lines.append(
+                    f"- {item['module']}::{item['class']} ({item['component_type']}, 注册名={item['component']})"
+                )
+        raise PackageDiscoveryError(
+            message="组件扫描校验失败",
+            details={
+                "candidate_module_count": len(modules),
+                "failed_module_count": len(import_failures),
+                "missing_registration_count": len(missing_registrations),
+                "diagnostics": " | ".join(failure_lines),
+            },
+        )
 
 
 
@@ -383,8 +559,12 @@ def _init_framework():
         logger.warning("[WARN] Consider using cullinan.configure(user_packages=['your_app'])")
     else:
         logger.info("└---found %d modules to scan", len(modules))
-        scan_service(modules)
-        scan_controller(modules)
+        service_scan_results = scan_service(modules)
+        controller_scan_results = scan_controller(modules)
+        _validate_component_scan_results(
+            modules,
+            [*service_scan_results, *controller_scan_results],
+        )
 
     logger.info("└---refreshing ApplicationContext...")
     ctx.refresh()
