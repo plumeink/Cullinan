@@ -28,6 +28,7 @@ from cullinan.module_scanner import (
     is_nuitka_compiled,
     file_list_func
 )
+from cullinan.application_model import Application, Module, Runtime, current_app, module
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -692,4 +693,3 @@ async def _run_shutdown_sequence(server, loop, timeout_seconds: int):
         except Exception:
             pass
     return None
-

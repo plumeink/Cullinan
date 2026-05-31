@@ -7,23 +7,25 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/wiki/lifecycle.md"
-related_tests: ["tests/integration/test_service_lifecycle_integration.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_service_lifecycle_integration.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # Application Lifecycle
 
-Cullinan's lifecycle is driven by the active `ApplicationContext`.
+Cullinan's lifecycle is now usually driven by the active `Application`, which
+assembles and owns an `ApplicationContext` plus a `WebRuntime`.
 
 ## Main phases
 
-1. **Create context** — instantiate `ApplicationContext`
-2. **Register components** — decorators, scanners, or explicit definitions
-3. **Refresh** — call `ctx.refresh()` to build eager state and run startup hooks
-4. **Serve requests** — request scope and middleware operate against the active context
-5. **Shutdown** — call `ctx.shutdown()` to run teardown hooks and release managed state
+1. **Discover modules** — `Application.run()` collects the root module graph and owned packages
+2. **Assemble runtime** — create an `ApplicationContext` and `WebRuntime` candidate
+3. **Validate and warm** — run health checks, `refresh()`, router/dispatcher wiring, and warmup hooks
+4. **Activate** — atomically switch the active runtime and begin draining the previous one
+5. **Serve requests** — request scope and middleware operate against the request-bound application snapshot
+6. **Drain and close** — once in-flight requests finish, the old context shuts down and the runtime closes
 
 ## Lifecycle hooks
 
@@ -42,7 +44,17 @@ If a component must start or stop before others, implement `get_phase()`. Lower 
 
 ## Request scope
 
-Request-scoped dependencies are resolved against the current request context. The framework creates and tears down that context around request handling.
+Request-scoped dependencies are resolved against the current request context.
+Adapters bind the active runtime into that request context before dispatch and
+release it afterward. During runtime replacement, `current_app()` keeps
+returning the request-bound snapshot until that request finishes.
+
+## Reload and draining
+
+`Application.reload()` builds a fresh candidate runtime and activates it only
+after validation and warmup succeed. The previous runtime moves to
+`DRAINING`, keeps serving in-flight requests, and closes only after request
+counts reach zero.
 
 ## Middleware bridge
 
@@ -51,4 +63,5 @@ Application bootstrap can bridge older middleware registrations into the gateway
 ## See also
 
 - [IoC & DI](injection.md)
+- [Application Runtime Model](application_runtime.md)
 - [Web Runtime Guide](../web_runtime_guide.md)

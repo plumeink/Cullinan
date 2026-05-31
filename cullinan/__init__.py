@@ -59,6 +59,14 @@ from cullinan.core import (
     reset_injection_registry,
 )
 
+from cullinan.application_model import (
+    Application,
+    Module,
+    Runtime,
+    current_app,
+    module,
+)
+
 # Export enhanced service layer
 from cullinan.service import (
     Service,
@@ -212,7 +220,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.93a2'
+__version__ = '0.93a3'
 
 __all__ = [
     # Configuration
@@ -387,6 +395,11 @@ __all__ = [
     'service',
     'controller',
     'component',
+    'Application',
+    'Module',
+    'Runtime',
+    'module',
+    'current_app',
 
     # Application helpers
     'get_asgi_app',

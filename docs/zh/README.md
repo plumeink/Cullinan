@@ -10,19 +10,20 @@ translation_pair: "docs/README.md"
 related_tests: []
 related_examples: []
 estimate_pd: 0.5
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # Cullinan 文档
 
 欢迎使用 Cullinan 文档站点。
 
-> **当前版本：0.93a1**。当前文档已对齐统一的 `cullinan.core` 容器门面、传输无关的 Web Runtime（`WebRequest` / `WebResponse` / `WebAdapter`）以及基于 pytest 的测试体系。
+> **当前版本：0.93a3**。当前文档已对齐 application-first 启动模型（`Application` + `@module`）、统一的 `cullinan.core` 容器门面、传输无关的 Web Runtime（`WebRequest` / `WebResponse` / `WebAdapter`）以及当前以 pytest 为主的测试工作流。
 
 ## 重点更新
 
-- [运行时整合概览](runtime_updates_v093.md) —— 汇总 IoC/DI、Web Runtime、测试优化三次更新
+- [运行时整合概览](runtime_updates_v093.md) —— 汇总 IoC/DI、应用运行时、Web Runtime、测试更新
 - [架构设计](architecture.md) —— 当前框架架构与执行流程
+- [应用运行时模型](wiki/application_runtime.md) —— 模块图、归属、激活、reload 与 draining 语义
 - [依赖注入指南](dependency_injection_guide.md) —— 推荐 DI 用法与兼容层说明
 - [Web Runtime 指南](web_runtime_guide.md) —— 传输无关的请求/响应运行时与适配器
 - [测试与验证](testing.md) —— 仓库测试入口、目录结构与约定
@@ -30,6 +31,7 @@ pr_links: []
 ## Wiki
 
 - [IoC 与 DI（注入）](wiki/injection.md) —— 注入模式速查
+- [应用运行时模型](wiki/application_runtime.md) —— `Application.run()`、`@module`、归属解析与运行时切换
 - [应用生命周期](wiki/lifecycle.md) —— 启动、refresh、请求作用域与关闭流程
 - [RESTful API](wiki/restful_api.md) —— 控制器路由与当前 Web Runtime 响应模型
 

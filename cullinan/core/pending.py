@@ -26,6 +26,7 @@ class PendingRegistration:
     routes: List[Any] = field(default_factory=list)
     dependencies: Optional[List[str]] = None
     conditions: List[Callable] = field(default_factory=list)
+    source_module: Optional[str] = None
     source_file: Optional[str] = None
     source_line: Optional[int] = None
 

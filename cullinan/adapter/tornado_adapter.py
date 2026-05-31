@@ -19,6 +19,10 @@ import tornado.web
 import tornado.websocket
 
 from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter
+from cullinan.application_model import (
+    bind_runtime_request_context,
+    release_runtime_request_context,
+)
 from cullinan.gateway.dispatcher import Dispatcher
 from cullinan.gateway.web_core import WebRequest, WebResponse
 from .base import WebAdapter
@@ -53,10 +57,12 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
         writing and falls back to a plain 500 so that Tornado's default
         error page is never triggered unexpectedly.
         """
+        binding = None
         try:
             runtime = self._adapter.runtime
             if runtime is not None:
                 runtime.begin_request()
+            binding = bind_runtime_request_context(runtime)
             request = self._adapter.create_request_adapter().build_request(self)
             if runtime is not None:
                 request.attributes['runtime'] = runtime
@@ -76,6 +82,7 @@ class _CullinanTornadoHandler(tornado.web.RequestHandler):
             logger.exception('Uncaught error in _CullinanTornadoHandler._handle')
         finally:
             runtime = self._adapter.runtime
+            release_runtime_request_context(runtime, binding)
             if runtime is not None:
                 runtime.end_request()
 

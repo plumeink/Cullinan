@@ -7,23 +7,25 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/wiki/lifecycle.md"
-related_tests: ["tests/integration/test_service_lifecycle_integration.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_service_lifecycle_integration.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # 应用生命周期
 
-Cullinan 的生命周期由当前活动的 `ApplicationContext` 驱动。
+Cullinan 的生命周期现在通常由当前活动的 `Application` 驱动；它会装配并持有
+一个 `ApplicationContext` 和一个 `WebRuntime`。
 
 ## 主要阶段
 
-1. **创建上下文** —— 实例化 `ApplicationContext`
-2. **注册组件** —— 通过装饰器、扫描器或显式 Definition 完成注册
-3. **Refresh** —— 调用 `ctx.refresh()` 构建 eager 状态并执行启动钩子
-4. **处理请求** —— request scope 与中间件围绕活动上下文运行
-5. **Shutdown** —— 调用 `ctx.shutdown()` 执行销毁钩子并释放受管状态
+1. **发现模块** —— `Application.run()` 收集根模块图及其声明的包归属
+2. **装配运行时** —— 创建 `ApplicationContext` 与 `WebRuntime` 候选实例
+3. **校验与预热** —— 执行健康检查、`refresh()`、router/dispatcher 绑定与 warmup hooks
+4. **激活** —— 原子切换活动运行时，并让旧运行时进入 draining
+5. **处理请求** —— request scope 与中间件围绕请求绑定的应用快照运行
+6. **Drain 与关闭** —— 待飞行中的请求完成后，旧上下文执行 shutdown，运行时关闭
 
 ## 生命周期钩子
 
@@ -42,7 +44,15 @@ Cullinan 的生命周期由当前活动的 `ApplicationContext` 驱动。
 
 ## 请求作用域
 
-request scope 依赖绑定到当前请求上下文。框架会在请求处理前后自动创建和释放该上下文。
+request scope 依赖绑定到当前请求上下文。适配器会在分发前把活动 runtime
+绑定到请求上下文，并在分发结束后释放。运行时切换期间，`current_app()` 会在
+该请求结束前持续返回请求绑定的应用快照。
+
+## Reload 与 draining
+
+`Application.reload()` 会先构建新的候选运行时，只有在校验与预热成功后才切换为
+活动运行时。旧运行时会进入 `DRAINING`，继续服务已有请求，并在请求计数归零后
+真正关闭。
 
 ## 中间件桥接
 
@@ -51,4 +61,5 @@ request scope 依赖绑定到当前请求上下文。框架会在请求处理前
 ## 另见
 
 - [IoC 与 DI](injection.md)
+- [应用运行时模型](application_runtime.md)
 - [Web Runtime 指南](../web_runtime_guide.md)

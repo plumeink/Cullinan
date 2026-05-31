@@ -7,15 +7,15 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/runtime_updates_v093.md"
-related_tests: ["tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # Runtime consolidation overview
 
-This page summarizes the three major updates currently reflected in the codebase and documentation.
+This page summarizes the four major updates currently reflected in the codebase and documentation.
 
 ## 1. IoC/DI consolidation
 
@@ -34,7 +34,26 @@ The container model is now centered on `ApplicationContext` and publicly surface
 - `Inject()` and `InjectByName()`
 - `ApplicationContext` for explicit registration or integration work
 
-## 2. Web Runtime consolidation
+## 2. Application-first runtime
+
+Cullinan now exposes an application-first bootstrap model in `cullinan.application_model`
+and re-exports it from `cullinan`.
+
+### What changed
+
+- `Application.run(RootModule)` builds, validates, warms, and activates a root module
+- `@module` defines module imports, owned packages, warmup hooks, and health checks
+- component discovery rebuilds pending registrations from decorator metadata instead of
+  relying on one-shot import timing
+- `current_app()` prefers the request-bound application snapshot while an older runtime drains
+
+### Migration implication
+
+New bootstrap code should prefer `Application` + `@module`. Keep using
+`ApplicationContext` for low-level container work and use the legacy
+`cullinan.application.run()` entrypoint only when compatibility matters.
+
+## 3. Web Runtime consolidation
 
 The web stack was reorganized around a transport-agnostic runtime in `cullinan.gateway`.
 
@@ -49,16 +68,18 @@ The web stack was reorganized around a transport-agnostic runtime in `cullinan.g
 
 Use the unified Web Runtime names in new code. The old request / response / adapter names are no longer the primary public surface.
 
-## 3. Test-suite optimization
+## 4. Test-suite alignment
 
-The repository test workflow was cleaned up and normalized around pytest.
+The repository test workflow continues to converge on pytest, and the new
+application-model and adapter coverage now lives in regular collected tests.
 
 ### What changed
 
 - a single formal entrypoint: `.venv\Scripts\python -m pytest`
 - test discovery is defined by `pytest.ini`
 - topic-based suite layout under `tests/`
-- old script-style verification files were removed or converted to real pytest tests
+- new and refreshed coverage uses real pytest tests under `tests/core` and `tests/integration`
+- some historical script-style files still remain and are being migrated incrementally
 
 ### Current directories
 
@@ -72,6 +93,7 @@ The repository test workflow was cleaned up and normalized around pytest.
 ## Where to read next
 
 - [Architecture](architecture.md)
+- [Application Runtime Model](wiki/application_runtime.md)
 - [Dependency Injection Guide](dependency_injection_guide.md)
 - [Web Runtime Guide](web_runtime_guide.md)
 - [Testing & Verification](testing.md)

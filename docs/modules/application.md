@@ -7,30 +7,86 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/modules/application.md"
-related_tests: ["tests/test_real_app_startup.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_decorators.py", "tests/di/test_global_container_manager.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # cullinan.application
 
-> **Note (v0.90)**: For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
+`cullinan.application` now exposes the recommended application-first bootstrap
+surface:
 
-Summary: placeholder for `cullinan.application` module documentation. Include public classes, typical usage, and links to related tests and examples.
+- `Application.run(RootModule)` builds, warms, and activates a root module
+- `@module` declares a root/feature/shared module and its imported modules
+- `current_app()` returns the active application, and prefers the request
+  snapshot while an older runtime is draining
+- legacy `run(handlers=None, engine=None)` remains available for compatibility
 
-Public symbols to document (suggested): Application, start, stop
+## Recommended bootstrap
 
-Usage example:
+```python
+from cullinan import Application, controller, current_app, get_api, module, service
+from cullinan.core import Inject
 
-(placeholder for minimal code showing a typical Application usage)
 
-## Public API (auto-generated)
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "hello"
 
-<!-- generated: docs/work/generated_modules/cullinan_application.md -->
 
-### cullinan.application
+@controller(url="/api")
+class GreetingController:
+    greeting_service: GreetingService = Inject()
 
-| Name | Kind | Signature / Value |
-| --- | --- | --- |
-| `run` | function | `run(handlers=None)` |
+    @get_api(url="/whoami")
+    def whoami(self):
+        return {
+            "root": current_app().root_module.__name__,
+            "message": self.greeting_service.greet(),
+        }
+
+
+@module
+class RootModule:
+    pass
+
+
+app = Application.run(RootModule)
+```
+
+## Module ownership
+
+`@module` uses Python package ownership to discover components. When a component
+matches more than one module package, startup fails fast. Resolve intentional
+overlap with `ownership_overrides`.
+
+```python
+@module(
+    imports=[SharedModule, OrdersModule],
+    ownership_overrides={"myapp.shared": SharedModule},
+)
+class RootModule:
+    pass
+```
+
+## Runtime switching
+
+`Application.reload()` builds a fresh candidate runtime, validates and warms it,
+then atomically switches the active application. The previous runtime enters
+draining state, and `current_app()` keeps returning the request-bound snapshot
+until the in-flight request ends.
+
+## Compatibility note
+
+`ApplicationContext` remains the low-level container/runtime primitive. Existing
+code using `register()`, `refresh()`, `get()`, or the legacy
+`cullinan.application.run()` entrypoint continues to work, but new application
+setup should prefer `Application` + `@module`.
+
+## Related documents
+
+- [Application Runtime Model](../wiki/application_runtime.md)
+- [Application Lifecycle](../wiki/lifecycle.md)

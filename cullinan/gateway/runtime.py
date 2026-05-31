@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, List, Optional
 
 from .dispatcher import Dispatcher
 from .exception_handler import ExceptionHandler
@@ -68,6 +68,8 @@ class WebRuntime:
         self.state = WebRuntimeState.CREATED
         self._request_count = 0
         self._request_lock = threading.RLock()
+        self._close_callbacks: List[Callable[["WebRuntime"], None]] = []
+        self.application: Optional[Any] = None
 
     def validate(self) -> None:
         self.state = WebRuntimeState.VALIDATING
@@ -84,15 +86,38 @@ class WebRuntime:
         self.validate()
         self.warmup()
 
-    def activate(self) -> Optional["WebRuntime"]:
-        self.prepare()
+    def add_close_callback(self, callback: Callable[["WebRuntime"], None]) -> None:
+        self._close_callbacks.append(callback)
+
+    def activate(self, *, prepare: bool = True) -> Optional["WebRuntime"]:
+        if prepare and self.state not in {WebRuntimeState.WARMING, WebRuntimeState.ACTIVE}:
+            self.prepare()
         with self._active_lock:
             previous = self.__class__._active_runtime
             if previous is not None and previous is not self and previous.state != WebRuntimeState.CLOSED:
-                previous.state = WebRuntimeState.DRAINING
+                previous.begin_draining()
             self.__class__._active_runtime = self
             self.state = WebRuntimeState.ACTIVE
         return previous
+
+    def begin_draining(self) -> None:
+        with self._request_lock:
+            if self.state == WebRuntimeState.CLOSED:
+                return
+            self.state = WebRuntimeState.DRAINING
+            should_close = self._request_count == 0
+        if should_close:
+            self.close()
+
+    def close(self) -> None:
+        callbacks: List[Callable[["WebRuntime"], None]] = []
+        with self._request_lock:
+            if self.state == WebRuntimeState.CLOSED:
+                return
+            self.state = WebRuntimeState.CLOSED
+            callbacks = list(self._close_callbacks)
+        for callback in callbacks:
+            callback(self)
 
     def begin_request(self) -> None:
         with self._request_lock:
@@ -101,8 +126,9 @@ class WebRuntime:
     def end_request(self) -> None:
         with self._request_lock:
             self._request_count = max(0, self._request_count - 1)
-            if self.state == WebRuntimeState.DRAINING and self._request_count == 0:
-                self.state = WebRuntimeState.CLOSED
+            should_close = self.state == WebRuntimeState.DRAINING and self._request_count == 0
+        if should_close:
+            self.close()
 
     @property
     def request_count(self) -> int:
@@ -115,8 +141,13 @@ class WebRuntime:
             return cls._active_runtime
 
     @classmethod
-    def activate_runtime(cls, runtime: "WebRuntime") -> Optional["WebRuntime"]:
-        return runtime.activate()
+    def activate_runtime(cls, runtime: "WebRuntime", *, prepare: bool = True) -> Optional["WebRuntime"]:
+        return runtime.activate(prepare=prepare)
+
+    @classmethod
+    def bind_runtime(cls, runtime: Optional["WebRuntime"]) -> None:
+        with cls._active_lock:
+            cls._active_runtime = runtime
 
     @classmethod
     def clear_active(cls) -> None:

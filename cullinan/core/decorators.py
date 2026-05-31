@@ -15,7 +15,7 @@ Author: Plumeink
 """
 
 import inspect
-from typing import Type, Optional, List, Callable, Any, Union
+from typing import Type, Optional, List, Callable, Any, Union, Dict
 from functools import wraps
 
 from .pending import PendingRegistry, PendingRegistration, ComponentType
@@ -24,6 +24,41 @@ from .pending import PendingRegistry, PendingRegistration, ComponentType
 # =============================================================================
 # Component Registration Decorators
 # =============================================================================
+
+_COMPONENT_REGISTRATION_ATTR = "__cullinan_component_registration__"
+
+
+def _capture_component_registration(target_cls: Type, registration: PendingRegistration) -> None:
+    setattr(target_cls, _COMPONENT_REGISTRATION_ATTR, {
+        "name": registration.name,
+        "component_type": registration.component_type,
+        "scope": registration.scope,
+        "url_prefix": registration.url_prefix,
+        "routes": list(registration.routes),
+        "dependencies": list(registration.dependencies or []),
+        "conditions": list(registration.conditions),
+        "source_module": registration.source_module,
+        "source_file": registration.source_file,
+        "source_line": registration.source_line,
+    })
+
+
+def get_component_registration_metadata(target_cls: Type) -> Optional[Dict[str, Any]]:
+    metadata = getattr(target_cls, _COMPONENT_REGISTRATION_ATTR, None)
+    if metadata is None:
+        return None
+    return {
+        "name": metadata["name"],
+        "component_type": metadata["component_type"],
+        "scope": metadata["scope"],
+        "url_prefix": metadata["url_prefix"],
+        "routes": list(metadata["routes"]),
+        "dependencies": list(metadata["dependencies"]),
+        "conditions": list(metadata["conditions"]),
+        "source_module": metadata["source_module"],
+        "source_file": metadata["source_file"],
+        "source_line": metadata["source_line"],
+    }
 
 def service(cls: Optional[Type] = None, *,
             name: Optional[str] = None,
@@ -83,10 +118,11 @@ def service(cls: Optional[Type] = None, *,
             scope=scope,
             dependencies=dependencies,
             conditions=conditions,
+            source_module=target_cls.__module__,
             source_file=source_file,
             source_line=source_line,
         )
-        
+        _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
         return target_cls
 
@@ -159,10 +195,11 @@ def controller(cls: Optional[Type] = None, *, url: str = ""):
             scope="singleton",
             url_prefix=url,
             conditions=conditions,
+            source_module=target_cls.__module__,
             source_file=source_file,
             source_line=source_line,
         )
-        
+        _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
         return target_cls
 
@@ -226,10 +263,11 @@ def component(cls: Optional[Type] = None, *,
             component_type=ComponentType.COMPONENT,
             scope=scope,
             conditions=conditions,
+            source_module=target_cls.__module__,
             source_file=source_file,
             source_line=source_line,
         )
-        
+        _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
         return target_cls
 
@@ -287,10 +325,11 @@ def provider(cls: Optional[Type] = None, *, name: Optional[str] = None):
             component_type=ComponentType.PROVIDER,
             scope="singleton",
             conditions=conditions,
+            source_module=target_cls.__module__,
             source_file=source_file,
             source_line=source_line,
         )
-        
+        _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
         return target_cls
 
@@ -456,4 +495,3 @@ def get_type_hints_safe(cls: Type) -> dict:
     except Exception:
         # Fall back to raw annotations
         return getattr(cls, '__annotations__', {})
-

@@ -15,6 +15,7 @@ from cullinan.core.decorators import (
     InjectByName,
     Lazy,
     get_injection_markers,
+    get_component_registration_metadata,
 )
 
 
@@ -85,6 +86,24 @@ class TestServiceDecorator:
         assert reg.source_line is not None
         assert "test_decorators.py" in reg.source_file
 
+    def test_service_registration_metadata_is_available_for_rescan(self):
+        """Test metadata captured for application-model rediscovery."""
+        @service(dependencies=["EmailService"])
+        class MetadataService:
+            pass
+
+        metadata = get_component_registration_metadata(MetadataService)
+
+        assert metadata is not None
+        assert metadata["name"] == "MetadataService"
+        assert metadata["component_type"] == ComponentType.SERVICE
+        assert metadata["dependencies"] == ["EmailService"]
+        assert metadata["source_module"] == MetadataService.__module__
+        assert "test_decorators.py" in metadata["source_file"]
+
+        metadata["dependencies"].append("Mutated")
+        assert get_component_registration_metadata(MetadataService)["dependencies"] == ["EmailService"]
+
 
 class TestControllerDecorator:
     """Tests for @controller decorator."""
@@ -120,6 +139,19 @@ class TestControllerDecorator:
         registry = PendingRegistry.get_instance()
         reg = registry.get_by_name("RootController")
         assert reg.url_prefix == ""
+
+    def test_controller_registration_metadata_preserves_route_prefix(self):
+        """Test controller metadata used by application-model discovery."""
+        @controller(url="/api/users")
+        class MetadataController:
+            pass
+
+        metadata = get_component_registration_metadata(MetadataController)
+
+        assert metadata is not None
+        assert metadata["component_type"] == ComponentType.CONTROLLER
+        assert metadata["url_prefix"] == "/api/users"
+        assert metadata["source_module"] == MetadataController.__module__
 
 
 class TestComponentDecorator:
@@ -310,8 +342,4 @@ class TestMultipleRegistrations:
         assert len(registry.get_by_type(ComponentType.SERVICE)) == 1
         assert len(registry.get_by_type(ComponentType.CONTROLLER)) == 1
         assert len(registry.get_by_type(ComponentType.COMPONENT)) == 1
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
 

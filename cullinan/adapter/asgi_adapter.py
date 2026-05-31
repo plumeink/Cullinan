@@ -19,6 +19,10 @@ import logging
 from typing import Any, Callable, Dict, List, Optional
 
 from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter
+from cullinan.application_model import (
+    bind_runtime_request_context,
+    release_runtime_request_context,
+)
 from cullinan.gateway.dispatcher import Dispatcher
 from cullinan.gateway.web_core import WebRequest, WebResponse
 from .base import WebAdapter
@@ -153,10 +157,12 @@ async def _handle_http(
     always produce a valid HTTP 500 response instead of crashing the
     ASGI server.
     """
+    binding = None
     try:
         runtime = adapter.runtime
         if runtime is not None:
             runtime.begin_request()
+        binding = bind_runtime_request_context(runtime)
         # 1. Read full body
         body = b''
         while True:
@@ -197,6 +203,7 @@ async def _handle_http(
             pass
     finally:
         runtime = adapter.runtime
+        release_runtime_request_context(runtime, binding)
         if runtime is not None:
             runtime.end_request()
 

@@ -7,49 +7,76 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/modules/application.md"
-related_tests: ["tests/test_real_app_startup.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_decorators.py", "tests/di/test_global_container_manager.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # cullinan.application
 
-> **说明（v0.90）**：新的 IoC/DI 2.0 架构请参阅 [依赖注入指南](../dependency_injection_guide.md)。
+`cullinan.application` 现在提供推荐的 application-first 启动面：
 
-摘要：`cullinan.application` 模块文档占位。包含公有类、典型用法，及相关测试/示例链接。
+- `Application.run(RootModule)`：构建、预热并激活根模块
+- `@module`：声明根模块、功能模块和共享模块及其导入关系
+- `current_app()`：返回当前活动应用；当旧 runtime 正在 draining 时，会优先返回请求绑定的应用快照
+- 旧的 `run(handlers=None, engine=None)` 入口仍保留，用于兼容已有调用
 
-建议记录的公有符号：Application，start，stop
+## 推荐启动方式
 
-示例用法：
+```python
+from cullinan import Application, controller, current_app, get_api, module, service
+from cullinan.core import Inject
 
-（占位：展示典型 Application 使用的最小代码片段）
 
-## 示例
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "hello"
 
-### Hello HTTP（烟雾测试示例）
 
-仓库包含一个最小示例 `examples/hello_http.py`，用于文档中的烟雾测试。该示例**不使用 `application.run()`**，而是直接通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。
+@controller(url="/api")
+class GreetingController:
+    greeting_service: GreetingService = Inject()
 
-> **注意**：此示例的输出与使用 `application.run()` 启动的常规应用不同。`application.run()` 会显示 Cullinan 框架 banner、扫描服务和控制器，并保持服务器运行直到手动停止（Ctrl+C）。
+    @get_api(url="/whoami")
+    def whoami(self):
+        return {
+            "root": current_app().root_module.__name__,
+            "message": self.greeting_service.greet(),
+        }
 
-PowerShell（Windows）运行命令：
 
-```powershell
-pip install -U pip
-pip install cullinan tornado
-python examples\hello_http.py
+@module
+class RootModule:
+    pass
+
+
+app = Application.run(RootModule)
 ```
 
-观察到的输出（节选）：
+## 模块归属
 
-```
-INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+`@module` 基于 Python 包归属发现组件。若某个组件同时匹配多个模块包，启动会立即失败；对有意共享的重叠区域，请用 `ownership_overrides` 显式指定归属。
+
+```python
+@module(
+    imports=[SharedModule, OrdersModule],
+    ownership_overrides={"myapp.shared": SharedModule},
+)
+class RootModule:
+    pass
 ```
 
-说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出），但**不代表 `application.run()` 的实际行为**。
+## Runtime 切换
+
+`Application.reload()` 会先构建新的候选 runtime，完成校验与预热，再原子切换当前活动应用。旧 runtime 会进入 draining 状态，而 `current_app()` 在请求结束前仍会返回该请求绑定的旧应用快照。
+
+## 兼容性说明
+
+`ApplicationContext` 仍然是底层容器 / 运行时原语。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用装配应优先使用 `Application` + `@module`。
+
+## 相关文档
+
+- [应用运行时模型](../wiki/application_runtime.md)
+- [应用生命周期](../wiki/lifecycle.md)

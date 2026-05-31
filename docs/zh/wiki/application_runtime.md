@@ -1,0 +1,111 @@
+title: "应用运行时模型"
+slug: "wiki-application-runtime"
+module: ["cullinan.application_model"]
+tags: ["wiki", "application", "runtime", "module"]
+author: "Plumeink"
+reviewers: []
+status: updated
+locale: zh
+translation_pair: "docs/wiki/application_runtime.md"
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py"]
+related_examples: []
+estimate_pd: 1.0
+last_updated: "2026-05-31T00:00:00Z"
+pr_links: []
+
+# 应用运行时模型
+
+本文解释围绕 `cullinan.application_model` 引入、并由 `cullinan` 顶层重新导出的
+application-first 运行时模型。
+
+## 核心概念
+
+- `Application` 持有一个根模块图、一个 `ApplicationContext` 和一个 `WebRuntime`
+- `@module` 用于声明模块导入、拥有的 Python 包、warmup hooks 与 health checks
+- `Runtime` 是一个应用候选实例在校验 / 预热过程中的可变记录
+- `current_app()` 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照
+
+## 典型启动方式
+
+```python
+from cullinan import Application, controller, get_api, module, service
+from cullinan.core import Inject
+
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "hello"
+
+
+@controller(url="/api")
+class GreetingController:
+    greeting_service: GreetingService = Inject()
+
+    @get_api(url="/whoami")
+    def whoami(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@module
+class RootModule:
+    pass
+
+
+app = Application.run(RootModule)
+```
+
+## 模块图与归属解析
+
+每个模块都可提供：
+
+- `imports` —— 纳入根图的子模块或兄弟模块
+- `packages` —— 归属于该模块的 Python 包前缀
+- `ownership_overrides` —— 用于显式处理有意共享包的归属
+- `warmup` / `health_checks` —— 在构建与校验阶段执行的钩子
+
+组件归属会基于 `@service`、`@controller`、`@component`、`@provider` 捕获的装饰器元数据解析。
+如果同一组件以相同深度匹配多个模块包前缀，启动会失败，直到你通过
+`ownership_overrides` 显式指定归属。
+
+## 构建与激活流程
+
+`Application.run()` 会依次执行：
+
+1. 发现模块图并导入各模块声明拥有的 Python 模块
+2. 基于装饰器元数据重建待注册项
+3. 装配 `ApplicationContext` 与 `WebRuntime`
+4. 校验、`refresh()` 并完成运行时预热
+5. 原子地把新应用绑定为当前活动应用
+
+## Reload 与 draining
+
+`Application.reload()` 会基于同一个根模块创建新的应用候选实例。若激活成功：
+
+1. 新运行时立即成为活动运行时
+2. 旧运行时进入 `DRAINING`
+3. 飞行中的请求继续持有自己的请求绑定应用快照
+4. 旧运行时只有在请求计数归零后才会真正关闭
+
+这也是为什么全局已经切换到新运行时后，某个 draining 中的旧请求里
+`current_app()` 仍可能返回旧应用。
+
+## 适配器与请求绑定
+
+`ASGIAdapter` 与 `TornadoAdapter` 会在分发前把运行时绑定到当前请求上下文。
+这个绑定提供了：
+
+- 针对正确应用的 request-scoped 依赖解析
+- 控制器与中间件中的 `current_app()`
+- 旧请求尚未结束时的安全 draining
+
+## 何时直接使用 ApplicationContext
+
+当你需要底层容器集成、显式注册或非模块化启动方式时，仍应直接使用
+`ApplicationContext`。对于新的应用启动，优先使用 `Application` + `@module`。
+
+## 相关文档
+
+- [cullinan.application 模块](../modules/application.md)
+- [应用生命周期](lifecycle.md)
+- [组件](components.md)

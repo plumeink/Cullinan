@@ -7,10 +7,10 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/getting_started.md"
-related_tests: ["tests/test_real_app_startup.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py"]
 related_examples: ["examples/hello_http.py"]
 estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # Getting Started with Cullinan
@@ -53,19 +53,38 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan.application import run
-from cullinan.controller import controller, get_api
+from cullinan import Application, controller, get_api, module, service
+from cullinan.adapter import TornadoAdapter
+from cullinan.core import Inject
 
-@controller(url='/hello')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
     """Simple HTTP controller."""
-    
-    @get_api(url='')
+
+    greeting_service: GreetingService = Inject()
+
+    @get_api(url="")
     def hello(self):
-        return {'message': 'Hello from Cullinan!'}
+        return {"message": self.greeting_service.greet()}
+
+
+@module
+class RootModule:
+    pass
+
+
+app = Application.run(RootModule)
+server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
 
 if __name__ == '__main__':
-    run()
+    server.run()
 ```
 
 4. Run your app:
@@ -84,42 +103,12 @@ python minimal_app.py
 
 Then open `http://localhost:4080/hello` in your browser to verify the server is running.
 
-## Sample run output
+## What this example demonstrates
 
-The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:
-
-```
-|||||||||||||||||||||||||||||||||||||||||||||||||
-|||                                           |||
-|||    _____      _ _ _                       |||
-|||   / ____|    | | (_)                      |||
-|||  | |    _   _| | |_ _ __   __ _ _ __      |||
-|||  | |   | | | | | | | '_ \ / _` | '_ \     |||
-|||  | |___| |_| | | | | | | | (_| | | | |    |||
-|||   \_____\__,_|_|_|_|_| |_|\__,_|_| |_|    |||
-|||                                           |||
-|||||||||||||||||||||||||||||||||||||||||||||||||
-	|||
-
-2025-11-19 04:18:50,209 INFO cullinan.application: loading env...
-2025-11-19 04:18:50,210 INFO cullinan.application: └---configuring dependency injection...
-2025-11-19 04:18:50,210 INFO cullinan.application: └---dependency injection configured
-2025-11-19 04:18:50,210 INFO cullinan.application: └---scanning services...
-2025-11-19 04:18:50,210 INFO cullinan.application: ...
-2025-11-19 04:18:50,223 INFO cullinan.application: └---found 31 modules to scan
-2025-11-19 04:18:50,228 INFO cullinan.application: └---scanning controllers...
-2025-11-19 04:18:50,260 INFO cullinan.application: └---found 31 modules to scan
-2025-11-19 04:18:50,261 INFO cullinan.application: └---initializing services...
-2025-11-19 04:18:50,261 INFO cullinan.application: └---no services registered
-2025-11-19 04:18:50,261 INFO cullinan.application: └---loading controller finish
-
-2025-11-19 04:18:50,261 INFO cullinan.application: loading env finish
-
-2025-11-19 04:18:50,262 INFO cullinan.application: server is starting
-2025-11-19 04:18:50,262 INFO cullinan.application: port is 4080
-```
-
-At this point, the server is running and listening on `http://localhost:4080`. Use Ctrl+C to gracefully stop the server.
+- `Application.run(RootModule)` assembles and activates the application runtime
+- `@module` marks the application root and participates in module ownership
+- `Inject()` resolves the controller dependency from the active application context
+- `TornadoAdapter` serves the already-built Web Runtime
 
 ## Minimal application example
 
@@ -127,19 +116,36 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan.application import run
-from cullinan.controller import controller, get_api
+from cullinan import Application, controller, get_api, module, service
+from cullinan.adapter import TornadoAdapter
+from cullinan.core import Inject
 
-@controller(url='/hello')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
-    """Simple HTTP controller."""
-    
-    @get_api(url='')
-    def hello(self):
-        return {'message': 'Hello from Cullinan!'}
+    greeting_service: GreetingService = Inject()
 
-if __name__ == '__main__':
-    run()
+    @get_api(url="")
+    def hello(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@module
+class RootModule:
+    pass
+
+
+app = Application.run(RootModule)
+server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+
+if __name__ == "__main__":
+    server.run()
 ```
 
 To run this example:
@@ -154,13 +160,13 @@ Then visit `http://localhost:4080/hello` in your browser.
 ## Understanding the basics
 
 ### Application lifecycle
-1. **Creation**: `create_app()` initializes the application with default settings
-2. **Registration**: Controllers and services are discovered via module scanning or explicit registration
-3. **Startup**: `app.run()` starts the Tornado IOLoop and begins accepting requests
-4. **Shutdown**: Graceful shutdown on SIGINT/SIGTERM
+1. **Discovery**: `Application.run()` collects the root module graph and owned packages
+2. **Assembly**: Cullinan rebuilds pending registrations and assembles an `ApplicationContext` plus `WebRuntime`
+3. **Activation**: the validated runtime becomes active and can be served through an adapter
+4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
 
 ### Dependency Injection
-Cullinan provides built-in IoC/DI support through the unified `ApplicationContext` model.
+Cullinan provides built-in IoC/DI support through the application-first runtime model backed by `ApplicationContext`.
 
 #### Recommended runtime model
 
@@ -168,7 +174,8 @@ Cullinan provides built-in IoC/DI support through the unified `ApplicationContex
 - Use `@controller` for HTTP controllers
 - Use `Inject()` for type-based injection
 - Use `InjectByName()` when name-based lookup is more convenient
-- Treat `ApplicationContext` as the single runtime container entrypoint
+- Treat `Application` + `@module` as the preferred startup path
+- Reach for `ApplicationContext` directly only when you need low-level container orchestration
 
 ```python
 from cullinan.controller import controller, get_api
@@ -289,7 +296,7 @@ class UserController:
 
 </details>
 
-For a deeper dive into URL patterns and all decorator options, see `docs/wiki/restful_api.md`.
+For a deeper dive into URL patterns and all decorator options, see `wiki/restful_api.md`.
 
 ---
 
@@ -368,7 +375,7 @@ class UserRepository(Service):
 - **InjectByName**: Useful for decoupling or avoiding circular imports
 - **Inject + TYPE_CHECKING**: Best for strong editor support without runtime import coupling
 
-For detailed information on injection patterns, see `docs/wiki/injection.md`.
+For detailed information on injection patterns, see `wiki/injection.md`.
 
 ## Common patterns
 
@@ -397,20 +404,21 @@ config.set('server.port', 8080)
 - If you encounter errors installing packages, ensure your Python and pip are up to date and that you have network access to PyPI.
 
 ## Next steps
-- Read `docs/wiki/injection.md` for IoC/DI details.
+- Read `wiki/injection.md` for IoC/DI details.
 - Explore `examples/` for runnable samples.
 
 ## Additional resources
 
-- **Architecture**: See `docs/architecture.md` for system design overview
-- **Components**: Read `docs/wiki/components.md` for component responsibilities
-- **Lifecycle**: Learn about application lifecycle in `docs/wiki/lifecycle.md`
-- **Middleware**: Understand middleware in `docs/wiki/middleware.md`
-- **API Reference**: Browse `docs/api_reference.md` for complete API documentation
+- **Architecture**: See `architecture.md` for system design overview
+- **Application runtime**: Read `wiki/application_runtime.md` for module graph, ownership, and draining
+- **Components**: Read `wiki/components.md` for component responsibilities
+- **Lifecycle**: Learn about application lifecycle in `wiki/lifecycle.md`
+- **Middleware**: Understand middleware in `wiki/middleware.md`
+- **API Reference**: Browse `api_reference.md` for complete API documentation
 - **Examples**: Explore `examples/` directory for more samples
 
 ## Community and support
 
 - **Issues**: Report bugs at [GitHub Issues](https://github.com/your-org/cullinan/issues)
-- **Contributing**: See `docs/contributing.md` for contribution guidelines
-- **Testing**: Read `docs/testing.md` for testing best practices
+- **Contributing**: See `contributing.md` for contribution guidelines
+- **Testing**: Read `testing.md` for testing best practices

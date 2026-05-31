@@ -13,6 +13,7 @@ nav:
     - Components: wiki/components.md
     - Decorators: wiki/decorators.md
     - Injection: wiki/injection.md
+    - Application Runtime: wiki/application_runtime.md
     - Lifecycle: wiki/lifecycle.md
     - Middleware: wiki/middleware.md
     - Extensions: wiki/extensions.md
@@ -89,6 +90,7 @@ plugins:
             Components: 组件
             Decorators: 装饰器
             Injection: 注入
+            Application Runtime: 应用运行时
             Lifecycle: 生命周期
             Middleware: 中间件
             Extensions: 扩展

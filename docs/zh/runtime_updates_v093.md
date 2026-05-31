@@ -7,15 +7,15 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/runtime_updates_v093.md"
-related_tests: ["tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # 运行时整合概览
 
-本文汇总当前代码库与文档已落地的三次大更新。
+本文汇总当前代码库与文档已落地的四次主要更新。
 
 ## 1. IoC/DI 整合
 
@@ -34,7 +34,25 @@ pr_links: []
 - `Inject()` 与 `InjectByName()`
 - 需要显式注册或做集成时直接使用 `ApplicationContext`
 
-## 2. Web Runtime 整合
+## 2. Application-first 运行时
+
+Cullinan 现在在 `cullinan.application_model` 中提供 application-first 启动模型，
+并通过 `cullinan` 顶层重新导出。
+
+### 变更内容
+
+- `Application.run(RootModule)` 会构建、校验、预热并激活根模块
+- `@module` 用于声明模块导入、包归属、warmup hooks 与 health checks
+- 组件发现会从装饰器元数据重建待注册项，而不再依赖一次性的导入时机
+- 当旧 runtime 进入 draining 时，`current_app()` 会优先返回请求绑定的应用快照
+
+### 迁移含义
+
+新的启动代码应优先使用 `Application` + `@module`。底层容器编排仍可直接使用
+`ApplicationContext`；只有兼容场景才建议继续使用旧的
+`cullinan.application.run()` 入口。
+
+## 3. Web Runtime 整合
 
 Web 栈已围绕 `cullinan.gateway` 中的传输无关运行时完成重组。
 
@@ -49,16 +67,18 @@ Web 栈已围绕 `cullinan.gateway` 中的传输无关运行时完成重组。
 
 新代码应直接使用统一后的 Web Runtime 名称；旧的 request / response / adapter 名称不再是主要公开接口。
 
-## 3. 测试体系优化
+## 4. 测试体系对齐
 
-仓库测试工作流已围绕 pytest 完成清理与标准化。
+仓库测试工作流仍在向 pytest 收敛，而新的 application-model 与 adapter 覆盖
+已经进入常规可收集测试。
 
 ### 变更内容
 
 - 唯一正式入口：`.venv\Scripts\python -m pytest`
 - 测试发现规则由 `pytest.ini` 统一定义
 - `tests/` 下按主题组织测试
-- 旧脚本式验证文件已删除或改造成真正的 pytest 测试
+- 新增和刷新后的覆盖统一使用 `tests/core`、`tests/integration` 下的 pytest 测试
+- 仍有少量历史脚本式文件在迁移中，文档不再假定它们已经全部移除
 
 ### 当前目录
 
@@ -72,6 +92,7 @@ Web 栈已围绕 `cullinan.gateway` 中的传输无关运行时完成重组。
 ## 后续阅读
 
 - [架构设计](architecture.md)
+- [应用运行时模型](wiki/application_runtime.md)
 - [依赖注入指南](dependency_injection_guide.md)
 - [Web Runtime 指南](web_runtime_guide.md)
 - [测试与验证](testing.md)
