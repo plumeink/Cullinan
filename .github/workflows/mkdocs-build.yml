@@ -19,6 +19,10 @@ on:
       - 'cullinan/__init__.py'
   workflow_dispatch:
 
+concurrency:
+  group: docs-gh-pages-publish
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pages: write
@@ -306,8 +310,24 @@ jobs:
             echo "No gh-pages branch changes to push."
             exit 0
           fi
-          git commit -m "docs: publish ${CHANNEL} ${CURRENT_VERSION}"
-          git push origin gh-pages
+          commit_message="docs: publish ${CHANNEL} ${CURRENT_VERSION}"
+          git commit -m "${commit_message}"
+
+          for attempt in 1 2 3; do
+            if git push origin gh-pages; then
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "gh-pages push failed after ${attempt} attempts."
+              exit 1
+            fi
+
+            echo "gh-pages push was rejected; refreshing from origin/gh-pages and retrying..."
+            git fetch origin gh-pages
+            git reset --soft origin/gh-pages
+            git commit -m "${commit_message}"
+          done
 
       - name: Upload Pages artifact
         if: steps.deploy_gate.outputs.deploy_site == 'true'
