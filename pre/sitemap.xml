@@ -71,6 +71,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/extension_development_guide/"/>
     </url>
     <url>
+        <loc>/framework_semantics/</loc>
+        <lastmod>2026-05-31</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/framework_semantics/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/framework_semantics/"/>
+    </url>
+    <url>
         <loc>/getting_started/</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
@@ -300,6 +307,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/extension_development_guide/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/extension_development_guide/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/framework_semantics/</loc>
+        <lastmod>2026-05-31</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/framework_semantics/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/framework_semantics/"/>
     </url>
     <url>
         <loc>/zh/zh/getting_started/</loc>
