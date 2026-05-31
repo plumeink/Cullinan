@@ -31,6 +31,7 @@ from cullinan.module_scanner import (
     file_list_func
 )
 from cullinan.application_model import Application, Module, Runtime, current_app, module
+from cullinan.core.semantic_rules import describe_semantic_rule, format_semantic_message
 from cullinan.exceptions import PackageDiscoveryError
 
 # Module-level logger
@@ -360,22 +361,42 @@ def _validate_component_scan_results(
     if import_failures or missing_registrations:
         failure_lines = []
         if import_failures:
-            failure_lines.append("导入失败模块:")
+            failure_lines.append(
+                format_semantic_message(
+                    "component-import-execution",
+                    "以下模块在组件扫描阶段导入失败，装饰器注册因此没有发生。",
+                    "先修复模块导入错误，再重新 refresh()。",
+                )
+            )
             for module_name, error in sorted(import_failures.items()):
                 failure_lines.append(f"- {module_name}: {error}")
         if missing_registrations:
-            failure_lines.append("已导入但未进入 PendingRegistry 的装饰器组件:")
+            failure_lines.append(
+                format_semantic_message(
+                    "component-top-level",
+                    "以下装饰器组件存在注册元数据，但未进入 PendingRegistry。",
+                    "确认组件定义位于模块顶层，且 PendingRegistry 未被提前冻结或替换。",
+                )
+            )
             for item in missing_registrations:
                 failure_lines.append(
                     f"- {item['module']}::{item['class']} ({item['component_type']}, 注册名={item['component']})"
                 )
         raise PackageDiscoveryError(
-            message="组件扫描校验失败",
+            message=format_semantic_message(
+                "component-top-level",
+                "组件扫描校验失败，存在导入未执行或装饰器注册未落入 PendingRegistry 的组件。",
+                "Cullinan 只保证模块导入阶段执行过装饰器的顶层组件能被自动发现。",
+            ),
             details={
                 "candidate_module_count": len(modules),
                 "failed_module_count": len(import_failures),
                 "missing_registration_count": len(missing_registrations),
                 "diagnostics": " | ".join(failure_lines),
+                "semantic_rules": {
+                    "component-import-execution": describe_semantic_rule("component-import-execution"),
+                    "component-top-level": describe_semantic_rule("component-top-level"),
+                },
             },
         )
 

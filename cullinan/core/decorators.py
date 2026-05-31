@@ -40,6 +40,8 @@ def _capture_component_registration(target_cls: Type, registration: PendingRegis
         "source_module": registration.source_module,
         "source_file": registration.source_file,
         "source_line": registration.source_line,
+        "source_qualname": registration.source_qualname,
+        "is_top_level": registration.is_top_level,
     })
 
 
@@ -58,7 +60,29 @@ def get_component_registration_metadata(target_cls: Type) -> Optional[Dict[str, 
         "source_module": metadata["source_module"],
         "source_file": metadata["source_file"],
         "source_line": metadata["source_line"],
+        "source_qualname": metadata["source_qualname"],
+        "is_top_level": metadata["is_top_level"],
     }
+
+
+def _build_source_context(target_cls: Type) -> Dict[str, Any]:
+    source_file = None
+    source_line = None
+    try:
+        source_file = inspect.getfile(target_cls)
+        source_lines = inspect.getsourcelines(target_cls)
+        source_line = source_lines[1] if source_lines else None
+    except (TypeError, OSError):
+        pass
+
+    source_qualname = getattr(target_cls, "__qualname__", target_cls.__name__)
+    return {
+        "source_file": source_file,
+        "source_line": source_line,
+        "source_qualname": source_qualname,
+        "is_top_level": "<locals>" not in source_qualname,
+    }
+
 
 def service(cls: Optional[Type] = None, *,
             name: Optional[str] = None,
@@ -96,15 +120,7 @@ def service(cls: Optional[Type] = None, *,
         Decorated class (unchanged, but registered in PendingRegistry)
     """
     def decorator(target_cls: Type) -> Type:
-        # Get source location from class definition
-        source_file = None
-        source_line = None
-        try:
-            source_file = inspect.getfile(target_cls)
-            source_lines = inspect.getsourcelines(target_cls)
-            source_line = source_lines[1] if source_lines else None
-        except (TypeError, OSError):
-            pass
+        source_context = _build_source_context(target_cls)
 
         # Collect conditions from class (set by @Conditional* decorators)
         from .conditions import get_class_conditions, clear_class_conditions
@@ -119,8 +135,10 @@ def service(cls: Optional[Type] = None, *,
             dependencies=dependencies,
             conditions=conditions,
             source_module=target_cls.__module__,
-            source_file=source_file,
-            source_line=source_line,
+            source_file=source_context["source_file"],
+            source_line=source_context["source_line"],
+            source_qualname=source_context["source_qualname"],
+            is_top_level=source_context["is_top_level"],
         )
         _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
@@ -174,14 +192,7 @@ def controller(cls: Optional[Type] = None, *, url: str = ""):
         Decorated class (registered in PendingRegistry, routes processed on refresh)
     """
     def decorator(target_cls: Type) -> Type:
-        source_file = None
-        source_line = None
-        try:
-            source_file = inspect.getfile(target_cls)
-            source_lines = inspect.getsourcelines(target_cls)
-            source_line = source_lines[1] if source_lines else None
-        except (TypeError, OSError):
-            pass
+        source_context = _build_source_context(target_cls)
 
         # Collect conditions from class
         from .conditions import get_class_conditions, clear_class_conditions
@@ -196,8 +207,10 @@ def controller(cls: Optional[Type] = None, *, url: str = ""):
             url_prefix=url,
             conditions=conditions,
             source_module=target_cls.__module__,
-            source_file=source_file,
-            source_line=source_line,
+            source_file=source_context["source_file"],
+            source_line=source_context["source_line"],
+            source_qualname=source_context["source_qualname"],
+            is_top_level=source_context["is_top_level"],
         )
         _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
@@ -243,14 +256,7 @@ def component(cls: Optional[Type] = None, *,
         Decorated class (unchanged, but registered in PendingRegistry)
     """
     def decorator(target_cls: Type) -> Type:
-        source_file = None
-        source_line = None
-        try:
-            source_file = inspect.getfile(target_cls)
-            source_lines = inspect.getsourcelines(target_cls)
-            source_line = source_lines[1] if source_lines else None
-        except (TypeError, OSError):
-            pass
+        source_context = _build_source_context(target_cls)
 
         # Collect conditions from class
         from .conditions import get_class_conditions, clear_class_conditions
@@ -264,8 +270,10 @@ def component(cls: Optional[Type] = None, *,
             scope=scope,
             conditions=conditions,
             source_module=target_cls.__module__,
-            source_file=source_file,
-            source_line=source_line,
+            source_file=source_context["source_file"],
+            source_line=source_context["source_line"],
+            source_qualname=source_context["source_qualname"],
+            is_top_level=source_context["is_top_level"],
         )
         _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
@@ -305,14 +313,7 @@ def provider(cls: Optional[Type] = None, *, name: Optional[str] = None):
         Decorated class (unchanged, but registered in PendingRegistry)
     """
     def decorator(target_cls: Type) -> Type:
-        source_file = None
-        source_line = None
-        try:
-            source_file = inspect.getfile(target_cls)
-            source_lines = inspect.getsourcelines(target_cls)
-            source_line = source_lines[1] if source_lines else None
-        except (TypeError, OSError):
-            pass
+        source_context = _build_source_context(target_cls)
 
         # Collect conditions from class
         from .conditions import get_class_conditions, clear_class_conditions
@@ -326,8 +327,10 @@ def provider(cls: Optional[Type] = None, *, name: Optional[str] = None):
             scope="singleton",
             conditions=conditions,
             source_module=target_cls.__module__,
-            source_file=source_file,
-            source_line=source_line,
+            source_file=source_context["source_file"],
+            source_line=source_context["source_line"],
+            source_qualname=source_context["source_qualname"],
+            is_top_level=source_context["is_top_level"],
         )
         _capture_component_registration(target_cls, registration)
         PendingRegistry.get_instance().add(registration)
@@ -388,11 +391,11 @@ class InjectByName:
             # Explicit name
             email_service = InjectByName("EmailService")
             
-            # Auto-infer from attribute name (email_service -> EmailService)
+            # Compatibility fallback: infer from attribute name
             email_service = InjectByName()
     
     Attributes:
-        name: Explicit dependency name (None for auto-inference)
+        name: Explicit dependency name (None keeps compatibility fallback)
         required: If True (default), raises error if dependency not found
     """
     
@@ -400,7 +403,7 @@ class InjectByName:
         """Initialize injection marker.
         
         Args:
-            name: Explicit dependency name (None to infer from attribute name)
+            name: Explicit dependency name (None keeps compatibility fallback)
             required: Whether the dependency is required (default True)
         """
         self.name = name

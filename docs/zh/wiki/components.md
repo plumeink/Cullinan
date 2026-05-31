@@ -17,6 +17,8 @@ pr_links: []
 
 本文给出 Cullinan 当前主要运行时组件的高层地图。
 
+如果你想确认自动发现与注册到底保证什么，请先看[框架语义规则](../framework_semantics.md)。简而言之：Cullinan 只保证模块导入阶段执行到的模块顶层装饰器组件，不保证稍后才创建出来的局部类定义。
+
 ## 运行时概览
 
 ### 1. 应用编排层
@@ -65,6 +67,7 @@ pr_links: []
 
 1. [架构设计](../architecture.md)
 2. [应用运行时模型](application_runtime.md)
-3. [依赖注入指南](../dependency_injection_guide.md)
-4. [Web Runtime 指南](../web_runtime_guide.md)
-5. [测试与验证](../testing.md)
+3. [框架语义规则](../framework_semantics.md)
+4. [依赖注入指南](../dependency_injection_guide.md)
+5. [Web Runtime 指南](../web_runtime_guide.md)
+6. [测试与验证](../testing.md)

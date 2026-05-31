@@ -1,6 +1,6 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.93a3  
+> **Version**: v0.93a4  
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
 
@@ -667,6 +667,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.93a3  
+**Version**: v0.93a4  
 **Author**: Plumeink  
-**Last Updated**: 2026-05-30
+**Last Updated**: 2026-06-01

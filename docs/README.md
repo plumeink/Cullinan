@@ -15,9 +15,15 @@ pr_links: []
 
 # Cullinan Documentation
 
+## Recommended first reads
+
+1. [Framework Semantics](framework_semantics.md)
+2. [Dependency Injection Guide](dependency_injection_guide.md)
+3. [Application Runtime Model](wiki/application_runtime.md)
+
 Welcome to the Cullinan documentation site.
 
-> **Current version: 0.93a3**. The current documentation reflects the application-first bootstrap (`Application` + `@module`), the unified `cullinan.core` container facade, the transport-agnostic Web Runtime (`WebRequest` / `WebResponse` / `WebAdapter`), and the current pytest-led test workflow.
+> **Current version: 0.93a4**. The current documentation reflects the application-first bootstrap (`Application` + `@module`), the unified `cullinan.core` container facade, the transport-agnostic Web Runtime (`WebRequest` / `WebResponse` / `WebAdapter`), and the current pytest-led test workflow.
 
 ## Key updates
 

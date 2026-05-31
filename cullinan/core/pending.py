@@ -8,6 +8,8 @@ from enum import Enum
 import threading
 from typing import Any, Callable, List, Optional, Type
 
+from .semantic_rules import format_semantic_message
+
 
 class ComponentType(Enum):
     SERVICE = "service"
@@ -29,6 +31,8 @@ class PendingRegistration:
     source_module: Optional[str] = None
     source_file: Optional[str] = None
     source_line: Optional[int] = None
+    source_qualname: Optional[str] = None
+    is_top_level: bool = True
 
     def get_source_location(self) -> str:
         if self.source_file and self.source_line:
@@ -66,9 +70,22 @@ class PendingRegistry:
     def add(self, registration: PendingRegistration) -> None:
         with self._lock:
             if self._frozen:
+                problem = (
+                    f"组件 '{registration.name}' 在 ApplicationContext.refresh() 之后才尝试注册。"
+                )
+                guidance = (
+                    "将所有带装饰器的组件放在模块顶层，并确保其所在模块在 refresh() 之前已完成导入。"
+                )
+                if not registration.is_top_level:
+                    problem = (
+                        f"组件 '{registration.name}' 定义在局部作用域 ({registration.source_qualname})，"
+                        "直到运行到该代码块时装饰器才会执行。"
+                    )
+                    guidance = (
+                        "把该组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描，并在 refresh() 前显式完成创建与注册。"
+                    )
                 raise RuntimeError(
-                    f"Cannot register '{registration.name}' after ApplicationContext.refresh(). "
-                    f"Ensure all decorated classes are imported before calling refresh(). "
+                    f"{format_semantic_message('refresh-freeze', problem, guidance)} "
                     f"Source: {registration.get_source_location()}"
                 )
             self._registrations.append(registration)

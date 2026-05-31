@@ -15,9 +15,15 @@ pr_links: []
 
 # Cullinan 文档
 
+## 建议优先阅读
+
+1. [框架语义规则](framework_semantics.md)
+2. [依赖注入指南](dependency_injection_guide.md)
+3. [应用运行时模型](wiki/application_runtime.md)
+
 欢迎使用 Cullinan 文档站点。
 
-> **当前版本：0.93a3**。当前文档已对齐 application-first 启动模型（`Application` + `@module`）、统一的 `cullinan.core` 容器门面、传输无关的 Web Runtime（`WebRequest` / `WebResponse` / `WebAdapter`）以及当前以 pytest 为主的测试工作流。
+> **当前版本：0.93a4**。当前文档已对齐 application-first 启动模型（`Application` + `@module`）、统一的 `cullinan.core` 容器门面、传输无关的 Web Runtime（`WebRequest` / `WebResponse` / `WebAdapter`）以及当前以 pytest 为主的测试工作流。
 
 ## 重点更新
 

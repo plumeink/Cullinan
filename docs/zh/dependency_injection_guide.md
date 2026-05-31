@@ -1,12 +1,14 @@
 # Cullinan 依赖注入指南
 
-> **版本**：0.93a3  
-> **最后更新**：2026-05-31  
+> **版本**：0.93a4  
+> **最后更新**：2026-06-01  
 > **状态**：已更新
 
 ## 概述
 
 Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cullinan.core` 作为公开入口。装饰器仍然是推荐的编写方式；旧式 registry API 仅保留兼容意义。
+
+在选择注入原语之前，建议先阅读[框架语义规则](framework_semantics.md)。其中定义了 `Inject()`、`InjectByName()`、`refresh()` 以及兼容 API 的硬约束。
 
 ## 推荐用法
 
@@ -57,6 +59,16 @@ class AuditService:
     cache: CacheService = Inject(required=False)
 ```
 
+`Inject()` 现在采用严格的类型解析流水线：
+
+- 直接可用的运行时类型仍按原方式工作
+- `TYPE_CHECKING` + 前向引用在 **能唯一落到一个注册目标** 时可以正常工作
+- `Optional[T]`、`Annotated[T, ...]`、`Final[T]`、`Provider[T]`、`list[T]`、`set[T]`、`tuple[T, ...]`、`Union[A, B]` 等常见包装类型已受控支持
+- Cullinan 仍然禁止 `session_provider -> SessionProvider` 这类属性名猜测
+- 如果注解无法安全归一化，或最终绑定不唯一，启动会直接抛出 `DependencyTypeResolutionError`
+
+当你希望保留类型驱动注入，并且注解能够被稳定归一化时，优先使用它。
+
 ### `InjectByName()` —— 按名称解析
 
 当依赖更适合按名称解析，或直接导入类型会引入不理想的依赖边时，使用 `InjectByName()`。
@@ -67,6 +79,95 @@ from cullinan.core import InjectByName
 class ReportController:
     report_service = InjectByName("ReportService")
 ```
+
+Cullinan 现在把 `InjectByName("ExactComponentName")` 视为推荐写法。省略显式名称的 `InjectByName()` 仅作为兼容回退保留，并会触发 warning。
+
+如果你**明确不想**在运行时导入目标类型，这就是正确选择。
+
+### `Lazy()` —— 延迟解析
+
+当依赖应该在第一次访问时再解析，而不是在实例装配时立即获取，可使用 `Lazy()`。
+
+```python
+from cullinan.core import Lazy
+
+class AuditService:
+    report_service = Lazy("ReportService")
+```
+
+`Lazy()` 与 `Inject()` / `InjectByName()` 遵循同一套命名规则：
+
+- 如果希望延迟解析且不导入目标类型，优先显式传名称
+- 如果希望按类型解析，类型同样必须能在运行时被解析
+
+## 如何选择
+
+| 需求 | 推荐注入原语 |
+| --- | --- |
+| 运行时类型可用，且希望获得更好的重构友好性 | `Inject()` |
+| `TYPE_CHECKING` / 前向引用场景下仍希望按类型解析，且目标唯一 | `Inject()` |
+| 运行时类型刻意不可用，或不适合直接导入 | `InjectByName("Name")` |
+| 希望第一次使用时再查找依赖 | `Lazy("Name")` 或带运行时可解析类型的 `Lazy()` |
+| 可选依赖 | `Inject(required=False)` 或 `InjectByName("Name", required=False)` |
+| 希望注入延迟获取的提供者对象 | `Inject()` + `Provider[T]` |
+| 希望注入某个契约下的全部实现 | `Inject()` + `list[T]` / `set[T]` / `tuple[T, ...]` |
+
+## `TYPE_CHECKING` 与前向引用规则
+
+`Inject()` 现在可以支持 `TYPE_CHECKING` 与前向引用，但前提是最终绑定结果仍然**唯一可判定**。
+
+### 支持示例：单一目标前向引用
+
+```python
+from typing import TYPE_CHECKING
+
+from cullinan.core import Inject
+from cullinan.service import service
+
+if TYPE_CHECKING:
+    from .providers import DatabaseSessionProvider
+
+@service
+class ChannelBindingRepository:
+    session_provider: "DatabaseSessionProvider" = Inject()
+```
+
+只要 `DatabaseSessionProvider` 最终能唯一匹配到一个已注册组件，启动就会成功。
+
+### 支持的包装类型
+
+```python
+from typing import TYPE_CHECKING, Optional
+
+from cullinan.core import Inject, Provider
+from cullinan.service import service
+
+if TYPE_CHECKING:
+    from .contracts import Hook
+    from .providers import DatabaseSessionProvider, PrimarySessionProvider, SecondarySessionProvider
+
+@service
+class ChannelBindingRepository:
+    session_provider: Provider["DatabaseSessionProvider"] = Inject()
+    hooks: list["Hook"] = Inject(required=False)
+    fallback_cache: Optional["CacheService"] = Inject()
+    preferred_provider: "PrimarySessionProvider | SecondarySessionProvider" = Inject()
+```
+
+规则如下：
+
+- `Optional[T]` 在 `T` 缺失时允许得到 `None`
+- `Provider[T]` 注入的是延迟获取 `T` 的 provider 对象
+- 集合包装会注入所有匹配实现
+- `Union[A, B]` 只有在恰好一个分支可绑定时才允许成功
+
+### 仍然会被拒绝的情况
+
+- `Union` 中多个分支同时可绑定
+- `list[Union[A, B]]` 这类无法安全判定的嵌套组合
+- 任何需要模糊猜测或属性名回退的情况
+
+如果你本来就希望按名称显式控制，仍然应使用 `InjectByName("Name")` 或 `Lazy("Name")`。
 
 ## ApplicationContext 是唯一容器入口
 
@@ -115,6 +216,7 @@ Cullinan 仍导出部分旧名称，但不应再作为主要编程模型：
 | 问题 | 检查点 |
 | --- | --- |
 | 依赖无法解析 | 确认类型或依赖名称与注册组件一致 |
+| 启动时报 `DependencyTypeResolutionError` | 注解存在歧义、不受支持，或无法被安全归一化；缩小类型范围，或切换到 `InjectByName()` / `Lazy("Name")` |
 | 可选依赖缺失 | 使用 `required=False` 并显式处理 `None` |
 | 生命周期钩子未执行 | 确认组件受框架管理且已执行 `ApplicationContext.refresh()` |
 | 高级注册行为不符合预期 | 检查 `Definition` 的 scope 与 factory/source 设置 |

@@ -38,7 +38,12 @@ from cullinan.core import (
     Inject,
     InjectByName,
     Lazy,
+    Provider,
     PendingRegistry,
+    CullinanSemanticWarning,
+    ComponentDiscoveryWarning,
+    CompatibilitySemanticWarning,
+    InjectionSemanticWarning,
     # Core infrastructure
     Registry,
     SimpleRegistry,
@@ -220,7 +225,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.93a3.post1'
+__version__ = '0.93a4'
 
 __all__ = [
     # Configuration
@@ -247,6 +252,7 @@ __all__ = [
     'Service',
     'ServiceRegistry',
     'service',
+    'Provider',
     'get_service_registry',
     'reset_service_registry',
     
@@ -385,6 +391,10 @@ __all__ = [
     'Inject',
     'InjectByName',
     'Lazy',
+    'CullinanSemanticWarning',
+    'ComponentDiscoveryWarning',
+    'CompatibilitySemanticWarning',
+    'InjectionSemanticWarning',
     'injectable',
     'get_injection_registry',
     'reset_injection_registry',

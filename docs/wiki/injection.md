@@ -10,18 +10,21 @@ translation_pair: "docs/zh/wiki/injection.md"
 related_tests: ["tests/di/test_core_constructor_injection.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # IoC & DI
 
 Cullinan's current dependency model is unified around `ApplicationContext` and the public `cullinan.core` facade.
 
+For the hard contract behind discovery, typed binding, `refresh()`, and compatibility APIs, read [Framework Semantics](../framework_semantics.md) together with this page.
+
 ## Preferred programming model
 
 - register business types with `@service` and `@controller`
 - inject dependencies with `Inject()`
-- use `InjectByName()` only when name-based lookup is the better fit
+- use `InjectByName()` when runtime type imports are undesirable
+- use `Lazy("Name")` when lookup should be deferred until first access
 - use `ApplicationContext` directly for explicit integration or custom definitions
 
 ## Example
@@ -51,6 +54,21 @@ class UserController:
 - `ApplicationContext.refresh()` materializes eager parts of the graph
 - lifecycle hooks run on managed components
 - request-scoped resolution is tied to the active request context
+
+## Runtime type resolution rule
+
+`Inject()` is still strict, but it now understands a wider set of typed contracts:
+
+- direct runtime types
+- `TYPE_CHECKING` forward references when they map to one unique target
+- `Optional[T]`, `Annotated[T, ...]`, `Final[T]`
+- `Provider[T]`
+- `list[T]`, `set[T]`, `tuple[T, ...]`
+- `Union[A, B]` when exactly one branch is bindable
+
+Cullinan still rejects attribute-name guesses and ambiguous combinations. If the type contract cannot be normalized safely, startup fails with `DependencyTypeResolutionError`.
+
+Use `InjectByName("Name")` or `Lazy("Name")` when you want explicit, name-based control instead.
 
 ## Compatibility layer
 

@@ -221,7 +221,9 @@ class TestPendingRegistry:
                 component_type=ComponentType.SERVICE
             ))
 
-        assert "Cannot register 'ServiceB' after ApplicationContext.refresh()" in str(exc_info.value)
+        message = str(exc_info.value)
+        assert "ServiceB" in message
+        assert "ApplicationContext.refresh()" in message
 
     def test_clear(self):
         """Test clearing all registrations."""
@@ -322,4 +324,3 @@ class TestPendingRegistry:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

@@ -22,6 +22,8 @@ pr_links: []
 - `current_app()`：返回当前活动应用；当旧 runtime 正在 draining 时，会优先返回请求绑定的应用快照
 - 旧的 `run(handlers=None, engine=None)` 入口仍保留，用于兼容已有调用
 
+这里的启动契约同时依赖[框架语义规则](../framework_semantics.md)：组件发现基于导入执行、自动扫描只保证模块顶层装饰器组件、`refresh()` 之后结构性注册会被冻结。
+
 ## 推荐启动方式
 
 ```python

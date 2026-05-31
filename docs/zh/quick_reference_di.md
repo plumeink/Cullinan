@@ -1,6 +1,6 @@
 # Cullinan 依赖注入快速参考
 
-> **版本**: v0.90  
+> **版本**: 0.93a4  
 > **作者**: Plumeink
 
 ## 基本用法
@@ -24,7 +24,7 @@ class UserService(Service):
 
 ```python
 from cullinan.controller import controller, get_api
-from cullinan.core import Inject, InjectByName
+from cullinan.core import Inject, InjectByName, Lazy, Provider
 
 @controller(url='/api')
 class UserController:
@@ -36,6 +36,9 @@ class UserController:
     
     # 方式3: 可选依赖
     cache_service = InjectByName('CacheService', required=False)
+
+    # 方式4: 延迟查找
+    report_service = Lazy('ReportService')
 ```
 
 ### 3. 使用注入的服务
@@ -54,6 +57,41 @@ class UserController:
         user = self.user_service.get_user(user_id)
         return user
 ```
+
+## 注入原语如何选择
+
+| 场景 | 用法 |
+| --- | --- |
+| 类型可在运行时导入 | `Inject()` |
+| `TYPE_CHECKING` / 前向引用最终仍能唯一命中一个目标 | `Inject()` |
+| 类型不希望在运行时直接导入 | `InjectByName("Name")` |
+| 希望第一次使用时再解析 | `Lazy("Name")` |
+| 可选依赖 | `required=False` |
+| 希望注入延迟 provider 对象 | `Provider[T] = Inject()` |
+| 希望注入某个契约下的全部实现 | `list[T] = Inject()` / `set[T] = Inject()` / `tuple[T, ...] = Inject()` |
+
+## `TYPE_CHECKING` 规则
+
+`Inject()` 现在支持 `TYPE_CHECKING` 前向引用，但前提是最终绑定结果唯一：
+
+```python
+from typing import TYPE_CHECKING
+from cullinan.core import Inject, Provider
+
+if TYPE_CHECKING:
+    from .contracts import Hook
+    from .providers import DatabaseSessionProvider
+
+class Repo:
+    session_provider: Provider["DatabaseSessionProvider"] = Inject()
+    hooks: list["Hook"] = Inject(required=False)
+```
+
+以下情况仍会在启动阶段快速失败：
+
+- 注解有歧义，例如 `Union[A, B]` 同时存在多个可绑定候选
+- 注解组合不受支持，例如 `list[Union[A, B]]`
+- 框架需要靠名称猜测而不是精确解析才能继续
 
 ## 打包应用配置
 
@@ -107,8 +145,9 @@ nuitka --include-package=my_app \
 |------|----------|
 | 依赖为 None | 确保服务使用 `@service` 装饰器 |
 | 找不到服务 | 检查服务名称是否匹配（区分大小写） |
-| 循环依赖 | 使用 `InjectByName()` 进行延迟解析 |
-| 注入不生效 | 确保类继承自 `Service` 或 `Controller` |
+| 循环依赖或运行时 import 边不合适 | 使用 `InjectByName()` 或 `Lazy("Name")` |
+| 报 `DependencyTypeResolutionError` | 注解存在歧义、不受支持，或无法被安全归一化；缩小类型契约，或改用 `InjectByName()` |
+| 注入不生效 | 确保组件已用 `@service` / `@controller` 注册，并可被 `ApplicationContext` 发现 |
 
 ## 另请参阅
 

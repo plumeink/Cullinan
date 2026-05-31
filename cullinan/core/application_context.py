@@ -3,13 +3,16 @@
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import inspect
 import logging
 import threading
 import time
+import types
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from .definition_registry import DefinitionRegistry
 from .definitions import Definition, ScopeType
@@ -26,10 +29,43 @@ from .diagnostics import (
     format_circular_dependency_error,
     format_missing_dependency_error,
 )
+from .injection_types import Provider
 from .lifecycle_enhanced import LifecyclePhase
+from .semantic_rules import (
+    ComponentDiscoveryWarning,
+    InjectionSemanticWarning,
+    format_semantic_message,
+    warn_semantic_once,
+)
 from .scope_manager import ScopeManager
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class _InjectionTarget:
+    display_name: str
+    lookup_names: Tuple[str, ...]
+    runtime_type: Optional[type] = None
+
+
+@dataclass(frozen=True)
+class _NormalizedInjectionAnnotation:
+    kind: str
+    annotation_repr: str
+    targets: Tuple[_InjectionTarget, ...]
+    optional: bool = False
+    collection_kind: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class _ResolvedInjectionBinding:
+    kind: str
+    annotation_repr: str
+    target_labels: Tuple[str, ...]
+    required: bool
+    candidate_names: Tuple[str, ...] = ()
+    collection_kind: Optional[str] = None
 
 
 class ContainerState(Enum):
@@ -85,7 +121,11 @@ class ApplicationContext:
         with self._lock:
             if self._definition_registry.is_frozen:
                 raise RegistryFrozenError(
-                    f"无法注册 '{definition.name}'：Registry 已冻结（refresh 后禁止修改）"
+                    format_semantic_message(
+                        "refresh-freeze",
+                        f"组件 '{definition.name}' 试图在 refresh() 之后继续注册。",
+                        "把所有结构性注册放到应用启动与 refresh() 之前完成。",
+                    )
                 )
             if self._state == ContainerState.CREATED:
                 self._state = ContainerState.REGISTERING
@@ -108,7 +148,13 @@ class ApplicationContext:
                 logger.warning("ApplicationContext.refresh() 已被调用过，跳过")
                 return
             if self._state == ContainerState.CLOSED:
-                raise LifecycleError("已关闭的 ApplicationContext 不能再次 refresh")
+                raise LifecycleError(
+                    format_semantic_message(
+                        "refresh-freeze",
+                        "已关闭的 ApplicationContext 不能再次 refresh().",
+                        "如需重建应用，请创建新的 ApplicationContext 实例。",
+                    )
+                )
 
             if self._state == ContainerState.CREATED:
                 self._state = ContainerState.REGISTERING
@@ -280,7 +326,11 @@ class ApplicationContext:
             )
         ):
             raise CreationError(
-                message=f"singleton 组件不能直接依赖 request 作用域组件 '{name}'",
+                message=format_semantic_message(
+                    "lifecycle-request-scope",
+                    f"singleton 组件解析到了 request 作用域组件 '{name}'。",
+                    "改为延迟在 request 上下文内获取，或调整两者的作用域关系。",
+                ),
                 dependency_name=name,
             )
 
@@ -318,7 +368,7 @@ class ApplicationContext:
         self._validate_scope_constraints()
 
     def _validate_injection_contracts(self) -> None:
-        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+        from .decorators import get_injection_markers
 
         for definition in self._definition_registry.values():
             target_cls = definition.type_
@@ -332,7 +382,7 @@ class ApplicationContext:
             type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(target_cls)
 
             for attr_name, marker in markers.items():
-                dep_name = self._resolve_marker_dependency_name(
+                self._resolve_marker_binding(
                     owner_cls=target_cls,
                     attr_name=attr_name,
                     marker=marker,
@@ -340,20 +390,6 @@ class ApplicationContext:
                     raw_annotations=raw_annotations,
                     type_hint_error=type_hint_error,
                 )
-                required = getattr(marker, "required", True)
-                if required and not self._definition_registry.has(dep_name):
-                    raise DependencyNotFoundError(
-                        message=(
-                            f"组件 '{definition.name}' 的依赖字段 '{attr_name}' 需要组件 "
-                            f"'{dep_name}'，但该组件未注册"
-                        ),
-                        dependency_name=dep_name,
-                        injection_point=f"{target_cls.__module__}.{target_cls.__name__}.{attr_name}",
-                        candidate_sources=[
-                            {"source": candidate, "reason": "name_mismatch"}
-                            for candidate in self.list_definitions()
-                        ],
-                    )
 
     def _validate_dependencies(self) -> None:
         visited: Set[str] = set()
@@ -379,7 +415,11 @@ class ApplicationContext:
             for dep_name in definition.dependencies:
                 if not self._definition_registry.has(dep_name):
                     raise DependencyNotFoundError(
-                        message=f"依赖 '{definition.name}' 缺少被声明的组件 '{dep_name}'",
+                        message=format_semantic_message(
+                            "inject-unique-binding",
+                            f"组件 '{definition.name}' 声明依赖了未注册的组件 '{dep_name}'。",
+                            "检查装饰器是否已执行、模块是否在 refresh() 前导入，以及依赖名称是否正确。",
+                        ),
                         dependency_name=dep_name,
                         candidate_sources=[],
                     )
@@ -398,7 +438,11 @@ class ApplicationContext:
                 dependency = self._definition_registry.get(dep_name)
                 if dependency and dependency.scope == ScopeType.REQUEST:
                     raise LifecycleError(
-                        f"singleton 组件 '{definition.name}' 不能直接依赖 request 组件 '{dep_name}'"
+                        format_semantic_message(
+                            "lifecycle-request-scope",
+                            f"singleton 组件 '{definition.name}' 直接依赖了 request 组件 '{dep_name}'。",
+                            "改为在 request 上下文内解析该依赖，或调整组件作用域。",
+                        )
                     )
 
     def _warm_up(self) -> None:
@@ -463,6 +507,23 @@ class ApplicationContext:
             except KeyError:
                 logger.warning("未知 scope '%s'，使用 SINGLETON", registration.scope)
                 scope = ScopeType.SINGLETON
+
+            if not registration.is_top_level:
+                warn_semantic_once(
+                    key=(
+                        f"component-local:{registration.source_module}:{registration.source_qualname}:{registration.name}"
+                    ),
+                    rule_key="component-top-level",
+                    problem=(
+                        f"组件 '{registration.name}' 定义在局部作用域 ({registration.source_qualname})。"
+                        "这类组件只有在运行到对应代码块时才会注册。"
+                    ),
+                    guidance=(
+                        "将组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描与自动装配的稳定保证。"
+                    ),
+                    category=ComponentDiscoveryWarning,
+                    stacklevel=3,
+                )
 
             cls = registration.cls
             definition = Definition(
@@ -562,45 +623,25 @@ class ApplicationContext:
             logger.warning("注册 Controller %s 路由失败: %s", cls.__name__, exc)
 
     def _create_class_instance(self, cls: type) -> object:
-        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+        from .decorators import Lazy, get_injection_markers
 
         instance = cls()
         markers = get_injection_markers(cls)
         type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(cls)
 
         for attr_name, marker in markers.items():
+            binding = self._resolve_marker_binding(
+                owner_cls=cls,
+                attr_name=attr_name,
+                marker=marker,
+                type_hints=type_hints,
+                raw_annotations=raw_annotations,
+                type_hint_error=type_hint_error,
+            )
             if isinstance(marker, Lazy):
-                dep_name = self._resolve_marker_dependency_name(
-                    owner_cls=cls,
-                    attr_name=attr_name,
-                    marker=marker,
-                    type_hints=type_hints,
-                    raw_annotations=raw_annotations,
-                    type_hint_error=type_hint_error,
-                )
-                setattr(instance, attr_name, _LazyProxy(self, dep_name))
-            elif isinstance(marker, InjectByName):
-                dep_name = self._resolve_marker_dependency_name(
-                    owner_cls=cls,
-                    attr_name=attr_name,
-                    marker=marker,
-                    type_hints=type_hints,
-                    raw_annotations=raw_annotations,
-                    type_hint_error=type_hint_error,
-                )
-                dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
-                setattr(instance, attr_name, dep_instance)
-            elif isinstance(marker, Inject):
-                dep_name = self._resolve_marker_dependency_name(
-                    owner_cls=cls,
-                    attr_name=attr_name,
-                    marker=marker,
-                    type_hints=type_hints,
-                    raw_annotations=raw_annotations,
-                    type_hint_error=type_hint_error,
-                )
-                dep_instance = self.get(dep_name) if marker.required else self.try_get(dep_name)
-                setattr(instance, attr_name, dep_instance)
+                setattr(instance, attr_name, _LazyProxy(lambda binding=binding: self._materialize_binding(binding)))
+                continue
+            setattr(instance, attr_name, self._materialize_binding(binding))
 
         return instance
 
@@ -608,42 +649,367 @@ class ApplicationContext:
     def _get_class_type_hints(cls: type):
         import typing
 
-        raw_annotations = dict(getattr(cls, "__annotations__", {}) or {})
         try:
-            return typing.get_type_hints(cls), raw_annotations, None
+            raw_annotations = dict(inspect.get_annotations(cls, eval_str=False))
+        except Exception:
+            raw_annotations = dict(getattr(cls, "__annotations__", {}) or {})
+        try:
+            return typing.get_type_hints(cls, include_extras=True), raw_annotations, None
         except Exception as exc:
             return {}, raw_annotations, exc
 
     @staticmethod
-    def _describe_dependency_target(type_hint, raw_annotation) -> Optional[str]:
-        import typing
+    def _format_annotation_repr(annotation: Any) -> str:
+        if isinstance(annotation, str):
+            return annotation
+        if hasattr(annotation, "__forward_arg__"):
+            return str(annotation.__forward_arg__)
+        if annotation is None:
+            return "<unknown>"
+        if hasattr(annotation, "__module__") and hasattr(annotation, "__qualname__"):
+            return f"{annotation.__module__}.{annotation.__qualname__}"
+        return repr(annotation)
 
-        if type_hint is not None:
-            if hasattr(type_hint, "__name__"):
-                return type_hint.__name__
-            origin = typing.get_origin(type_hint)
-            if origin is typing.Union:
-                non_none_args = [
-                    arg for arg in typing.get_args(type_hint) if arg is not type(None)
-                ]
-                if len(non_none_args) == 1:
-                    return ApplicationContext._describe_dependency_target(non_none_args[0], None)
-            if origin is typing.Annotated:
-                annotated_args = typing.get_args(type_hint)
-                if annotated_args:
-                    return ApplicationContext._describe_dependency_target(annotated_args[0], None)
+    @staticmethod
+    def _annotation_expr(node: ast.AST) -> str:
+        return ast.unparse(node) if hasattr(ast, "unparse") else node.__class__.__name__
 
-        if isinstance(raw_annotation, str):
-            return raw_annotation
-        if hasattr(raw_annotation, "__forward_arg__"):
-            return raw_annotation.__forward_arg__
-        if hasattr(raw_annotation, "__name__"):
-            return raw_annotation.__name__
-        if raw_annotation is not None:
-            return str(raw_annotation)
+    @staticmethod
+    def _flatten_union_ast(node: ast.AST) -> List[ast.AST]:
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+            return (
+                ApplicationContext._flatten_union_ast(node.left)
+                + ApplicationContext._flatten_union_ast(node.right)
+            )
+        return [node]
+
+    @staticmethod
+    def _extract_ast_name(node: ast.AST) -> Optional[str]:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            parent = ApplicationContext._extract_ast_name(node.value)
+            if parent:
+                return f"{parent}.{node.attr}"
+            return node.attr
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
         return None
 
-    def _resolve_marker_dependency_name(
+    @staticmethod
+    def _make_target_from_name(name: str) -> _InjectionTarget:
+        lookup_names = []
+        if name:
+            lookup_names.append(name)
+            if "." in name:
+                lookup_names.append(name.rsplit(".", 1)[-1])
+        deduped = []
+        for item in lookup_names:
+            if item not in deduped:
+                deduped.append(item)
+        return _InjectionTarget(
+            display_name=name,
+            lookup_names=tuple(deduped),
+        )
+
+    @staticmethod
+    def _make_target_from_type(type_hint: type) -> _InjectionTarget:
+        lookup_names = [type_hint.__name__]
+        qualified_name = f"{type_hint.__module__}.{type_hint.__qualname__}"
+        if qualified_name not in lookup_names:
+            lookup_names.append(qualified_name)
+        if type_hint.__qualname__ not in lookup_names:
+            lookup_names.append(type_hint.__qualname__)
+        return _InjectionTarget(
+            display_name=type_hint.__name__,
+            lookup_names=tuple(lookup_names),
+            runtime_type=type_hint,
+        )
+
+    @staticmethod
+    def _make_single_annotation(target: _InjectionTarget, annotation_repr: str, *, optional: bool = False) -> _NormalizedInjectionAnnotation:
+        return _NormalizedInjectionAnnotation(
+            kind="single",
+            annotation_repr=annotation_repr,
+            targets=(target,),
+            optional=optional,
+        )
+
+    @staticmethod
+    def _parse_runtime_annotation(annotation: Any) -> _NormalizedInjectionAnnotation:
+        import typing
+
+        annotation_repr = ApplicationContext._format_annotation_repr(annotation)
+        if isinstance(annotation, str):
+            return ApplicationContext._parse_string_annotation(annotation)
+        if hasattr(annotation, "__forward_arg__"):
+            return ApplicationContext._parse_string_annotation(annotation.__forward_arg__)
+        if inspect.isclass(annotation):
+            return ApplicationContext._make_single_annotation(
+                ApplicationContext._make_target_from_type(annotation),
+                annotation_repr,
+            )
+
+        origin = typing.get_origin(annotation)
+        args = typing.get_args(annotation)
+        if origin is typing.Annotated:
+            if not args:
+                raise ValueError("Annotated 缺少内部类型")
+            return ApplicationContext._parse_runtime_annotation(args[0])
+        if origin is typing.Final:
+            if not args:
+                raise ValueError("Final 缺少内部类型")
+            return ApplicationContext._parse_runtime_annotation(args[0])
+        if origin in (typing.Union, types.UnionType):
+            non_none_args = [arg for arg in args if arg is not type(None)]
+            has_none = len(non_none_args) != len(args)
+            if has_none and len(non_none_args) == 1:
+                normalized = ApplicationContext._parse_runtime_annotation(non_none_args[0])
+                if normalized.kind != "single":
+                    raise ValueError("Optional 仅支持包装单实例依赖")
+                return _NormalizedInjectionAnnotation(
+                    kind="single",
+                    annotation_repr=annotation_repr,
+                    targets=normalized.targets,
+                    optional=True,
+                )
+            targets: List[_InjectionTarget] = []
+            for arg in args:
+                normalized = ApplicationContext._parse_runtime_annotation(arg)
+                if normalized.kind != "single" or normalized.optional:
+                    raise ValueError("Union 仅支持多个单实例候选")
+                targets.extend(normalized.targets)
+            return _NormalizedInjectionAnnotation(
+                kind="union",
+                annotation_repr=annotation_repr,
+                targets=tuple(targets),
+            )
+        if origin is Provider:
+            if len(args) != 1:
+                raise ValueError("Provider[T] 必须且只能包含一个类型参数")
+            normalized = ApplicationContext._parse_runtime_annotation(args[0])
+            if normalized.kind != "single" or normalized.optional:
+                raise ValueError("Provider[T] 仅支持单实例依赖")
+            return _NormalizedInjectionAnnotation(
+                kind="provider",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+            )
+        if origin in (list, set, tuple):
+            if origin is tuple:
+                if len(args) != 2 or args[1] is not Ellipsis:
+                    raise ValueError("tuple 注入仅支持 tuple[T, ...] 形式")
+                element_annotation = args[0]
+                collection_kind = "tuple"
+            else:
+                if len(args) != 1:
+                    raise ValueError("集合注入必须且只能包含一个元素类型")
+                element_annotation = args[0]
+                collection_kind = origin.__name__
+            normalized = ApplicationContext._parse_runtime_annotation(element_annotation)
+            if normalized.kind != "single" or normalized.optional:
+                raise ValueError("集合注入仅支持单实例元素类型")
+            return _NormalizedInjectionAnnotation(
+                kind="collection",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+                collection_kind=collection_kind,
+            )
+
+        raise ValueError(f"不支持的注解类型: {annotation_repr}")
+
+    @staticmethod
+    def _parse_string_annotation(annotation_text: str) -> _NormalizedInjectionAnnotation:
+        try:
+            expr = ast.parse(annotation_text, mode="eval").body
+        except SyntaxError as exc:
+            raise ValueError(f"无法解析注解表达式 '{annotation_text}'") from exc
+        return ApplicationContext._parse_annotation_ast(expr, annotation_text)
+
+    @staticmethod
+    def _parse_annotation_ast(node: ast.AST, annotation_repr: str) -> _NormalizedInjectionAnnotation:
+        base_name = ApplicationContext._extract_ast_name(node)
+        if base_name:
+            return ApplicationContext._make_single_annotation(
+                ApplicationContext._make_target_from_name(base_name),
+                annotation_repr,
+            )
+
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+            parts = ApplicationContext._flatten_union_ast(node)
+            normalized_targets: List[_InjectionTarget] = []
+            optional = False
+            for part in parts:
+                part_name = ApplicationContext._extract_ast_name(part)
+                if part_name in {"None", "NoneType"}:
+                    optional = True
+                    continue
+                normalized = ApplicationContext._parse_annotation_ast(part, ApplicationContext._annotation_expr(part))
+                if normalized.kind != "single" or normalized.optional:
+                    raise ValueError("Union 仅支持多个单实例候选")
+                normalized_targets.extend(normalized.targets)
+            if optional and len(normalized_targets) == 1:
+                return _NormalizedInjectionAnnotation(
+                    kind="single",
+                    annotation_repr=annotation_repr,
+                    targets=tuple(normalized_targets),
+                    optional=True,
+                )
+            return _NormalizedInjectionAnnotation(
+                kind="union",
+                annotation_repr=annotation_repr,
+                targets=tuple(normalized_targets),
+            )
+
+        if not isinstance(node, ast.Subscript):
+            raise ValueError(f"不支持的注解表达式: {annotation_repr}")
+
+        container_name = ApplicationContext._extract_ast_name(node.value)
+        if container_name is None:
+            raise ValueError(f"不支持的注解容器: {annotation_repr}")
+        container_name = container_name.rsplit(".", 1)[-1]
+
+        if container_name in {"Annotated", "Final"}:
+            elements = ApplicationContext._subscript_elements(node.slice)
+            if not elements:
+                raise ValueError(f"{container_name} 缺少内部类型")
+            normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
+            return _NormalizedInjectionAnnotation(
+                kind=normalized.kind,
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+                optional=normalized.optional,
+                collection_kind=normalized.collection_kind,
+            )
+        if container_name == "Optional":
+            elements = ApplicationContext._subscript_elements(node.slice)
+            if len(elements) != 1:
+                raise ValueError("Optional[T] 必须且只能包含一个类型参数")
+            normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
+            if normalized.kind != "single":
+                raise ValueError("Optional 仅支持包装单实例依赖")
+            return _NormalizedInjectionAnnotation(
+                kind="single",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+                optional=True,
+            )
+        if container_name == "Provider":
+            elements = ApplicationContext._subscript_elements(node.slice)
+            if len(elements) != 1:
+                raise ValueError("Provider[T] 必须且只能包含一个类型参数")
+            normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
+            if normalized.kind != "single" or normalized.optional:
+                raise ValueError("Provider[T] 仅支持单实例依赖")
+            return _NormalizedInjectionAnnotation(
+                kind="provider",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+            )
+        if container_name in {"list", "set"}:
+            elements = ApplicationContext._subscript_elements(node.slice)
+            if len(elements) != 1:
+                raise ValueError(f"{container_name}[T] 必须且只能包含一个元素类型")
+            normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
+            if normalized.kind != "single" or normalized.optional:
+                raise ValueError("集合注入仅支持单实例元素类型")
+            return _NormalizedInjectionAnnotation(
+                kind="collection",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+                collection_kind=container_name,
+            )
+        if container_name == "tuple":
+            elements = ApplicationContext._subscript_elements(node.slice)
+            if len(elements) != 2 or not isinstance(elements[1], ast.Constant) or elements[1].value is not Ellipsis:
+                raise ValueError("tuple 注入仅支持 tuple[T, ...] 形式")
+            normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
+            if normalized.kind != "single" or normalized.optional:
+                raise ValueError("集合注入仅支持单实例元素类型")
+            return _NormalizedInjectionAnnotation(
+                kind="collection",
+                annotation_repr=annotation_repr,
+                targets=normalized.targets,
+                collection_kind="tuple",
+            )
+        if container_name == "Union":
+            elements = ApplicationContext._subscript_elements(node.slice)
+            normalized_targets: List[_InjectionTarget] = []
+            optional = False
+            for element in elements:
+                element_name = ApplicationContext._extract_ast_name(element)
+                if element_name in {"None", "NoneType"}:
+                    optional = True
+                    continue
+                normalized = ApplicationContext._parse_annotation_ast(element, ApplicationContext._annotation_expr(element))
+                if normalized.kind != "single" or normalized.optional:
+                    raise ValueError("Union 仅支持多个单实例候选")
+                normalized_targets.extend(normalized.targets)
+            if optional and len(normalized_targets) == 1:
+                return _NormalizedInjectionAnnotation(
+                    kind="single",
+                    annotation_repr=annotation_repr,
+                    targets=tuple(normalized_targets),
+                    optional=True,
+                )
+            return _NormalizedInjectionAnnotation(
+                kind="union",
+                annotation_repr=annotation_repr,
+                targets=tuple(normalized_targets),
+            )
+
+        raise ValueError(f"不支持的注解容器: {annotation_repr}")
+
+    @staticmethod
+    def _subscript_elements(node: ast.AST) -> List[ast.AST]:
+        if isinstance(node, ast.Tuple):
+            return list(node.elts)
+        return [node]
+
+    def _normalize_marker_annotation(
+        self,
+        *,
+        owner_cls: type,
+        attr_name: str,
+        type_hints: Dict[str, Any],
+        raw_annotations: Dict[str, Any],
+        type_hint_error: Optional[Exception],
+    ) -> _NormalizedInjectionAnnotation:
+        type_hint = type_hints.get(attr_name)
+        raw_annotation = raw_annotations.get(attr_name)
+        try:
+            if type_hint is not None:
+                return self._parse_runtime_annotation(type_hint)
+            if raw_annotation is not None:
+                return self._parse_runtime_annotation(raw_annotation)
+        except Exception as exc:
+            cause = exc
+        else:
+            cause = type_hint_error
+
+        message = format_semantic_message(
+            "inject-unique-binding",
+            (
+                f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 类型解析失败；"
+                f"原始注解: '{self._format_annotation_repr(raw_annotation)}'。"
+            ),
+            "为 Inject() 提供可稳定解析的类型注解；复杂场景改用 InjectByName('ExplicitName')。",
+        )
+        if cause is not None:
+            message = (
+                f"{message} 原始异常: {type(cause).__name__}: {cause}"
+            )
+
+        raise DependencyTypeResolutionError(
+            message=message,
+            dependency_name=attr_name,
+            injection_point=f"{owner_cls.__module__}.{owner_cls.__name__}.{attr_name}",
+            expected_type_name=self._format_annotation_repr(raw_annotation),
+            candidate_sources=[],
+            cause=cause,
+        )
+
+    def _resolve_marker_binding(
         self,
         *,
         owner_cls: type,
@@ -652,65 +1018,364 @@ class ApplicationContext:
         type_hints: Dict[str, Any],
         raw_annotations: Dict[str, Any],
         type_hint_error: Optional[Exception],
-    ) -> str:
+    ) -> _ResolvedInjectionBinding:
         from .decorators import InjectByName
 
-        if isinstance(marker, InjectByName):
-            return marker.name or self._infer_dependency_name(attr_name, None)
-
+        injection_point = f"{owner_cls.__module__}.{owner_cls.__name__}.{attr_name}"
+        required = getattr(marker, "required", True)
         explicit_name = getattr(marker, "name", None)
-        if explicit_name:
-            return explicit_name
 
-        type_hint = type_hints.get(attr_name)
-        raw_annotation = raw_annotations.get(attr_name)
-        expected_type_name = self._describe_dependency_target(type_hint, raw_annotation)
-        if expected_type_name and type_hint is not None:
-            return expected_type_name
+        if isinstance(marker, InjectByName) or explicit_name:
+            self._warn_name_based_injection_semantics(
+                owner_cls=owner_cls,
+                attr_name=attr_name,
+                explicit_name=explicit_name,
+                raw_annotation=raw_annotations.get(attr_name),
+            )
+            dependency_name = explicit_name or marker.name or attr_name
+            candidate_names = (dependency_name,) if self._definition_registry.has(dependency_name) else ()
+            if required and not candidate_names:
+                raise DependencyNotFoundError(
+                    message=format_semantic_message(
+                        "inject-by-name",
+                        (
+                            f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 需要显式组件 "
+                            f"'{dependency_name}'，但该组件未注册。"
+                        ),
+                        "确认 InjectByName() 的名称与注册名一致；必要时改为 Inject() + 明确类型。",
+                    ),
+                    dependency_name=dependency_name,
+                    injection_point=injection_point,
+                    candidate_sources=[
+                        {"source": candidate, "reason": "name_mismatch"}
+                        for candidate in self.list_definitions()
+                    ],
+                )
+            return _ResolvedInjectionBinding(
+                kind="single",
+                annotation_repr=dependency_name,
+                target_labels=(dependency_name,),
+                required=required,
+                candidate_names=candidate_names,
+            )
 
-        fallback_candidate = self._infer_dependency_name(attr_name, None)
-        message = (
-            f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 类型解析失败；"
-            f"期望类型: '{expected_type_name or '<unknown>'}'。"
-            f"检测到属性名回退候选 '{attr_name} -> {fallback_candidate}'，该回退已被禁止。"
+        normalized = self._normalize_marker_annotation(
+            owner_cls=owner_cls,
+            attr_name=attr_name,
+            type_hints=type_hints,
+            raw_annotations=raw_annotations,
+            type_hint_error=type_hint_error,
         )
-        if type_hint_error is not None:
-            message = (
-                f"{message} 原始异常: {type(type_hint_error).__name__}: {type_hint_error}"
+        return self._resolve_normalized_binding(
+            normalized=normalized,
+            injection_point=injection_point,
+            dependency_name=attr_name,
+            required=required,
+        )
+
+    def _warn_name_based_injection_semantics(
+        self,
+        *,
+        owner_cls: type,
+        attr_name: str,
+        explicit_name: Optional[str],
+        raw_annotation: Any,
+    ) -> None:
+        point = f"{owner_cls.__module__}.{owner_cls.__name__}.{attr_name}"
+        if not explicit_name:
+            warn_semantic_once(
+                key=f"inject-by-name-implicit:{point}",
+                rule_key="inject-by-name",
+                problem=(
+                    f"注入点 '{point}' 使用了未显式传名的 InjectByName()，当前会回退到属性名 '{attr_name}'。"
+                ),
+                guidance="推荐改为 InjectByName('ExactComponentName')，避免属性名与注册名漂移。",
+                category=InjectionSemanticWarning,
+                stacklevel=4,
+            )
+
+        if raw_annotation in (None, Any):
+            warn_semantic_once(
+                key=f"inject-by-name-annotation:{point}",
+                rule_key="inject-by-name",
+                problem=(
+                    f"注入点 '{point}' 使用 InjectByName() 时缺少明确类型注解。"
+                ),
+                guidance="即使按名称解析，也建议补上准确类型注解以表达语义并帮助静态检查。",
+                category=InjectionSemanticWarning,
+                stacklevel=4,
+            )
+
+    def _resolve_normalized_binding(
+        self,
+        *,
+        normalized: _NormalizedInjectionAnnotation,
+        injection_point: str,
+        dependency_name: str,
+        required: bool,
+    ) -> _ResolvedInjectionBinding:
+        allow_missing = normalized.optional or not required
+
+        if normalized.kind == "single":
+            candidate_name = self._select_single_candidate(
+                target=normalized.targets[0],
+                injection_point=injection_point,
+                dependency_name=dependency_name,
+                normalized=normalized,
+                allow_missing=allow_missing,
+            )
+            return _ResolvedInjectionBinding(
+                kind="single",
+                annotation_repr=normalized.annotation_repr,
+                target_labels=tuple(target.display_name for target in normalized.targets),
+                required=required,
+                candidate_names=(candidate_name,) if candidate_name else (),
+            )
+
+        if normalized.kind == "provider":
+            candidate_name = self._select_single_candidate(
+                target=normalized.targets[0],
+                injection_point=injection_point,
+                dependency_name=dependency_name,
+                normalized=normalized,
+                allow_missing=not required,
+            )
+            return _ResolvedInjectionBinding(
+                kind="provider",
+                annotation_repr=normalized.annotation_repr,
+                target_labels=tuple(target.display_name for target in normalized.targets),
+                required=required,
+                candidate_names=(candidate_name,) if candidate_name else (),
+            )
+
+        if normalized.kind == "collection":
+            candidate_names = tuple(
+                definition.name for definition in self._find_matching_definitions(normalized.targets[0])
+            )
+            if required and not candidate_names:
+                self._raise_missing_binding(
+                    dependency_name=dependency_name,
+                    injection_point=injection_point,
+                    normalized=normalized,
+                )
+            return _ResolvedInjectionBinding(
+                kind="collection",
+                annotation_repr=normalized.annotation_repr,
+                target_labels=tuple(target.display_name for target in normalized.targets),
+                required=required,
+                candidate_names=candidate_names,
+                collection_kind=normalized.collection_kind,
+            )
+
+        if normalized.kind == "union":
+            viable_candidates = []
+            ambiguous_targets = []
+            for target in normalized.targets:
+                matches = self._find_matching_definitions(target)
+                if len(matches) > 1:
+                    ambiguous_targets.append((target, matches))
+                elif len(matches) == 1:
+                    viable_candidates.append((target, matches[0]))
+            if ambiguous_targets:
+                target, matches = ambiguous_targets[0]
+                self._raise_ambiguous_binding(
+                    dependency_name=dependency_name,
+                    injection_point=injection_point,
+                    normalized=normalized,
+                    candidates=matches,
+                    extra_reason=f"联合候选 '{target.display_name}' 匹配到多个组件",
+                )
+            unique_names = {definition.name for _, definition in viable_candidates}
+            if len(unique_names) == 1 and viable_candidates:
+                chosen = viable_candidates[0][1].name
+                return _ResolvedInjectionBinding(
+                    kind="single",
+                    annotation_repr=normalized.annotation_repr,
+                    target_labels=tuple(target.display_name for target in normalized.targets),
+                    required=required,
+                    candidate_names=(chosen,),
+                )
+            if len(unique_names) > 1:
+                self._raise_ambiguous_binding(
+                    dependency_name=dependency_name,
+                    injection_point=injection_point,
+                    normalized=normalized,
+                    candidates=[definition for _, definition in viable_candidates],
+                    extra_reason="Union 中有多个候选同时可绑定",
+                )
+            if allow_missing:
+                return _ResolvedInjectionBinding(
+                    kind="single",
+                    annotation_repr=normalized.annotation_repr,
+                    target_labels=tuple(target.display_name for target in normalized.targets),
+                    required=False,
+                    candidate_names=(),
+                )
+            self._raise_missing_binding(
+                dependency_name=dependency_name,
+                injection_point=injection_point,
+                normalized=normalized,
             )
 
         raise DependencyTypeResolutionError(
-            message=message,
-            dependency_name=expected_type_name or fallback_candidate,
-            injection_point=f"{owner_cls.__module__}.{owner_cls.__name__}.{attr_name}",
-            expected_type_name=expected_type_name,
-            fallback_candidate=fallback_candidate,
+            message=format_semantic_message(
+                "inject-unique-binding",
+                f"注入点 '{injection_point}' 使用了当前不支持的注入语义 '{normalized.kind}'。",
+                "改用 InjectByName('ExplicitName')，或将注解收敛为单一、可唯一绑定的类型契约。",
+            ),
+            dependency_name=dependency_name,
+            injection_point=injection_point,
+            expected_type_name=normalized.annotation_repr,
+            candidate_sources=[],
+        )
+
+    def _select_single_candidate(
+        self,
+        *,
+        target: _InjectionTarget,
+        injection_point: str,
+        dependency_name: str,
+        normalized: _NormalizedInjectionAnnotation,
+        allow_missing: bool,
+    ) -> Optional[str]:
+        matches = self._find_matching_definitions(target)
+        if len(matches) == 1:
+            return matches[0].name
+        if not matches and allow_missing:
+            return None
+        if len(matches) > 1:
+            self._raise_ambiguous_binding(
+                dependency_name=dependency_name,
+                injection_point=injection_point,
+                normalized=normalized,
+                candidates=matches,
+            )
+        self._raise_missing_binding(
+            dependency_name=dependency_name,
+            injection_point=injection_point,
+            normalized=normalized,
+        )
+
+    def _find_matching_definitions(self, target: _InjectionTarget) -> List[Definition]:
+        matches: List[Definition] = []
+        for definition in self._definition_registry.values():
+            if self._definition_matches_target(definition, target):
+                matches.append(definition)
+        return matches
+
+    @staticmethod
+    def _definition_matches_target(definition: Definition, target: _InjectionTarget) -> bool:
+        if target.runtime_type is not None and definition.type_ is not None:
+            try:
+                if issubclass(definition.type_, target.runtime_type):
+                    return True
+            except TypeError:
+                pass
+        if definition.name in target.lookup_names:
+            return True
+        if definition.type_ is None:
+            return False
+        for candidate_type in getattr(definition.type_, "__mro__", (definition.type_,)):
+            qualified_name = f"{candidate_type.__module__}.{candidate_type.__qualname__}"
+            if (
+                candidate_type.__name__ in target.lookup_names
+                or candidate_type.__qualname__ in target.lookup_names
+                or qualified_name in target.lookup_names
+            ):
+                return True
+        return False
+
+    def _raise_missing_binding(
+        self,
+        *,
+        dependency_name: str,
+        injection_point: str,
+        normalized: _NormalizedInjectionAnnotation,
+    ) -> None:
+        raise DependencyNotFoundError(
+            message=format_semantic_message(
+                "inject-unique-binding",
+                (
+                    f"注入点 '{injection_point}' 无法找到可绑定组件；"
+                    f"原始注解: '{normalized.annotation_repr}'，"
+                    f"归一化语义: '{self._describe_normalized_kind(normalized)}'。"
+                ),
+                "确认目标组件已注册并在 refresh() 前完成导入；无法唯一表达时改用 InjectByName('ExplicitName')。",
+            ),
+            dependency_name=dependency_name,
+            injection_point=injection_point,
             candidate_sources=[
-                {"source": fallback_candidate, "reason": "forbidden_attribute_name_fallback"}
+                {"source": candidate, "reason": "name_mismatch"}
+                for candidate in self.list_definitions()
             ],
-            cause=type_hint_error,
+        )
+
+    def _raise_ambiguous_binding(
+        self,
+        *,
+        dependency_name: str,
+        injection_point: str,
+        normalized: _NormalizedInjectionAnnotation,
+        candidates: List[Definition],
+        extra_reason: Optional[str] = None,
+    ) -> None:
+        reason = extra_reason or "多个候选同时满足注入条件"
+        raise DependencyTypeResolutionError(
+            message=format_semantic_message(
+                "inject-unique-binding",
+                (
+                    f"注入点 '{injection_point}' 解析到多个候选；"
+                    f"原始注解: '{normalized.annotation_repr}'，"
+                    f"归一化语义: '{self._describe_normalized_kind(normalized)}'。"
+                    f"{reason}。"
+                ),
+                "改用 InjectByName('ExplicitName')，或缩小类型范围直到只能绑定一个组件。",
+            ),
+            dependency_name=dependency_name,
+            injection_point=injection_point,
+            expected_type_name=normalized.annotation_repr,
+            candidate_sources=[
+                {"source": definition.name, "reason": "multiple_candidates"}
+                for definition in candidates
+            ],
         )
 
     @staticmethod
-    def _infer_dependency_name(attr_name: str, type_hint) -> str:
-        import typing
+    def _describe_normalized_kind(normalized: _NormalizedInjectionAnnotation) -> str:
+        if normalized.kind == "collection":
+            return f"collection[{normalized.collection_kind}]"
+        return normalized.kind
 
-        if type_hint and hasattr(type_hint, "__name__"):
-            return type_hint.__name__
-        if type_hint:
-            origin = typing.get_origin(type_hint)
-            if origin is typing.Union:
-                non_none_args = [
-                    arg for arg in typing.get_args(type_hint) if arg is not type(None)
-                ]
-                if len(non_none_args) == 1 and hasattr(non_none_args[0], "__name__"):
-                    return non_none_args[0].__name__
-            if origin is typing.Annotated:
-                annotated_args = typing.get_args(type_hint)
-                if annotated_args and hasattr(annotated_args[0], "__name__"):
-                    return annotated_args[0].__name__
-        parts = attr_name.split("_")
-        return "".join(part.capitalize() for part in parts)
+    def _materialize_binding(self, binding: _ResolvedInjectionBinding) -> Any:
+        if binding.kind == "single":
+            if not binding.candidate_names:
+                return None
+            dependency_name = binding.candidate_names[0]
+            return self.get(dependency_name) if binding.required else self.try_get(dependency_name)
+
+        if binding.kind == "provider":
+            if not binding.candidate_names:
+                return None
+            dependency_name = binding.candidate_names[0]
+            return Provider(lambda dependency_name=dependency_name: self.get(dependency_name))
+
+        if binding.kind == "collection":
+            values = [self.get(name) for name in binding.candidate_names]
+            if binding.collection_kind == "set":
+                return set(values)
+            if binding.collection_kind == "tuple":
+                return tuple(values)
+            return list(values)
+
+        raise DependencyTypeResolutionError(
+            message=format_semantic_message(
+                "inject-unique-binding",
+                f"内部绑定结果包含未知类型 '{binding.kind}'。",
+                "这是框架内部一致性错误，请检查注入绑定归一化流程。",
+            ),
+            dependency_name=",".join(binding.target_labels),
+            candidate_sources=[],
+        )
 
     def _definition_has_lifecycle(self, definition: Definition) -> bool:
         target_cls = definition.type_
@@ -883,17 +1548,16 @@ class ApplicationContext:
 
 
 class _LazyProxy:
-    __slots__ = ("_ctx", "_dep_name", "_resolved", "_value")
+    __slots__ = ("_resolver", "_resolved", "_value")
 
-    def __init__(self, ctx: ApplicationContext, dep_name: str):
-        self._ctx = ctx
-        self._dep_name = dep_name
+    def __init__(self, resolver: Callable[[], Any]):
+        self._resolver = resolver
         self._resolved = False
         self._value = None
 
     def _resolve(self):
         if not self._resolved:
-            self._value = self._ctx.get(self._dep_name)
+            self._value = self._resolver()
             self._resolved = True
         return self._value
 

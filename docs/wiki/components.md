@@ -17,6 +17,8 @@ pr_links: []
 
 This page gives a current high-level map of Cullinan's main runtime components.
 
+For the contract behind automatic discovery and registration, read [Framework Semantics](../framework_semantics.md). The short version is: Cullinan guarantees module-top-level decorated components whose decorators run during import, not arbitrary local class definitions created later.
+
 ## Runtime overview
 
 ### 1. Application orchestration
@@ -65,6 +67,7 @@ This page gives a current high-level map of Cullinan's main runtime components.
 
 1. [Architecture](../architecture.md)
 2. [Application Runtime Model](application_runtime.md)
-3. [Dependency Injection Guide](../dependency_injection_guide.md)
-4. [Web Runtime Guide](../web_runtime_guide.md)
-5. [Testing & Verification](../testing.md)
+3. [Framework Semantics](../framework_semantics.md)
+4. [Dependency Injection Guide](../dependency_injection_guide.md)
+5. [Web Runtime Guide](../web_runtime_guide.md)
+6. [Testing & Verification](../testing.md)

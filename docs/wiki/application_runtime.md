@@ -18,6 +18,8 @@ pr_links: []
 This page explains the application-first runtime introduced around
 `cullinan.application_model` and re-exported from `cullinan`.
 
+For the runtime contracts that now fail fast or warn, see [Framework Semantics](../framework_semantics.md). In particular, `Application.run()` assumes component decorators have already executed during module import, and `refresh()` marks the end of structural registration.
+
 ## Core concepts
 
 - `Application` owns one root module graph, one `ApplicationContext`, and one `WebRuntime`

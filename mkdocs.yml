@@ -9,6 +9,7 @@ nav:
   - Getting Started: getting_started.md
   - Architecture: architecture.md
   - Runtime Consolidation: runtime_updates_v093.md
+  - Framework Semantics: framework_semantics.md
   - Wiki:
     - Components: wiki/components.md
     - Decorators: wiki/decorators.md
@@ -86,6 +87,7 @@ plugins:
             Getting Started: 快速开始
             Architecture: 架构设计
             Runtime Consolidation: 运行时整合
+            Framework Semantics: 框架语义规则
             Wiki: 维基
             Components: 组件
             Decorators: 装饰器

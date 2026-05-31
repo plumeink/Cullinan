@@ -24,6 +24,8 @@ surface:
   snapshot while an older runtime is draining
 - legacy `run(handlers=None, engine=None)` remains available for compatibility
 
+The bootstrap contract also depends on the framework semantics documented in [Framework Semantics](../framework_semantics.md): component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after `refresh()`.
+
 ## Recommended bootstrap
 
 ```python

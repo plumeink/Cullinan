@@ -7,7 +7,7 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.93a3.post1',
+    version='0.93a4',
     packages=find_packages(exclude=['tests*', 'examples*', 'docs*', 'docs_archive*', 'scripts*']),
     description='Cullinan — A pluggable IoC/DI web framework',
     author='plumeink',

@@ -18,6 +18,8 @@ pr_links: []
 本文解释围绕 `cullinan.application_model` 引入、并由 `cullinan` 顶层重新导出的
 application-first 运行时模型。
 
+如果你想了解哪些运行时契约现在会 warning 或直接失败，请同时阅读[框架语义规则](../framework_semantics.md)。尤其要注意：`Application.run()` 假定组件装饰器已在模块导入阶段执行，且 `refresh()` 是结构性注册的结束边界。
+
 ## 核心概念
 
 - `Application` 持有一个根模块图、一个 `ApplicationContext` 和一个 `WebRuntime`

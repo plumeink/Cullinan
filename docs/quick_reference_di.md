@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: v0.90  
+> **Version**: 0.93a4  
 > **Author**: Plumeink
 
 ## Basic Usage
@@ -24,7 +24,7 @@ class UserService(Service):
 
 ```python
 from cullinan.controller import controller, get_api
-from cullinan.core import Inject, InjectByName
+from cullinan.core import Inject, InjectByName, Lazy, Provider
 
 @controller(url='/api')
 class UserController:
@@ -36,6 +36,9 @@ class UserController:
     
     # Method 3: Optional dependency
     cache_service = InjectByName('CacheService', required=False)
+
+    # Method 4: Lazy lookup
+    report_service = Lazy('ReportService')
 ```
 
 ### 3. Use Injected Service
@@ -54,6 +57,41 @@ class UserController:
         user = self.user_service.get_user(user_id)
         return user
 ```
+
+## Which injection primitive to use
+
+| Case | Use |
+| --- | --- |
+| Type is importable at runtime | `Inject()` |
+| `TYPE_CHECKING` / forward reference still maps to one unique target | `Inject()` |
+| Type should not be imported at runtime | `InjectByName("Name")` |
+| Lookup should happen on first access | `Lazy("Name")` |
+| Optional dependency | `required=False` |
+| Deferred provider object | `Provider[T] = Inject()` |
+| Multiple implementations of one contract | `list[T] = Inject()` / `set[T] = Inject()` / `tuple[T, ...] = Inject()` |
+
+## `TYPE_CHECKING` rule
+
+`Inject()` now supports `TYPE_CHECKING` forward references when the binding result is unique:
+
+```python
+from typing import TYPE_CHECKING
+from cullinan.core import Inject, Provider
+
+if TYPE_CHECKING:
+    from .contracts import Hook
+    from .providers import DatabaseSessionProvider
+
+class Repo:
+    session_provider: Provider["DatabaseSessionProvider"] = Inject()
+    hooks: list["Hook"] = Inject(required=False)
+```
+
+Startup still fails fast when:
+
+- the annotation is ambiguous, such as `Union[A, B]` with multiple live candidates
+- the combination is unsupported, such as `list[Union[A, B]]`
+- the framework would need name guessing instead of exact resolution
 
 ## Packaging Configuration
 
@@ -107,8 +145,9 @@ nuitka --include-package=my_app \
 |---------|----------|
 | Dependency is None | Ensure service uses `@service` decorator |
 | Service not found | Check service name matches (case-sensitive) |
-| Circular dependency | Use `InjectByName()` for lazy resolution |
-| Injection not working | Ensure class extends `Service` or `Controller` |
+| Circular dependency or runtime-only import edge | Use `InjectByName()` or `Lazy("Name")` |
+| `DependencyTypeResolutionError` | Annotation is ambiguous, unsupported, or cannot be normalized safely; narrow the type contract or use `InjectByName()` |
+| Injection not working | Ensure the component is registered with `@service` / `@controller` and available to `ApplicationContext` |
 
 ## See Also
 

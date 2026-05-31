@@ -68,6 +68,14 @@ from .diagnostics import (
     format_circular_dependency_error,
     format_missing_dependency_error,
 )
+from .injection_types import Provider
+from .semantic_rules import (
+    CompatibilitySemanticWarning,
+    ComponentDiscoveryWarning,
+    CullinanSemanticWarning,
+    InjectionSemanticWarning,
+    warn_semantic_once,
+)
 
 # Decorators - Primary Registration API
 from .decorators import (
@@ -104,10 +112,26 @@ def injectable(cls):
     In 0.93, all classes decorated with @service, @controller, or @component
     are automatically injectable. This function is kept for backward compatibility.
     """
+    warn_semantic_once(
+        key="compatibility:injectable",
+        rule_key="compatibility-api",
+        problem="@injectable 只是兼容入口，不再承担新的注册或注入语义。",
+        guidance="改用 @service、@component 或 @controller 作为主入口。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
     return cls
 
 def inject_constructor(cls):
     """Compatibility decorator - no longer needed in 0.93."""
+    warn_semantic_once(
+        key="compatibility:inject_constructor",
+        rule_key="compatibility-api",
+        problem="@inject_constructor 只是兼容入口，不再改变构造器注入行为。",
+        guidance="依赖注入由 ApplicationContext.refresh() 统一处理，不需要额外装饰器。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
     return cls
 
 # ============================================================================
@@ -136,18 +160,33 @@ def get_injection_registry():
 
     Use ApplicationContext instead.
     """
+    warn_semantic_once(
+        key="compatibility:get_injection_registry",
+        rule_key="compatibility-api",
+        problem="get_injection_registry() 仅保留兼容外形，当前不会返回可用注册中心。",
+        guidance="改用 ApplicationContext / get_application_context()。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
     return _dummy_registry
 
 def reset_injection_registry():
     """Compatibility function - no-op in 0.93."""
-    pass
+    warn_semantic_once(
+        key="compatibility:reset_injection_registry",
+        rule_key="compatibility-api",
+        problem="reset_injection_registry() 在 0.93 中不再重置真实容器。",
+        guidance="如需重建容器，请显式创建新的 ApplicationContext。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
 
 # InjectionRegistry compatibility class
 class InjectionRegistry:
     """Compatibility class - use ApplicationContext instead."""
     pass
 
-__version__ = "0.93"
+__version__ = "0.93a4"
 
 __all__ = [
     # ========================================================================
@@ -191,10 +230,15 @@ __all__ = [
     'controller',
     'component',
     'provider_decorator',
+    'Provider',
     'Inject',
     'InjectByName',
     'Lazy',
     'get_injection_markers',
+    'CullinanSemanticWarning',
+    'ComponentDiscoveryWarning',
+    'CompatibilitySemanticWarning',
+    'InjectionSemanticWarning',
 
     # Conditional Decorators
     'ConditionalOnProperty',
