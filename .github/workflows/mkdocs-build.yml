@@ -2,15 +2,11 @@ name: Build and Publish Docs
 
 on:
   push:
+    branches:
+      - master
+      - release/**
     tags-ignore:
       - '**'
-    paths:
-      - 'docs/**'
-      - 'overrides/**'
-      - '.github/workflows/**'
-      - 'mkdocs.yml'
-      - 'setup.py'
-      - 'cullinan/__init__.py'
   pull_request:
     paths:
       - 'docs/**'
