@@ -12,7 +12,7 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="/architecture/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/architecture/">
       
       
         <link rel="prev" href="../framework_semantics/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -690,6 +690,17 @@
     <span class="md-ellipsis">
       
         Architecture layers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semantic-package-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic package surface
       
     </span>
   </a>
@@ -2008,6 +2019,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2169,6 +2215,17 @@
     <span class="md-ellipsis">
       
         Architecture layers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semantic-package-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic package surface
       
     </span>
   </a>
@@ -2344,7 +2401,7 @@
 
 <h1 id="cullinan-framework-architecture">Cullinan Framework Architecture<a class="headerlink" href="#cullinan-framework-architecture" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: 0.93a6<br />
+<p><strong>Version</strong>: 0.93a8
 <strong>Last Updated</strong>: 2026-06-01<br />
 <strong>Status</strong>: Updated</p>
 <p><strong>Knowledge role:</strong> <a href="../concepts/">Framework Semantics</a><br />
@@ -2353,10 +2410,10 @@ Start from <a href="../start/">Application Build</a> for the recommended bootstr
 and use <a href="../internals/">Internals &amp; Extensions</a> when you intentionally need deeper runtime details.</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Cullinan is a Tornado-oriented application framework whose current runtime is organized around three consolidated pillars:</p>
+<p>Cullinan is an engine-neutral application framework whose current runtime is organized around three consolidated pillars:</p>
 <ol>
 <li><strong>Unified container facade</strong> — <code>cullinan.core</code> is the public IoC/DI entrypoint.</li>
-<li><strong>Transport-agnostic Web Runtime</strong> — <code>cullinan.gateway</code> owns <code>WebRequest</code>, <code>WebResponse</code>, routing, dispatch, middleware, and exception handling.</li>
+<li><strong>Transport-agnostic Web Runtime</strong> — <code>cullinan.web.gateway</code> owns <code>WebRequest</code>, <code>WebResponse</code>, routing, dispatch, middleware, and exception handling.</li>
 <li><strong>Decorator-first runtime assembly</strong> — application code starts from business decorators, while runtime ownership and hot-pluggable stability are layered in when needed.</li>
 </ol>
 <h2 id="architecture-layers">Architecture layers<a class="headerlink" href="#architecture-layers" title="Permanent link">&para;</a></h2>
@@ -2366,10 +2423,12 @@ and use <a href="../internals/">Internals &amp; Extensions</a> when you intentio
 └── Business services and middleware
 
 Framework facade
-├── cullinan.core      -&gt; ApplicationContext, scopes, lifecycle, request context
-├── cullinan.gateway   -&gt; WebRequest, WebResponse, Router, Dispatcher, WebRuntime
-├── cullinan.adapter   -&gt; WebAdapter, TornadoAdapter, ASGIAdapter
-└── cullinan.params    -&gt; Path, Query, Body, Header, File, model resolution
+├── cullinan.application -&gt; Application, configure/run/get_asgi_app, @module
+├── cullinan.web         -&gt; controller decorators, WebRequest/WebResponse, params, middleware
+├── cullinan.core        -&gt; ApplicationContext, scopes, lifecycle, request context
+├── cullinan.testing     -&gt; testing helpers and verification entrypoints
+├── cullinan.runtime     -&gt; discovery, scanning, runtime assembly
+└── cullinan.transport   -&gt; WebAdapter, TornadoAdapter, ASGIAdapter
 
 Runtime execution
 ├── Decorator declarations -&gt; import-executed discovery -&gt; runtime assembly
@@ -2378,6 +2437,18 @@ Runtime execution
 ├── Adapter-specific request/response translation
 └── ApplicationContext.shutdown()
 </code></pre></div>
+<h2 id="semantic-package-surface">Semantic package surface<a class="headerlink" href="#semantic-package-surface" title="Permanent link">&para;</a></h2>
+<p>Cullinan's recommended package surface now follows a clearer framework-semantic split:</p>
+<ul>
+<li><code>cullinan.application</code> — application definition, runtime boundary, startup, and ASGI app creation</li>
+<li><code>cullinan.web</code> — business-facing Web development surface</li>
+<li><code>cullinan.core</code> — IoC/DI, lifecycle, request context, semantic diagnostics</li>
+<li><code>cullinan.testing</code> — test-facing support</li>
+<li><code>cullinan.runtime</code> — discovery, scanning, and runtime assembly internals</li>
+<li><code>cullinan.transport</code> — server adapter boundary</li>
+<li><code>cullinan.support</code> — constrained support utilities, not a default first-read surface</li>
+</ul>
+<p>This split keeps the default path business-first while still giving maintainers and advanced users explicit lower-level layers. Historical root-level wrappers such as <code>cullinan.app</code> or <code>cullinan.public_api</code> are no longer part of the maintained structure.</p>
 <h2 id="core-container-model">Core container model<a class="headerlink" href="#core-container-model" title="Permanent link">&para;</a></h2>
 <p><code>cullinan.core</code> exposes the public container API. <code>ApplicationContext</code> is the single runtime entrypoint for registration, resolution, refresh, and shutdown.</p>
 <h3 id="main-responsibilities">Main responsibilities<a class="headerlink" href="#main-responsibilities" title="Permanent link">&para;</a></h3>
@@ -2419,7 +2490,7 @@ Runtime execution
 </ul>
 <p>Async hook variants with <code>_async</code> are supported. Ordering can be influenced with <code>get_phase()</code>.</p>
 <h2 id="web-runtime">Web Runtime<a class="headerlink" href="#web-runtime" title="Permanent link">&para;</a></h2>
-<p>The current web stack is centered on <code>cullinan.gateway.web_core</code> and the exported <code>cullinan.gateway</code> facade.</p>
+<p>The current web stack is centered on <code>cullinan.web.gateway.web_core</code>, but the recommended business-facing entry now goes through <code>cullinan.web</code>.</p>
 <h3 id="public-runtime-objects">Public runtime objects<a class="headerlink" href="#public-runtime-objects" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>WebRequest</code> — normalized request object</li>
@@ -2431,7 +2502,7 @@ Runtime execution
 <li><code>WebRuntime</code> — active runtime state and runtime switching</li>
 </ul>
 <h3 id="adapter-boundary">Adapter boundary<a class="headerlink" href="#adapter-boundary" title="Permanent link">&para;</a></h3>
-<p>Server integration lives in <code>cullinan.adapter</code>:</p>
+<p>Server integration lives behind <code>cullinan.transport</code> and its underlying <code>cullinan.transport.adapter</code> implementation:</p>
 <ul>
 <li><code>WebAdapter</code> — common adapter contract</li>
 <li><code>TornadoAdapter</code> — Tornado integration</li>
@@ -2446,8 +2517,9 @@ Runtime execution
 <li>The gateway pipeline receives a transport-normalized <code>WebRequest</code>.</li>
 <li><code>Dispatcher</code> matches a route, resolves parameters, invokes the handler, and produces a <code>WebResponse</code>.</li>
 <li>A concrete adapter writes the response back to Tornado or ASGI.</li>
-<li>Shutdown calls <code>ctx.shutdown()</code> and drains managed lifecycle hooks.</li>
 </ol>
+<p>Cullinan's default developer story is now <strong>framework semantics first, runtime backend second</strong>: application code targets Cullinan's request/response, controller, parameter, middleware, and lifecycle model, while Tornado and ASGI sit behind the adapter boundary as execution backends.
+7. Shutdown calls <code>ctx.shutdown()</code> and drains managed lifecycle hooks.</p>
 <h2 id="testing-strategy">Testing strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
 <p>The repository uses pytest as the single supported test runner.</p>
 <ul>
@@ -2528,7 +2600,7 @@ Runtime execution
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

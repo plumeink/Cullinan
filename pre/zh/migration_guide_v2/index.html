@@ -12,7 +12,7 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="/zh/zh/migration_guide_v2/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/migration_guide_v2/">
       
       
         <link rel="prev" href="../migration_guide/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -1789,6 +1789,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    最终结构迁移
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2030,10 +2065,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093" class="md-nav__link">
+  <a href="#v093-cullinan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.93：选择你的引擎
+        v0.93：让 Cullinan 自动解析后端，或显式选择
       
     </span>
   </a>
@@ -2080,7 +2115,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093_1" class="md-nav__link">
+  <a href="#v093" class="md-nav__link">
     <span class="md-ellipsis">
       
         v0.93：中间件在洋葱管线中
@@ -2185,7 +2220,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093_2" class="md-nav__link">
+  <a href="#v093_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         v0.93 架构
@@ -2411,10 +2446,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093" class="md-nav__link">
+  <a href="#v093-cullinan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.93：选择你的引擎
+        v0.93：让 Cullinan 自动解析后端，或显式选择
       
     </span>
   </a>
@@ -2461,7 +2496,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093_1" class="md-nav__link">
+  <a href="#v093" class="md-nav__link">
     <span class="md-ellipsis">
       
         v0.93：中间件在洋葱管线中
@@ -2566,7 +2601,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093_2" class="md-nav__link">
+  <a href="#v093_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         v0.93 架构
@@ -2690,7 +2725,7 @@
 </tbody>
 </table>
 <h2 id="_2">安装<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Tornado 模式（默认，向后兼容）</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Tornado 模式</span>
 pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o">[</span>tornado<span class="o">]</span>
 
 <span class="c1"># ASGI 模式（uvicorn）</span>
@@ -2703,19 +2738,21 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <h3 id="1">1. 导入路径变更<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
 <p>保留 controller/service 侧原有导入方式，但 Web 层统一使用新的入口命名：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># v0.9x — 在 v0.93 中仍然有效</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 
-<span class="c1"># v0.93 — 新增可用导入</span>
+<span class="c1"># v0.93 — 新增语义导入</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WebRequest</span><span class="p">,</span> <span class="n">WebResponse</span><span class="p">,</span>               <span class="c1"># 统一请求/响应</span>
-    <span class="n">Router</span><span class="p">,</span> <span class="n">Dispatcher</span><span class="p">,</span>                     <span class="c1"># 网关层</span>
-    <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">CORSMiddleware</span><span class="p">,</span>      <span class="c1"># 中间件管线</span>
-    <span class="n">OpenAPIGenerator</span><span class="p">,</span>                       <span class="c1"># OpenAPI 规范</span>
-    <span class="n">TornadoAdapter</span><span class="p">,</span> <span class="n">ASGIAdapter</span><span class="p">,</span> <span class="n">WebAdapter</span><span class="p">,</span><span class="c1"># 服务器适配器</span>
-    <span class="n">get_asgi_app</span><span class="p">,</span>                           <span class="c1"># ASGI 便捷函数</span>
+    <span class="n">WebRequest</span><span class="p">,</span> <span class="n">WebResponse</span><span class="p">,</span>          <span class="c1"># 统一请求/响应</span>
+    <span class="n">Router</span><span class="p">,</span> <span class="n">Dispatcher</span><span class="p">,</span>               <span class="c1"># 网关层</span>
+    <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">CORSMiddleware</span><span class="p">,</span><span class="c1"># 中间件管线</span>
+    <span class="n">OpenAPIGenerator</span><span class="p">,</span>                 <span class="c1"># OpenAPI 规范</span>
+    <span class="n">get_asgi_app</span><span class="p">,</span>                     <span class="c1"># ASGI 便捷函数</span>
 <span class="p">)</span>
+
+<span class="c1"># 高级 transport 集成保持显式导入</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.transport.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span><span class="p">,</span> <span class="n">TornadoAdapter</span><span class="p">,</span> <span class="n">WebAdapter</span>
 </code></pre></div>
 <h3 id="2-controller">2. Controller 变更<a class="headerlink" href="#2-controller" title="Permanent link">&para;</a></h3>
 <h4 id="v09xcontroller-tornado-selfwrite">v0.9x：Controller 方法使用 Tornado 的 <code>self.write()</code><a class="headerlink" href="#v09xcontroller-tornado-selfwrite" title="Permanent link">&para;</a></h4>
@@ -2780,10 +2817,10 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 <span class="n">run</span><span class="p">()</span>  <span class="c1"># 在端口 4080 启动 Tornado</span>
 </code></pre></div>
-<h4 id="v093">v0.93：选择你的引擎<a class="headerlink" href="#v093" title="Permanent link">&para;</a></h4>
+<h4 id="v093-cullinan">v0.93：让 Cullinan 自动解析后端，或显式选择<a class="headerlink" href="#v093-cullinan" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
-<span class="c1"># 方式 A：Tornado（默认，向后兼容）</span>
+<span class="c1"># 方式 A：让 Cullinan 自动解析后端</span>
 <span class="n">run</span><span class="p">()</span>
 
 <span class="c1"># 方式 B：Tornado（显式指定）</span>
@@ -2797,14 +2834,14 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <span class="n">app</span> <span class="o">=</span> <span class="n">get_asgi_app</span><span class="p">()</span>
 <span class="c1"># 然后：uvicorn myapp:app</span>
 </code></pre></div>
-<p>环境变量：<code>CULLINAN_ENGINE=asgi</code>，或配置：<code>server_engine='asgi'</code>。</p>
+<p>环境变量：<code>CULLINAN_ENGINE=asgi</code>，或配置：<code>server_engine='auto'</code> / <code>'asgi'</code> / <code>'tornado'</code>。</p>
 <h3 id="5">5. 配置变更<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
 
 <span class="n">configure</span><span class="p">(</span>
     <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;myapp&#39;</span><span class="p">],</span>
     <span class="c1"># v0.93 新增选项：</span>
-    <span class="c1"># server_engine=&#39;tornado&#39;,        # &#39;tornado&#39; 或 &#39;asgi&#39;</span>
+    <span class="c1"># server_engine=&#39;auto&#39;,           # &#39;auto&#39;、&#39;tornado&#39; 或 &#39;asgi&#39;</span>
     <span class="c1"># asgi_server=&#39;uvicorn&#39;,          # &#39;uvicorn&#39; 或 &#39;hypercorn&#39;</span>
     <span class="c1"># route_trailing_slash=False,</span>
     <span class="c1"># route_case_sensitive=True,</span>
@@ -2813,7 +2850,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 </code></pre></div>
 <h3 id="6">6. 中间件迁移<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
 <h4 id="v09x">v0.9x：中间件注册但未接入请求管线<a class="headerlink" href="#v09x" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">middleware</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">middleware</span>
 
 <span class="nd">@middleware</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
@@ -2821,7 +2858,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
         <span class="c1"># 启动时初始化，但不会在每个请求中调用</span>
         <span class="k">pass</span>
 </code></pre></div>
-<h4 id="v093_1">v0.93：中间件在洋葱管线中<a class="headerlink" href="#v093_1" title="Permanent link">&para;</a></h4>
+<h4 id="v093">v0.93：中间件在洋葱管线中<a class="headerlink" href="#v093" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">get_pipeline</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">GatewayMiddleware</span><span class="p">):</span>
@@ -2867,12 +2904,12 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <h4 id="v093-api-tornado-asgi">v0.93：相同 API，同时支持 Tornado 和 ASGI<a class="headerlink" href="#v093-api-tornado-asgi" title="Permanent link">&para;</a></h4>
 <p><code>@websocket_handler</code> API 不变。在 ASGI 模式下运行时，WebSocket 连接通过 ASGI WebSocket 协议原生处理。</p>
 <h3 id="9">9. 参数系统<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
-<p><code>cullinan.params</code> 系统（<code>Path</code>、<code>Query</code>、<code>Body</code>、<code>Header</code>）不变，在 v0.93 中工作方式完全相同。参数现在由 <code>Dispatcher</code> 而非 Tornado handler 解析。</p>
+<p><code>cullinan.web.params</code> 系统（<code>Path</code>、<code>Query</code>、<code>Body</code>、<code>Header</code>）不变，在 v0.93 中工作方式完全相同。参数现在由 <code>Dispatcher</code> 而非 Tornado handler 解析。</p>
 <h2 id="_4">架构对比<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <h3 id="v09x_1">v0.9x 架构<a class="headerlink" href="#v09x_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>请求 → Tornado → 动态 Handler(每个URL) → Controller 方法 → self.write()
 </code></pre></div>
-<h3 id="v093_2">v0.93 架构<a class="headerlink" href="#v093_2" title="Permanent link">&para;</a></h3>
+<h3 id="v093_1">v0.93 架构<a class="headerlink" href="#v093_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>请求 → 适配器(Tornado/ASGI) → WebRequest → 中间件管线
   → Dispatcher → Router → Controller 方法 → WebResponse
   → 适配器 → 原生响应
@@ -2985,7 +3022,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/wiki/application_runtime/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/wiki/application_runtime/">
       
       
         <link rel="prev" href="../../internals/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -1931,6 +1931,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2183,7 +2218,7 @@
 
 <h1 id="application-runtime-model">Application Runtime Model<a class="headerlink" href="#application-runtime-model" title="Permanent link">&para;</a></h1>
 <p>This page explains the advanced runtime model built around
-<code>cullinan.application_model</code>.
+<code>cullinan.application</code>.
 Cullinan's intended experience is decorator-first business development: the
 runtime assembles what your modules declare, instead of asking you to wire a
 manual app object step by step.</p>
@@ -2193,7 +2228,7 @@ manual app object step by step.</p>
 <strong>Reference companion:</strong> see <a href="../../api_reference/">API Reference</a> for the public / advanced / compatibility API split.</p>
 </blockquote>
 <p>For regular applications, prefer the top-level <code>from cullinan import configure, run</code>.
-Reach for <code>cullinan.application_model</code> only when you intentionally need explicit
+Reach for <code>cullinan.application</code> only when you intentionally need explicit
 runtime orchestration.</p>
 <p>For the runtime contracts that now fail fast or warn, see <a href="../../framework_semantics/">Framework Semantics</a>. In particular, <code>Application.run()</code> assumes component decorators have already executed during module import, and <code>refresh()</code> marks the end of structural registration.</p>
 <h2 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">&para;</a></h2>
@@ -2205,7 +2240,7 @@ runtime orchestration.</p>
 </ul>
 <h2 id="typical-runtime-assembly">Typical runtime assembly<a class="headerlink" href="#typical-runtime-assembly" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
 
 
 <span class="nd">@service</span>
@@ -2263,13 +2298,15 @@ module. If activation succeeds:</p>
 <p>This is why <code>current_app()</code> may return an older application inside a draining
 request even after a newer runtime is already active globally.</p>
 <h2 id="adapters-and-request-binding">Adapters and request binding<a class="headerlink" href="#adapters-and-request-binding" title="Permanent link">&para;</a></h2>
-<p><code>ASGIAdapter</code> and <code>TornadoAdapter</code> bind the runtime into the current request
-context before dispatch. That request binding enables:</p>
+<p>The transport adapters (<code>ASGIAdapter</code> / <code>TornadoAdapter</code>) bind the runtime into
+the current request context before dispatch. That request binding enables:</p>
 <ul>
 <li>request-scoped dependency resolution against the correct application</li>
 <li><code>current_app()</code> inside controllers and middleware</li>
 <li>safe draining while older requests are still finishing</li>
 </ul>
+<p>For normal business applications, this stays an internal transport concern; the
+recommended entrypoint remains Cullinan's application and controller semantics.</p>
 <h2 id="when-to-use-applicationcontext-directly">When to use ApplicationContext directly<a class="headerlink" href="#when-to-use-applicationcontext-directly" title="Permanent link">&para;</a></h2>
 <p>Keep using <code>ApplicationContext</code> directly when you need low-level container
 integration, explicit registration, or compatibility-oriented bootstrapping. For
@@ -2349,7 +2386,7 @@ new application code, start from decorators and use <code>Application</code> plu
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

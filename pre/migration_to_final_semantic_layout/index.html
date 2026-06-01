@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="zh" class="no-js">
+<html lang="en" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -12,32 +12,32 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/framework_semantics/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/migration_to_final_semantic_layout/">
       
       
-        <link rel="prev" href="../concepts/">
+        <link rel="prev" href="../migration/">
       
       
-        <link rel="next" href="../architecture/">
+        <link rel="next" href="../runtime_updates_v093/">
       
       
         
-          <link rel="alternate" href="../../framework_semantics/" hreflang="en">
+          <link rel="alternate" href="./" hreflang="en">
         
-          <link rel="alternate" href="./" hreflang="zh">
+          <link rel="alternate" href="../zh/migration_to_final_semantic_layout/" hreflang="zh">
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>"框架语义规则" - Cullinan Documentation</title>
+        <title>"Final Structure Migration" - Cullinan Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
       
       
 
@@ -56,9 +56,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/version-switcher.css">
+      <link rel="stylesheet" href="../assets/stylesheets/version-switcher.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,8 +76,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
-          跳转至
+        <a href="#final-structure-migration" class="md-skip">
+          Skip to content
         </a>
       
     </div>
@@ -125,8 +125,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="页眉">
-    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "框架语义规则"
+              "Final Structure Migration"
             
           </span>
         </div>
@@ -160,20 +160,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="选择当前语言">
+    <button class="md-header__button md-icon" aria-label="Select language">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../framework_semantics/" hreflang="en" class="md-select__link">
+            <a href="./" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="./" hreflang="zh" class="md-select__link">
+            <a href="../zh/migration_to_final_semantic_layout/" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -194,16 +194,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="查找">
+      <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -214,7 +214,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            正在初始化搜索引擎
+            Initializing search
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -248,9 +248,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href=".." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -268,14 +268,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    首页
+    Home
   
 
     
@@ -320,7 +320,7 @@
   <span class="md-ellipsis">
     
   
-    应用构建
+    Application Build
   
 
     
@@ -336,7 +336,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    应用构建
+    Application Build
   
 
           </label>
@@ -356,7 +356,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -391,7 +391,7 @@
   <span class="md-ellipsis">
     
   
-    快速开始
+    Getting Started
   
 
     
@@ -426,7 +426,7 @@
   <span class="md-ellipsis">
     
   
-    示例
+    Examples
   
 
     
@@ -461,7 +461,7 @@
   <span class="md-ellipsis">
     
   
-    构建与运行
+    Build & Run
   
 
     
@@ -493,20 +493,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -516,7 +514,7 @@
   <span class="md-ellipsis">
     
   
-    框架语义
+    Framework Semantics
   
 
     
@@ -527,12 +525,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    框架语义
+    Framework Semantics
   
 
           </label>
@@ -552,7 +550,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -577,51 +575,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    框架语义
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../framework_semantics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    框架语义
+    Framework Semantics
   
 
     
@@ -637,114 +601,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        推荐的语义化包路径
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-ast-app" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-inject" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Inject() 是严格类型契约
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-injectbyname" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. InjectByName() 的语义是“显式名称绑定”
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-refresh" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. refresh() 之后注册会被冻结
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 作用域规则是强约束，不是“尽量工作”
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 兼容 API 只是兼容，不是推荐入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-warning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. 如何理解新的 warning 和报错
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -764,7 +620,7 @@
   <span class="md-ellipsis">
     
   
-    架构设计
+    Architecture
   
 
     
@@ -810,7 +666,7 @@
   <span class="md-ellipsis">
     
   
-    工程实践
+    Engineering Practices
   
 
     
@@ -826,7 +682,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    工程实践
+    Engineering Practices
   
 
           </label>
@@ -846,7 +702,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -881,7 +737,7 @@
   <span class="md-ellipsis">
     
   
-    依赖注入指南
+    Dependency Injection Guide
   
 
     
@@ -909,7 +765,7 @@
   <span class="md-ellipsis">
     
   
-    Web Runtime 指南
+    Web Runtime Guide
   
 
     
@@ -944,7 +800,7 @@
   <span class="md-ellipsis">
     
   
-    DI 快速参考
+    DI Quick Reference
   
 
     
@@ -972,7 +828,7 @@
   <span class="md-ellipsis">
     
   
-    参数系统指南
+    Parameter System Guide
   
 
     
@@ -1007,7 +863,7 @@
   <span class="md-ellipsis">
     
   
-    测试
+    Testing
   
 
     
@@ -1042,7 +898,7 @@
   <span class="md-ellipsis">
     
   
-    贡献指南
+    Contributing
   
 
     
@@ -1095,7 +951,7 @@
   <span class="md-ellipsis">
     
   
-    API 参考
+    API Reference
   
 
     
@@ -1111,7 +967,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    API 参考
+    API Reference
   
 
           </label>
@@ -1131,7 +987,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1166,7 +1022,7 @@
   <span class="md-ellipsis">
     
   
-    API 参考总览
+    API Reference Overview
   
 
     
@@ -1212,7 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    模块参考
+    Module Reference
   
 
     
@@ -1228,7 +1084,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    模块参考
+    Module Reference
   
 
           </label>
@@ -1248,7 +1104,7 @@
   <span class="md-ellipsis">
     
   
-    应用
+    app
   
 
     
@@ -1283,7 +1139,7 @@
   <span class="md-ellipsis">
     
   
-    应用程序
+    application
   
 
     
@@ -1318,7 +1174,7 @@
   <span class="md-ellipsis">
     
   
-    核心
+    core
   
 
     
@@ -1353,7 +1209,7 @@
   <span class="md-ellipsis">
     
   
-    控制器
+    controller
   
 
     
@@ -1388,7 +1244,7 @@
   <span class="md-ellipsis">
     
   
-    服务
+    service
   
 
     
@@ -1449,7 +1305,7 @@
   <span class="md-ellipsis">
     
   
-    运行时与扩展
+    Internals & Extensions
   
 
     
@@ -1465,7 +1321,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    运行时与扩展
+    Internals & Extensions
   
 
           </label>
@@ -1485,7 +1341,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1520,7 +1376,7 @@
   <span class="md-ellipsis">
     
   
-    应用运行时
+    Application Runtime
   
 
     
@@ -1555,7 +1411,7 @@
   <span class="md-ellipsis">
     
   
-    组件
+    Components
   
 
     
@@ -1590,7 +1446,7 @@
   <span class="md-ellipsis">
     
   
-    装饰器
+    Decorators
   
 
     
@@ -1618,7 +1474,7 @@
   <span class="md-ellipsis">
     
   
-    注入
+    Injection
   
 
     
@@ -1653,7 +1509,7 @@
   <span class="md-ellipsis">
     
   
-    生命周期
+    Lifecycle
   
 
     
@@ -1688,7 +1544,7 @@
   <span class="md-ellipsis">
     
   
-    中间件
+    Middleware
   
 
     
@@ -1723,7 +1579,7 @@
   <span class="md-ellipsis">
     
   
-    扩展
+    Extensions
   
 
     
@@ -1793,7 +1649,7 @@
   <span class="md-ellipsis">
     
   
-    扩展开发
+    Extension Development
   
 
     
@@ -1821,7 +1677,7 @@
   <span class="md-ellipsis">
     
   
-    扩展快速入门
+    Quick Start Extensions
   
 
     
@@ -1846,18 +1702,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -1867,7 +1725,7 @@
   <span class="md-ellipsis">
     
   
-    版本迁移
+    Migration & Version Notes
   
 
     
@@ -1878,12 +1736,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    版本迁移
+    Migration & Version Notes
   
 
           </label>
@@ -1903,7 +1761,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1928,17 +1786,51 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    最终结构迁移
+    Final Structure Migration
   
 
     
@@ -1954,6 +1846,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-was-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this was removed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#old-to-new-path-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Old-to-new path mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-migration-rewrites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common migration rewrites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common migration rewrites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-model-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime model helpers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-facing-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web-facing APIs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-transport-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced transport integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mental-model-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mental model change
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1973,7 +1990,7 @@
   <span class="md-ellipsis">
     
   
-    运行时整合
+    Runtime Consolidation
   
 
     
@@ -2008,7 +2025,7 @@
   <span class="md-ellipsis">
     
   
-    迁移指南
+    Migration Guide
   
 
     
@@ -2036,7 +2053,7 @@
   <span class="md-ellipsis">
     
   
-    迁移指南 v2
+    Migration Guide v2
   
 
     
@@ -2064,7 +2081,7 @@
   <span class="md-ellipsis">
     
   
-    0.90 导入迁移
+    Import Migration 0.90
   
 
     
@@ -2098,7 +2115,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="目录">
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
   
@@ -2107,15 +2124,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      目录
+      Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#what-changed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        推荐的语义化包路径
+        What changed
       
     </span>
   </a>
@@ -2123,10 +2140,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-ast-app" class="md-nav__link">
+  <a href="#why-this-was-removed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
+        Why this was removed
       
     </span>
   </a>
@@ -2134,10 +2151,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-inject" class="md-nav__link">
+  <a href="#old-to-new-path-mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Inject() 是严格类型契约
+        Old-to-new path mapping
       
     </span>
   </a>
@@ -2145,54 +2162,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-injectbyname" class="md-nav__link">
+  <a href="#common-migration-rewrites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. InjectByName() 的语义是“显式名称绑定”
+        Common migration rewrites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common migration rewrites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application startup
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#4-refresh" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#runtime-model-helpers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. refresh() 之后注册会被冻结
+        Runtime model helpers
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#web-facing-apis" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. 作用域规则是强约束，不是“尽量工作”
+        Web-facing APIs
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#6-api" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-transport-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. 兼容 API 只是兼容，不是推荐入口
+        Advanced transport integration
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#7-warning" class="md-nav__link">
+  <a href="#mental-model-change" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. 如何理解新的 warning 和报错
+        Mental model change
       
     </span>
   </a>
@@ -2216,92 +2250,154 @@
 
 
 
-<h1 id="_1">框架语义规则<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>本文定义 Cullinan <strong>保证什么</strong>、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。目标是把 Cullinan 的运行时模型讲清楚：先写装饰器式业务代码，通过导入执行完成发现，在需要时再引入明确的运行时边界。</p>
-<blockquote>
-<p><strong>知识角色：</strong> <a href="../concepts/">框架语义</a><br />
-<strong>推荐下一步：</strong> <a href="../architecture/">架构设计</a>、<a href="../how-to/">工程实践</a><br />
-<strong>如果你要查符号而不是读解释：</strong> 请转到 <a href="../reference/">API 参考</a>。</p>
-</blockquote>
-<h2 id="_2">推荐的语义化包路径<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>Cullinan 当前推荐的主路径是：</p>
+<h1 id="final-structure-migration">Final Structure Migration<a class="headerlink" href="#final-structure-migration" title="Permanent link">&para;</a></h1>
+<p>This page explains how to move code written for <code>0.93a6</code> and earlier mixed layouts to the
+final semantic structure introduced on the current pre branch.</p>
+<h2 id="what-changed">What changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h2>
+<p>Cullinan no longer keeps historical root-level wrappers such as:</p>
 <ul>
-<li><code>cullinan.application</code> —— 应用配置与启动</li>
-<li><code>cullinan.web</code> —— 控制器、路由装饰器、请求/响应、参数与中间件</li>
-<li><code>cullinan.core</code> —— IoC/DI、生命周期与语义诊断</li>
+<li><code>cullinan.app</code></li>
+<li><code>cullinan.application_model</code></li>
+<li><code>cullinan.public_api</code></li>
+<li><code>cullinan.module_scanner</code></li>
+<li><code>cullinan.scan_stats</code></li>
+<li><code>cullinan.scanner</code></li>
+<li><code>cullinan.compat</code></li>
 </ul>
-<p>像 <code>cullinan.runtime</code>、<code>cullinan.transport</code>、<code>cullinan.support</code> 这样的更底层层级仍然可用，但不应成为普通业务应用的默认入门路径。</p>
-<p>这也意味着默认学习路径<strong>不是先学 Tornado 再学 Cullinan</strong>。Tornado 与 ASGI 是框架边界之后的执行后端；对应用代码真正构成主契约的，是 Cullinan 自身的 Web 与 application 语义。</p>
-<h2 id="1-ast-app">1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册<a class="headerlink" href="#1-ast-app" title="Permanent link">&para;</a></h2>
-<p>Cullinan 通过<strong>导入 Python 模块</strong>并执行装饰器来发现组件。</p>
+<p>The maintained structure is now centered on:</p>
 <ul>
-<li>受保证：模块顶层定义、且在模块导入时就执行到的 <code>@service</code>、<code>@controller</code>、<code>@component</code>、<code>@provider</code></li>
-<li>不受保证：定义在函数、工厂、条件分支或其他局部作用域里的类；这些定义通常要等运行到对应代码块时装饰器才会执行</li>
+<li><code>cullinan.application</code></li>
+<li><code>cullinan.web</code></li>
+<li><code>cullinan.core</code></li>
+<li><code>cullinan.runtime</code></li>
+<li><code>cullinan.transport</code></li>
+<li><code>cullinan.testing</code></li>
+<li><code>cullinan.support</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">component</span>
+<h2 id="why-this-was-removed">Why this was removed<a class="headerlink" href="#why-this-was-removed" title="Permanent link">&para;</a></h2>
+<p>The previous layout left new semantic packages and historical wrappers side by side. That
+made the package tree harder to understand, encouraged old imports to remain in use, and kept
+the codebase in a long-lived intermediate state.</p>
+<p>Cullinan now treats the semantic packages as the real structure rather than as facades placed
+on top of legacy files.</p>
+<h2 id="old-to-new-path-mapping">Old-to-new path mapping<a class="headerlink" href="#old-to-new-path-mapping" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Old path</th>
+<th>New path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cullinan.app</code></td>
+<td><code>cullinan.application.lifecycle</code></td>
+</tr>
+<tr>
+<td><code>cullinan.application_model</code></td>
+<td><code>cullinan.application</code></td>
+</tr>
+<tr>
+<td><code>cullinan.public_api</code></td>
+<td><code>cullinan.application.public</code></td>
+</tr>
+<tr>
+<td><code>cullinan.module_scanner</code></td>
+<td><code>cullinan.runtime.module_scanner</code></td>
+</tr>
+<tr>
+<td><code>cullinan.scan_stats</code></td>
+<td><code>cullinan.runtime.scan_stats</code></td>
+</tr>
+<tr>
+<td><code>cullinan.scanner</code></td>
+<td><code>cullinan.runtime.scanner</code></td>
+</tr>
+<tr>
+<td><code>cullinan.controller</code></td>
+<td><code>cullinan.web.controller</code></td>
+</tr>
+<tr>
+<td><code>cullinan.middleware</code></td>
+<td><code>cullinan.web.middleware</code></td>
+</tr>
+<tr>
+<td><code>cullinan.params</code></td>
+<td><code>cullinan.web.params</code></td>
+</tr>
+<tr>
+<td><code>cullinan.gateway</code></td>
+<td><code>cullinan.web.gateway</code></td>
+</tr>
+<tr>
+<td><code>cullinan.handler</code></td>
+<td><code>cullinan.web.handler</code></td>
+</tr>
+<tr>
+<td><code>cullinan.adapter</code></td>
+<td><code>cullinan.transport.adapter</code></td>
+</tr>
+<tr>
+<td><code>cullinan.service</code></td>
+<td><code>cullinan.core</code> (<code>@service</code>) / <code>cullinan.core.services</code> (<code>Service</code>, registry helpers)</td>
+</tr>
+<tr>
+<td><code>cullinan.config</code></td>
+<td><code>cullinan.support.config</code></td>
+</tr>
+<tr>
+<td><code>cullinan.exceptions</code></td>
+<td><code>cullinan.support.exceptions</code></td>
+</tr>
+<tr>
+<td><code>cullinan.path_utils</code></td>
+<td><code>cullinan.support.path_utils</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-migration-rewrites">Common migration rewrites<a class="headerlink" href="#common-migration-rewrites" title="Permanent link">&para;</a></h2>
+<h3 id="application-startup">Application startup<a class="headerlink" href="#application-startup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.public_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
-
-<span class="nd">@component</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TopLevelCache</span><span class="p">:</span>
-    <span class="k">pass</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build_repository</span><span class="p">():</span>
-    <span class="nd">@component</span>
-    <span class="k">class</span><span class="w"> </span><span class="nc">LocalRepository</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="k">return</span> <span class="n">LocalRepository</span>
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 </code></pre></div>
-<p><code>TopLevelCache</code> 属于受支持的自动发现路径；<code>LocalRepository</code> 不属于自动顶层扫描契约。Cullinan 现在会对这类写法发 warning，如果它发生在 <code>refresh()</code> 之后，则会直接失败。如果某段能力需要更强的归属、reload 或热插拔运行时保证，应通过 <code>@module</code> 表达边界，而不是退回到手工 app 注册思路。</p>
-<h2 id="2-inject">2. <code>Inject()</code> 是严格类型契约<a class="headerlink" href="#2-inject" title="Permanent link">&para;</a></h2>
-<p>只有当 Cullinan 能把注解归一化为<strong>稳定且唯一</strong>的依赖契约时，<code>Inject()</code> 才会成功。</p>
-<p>当前支持的典型形式包括：</p>
-<ul>
-<li><code>T</code></li>
-<li><code>"T"</code></li>
-<li><code>Optional[T]</code></li>
-<li><code>Annotated[T, ...]</code></li>
-<li><code>Final[T]</code></li>
-<li><code>Provider[T]</code></li>
-<li><code>list[T]</code>、<code>set[T]</code>、<code>tuple[T, ...]</code></li>
-<li><code>Union[A, B]</code> / <code>A | B</code>（前提是最终只命中一个候选）</li>
-</ul>
-<p>Cullinan 已不再回退到属性名猜测。如果注解缺失、不受支持或存在歧义，启动会直接以类型化诊断失败。</p>
-<h2 id="3-injectbyname">3. <code>InjectByName()</code> 的语义是“显式名称绑定”<a class="headerlink" href="#3-injectbyname" title="Permanent link">&para;</a></h2>
-<p><code>InjectByName()</code> 按组件注册名解析，而不是按类型解析。</p>
-<p>推荐写法：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+<h3 id="runtime-model-helpers">Runtime model helpers<a class="headerlink" href="#runtime-model-helpers" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
 
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
+</code></pre></div>
+<h3 id="web-facing-apis">Web-facing APIs<a class="headerlink" href="#web-facing-apis" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
-    <span class="n">report_service</span><span class="p">:</span> <span class="s2">&quot;ReportService&quot;</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s2">&quot;ReportService&quot;</span><span class="p">)</span>
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">Body</span>
 </code></pre></div>
-<p>兼容写法：</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
-    <span class="n">report_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>
+<h3 id="advanced-transport-integration">Advanced transport integration<a class="headerlink" href="#advanced-transport-integration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span>
+
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.transport.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span>
 </code></pre></div>
-<p>兼容写法目前仍会回退到属性名，但 Cullinan 现在会给出 warning，因为这种绑定在重构时更容易悄悄失效。即使使用按名注入，也建议保留真实类型注解，便于表达语义与静态检查。</p>
-<h2 id="4-refresh">4. <code>refresh()</code> 之后注册会被冻结<a class="headerlink" href="#4-refresh" title="Permanent link">&para;</a></h2>
-<p><code>ApplicationContext.refresh()</code> 是结构边界：</p>
-<ul>
-<li>会消费并注册 pending 的装饰器组件</li>
-<li>会完成定义校验与预热</li>
-<li>会冻结相关注册表</li>
-</ul>
-<p>从这一刻开始，再去新增装饰器组件就不再是受支持的运行时变更路径。Cullinan 现在会给出明确的语义错误，并附上修复建议。</p>
-<h2 id="5">5. 作用域规则是强约束，不是“尽量工作”<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
-<p>Cullinan 把作用域兼容性视为硬规则。尤其是 <code>singleton</code> 组件不能直接依赖 <code>request</code> 作用域组件。现在这类情况会给出结构化生命周期诊断，而不是等到更晚阶段以不稳定方式出错。</p>
-<h2 id="6-api">6. 兼容 API 只是兼容，不是推荐入口<a class="headerlink" href="#6-api" title="Permanent link">&para;</a></h2>
-<p>像 <code>@injectable</code>、<code>@inject_constructor</code>、<code>get_injection_registry()</code> 这样的旧接口仍然保留，目的是让历史代码还能导入，但它们<strong>不再代表推荐编程模型</strong>。现在使用这些 API 时，Cullinan 会发出 warning。</p>
-<h2 id="7-warning">7. 如何理解新的 warning 和报错<a class="headerlink" href="#7-warning" title="Permanent link">&para;</a></h2>
-<p>Cullinan 现在把关键诊断统一表达为：</p>
-<ul>
-<li><strong>语义规则</strong>：框架当前强制执行的契约</li>
-<li><strong>当前问题</strong>：运行时实际观察到的现象</li>
-<li><strong>建议</strong>：最安全、最受支持的修复方式</li>
-</ul>
-<p>当框架能够确定你违反了核心语义时，会直接失败；当代码虽然还能运行，但明显容易误导开发者时，则会发 warning。</p>
+<h2 id="mental-model-change">Mental model change<a class="headerlink" href="#mental-model-change" title="Permanent link">&para;</a></h2>
+<p>Do not treat the migration as “find another old import that still works.”</p>
+<p>The new rule is:</p>
+<ol>
+<li>business application startup lives in <code>cullinan.application</code></li>
+<li>business web development lives in <code>cullinan.web</code></li>
+<li>IoC/DI and lifecycle live in <code>cullinan.core</code></li>
+<li>discovery and scanning live in <code>cullinan.runtime</code></li>
+<li>server integration lives in <code>cullinan.transport</code></li>
+<li>support utilities live in <code>cullinan.support</code></li>
+</ol>
+<p>If existing code still depends on removed root-level wrappers, migrate the import instead of
+reintroducing the wrapper.</p>
 
 
 
@@ -2370,12 +2466,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
-        <script src="../../assets/javascripts/version-switcher.js"></script>
+        <script src="../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

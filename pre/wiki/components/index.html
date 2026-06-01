@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/wiki/components/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/wiki/components/">
       
       
         <link rel="prev" href="../application_runtime/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -1948,6 +1948,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2222,7 +2257,7 @@
 <h3 id="1-application-orchestration">1. Application orchestration<a class="headerlink" href="#1-application-orchestration" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: module graph discovery, ownership resolution, runtime activation, draining, and active-app lookup</li>
-<li>Main package: <code>cullinan.application_model</code></li>
+<li>Main package: <code>cullinan.application</code></li>
 <li>Key APIs: <code>Application</code>, <code>module</code>, <code>current_app</code>, <code>Runtime</code></li>
 </ul>
 <h3 id="2-core-container">2. Core container<a class="headerlink" href="#2-core-container" title="Permanent link">&para;</a></h3>
@@ -2234,31 +2269,32 @@
 <h3 id="3-service-layer">3. Service layer<a class="headerlink" href="#3-service-layer" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: business logic and long-lived framework-managed services</li>
-<li>Main package: <code>cullinan.service</code></li>
+<li>Main package: <code>cullinan.core</code> (<code>@service</code>) with advanced <code>Service</code>/registry helpers under <code>cullinan.core.services</code></li>
 <li>Key APIs: <code>service</code>, <code>Service</code></li>
 </ul>
 <h3 id="4-controller-layer">4. Controller layer<a class="headerlink" href="#4-controller-layer" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: route declaration and handler methods</li>
-<li>Main package: <code>cullinan.controller</code></li>
+<li>Main package: <code>cullinan.web.controller</code></li>
 <li>Key APIs: <code>controller</code>, <code>get_api</code>, <code>post_api</code>, <code>response_build</code></li>
 </ul>
 <h3 id="5-web-runtime">5. Web Runtime<a class="headerlink" href="#5-web-runtime" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: normalized request/response model, routing, dispatch, middleware, exceptions</li>
-<li>Main package: <code>cullinan.gateway</code></li>
+<li>Main package: <code>cullinan.web.gateway</code></li>
 <li>Key APIs: <code>WebRequest</code>, <code>WebResponse</code>, <code>Router</code>, <code>Dispatcher</code>, <code>MiddlewarePipeline</code>, <code>WebRuntime</code></li>
 </ul>
 <h3 id="6-adapters">6. Adapters<a class="headerlink" href="#6-adapters" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: bind the Web Runtime to a specific server environment</li>
-<li>Main package: <code>cullinan.adapter</code></li>
+<li>Main package: <code>cullinan.transport.adapter</code></li>
 <li>Key APIs: <code>WebAdapter</code>, <code>TornadoAdapter</code>, <code>ASGIAdapter</code></li>
+<li>Positioning: backend integration layer behind Cullinan's semantic Web facade</li>
 </ul>
 <h3 id="7-parameters-and-model-binding">7. Parameters and model binding<a class="headerlink" href="#7-parameters-and-model-binding" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Responsibility: map path/query/body/header/file inputs into handler arguments</li>
-<li>Main package: <code>cullinan.params</code></li>
+<li>Main package: <code>cullinan.web.params</code></li>
 <li>Key APIs: <code>Path</code>, <code>Query</code>, <code>Body</code>, <code>Header</code>, <code>File</code></li>
 </ul>
 <h2 id="suggested-reading-order">Suggested reading order<a class="headerlink" href="#suggested-reading-order" title="Permanent link">&para;</a></h2>
@@ -2338,7 +2374,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

@@ -12,10 +12,10 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/runtime_updates_v093/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/runtime_updates_v093/">
       
       
-        <link rel="prev" href="../migration/">
+        <link rel="prev" href="../migration_to_final_semantic_layout/">
       
       
         <link rel="next" href="../migration_guide/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -1786,6 +1786,41 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2362,7 +2397,7 @@ default onboarding path for new applications.</p>
 <li><code>ApplicationContext</code> for explicit registration or integration work</li>
 </ul>
 <h2 id="2-application-first-runtime">2. Application-first runtime<a class="headerlink" href="#2-application-first-runtime" title="Permanent link">&para;</a></h2>
-<p>Cullinan now exposes an application-first bootstrap model in <code>cullinan.application_model</code>
+<p>Cullinan now exposes an application-first bootstrap model in <code>cullinan.application</code>
 and re-exports it from <code>cullinan</code>.</p>
 <h3 id="what-changed_1">What changed<a class="headerlink" href="#what-changed_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2377,13 +2412,14 @@ and re-exports it from <code>cullinan</code>.</p>
 <code>ApplicationContext</code> for low-level container work and use the legacy
 <code>cullinan.application.run()</code> entrypoint only when compatibility matters.</p>
 <h2 id="3-web-runtime-consolidation">3. Web Runtime consolidation<a class="headerlink" href="#3-web-runtime-consolidation" title="Permanent link">&para;</a></h2>
-<p>The web stack was reorganized around a transport-agnostic runtime in <code>cullinan.gateway</code>.</p>
+<p>The web stack was reorganized around a transport-agnostic runtime in <code>cullinan.web.gateway</code>.</p>
 <h3 id="what-changed_2">What changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>WebRequest</code>, <code>WebResponse</code>, and <code>WebAdapter</code> define the current public HTTP abstraction</li>
 <li><code>Router</code>, <code>Dispatcher</code>, <code>MiddlewarePipeline</code>, and <code>ExceptionHandler</code> now live behind the gateway facade</li>
-<li><code>cullinan.gateway.web_core</code> owns the shared request/response model</li>
-<li>adapters are separated into <code>cullinan.adapter</code> (<code>TornadoAdapter</code>, <code>ASGIAdapter</code>)</li>
+<li><code>cullinan.web.gateway.web_core</code> owns the shared request/response model</li>
+<li>adapters are separated into <code>cullinan.transport.adapter</code> (<code>TornadoAdapter</code>, <code>ASGIAdapter</code>)</li>
+<li>runtime backend selection is now engine-neutral (<code>auto</code> / <code>asgi</code> / <code>tornado</code>) instead of treating Tornado as the default application-facing story</li>
 </ul>
 <h3 id="migration-implication_1">Migration implication<a class="headerlink" href="#migration-implication_1" title="Permanent link">&para;</a></h3>
 <p>Use the unified Web Runtime names in new code. The old request / response / adapter names are no longer the primary public surface.</p>
@@ -2483,7 +2519,7 @@ application-model and adapter coverage now lives in regular collected tests.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

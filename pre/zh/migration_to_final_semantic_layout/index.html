@@ -9,20 +9,20 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration">
       
       
-        <meta name="author" content="Plumeink">
+        <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/dependency_injection_guide/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/migration_to_final_semantic_layout/">
       
       
-        <link rel="prev" href="../how-to/">
+        <link rel="prev" href="../migration/">
       
       
-        <link rel="next" href="../web_runtime_guide/">
+        <link rel="next" href="../runtime_updates_v093/">
       
       
         
-          <link rel="alternate" href="../../dependency_injection_guide/" hreflang="en">
+          <link rel="alternate" href="../../migration_to_final_semantic_layout/" hreflang="en">
         
           <link rel="alternate" href="./" hreflang="zh">
         
@@ -33,7 +33,7 @@
     
     
       
-        <title>依赖注入指南 - Cullinan Documentation</title>
+        <title>"最终结构迁移说明" - Cullinan Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cullinan" class="md-skip">
+        <a href="#_1" class="md-skip">
           跳转至
         </a>
       
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              依赖注入指南
+              "最终结构迁移说明"
             
           </span>
         </div>
@@ -167,7 +167,7 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../dependency_injection_guide/" hreflang="en" class="md-select__link">
+            <a href="../../migration_to_final_semantic_layout/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
@@ -645,20 +645,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -679,7 +677,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -729,37 +727,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    依赖注入指南
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../dependency_injection_guide/" class="md-nav__link">
         
   
   
@@ -775,242 +746,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        概述
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        推荐用法
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="推荐用法">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 用装饰器注册服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 在控制器中复用同一套注入模型
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        注入原语
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="注入原语">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#inject" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Inject() —— 首选
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#injectbyname" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        InjectByName() —— 按名称解析
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lazy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lazy() —— 延迟解析
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        如何选择
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#type_checking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TYPE_CHECKING 与前向引用规则
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="TYPE_CHECKING 与前向引用规则">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        支持示例：单一目标前向引用
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        支持的包装类型
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        仍然会被拒绝的情况
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#applicationcontext" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ApplicationContext 是唯一容器入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        生命周期集成
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        兼容性说明
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排查
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        相关文档
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1967,18 +1702,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -1999,7 +1736,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2049,10 +1786,44 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    最终结构迁移
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -2075,6 +1846,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        发生了什么变化
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么要移除
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        旧路径到新路径映射
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见迁移改写
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="常见迁移改写">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        应用启动
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        运行时模型 helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web 公开 API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高级传输集成
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        心智切换
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2233,52 +2129,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        概述
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        推荐用法
+        发生了什么变化
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="推荐用法">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 用装饰器注册服务
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. 在控制器中复用同一套注入模型
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2286,49 +2143,10 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        注入原语
+        为什么要移除
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="注入原语">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#inject" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Inject() —— 首选
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#injectbyname" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        InjectByName() —— 按名称解析
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lazy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lazy() —— 延迟解析
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2336,7 +2154,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        如何选择
+        旧路径到新路径映射
       
     </span>
   </a>
@@ -2344,22 +2162,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#type_checking" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TYPE_CHECKING 与前向引用规则
+        常见迁移改写
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="TYPE_CHECKING 与前向引用规则">
+    <nav class="md-nav" aria-label="常见迁移改写">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        支持示例：单一目标前向引用
+        应用启动
       
     </span>
   </a>
@@ -2367,10 +2185,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#helper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        支持的包装类型
+        运行时模型 helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web 公开 API
       
     </span>
   </a>
@@ -2381,7 +2210,7 @@
   <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
-        仍然会被拒绝的情况
+        高级传输集成
       
     </span>
   </a>
@@ -2394,54 +2223,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#applicationcontext" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ApplicationContext 是唯一容器入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
-        生命周期集成
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        兼容性说明
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        故障排查
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        相关文档
+        心智切换
       
     </span>
   </a>
@@ -2465,250 +2250,163 @@
 
 
 
-<h1 id="cullinan">Cullinan 依赖注入指南<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>版本</strong>：0.93a8
-<strong>最后更新</strong>：2026-06-01<br />
-<strong>状态</strong>：已更新</p>
-</blockquote>
-<h2 id="_1">概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<p>Cullinan 当前的 DI 模型以 <code>ApplicationContext</code> 为中心，并通过 <code>cullinan.core</code> 作为公开入口。装饰器仍然是推荐的编写方式；旧式 registry API 仅保留兼容意义。</p>
-<p>在选择注入原语之前，建议先阅读<a href="../framework_semantics/">框架语义规则</a>。其中定义了 <code>Inject()</code>、<code>InjectByName()</code>、<code>refresh()</code> 以及兼容 API 的硬约束。</p>
-<blockquote>
-<p><strong>知识角色：</strong> <a href="../how-to/">工程实践</a><br />
-<strong>推荐默认方式：</strong> 优先使用装饰器式业务代码，并在类型契约稳定时优先使用 <code>Inject()</code>。<br />
-<strong>如果你需要查符号而不是看指导：</strong> 请转到 <a href="../reference/">API 参考</a>。</p>
-</blockquote>
-<h2 id="_2">推荐用法<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<h3 id="1">1. 用装饰器注册服务<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
-
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">sql</span><span class="p">}</span>
-
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
-    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;select * from users where id = </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="2">2. 在控制器中复用同一套注入模型<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="_3">注入原语<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<h3 id="inject"><code>Inject()</code> —— 首选<a class="headerlink" href="#inject" title="Permanent link">&para;</a></h3>
-<p>需要按类型解析、并获得更好的重构支持时，优先使用 <code>Inject()</code>。</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AuditService</span><span class="p">:</span>
-    <span class="n">repo</span><span class="p">:</span> <span class="n">Repository</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</code></pre></div>
-<p><code>Inject()</code> 现在采用严格的类型解析流水线：</p>
+<h1 id="_1">最终结构迁移说明<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>本文说明如何把 <code>0.93a6</code> 及更早版本里基于混合布局的代码迁移到当前 pre 分支采用的最终语义结构。</p>
+<h2 id="_2">发生了什么变化<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Cullinan 不再保留以下历史根层 wrapper：</p>
 <ul>
-<li>直接可用的运行时类型仍按原方式工作</li>
-<li><code>TYPE_CHECKING</code> + 前向引用在 <strong>能唯一落到一个注册目标</strong> 时可以正常工作</li>
-<li><code>Optional[T]</code>、<code>Annotated[T, ...]</code>、<code>Final[T]</code>、<code>Provider[T]</code>、<code>list[T]</code>、<code>set[T]</code>、<code>tuple[T, ...]</code>、<code>Union[A, B]</code> 等常见包装类型已受控支持</li>
-<li>Cullinan 仍然禁止 <code>session_provider -&gt; SessionProvider</code> 这类属性名猜测</li>
-<li>如果注解无法安全归一化，或最终绑定不唯一，启动会直接抛出 <code>DependencyTypeResolutionError</code></li>
+<li><code>cullinan.app</code></li>
+<li><code>cullinan.application_model</code></li>
+<li><code>cullinan.public_api</code></li>
+<li><code>cullinan.module_scanner</code></li>
+<li><code>cullinan.scan_stats</code></li>
+<li><code>cullinan.scanner</code></li>
+<li><code>cullinan.compat</code></li>
 </ul>
-<p>当你希望保留类型驱动注入，并且注解能够被稳定归一化时，优先使用它。</p>
-<h3 id="injectbyname"><code>InjectByName()</code> —— 按名称解析<a class="headerlink" href="#injectbyname" title="Permanent link">&para;</a></h3>
-<p>当依赖更适合按名称解析，或直接导入类型会引入不理想的依赖边时，使用 <code>InjectByName()</code>。</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
-    <span class="n">report_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s2">&quot;ReportService&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>Cullinan 现在把 <code>InjectByName("ExactComponentName")</code> 视为推荐写法。省略显式名称的 <code>InjectByName()</code> 仅作为兼容回退保留，并会触发 warning。</p>
-<p>如果你<strong>明确不想</strong>在运行时导入目标类型，这就是正确选择。</p>
-<h3 id="lazy"><code>Lazy()</code> —— 延迟解析<a class="headerlink" href="#lazy" title="Permanent link">&para;</a></h3>
-<p>当依赖应该在第一次访问时再解析，而不是在实例装配时立即获取，可使用 <code>Lazy()</code>。</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lazy</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">AuditService</span><span class="p">:</span>
-    <span class="n">report_service</span> <span class="o">=</span> <span class="n">Lazy</span><span class="p">(</span><span class="s2">&quot;ReportService&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p><code>Lazy()</code> 与 <code>Inject()</code> / <code>InjectByName()</code> 遵循同一套命名规则：</p>
+<p>当前维护中的正式结构收敛为：</p>
 <ul>
-<li>如果希望延迟解析且不导入目标类型，优先显式传名称</li>
-<li>如果希望按类型解析，类型同样必须能在运行时被解析</li>
+<li><code>cullinan.application</code></li>
+<li><code>cullinan.web</code></li>
+<li><code>cullinan.core</code></li>
+<li><code>cullinan.runtime</code></li>
+<li><code>cullinan.transport</code></li>
+<li><code>cullinan.testing</code></li>
+<li><code>cullinan.support</code></li>
 </ul>
-<h2 id="_4">如何选择<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_3">为什么要移除<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>此前的新语义包与历史 wrapper 长期并存，导致：</p>
+<ul>
+<li>包结构更难理解</li>
+<li>旧导入持续被新代码沿用</li>
+<li>仓库一直停留在“已经开始收敛、但还没真正收干净”的中间态</li>
+</ul>
+<p>现在 Cullinan 直接把这些语义包视为真实结构，而不是覆盖在旧文件之上的 facade。</p>
+<h2 id="_4">旧路径到新路径映射<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>需求</th>
-<th>推荐注入原语</th>
+<th>旧路径</th>
+<th>新路径</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>运行时类型可用，且希望获得更好的重构友好性</td>
-<td><code>Inject()</code></td>
+<td><code>cullinan.app</code></td>
+<td><code>cullinan.application.lifecycle</code></td>
 </tr>
 <tr>
-<td><code>TYPE_CHECKING</code> / 前向引用场景下仍希望按类型解析，且目标唯一</td>
-<td><code>Inject()</code></td>
+<td><code>cullinan.application_model</code></td>
+<td><code>cullinan.application</code></td>
 </tr>
 <tr>
-<td>运行时类型刻意不可用，或不适合直接导入</td>
-<td><code>InjectByName("Name")</code></td>
+<td><code>cullinan.public_api</code></td>
+<td><code>cullinan.application.public</code></td>
 </tr>
 <tr>
-<td>希望第一次使用时再查找依赖</td>
-<td><code>Lazy("Name")</code> 或带运行时可解析类型的 <code>Lazy()</code></td>
+<td><code>cullinan.module_scanner</code></td>
+<td><code>cullinan.runtime.module_scanner</code></td>
 </tr>
 <tr>
-<td>可选依赖</td>
-<td><code>Inject(required=False)</code> 或 <code>InjectByName("Name", required=False)</code></td>
+<td><code>cullinan.scan_stats</code></td>
+<td><code>cullinan.runtime.scan_stats</code></td>
 </tr>
 <tr>
-<td>希望注入延迟获取的提供者对象</td>
-<td><code>Inject()</code> + <code>Provider[T]</code></td>
+<td><code>cullinan.scanner</code></td>
+<td><code>cullinan.runtime.scanner</code></td>
 </tr>
 <tr>
-<td>希望注入某个契约下的全部实现</td>
-<td><code>Inject()</code> + <code>list[T]</code> / <code>set[T]</code> / <code>tuple[T, ...]</code></td>
+<td><code>cullinan.controller</code></td>
+<td><code>cullinan.web.controller</code></td>
+</tr>
+<tr>
+<td><code>cullinan.middleware</code></td>
+<td><code>cullinan.web.middleware</code></td>
+</tr>
+<tr>
+<td><code>cullinan.params</code></td>
+<td><code>cullinan.web.params</code></td>
+</tr>
+<tr>
+<td><code>cullinan.gateway</code></td>
+<td><code>cullinan.web.gateway</code></td>
+</tr>
+<tr>
+<td><code>cullinan.handler</code></td>
+<td><code>cullinan.web.handler</code></td>
+</tr>
+<tr>
+<td><code>cullinan.adapter</code></td>
+<td><code>cullinan.transport.adapter</code></td>
+</tr>
+<tr>
+<td><code>cullinan.service</code></td>
+<td><code>cullinan.core</code>（<code>@service</code>）/ <code>cullinan.core.services</code>（<code>Service</code>、registry helper）</td>
+</tr>
+<tr>
+<td><code>cullinan.config</code></td>
+<td><code>cullinan.support.config</code></td>
+</tr>
+<tr>
+<td><code>cullinan.exceptions</code></td>
+<td><code>cullinan.support.exceptions</code></td>
+</tr>
+<tr>
+<td><code>cullinan.path_utils</code></td>
+<td><code>cullinan.support.path_utils</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="type_checking"><code>TYPE_CHECKING</code> 与前向引用规则<a class="headerlink" href="#type_checking" title="Permanent link">&para;</a></h2>
-<p><code>Inject()</code> 现在可以支持 <code>TYPE_CHECKING</code> 与前向引用，但前提是最终绑定结果仍然<strong>唯一可判定</strong>。</p>
-<h3 id="_5">支持示例：单一目标前向引用<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<h2 id="_5">常见迁移改写<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="_6">应用启动<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.public_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseSessionProvider</span>
-
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ChannelBindingRepository</span><span class="p">:</span>
-    <span class="n">session_provider</span><span class="p">:</span> <span class="s2">&quot;DatabaseSessionProvider&quot;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 </code></pre></div>
-<p>只要 <code>DatabaseSessionProvider</code> 最终能唯一匹配到一个已注册组件，启动就会成功。</p>
-<h3 id="_6">支持的包装类型<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<h3 id="helper">运行时模型 helper<a class="headerlink" href="#helper" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">Provider</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hook</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseSessionProvider</span><span class="p">,</span> <span class="n">PrimarySessionProvider</span><span class="p">,</span> <span class="n">SecondarySessionProvider</span>
-
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ChannelBindingRepository</span><span class="p">:</span>
-    <span class="n">session_provider</span><span class="p">:</span> <span class="n">Provider</span><span class="p">[</span><span class="s2">&quot;DatabaseSessionProvider&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-    <span class="n">hooks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Hook&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">fallback_cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;CacheService&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
-    <span class="n">preferred_provider</span><span class="p">:</span> <span class="s2">&quot;PrimarySessionProvider | SecondarySessionProvider&quot;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span>
 </code></pre></div>
-<p>规则如下：</p>
-<ul>
-<li><code>Optional[T]</code> 在 <code>T</code> 缺失时允许得到 <code>None</code></li>
-<li><code>Provider[T]</code> 注入的是延迟获取 <code>T</code> 的 provider 对象</li>
-<li>集合包装会注入所有匹配实现</li>
-<li><code>Union[A, B]</code> 只有在恰好一个分支可绑定时才允许成功</li>
-</ul>
-<h3 id="_7">仍然会被拒绝的情况<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>Union</code> 中多个分支同时可绑定</li>
-<li><code>list[Union[A, B]]</code> 这类无法安全判定的嵌套组合</li>
-<li>任何需要模糊猜测或属性名回退的情况</li>
-</ul>
-<p>如果你本来就希望按名称显式控制，仍然应使用 <code>InjectByName("Name")</code> 或 <code>Lazy("Name")</code>。</p>
-<h2 id="applicationcontext">ApplicationContext 是唯一容器入口<a class="headerlink" href="#applicationcontext" title="Permanent link">&para;</a></h2>
-<p>装饰器注册已覆盖大多数业务代码。高级集成场景可直接使用 <code>ApplicationContext</code>。</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
+<h3 id="web-api">Web 公开 API<a class="headerlink" href="#web-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
 
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CustomService&quot;</span><span class="p">,</span>
-    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">CustomService</span><span class="p">(),</span>
-    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;custom:CustomService&quot;</span><span class="p">,</span>
-<span class="p">))</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-<span class="n">service</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CustomService&quot;</span><span class="p">)</span>
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">Body</span>
 </code></pre></div>
-<p><code>cullinan.core.container.*</code> 路径现在只是同一公开容器 API 的兼容转发。</p>
-<h2 id="_8">生命周期集成<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
-<p>DI 与生命周期属于同一运行时模型。受管组件可实现：</p>
-<ul>
-<li><code>on_post_construct()</code></li>
-<li><code>on_startup()</code></li>
-<li><code>on_shutdown()</code></li>
-<li><code>on_pre_destroy()</code></li>
-</ul>
-<p>同样支持 <code>_async</code> 异步版本；如需控制顺序，可实现 <code>get_phase()</code>。</p>
-<h2 id="_9">兼容性说明<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
-<p>Cullinan 仍导出部分旧名称，但不应再作为主要编程模型：</p>
-<ul>
-<li><code>injectable</code> 当前是<strong>空操作兼容装饰器</strong></li>
-<li><code>inject_constructor</code> 当前是<strong>空操作兼容装饰器</strong></li>
-<li><code>get_injection_registry()</code> 当前返回 <code>None</code></li>
-<li><code>reset_injection_registry()</code> 是安全的兼容空操作</li>
-</ul>
-<p>保留这些名称是为了降低旧代码的硬中断风险；新代码应依赖 <code>@service</code>、<code>@controller</code>、<code>Inject</code>、<code>InjectByName</code> 与 <code>ApplicationContext</code>。</p>
-<h2 id="_10">故障排查<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>检查点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>依赖无法解析</td>
-<td>确认类型或依赖名称与注册组件一致</td>
-</tr>
-<tr>
-<td>启动时报 <code>DependencyTypeResolutionError</code></td>
-<td>注解存在歧义、不受支持，或无法被安全归一化；缩小类型范围，或切换到 <code>InjectByName()</code> / <code>Lazy("Name")</code></td>
-</tr>
-<tr>
-<td>可选依赖缺失</td>
-<td>使用 <code>required=False</code> 并显式处理 <code>None</code></td>
-</tr>
-<tr>
-<td>生命周期钩子未执行</td>
-<td>确认组件受框架管理且已执行 <code>ApplicationContext.refresh()</code></td>
-</tr>
-<tr>
-<td>高级注册行为不符合预期</td>
-<td>检查 <code>Definition</code> 的 scope 与 factory/source 设置</td>
-</tr>
-</tbody>
-</table>
-<h2 id="_11">相关文档<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../architecture/">架构设计</a></li>
-<li><a href="../runtime_updates_v093/">运行时整合概览</a></li>
-<li><a href="../wiki/injection/">IoC 与 DI wiki</a></li>
-<li><a href="../wiki/lifecycle/">应用生命周期</a></li>
-</ul>
+<h3 id="_7">高级传输集成<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span>
+
+<span class="c1"># After</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.transport.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span>
+</code></pre></div>
+<h2 id="_8">心智切换<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>不要把这次迁移理解成“再找一个还能继续兼容的旧入口”。</p>
+<p>新的规则是：</p>
+<ol>
+<li>业务应用启动放在 <code>cullinan.application</code></li>
+<li>业务 Web 开发放在 <code>cullinan.web</code></li>
+<li>IoC/DI 与生命周期放在 <code>cullinan.core</code></li>
+<li>自动发现与扫描放在 <code>cullinan.runtime</code></li>
+<li>服务端集成放在 <code>cullinan.transport</code></li>
+<li>支撑工具放在 <code>cullinan.support</code></li>
+</ol>
+<p>如果已有代码依赖被移除的根层 wrapper，应直接迁移 import，而不是重新把 wrapper 加回来。</p>
 
 
 
 
 
 
+
+  
+  
 
 
 

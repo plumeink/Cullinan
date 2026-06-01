@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/zh/zh/api_reference/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/api_reference/">
       
       
         <link rel="prev" href="../reference/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -1153,10 +1153,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams-v090a4" class="md-nav__link">
+  <a href="#cullinanwebparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params (v0.90a4+)
+        cullinan.web.params (v0.90a4+)
       
     </span>
   </a>
@@ -1164,10 +1164,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanparams-v090a5" class="md-nav__link">
+  <a href="#cullinanwebparams-v090a5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params (v0.90a5+)
+        cullinan.web.params (v0.90a5+)
       
     </span>
   </a>
@@ -1175,10 +1175,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+  <a href="#cullinanwebparamsmodel_handlers-v090a5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params.model_handlers (v0.90a5+)
+        cullinan.web.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -1197,10 +1197,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanmiddleware" class="md-nav__link">
+  <a href="#cullinanwebmiddleware" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.middleware（新增）
+        cullinan.web.middleware（新增）
       
     </span>
   </a>
@@ -1987,6 +1987,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    最终结构迁移
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2195,10 +2230,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cullinanparams-v090a4" class="md-nav__link">
+  <a href="#cullinanwebparams-v090a4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params (v0.90a4+)
+        cullinan.web.params (v0.90a4+)
       
     </span>
   </a>
@@ -2206,10 +2241,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanparams-v090a5" class="md-nav__link">
+  <a href="#cullinanwebparams-v090a5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params (v0.90a5+)
+        cullinan.web.params (v0.90a5+)
       
     </span>
   </a>
@@ -2217,10 +2252,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanparamsmodel_handlers-v090a5" class="md-nav__link">
+  <a href="#cullinanwebparamsmodel_handlers-v090a5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.params.model_handlers (v0.90a5+)
+        cullinan.web.params.model_handlers (v0.90a5+)
       
     </span>
   </a>
@@ -2239,10 +2274,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cullinanmiddleware" class="md-nav__link">
+  <a href="#cullinanwebmiddleware" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cullinan.middleware（新增）
+        cullinan.web.middleware（新增）
       
     </span>
   </a>
@@ -2314,20 +2349,21 @@
 </ul>
 <h3 id="api_3">高级集成 API<a class="headerlink" href="#api_3" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>cullinan.application_model</code> —— 显式运行时装配（<code>Application</code>、<code>Runtime</code>、<code>current_app</code>）</li>
-<li><code>cullinan.adapter</code> —— 服务器集成（<code>WebAdapter</code>、<code>TornadoAdapter</code>、<code>ASGIAdapter</code>）</li>
-<li><code>cullinan.gateway</code> —— 请求 / 响应 / dispatcher 契约</li>
+<li><code>cullinan.application</code> —— 显式运行时装配（<code>Application</code>、<code>Runtime</code>、<code>current_app</code>）</li>
+<li><code>cullinan.transport.adapter</code> —— 服务器集成（<code>WebAdapter</code>、<code>TornadoAdapter</code>、<code>ASGIAdapter</code>）</li>
+<li><code>cullinan.web.gateway</code> —— 请求 / 响应 / dispatcher 契约</li>
 <li><code>cullinan.core</code> —— 低层容器与生命周期原语</li>
 </ul>
+<p>这些 transport adapter 属于集成层 API，而不是默认的应用开发心智模型。常规业务代码应停留在 Cullinan 自身的 application / web 语义上，而不是直接依赖具体服务器适配器。</p>
 <h3 id="_1">兼容保留模块<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>cullinan.application</code> —— 面向既有项目保留的旧扫描式启动 helper</li>
-<li><code>cullinan.app</code> —— 仅为兼容保留的旧 app wrapper 接口</li>
+<li><code>cullinan.application.lifecycle</code> —— 仅为兼容保留的旧 app wrapper 接口</li>
 </ul>
 <p>对于常规应用，请优先使用顶层 <code>cullinan</code> API。高级与兼容模块应显式从对应子模块导入，这样在代码评审、IDE 补全和 onboarding 文档中都能更清楚地看到边界。</p>
 <h2 id="v090">v0.90+ 新增：参数系统<a class="headerlink" href="#v090" title="Permanent link">&para;</a></h2>
 <p>参数系统提供类型安全的请求参数处理。详见 <a href="../parameter_system_guide/">参数系统指南</a>。</p>
-<h3 id="cullinanparams-v090a4">cullinan.params (v0.90a4+)<a class="headerlink" href="#cullinanparams-v090a4" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanwebparams-v090a4">cullinan.web.params (v0.90a4+)<a class="headerlink" href="#cullinanwebparams-v090a4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2439,7 +2475,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="cullinanparams-v090a5">cullinan.params (v0.90a5+)<a class="headerlink" href="#cullinanparams-v090a5" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanwebparams-v090a5">cullinan.web.params (v0.90a5+)<a class="headerlink" href="#cullinanwebparams-v090a5" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2501,7 +2537,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="cullinanparamsmodel_handlers-v090a5">cullinan.params.model_handlers (v0.90a5+)<a class="headerlink" href="#cullinanparamsmodel_handlers-v090a5" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanwebparamsmodel_handlers-v090a5">cullinan.web.params.model_handlers (v0.90a5+)<a class="headerlink" href="#cullinanwebparamsmodel_handlers-v090a5" title="Permanent link">&para;</a></h3>
 <p>可插拔模型处理器架构，用于第三方库集成。</p>
 <table>
 <thead>
@@ -2616,7 +2652,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="cullinanmiddleware">cullinan.middleware（新增）<a class="headerlink" href="#cullinanmiddleware" title="Permanent link">&para;</a></h3>
+<h3 id="cullinanwebmiddleware">cullinan.web.middleware（新增）<a class="headerlink" href="#cullinanwebmiddleware" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2646,7 +2682,7 @@
 <h2 id="_2">公共符号与签名（建议结构）<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>每个模块建议按以下结构列出公共符号：</p>
 <ul>
-<li>模块路径，例如：<code>cullinan.controller</code></li>
+<li>模块路径，例如：<code>cullinan.web.controller</code></li>
 <li>简要说明：模块的主要职责与使用场景</li>
 <li>公有类与函数列表（示例）：</li>
 <li><code>@controller(...)</code> — 控制器装饰器，负责自动注册控制器与路由</li>
@@ -2731,7 +2767,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

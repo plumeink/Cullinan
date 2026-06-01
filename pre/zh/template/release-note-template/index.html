@@ -9,35 +9,31 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration">
       
       
-        <meta name="author" content=""Plumeink"">
+        <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/framework_semantics/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/template/release-note-template/">
       
       
-        <link rel="prev" href="../concepts/">
-      
-      
-        <link rel="next" href="../architecture/">
       
       
         
-          <link rel="alternate" href="../../framework_semantics/" hreflang="en">
+          <link rel="alternate" href="../../../template/release-note-template/" hreflang="en">
         
           <link rel="alternate" href="./" hreflang="zh">
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>"框架语义规则" - Cullinan Documentation</title>
+        <title>Cullinan {version} Release Notes / 发布说明 - Cullinan Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
       
       
 
@@ -56,9 +52,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/version-switcher.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/version-switcher.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
+        <a href="#cullinan-version-release-notes" class="md-skip">
           跳转至
         </a>
       
@@ -126,7 +122,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="页眉">
-    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -146,7 +142,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "框架语义规则"
+              Cullinan {version} Release Notes / 发布说明
             
           </span>
         </div>
@@ -167,7 +163,7 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../framework_semantics/" hreflang="en" class="md-select__link">
+            <a href="../../../template/release-note-template/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
@@ -250,7 +246,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href="../../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -268,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
@@ -349,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../start/" class="md-nav__link">
+      <a href="../../start/" class="md-nav__link">
         
   
   
@@ -384,7 +380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting_started/" class="md-nav__link">
+      <a href="../../getting_started/" class="md-nav__link">
         
   
   
@@ -419,7 +415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+      <a href="../../examples/" class="md-nav__link">
         
   
   
@@ -454,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_run/" class="md-nav__link">
+      <a href="../../build_run/" class="md-nav__link">
         
   
   
@@ -493,20 +489,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -527,7 +521,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -545,7 +539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/" class="md-nav__link">
+      <a href="../../concepts/" class="md-nav__link">
         
   
   
@@ -577,44 +571,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    框架语义
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../framework_semantics/" class="md-nav__link">
         
   
   
@@ -637,114 +597,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        推荐的语义化包路径
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-ast-app" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-inject" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Inject() 是严格类型契约
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-injectbyname" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. InjectByName() 的语义是“显式名称绑定”
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-refresh" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. refresh() 之后注册会被冻结
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 作用域规则是强约束，不是“尽量工作”
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 兼容 API 只是兼容，不是推荐入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-warning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. 如何理解新的 warning 和报错
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -757,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -839,7 +691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how-to/" class="md-nav__link">
+      <a href="../../how-to/" class="md-nav__link">
         
   
   
@@ -874,7 +726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dependency_injection_guide/" class="md-nav__link">
+      <a href="../../dependency_injection_guide/" class="md-nav__link">
         
   
   
@@ -902,7 +754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../web_runtime_guide/" class="md-nav__link">
+      <a href="../../web_runtime_guide/" class="md-nav__link">
         
   
   
@@ -937,7 +789,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quick_reference_di/" class="md-nav__link">
+      <a href="../../quick_reference_di/" class="md-nav__link">
         
   
   
@@ -965,7 +817,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../parameter_system_guide/" class="md-nav__link">
+      <a href="../../parameter_system_guide/" class="md-nav__link">
         
   
   
@@ -1000,7 +852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../../testing/" class="md-nav__link">
         
   
   
@@ -1035,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -1124,7 +976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/" class="md-nav__link">
+      <a href="../../reference/" class="md-nav__link">
         
   
   
@@ -1159,7 +1011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
+      <a href="../../api_reference/" class="md-nav__link">
         
   
   
@@ -1241,7 +1093,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
+      <a href="../../modules/app/" class="md-nav__link">
         
   
   
@@ -1276,7 +1128,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/application/" class="md-nav__link">
+      <a href="../../modules/application/" class="md-nav__link">
         
   
   
@@ -1311,7 +1163,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/core/" class="md-nav__link">
+      <a href="../../modules/core/" class="md-nav__link">
         
   
   
@@ -1346,7 +1198,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/controller/" class="md-nav__link">
+      <a href="../../modules/controller/" class="md-nav__link">
         
   
   
@@ -1381,7 +1233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/service/" class="md-nav__link">
+      <a href="../../modules/service/" class="md-nav__link">
         
   
   
@@ -1478,7 +1330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../internals/" class="md-nav__link">
+      <a href="../../internals/" class="md-nav__link">
         
   
   
@@ -1513,7 +1365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/application_runtime/" class="md-nav__link">
+      <a href="../../wiki/application_runtime/" class="md-nav__link">
         
   
   
@@ -1548,7 +1400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/components/" class="md-nav__link">
+      <a href="../../wiki/components/" class="md-nav__link">
         
   
   
@@ -1583,7 +1435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/decorators/" class="md-nav__link">
+      <a href="../../wiki/decorators/" class="md-nav__link">
         
   
   
@@ -1611,7 +1463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/injection/" class="md-nav__link">
+      <a href="../../wiki/injection/" class="md-nav__link">
         
   
   
@@ -1646,7 +1498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/lifecycle/" class="md-nav__link">
+      <a href="../../wiki/lifecycle/" class="md-nav__link">
         
   
   
@@ -1681,7 +1533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/middleware/" class="md-nav__link">
+      <a href="../../wiki/middleware/" class="md-nav__link">
         
   
   
@@ -1716,7 +1568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/extensions/" class="md-nav__link">
+      <a href="../../wiki/extensions/" class="md-nav__link">
         
   
   
@@ -1751,7 +1603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wiki/restful_api/" class="md-nav__link">
+      <a href="../../wiki/restful_api/" class="md-nav__link">
         
   
   
@@ -1786,7 +1638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../extension_development_guide/" class="md-nav__link">
+      <a href="../../extension_development_guide/" class="md-nav__link">
         
   
   
@@ -1814,7 +1666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quick_start_extensions/" class="md-nav__link">
+      <a href="../../quick_start_extensions/" class="md-nav__link">
         
   
   
@@ -1896,7 +1748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
+      <a href="../../migration/" class="md-nav__link">
         
   
   
@@ -1931,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+      <a href="../../migration_to_final_semantic_layout/" class="md-nav__link">
         
   
   
@@ -1966,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../runtime_updates_v093/" class="md-nav__link">
+      <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
   
@@ -2001,7 +1853,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration_guide/" class="md-nav__link">
+      <a href="../../migration_guide/" class="md-nav__link">
         
   
   
@@ -2029,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../migration_guide_v2/" class="md-nav__link">
+      <a href="../../migration_guide_v2/" class="md-nav__link">
         
   
   
@@ -2057,7 +1909,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../import_migration_090/" class="md-nav__link">
+      <a href="../../import_migration_090/" class="md-nav__link">
         
   
   
@@ -2112,10 +1964,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        推荐的语义化包路径
+        Overview / 版本概览
       
     </span>
   </a>
@@ -2123,10 +1975,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-ast-app" class="md-nav__link">
+  <a href="#highlights" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
+        Highlights / 主要更新
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Highlights / 主要更新">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-highlight_1_title_en-highlight_1_title_zh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. {highlight_1_title_en} / {highlight_1_title_zh}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-highlight_2_title_en-highlight_2_title_zh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. {highlight_2_title_en} / {highlight_2_title_zh}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-highlight_3_title_en-highlight_3_title_zh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. {highlight_3_title_en} / {highlight_3_title_zh}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Notes / 兼容性说明
       
     </span>
   </a>
@@ -2134,10 +2036,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-inject" class="md-nav__link">
+  <a href="#delivery-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Inject() 是严格类型契约
+        Delivery Notes / 交付说明
       
     </span>
   </a>
@@ -2145,10 +2047,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-injectbyname" class="md-nav__link">
+  <a href="#upgrade-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. InjectByName() 的语义是“显式名称绑定”
+        Upgrade Notes / 升级提示
       
     </span>
   </a>
@@ -2156,43 +2058,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-refresh" class="md-nav__link">
+  <a href="#authoring-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. refresh() 之后注册会被冻结
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. 作用域规则是强约束，不是“尽量工作”
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. 兼容 API 只是兼容，不是推荐入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-warning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. 如何理解新的 warning 和报错
+        Authoring Rules / 编写规则
       
     </span>
   </a>
@@ -2216,101 +2085,56 @@
 
 
 
-<h1 id="_1">框架语义规则<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>本文定义 Cullinan <strong>保证什么</strong>、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。目标是把 Cullinan 的运行时模型讲清楚：先写装饰器式业务代码，通过导入执行完成发现，在需要时再引入明确的运行时边界。</p>
-<blockquote>
-<p><strong>知识角色：</strong> <a href="../concepts/">框架语义</a><br />
-<strong>推荐下一步：</strong> <a href="../architecture/">架构设计</a>、<a href="../how-to/">工程实践</a><br />
-<strong>如果你要查符号而不是读解释：</strong> 请转到 <a href="../reference/">API 参考</a>。</p>
-</blockquote>
-<h2 id="_2">推荐的语义化包路径<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>Cullinan 当前推荐的主路径是：</p>
+<h1 id="cullinan-version-release-notes">Cullinan {version} Release Notes / 发布说明<a class="headerlink" href="#cullinan-version-release-notes" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview / 版本概览<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Cullinan <code>{version}</code> focuses on {summary_en}.<br />
+Cullinan <code>{version}</code> 重点围绕 {summary_zh} 展开。</p>
+<h2 id="highlights">Highlights / 主要更新<a class="headerlink" href="#highlights" title="Permanent link">&para;</a></h2>
+<h3 id="1-highlight_1_title_en-highlight_1_title_zh">1. {highlight_1_title_en} / {highlight_1_title_zh}<a class="headerlink" href="#1-highlight_1_title_en-highlight_1_title_zh" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>cullinan.application</code> —— 应用配置与启动</li>
-<li><code>cullinan.web</code> —— 控制器、路由装饰器、请求/响应、参数与中间件</li>
-<li><code>cullinan.core</code> —— IoC/DI、生命周期与语义诊断</li>
+<li highlight_1_point_1_zh="highlight_1_point_1_zh">{highlight_1_point_1_en}<br /></li>
+<li highlight_1_point_2_zh="highlight_1_point_2_zh">{highlight_1_point_2_en}<br /></li>
 </ul>
-<p>像 <code>cullinan.runtime</code>、<code>cullinan.transport</code>、<code>cullinan.support</code> 这样的更底层层级仍然可用，但不应成为普通业务应用的默认入门路径。</p>
-<p>这也意味着默认学习路径<strong>不是先学 Tornado 再学 Cullinan</strong>。Tornado 与 ASGI 是框架边界之后的执行后端；对应用代码真正构成主契约的，是 Cullinan 自身的 Web 与 application 语义。</p>
-<h2 id="1-ast-app">1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册<a class="headerlink" href="#1-ast-app" title="Permanent link">&para;</a></h2>
-<p>Cullinan 通过<strong>导入 Python 模块</strong>并执行装饰器来发现组件。</p>
+<h3 id="2-highlight_2_title_en-highlight_2_title_zh">2. {highlight_2_title_en} / {highlight_2_title_zh}<a class="headerlink" href="#2-highlight_2_title_en-highlight_2_title_zh" title="Permanent link">&para;</a></h3>
 <ul>
-<li>受保证：模块顶层定义、且在模块导入时就执行到的 <code>@service</code>、<code>@controller</code>、<code>@component</code>、<code>@provider</code></li>
-<li>不受保证：定义在函数、工厂、条件分支或其他局部作用域里的类；这些定义通常要等运行到对应代码块时装饰器才会执行</li>
+<li highlight_2_point_1_zh="highlight_2_point_1_zh">{highlight_2_point_1_en}<br /></li>
+<li highlight_2_point_2_zh="highlight_2_point_2_zh">{highlight_2_point_2_en}<br /></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">component</span>
-
-
-<span class="nd">@component</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TopLevelCache</span><span class="p">:</span>
-    <span class="k">pass</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build_repository</span><span class="p">():</span>
-    <span class="nd">@component</span>
-    <span class="k">class</span><span class="w"> </span><span class="nc">LocalRepository</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="k">return</span> <span class="n">LocalRepository</span>
-</code></pre></div>
-<p><code>TopLevelCache</code> 属于受支持的自动发现路径；<code>LocalRepository</code> 不属于自动顶层扫描契约。Cullinan 现在会对这类写法发 warning，如果它发生在 <code>refresh()</code> 之后，则会直接失败。如果某段能力需要更强的归属、reload 或热插拔运行时保证，应通过 <code>@module</code> 表达边界，而不是退回到手工 app 注册思路。</p>
-<h2 id="2-inject">2. <code>Inject()</code> 是严格类型契约<a class="headerlink" href="#2-inject" title="Permanent link">&para;</a></h2>
-<p>只有当 Cullinan 能把注解归一化为<strong>稳定且唯一</strong>的依赖契约时，<code>Inject()</code> 才会成功。</p>
-<p>当前支持的典型形式包括：</p>
+<h3 id="3-highlight_3_title_en-highlight_3_title_zh">3. {highlight_3_title_en} / {highlight_3_title_zh}<a class="headerlink" href="#3-highlight_3_title_en-highlight_3_title_zh" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>T</code></li>
-<li><code>"T"</code></li>
-<li><code>Optional[T]</code></li>
-<li><code>Annotated[T, ...]</code></li>
-<li><code>Final[T]</code></li>
-<li><code>Provider[T]</code></li>
-<li><code>list[T]</code>、<code>set[T]</code>、<code>tuple[T, ...]</code></li>
-<li><code>Union[A, B]</code> / <code>A | B</code>（前提是最终只命中一个候选）</li>
+<li highlight_3_point_1_zh="highlight_3_point_1_zh">{highlight_3_point_1_en}<br /></li>
+<li highlight_3_point_2_zh="highlight_3_point_2_zh">{highlight_3_point_2_en}<br /></li>
 </ul>
-<p>Cullinan 已不再回退到属性名猜测。如果注解缺失、不受支持或存在歧义，启动会直接以类型化诊断失败。</p>
-<h2 id="3-injectbyname">3. <code>InjectByName()</code> 的语义是“显式名称绑定”<a class="headerlink" href="#3-injectbyname" title="Permanent link">&para;</a></h2>
-<p><code>InjectByName()</code> 按组件注册名解析，而不是按类型解析。</p>
-<p>推荐写法：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
-    <span class="n">report_service</span><span class="p">:</span> <span class="s2">&quot;ReportService&quot;</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s2">&quot;ReportService&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>兼容写法：</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
-    <span class="n">report_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">()</span>
-</code></pre></div>
-<p>兼容写法目前仍会回退到属性名，但 Cullinan 现在会给出 warning，因为这种绑定在重构时更容易悄悄失效。即使使用按名注入，也建议保留真实类型注解，便于表达语义与静态检查。</p>
-<h2 id="4-refresh">4. <code>refresh()</code> 之后注册会被冻结<a class="headerlink" href="#4-refresh" title="Permanent link">&para;</a></h2>
-<p><code>ApplicationContext.refresh()</code> 是结构边界：</p>
+<h2 id="compatibility-notes">Compatibility Notes / 兼容性说明<a class="headerlink" href="#compatibility-notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li>会消费并注册 pending 的装饰器组件</li>
-<li>会完成定义校验与预热</li>
-<li>会冻结相关注册表</li>
+<li compat_point_1_zh="compat_point_1_zh">{compat_point_1_en}<br /></li>
+<li compat_point_2_zh="compat_point_2_zh">{compat_point_2_en}<br /></li>
 </ul>
-<p>从这一刻开始，再去新增装饰器组件就不再是受支持的运行时变更路径。Cullinan 现在会给出明确的语义错误，并附上修复建议。</p>
-<h2 id="5">5. 作用域规则是强约束，不是“尽量工作”<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
-<p>Cullinan 把作用域兼容性视为硬规则。尤其是 <code>singleton</code> 组件不能直接依赖 <code>request</code> 作用域组件。现在这类情况会给出结构化生命周期诊断，而不是等到更晚阶段以不稳定方式出错。</p>
-<h2 id="6-api">6. 兼容 API 只是兼容，不是推荐入口<a class="headerlink" href="#6-api" title="Permanent link">&para;</a></h2>
-<p>像 <code>@injectable</code>、<code>@inject_constructor</code>、<code>get_injection_registry()</code> 这样的旧接口仍然保留，目的是让历史代码还能导入，但它们<strong>不再代表推荐编程模型</strong>。现在使用这些 API 时，Cullinan 会发出 warning。</p>
-<h2 id="7-warning">7. 如何理解新的 warning 和报错<a class="headerlink" href="#7-warning" title="Permanent link">&para;</a></h2>
-<p>Cullinan 现在把关键诊断统一表达为：</p>
+<h2 id="delivery-notes">Delivery Notes / 交付说明<a class="headerlink" href="#delivery-notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>语义规则</strong>：框架当前强制执行的契约</li>
-<li><strong>当前问题</strong>：运行时实际观察到的现象</li>
-<li><strong>建议</strong>：最安全、最受支持的修复方式</li>
+<li delivery_point_1_zh="delivery_point_1_zh">{delivery_point_1_en}<br /></li>
+<li delivery_point_2_zh="delivery_point_2_zh">{delivery_point_2_en}<br /></li>
 </ul>
-<p>当框架能够确定你违反了核心语义时，会直接失败；当代码虽然还能运行，但明显容易误导开发者时，则会发 warning。</p>
+<h2 id="upgrade-notes">Upgrade Notes / 升级提示<a class="headerlink" href="#upgrade-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li upgrade_point_1_zh="upgrade_point_1_zh">{upgrade_point_1_en}<br /></li>
+<li upgrade_point_2_zh="upgrade_point_2_zh">{upgrade_point_2_en}<br /></li>
+</ul>
+<h2 id="authoring-rules">Authoring Rules / 编写规则<a class="headerlink" href="#authoring-rules" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Keep the document bilingual in a <strong>mixed</strong> style: each paragraph or bullet should pair English and Chinese together.<br />
+  保持<strong>英中混合</strong>写法：每个段落或 bullet 都要把英文和中文配对写在一起。</li>
+<li>Do not split the document into separate English-only and Chinese-only sections.<br />
+  不要把文档拆成纯英文区和纯中文区。</li>
+<li>Prefer concise change summaries tied to actual released work.<br />
+  优先写与实际发布内容对应的精炼变更摘要。</li>
+</ul>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -2370,12 +2194,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
-        <script src="../../assets/javascripts/version-switcher.js"></script>
+        <script src="../../../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

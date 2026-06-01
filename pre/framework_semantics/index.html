@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/framework_semantics/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/framework_semantics/">
       
       
         <link rel="prev" href="../concepts/">
@@ -92,11 +92,11 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a6"
+      data-current-version="0.93a8"
       data-stable-version="None"
-      data-stable-url="/"
-      data-pre-version="0.93a6"
-      data-pre-url="/pre/"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a8"
+      data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
       <label class="md-version-switcher__label" for="version-switcher">Version</label>
@@ -652,6 +652,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-semantic-package-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended semantic package path
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" class="md-nav__link">
@@ -1920,6 +1931,41 @@
   
   
     <li class="md-nav__item">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Structure Migration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
@@ -2066,6 +2112,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#recommended-semantic-package-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended semantic package path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2166,13 +2223,22 @@
 <strong>Read next:</strong> <a href="../architecture/">Architecture</a>, <a href="../how-to/">Engineering Practices</a><br />
 <strong>Lookup instead of explanation?</strong> Go to <a href="../reference/">API Reference</a>.</p>
 </blockquote>
+<h2 id="recommended-semantic-package-path">Recommended semantic package path<a class="headerlink" href="#recommended-semantic-package-path" title="Permanent link">&para;</a></h2>
+<p>Cullinan's default semantic path is now:</p>
+<ul>
+<li><code>cullinan.application</code> for application configuration and startup</li>
+<li><code>cullinan.web</code> for controllers, route decorators, request/response, parameters, and middleware</li>
+<li><code>cullinan.core</code> for IoC/DI, lifecycle, and semantic diagnostics</li>
+</ul>
+<p>Lower-level layers such as <code>cullinan.runtime</code>, <code>cullinan.transport</code>, and <code>cullinan.support</code> remain available, but they are not the default onboarding path for normal business applications.</p>
+<p>This also means the default semantic path is <strong>not</strong> "learn Tornado first, then learn Cullinan". Tornado and ASGI are execution backends behind the framework boundary; the primary contract for application code is Cullinan's own Web and application semantics.</p>
 <h2 id="1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration">1. Component discovery is import-executed, not static AST scanning or app-object registration<a class="headerlink" href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" title="Permanent link">&para;</a></h2>
 <p>Cullinan discovers decorated components by <strong>importing Python modules</strong> and letting decorators execute.</p>
 <ul>
 <li>guaranteed: module-top-level <code>@service</code>, <code>@controller</code>, <code>@component</code>, and <code>@provider</code> definitions that execute during module import</li>
 <li>not guaranteed: classes defined inside functions, factories, branches, or other local scopes that only run later</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">component</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">component</span>
 
 
 <span class="nd">@component</span>
@@ -2205,7 +2271,7 @@
 <h2 id="3-injectbyname-is-explicit-name-semantics">3. <code>InjectByName()</code> is explicit-name semantics<a class="headerlink" href="#3-injectbyname-is-explicit-name-semantics" title="Permanent link">&para;</a></h2>
 <p><code>InjectByName()</code> resolves by component name, not by type.</p>
 <p>Recommended form:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ReportController</span><span class="p">:</span>
@@ -2304,7 +2370,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a6", "pre_is_available": true, "pre_label": "0.93a6", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
