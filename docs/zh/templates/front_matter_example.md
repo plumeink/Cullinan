@@ -13,7 +13,7 @@ status: draft
 locale: zh
 translation_pair: "docs/<file>.md"
 related_tests: ["tests/test_real_app_startup.py"]
-related_examples: ["examples/hello_http.py"]
+related_examples: ["examples/minimal_app"]
 estimate_pd: 2.0
 last_updated: "2025-11-18T00:00:00Z"
 pr_links: []

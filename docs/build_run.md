@@ -74,34 +74,47 @@ If your environment uses a different test runner, adapt the command accordingly 
 
 ## Run an example application
 
-### Hello HTTP example
+The maintained runnable examples now live under the root `examples/` directory as
+small packages. Start from the minimal example, then move to the more focused guides.
 
-On Windows (PowerShell):
-
-```powershell
-python examples\hello_http.py
-```
-
-On Linux / macOS:
-
-```bash
-python examples/hello_http.py
-```
-
-Then open `http://localhost:4080/hello` in a browser to verify the server is running.
-
-### Middleware demo
-
-On Windows (PowerShell):
+### Minimal app
 
 ```powershell
-python examples\middleware_demo.py
+python -m examples.minimal_app
 ```
 
-On Linux / macOS:
+Then open `http://localhost:4080/hello` to verify the server is running.
 
-```bash
-python examples/middleware_demo.py
+### Business layering with injection
+
+```powershell
+python -m examples.controller_service_inject
 ```
 
-Refer to the middleware documentation for a description of the expected log output and behavior.
+Use this example to see the recommended `@service` + `@controller` + `Inject()` path.
+
+### Middleware and module boundary
+
+```powershell
+python -m examples.middleware_and_module
+```
+
+This example shows runtime boundary ownership through `@module` and request-pipeline
+extension through `@middleware`.
+
+### Parameter binding
+
+```powershell
+python -m examples.parameter_handling
+```
+
+Use it alongside the parameter guide to see `Path`, `Query`, and `Body` on controller methods.
+
+### Example-level testing flow
+
+```powershell
+python -m pytest examples/testing_flow/test_app.py -q
+```
+
+This path exercises the example through `configure(...)` and `get_asgi_app()` without launching
+an external server process.

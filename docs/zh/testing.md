@@ -7,8 +7,8 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/testing.md"
-related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_public_api_boundaries.py", "tests/core/test_developer_experience.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py", "tests/integration/test_gateway_integration.py", "tests/web/test_openapi_generator.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
-related_examples: []
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_public_api_boundaries.py", "tests/core/test_developer_experience.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py", "tests/integration/test_gateway_integration.py", "tests/integration/test_examples_public_guides.py", "tests/web/test_openapi_generator.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
+related_examples: ["examples/testing_flow"]
 estimate_pd: 1.5
 last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
@@ -69,6 +69,9 @@ addopts = -ra
 ```
 
 通用的 `python -m pytest` 也可运行，但当前仓库文档标准统一使用 Windows 下的 `.venv\Scripts\python` 形式。
+
+如果你想先看一个面向开发者的小型测试示例，而不是直接进入整个仓库测试集，
+可以参考 `examples/testing_flow/test_app.py`。
 
 ## 当前约定
 

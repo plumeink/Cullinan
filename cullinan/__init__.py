@@ -245,7 +245,7 @@ middleware = _middleware_decorator
 _public_api_semantic_warning = PublicAPISemanticWarning
 
 
-__version__ = '0.93a6'
+__version__ = '0.93a6.post1'
 
 __all__ = [
     'configure',

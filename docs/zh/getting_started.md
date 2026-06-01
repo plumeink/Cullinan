@@ -8,9 +8,9 @@ status: updated
 locale: zh
 translation_pair: "docs/getting_started.md"
 related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py"]
-related_examples: ["examples/hello_http.py"]
+related_examples: ["examples/minimal_app"]
 estimate_pd: 2.0
-last_updated: "2026-05-31T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Cullinan 快速开始
@@ -21,6 +21,7 @@ Cullinan 不是围绕手工组装 app 对象展开的框架。
 
 > **知识角色：** [应用构建](start/index.md)  
 > **推荐下一步：** [框架语义](framework_semantics.md)、[工程实践](how-to/index.md)  
+> **仓库可运行指引：** `examples/minimal_app/` 是当前维护中的最小示例。<br>
 > **高级边界：** 如果你明确需要显式 `Application` 编排，请进入
 > [运行时与扩展](internals/index.md)，不要把那条路径当成默认启动方式。
 

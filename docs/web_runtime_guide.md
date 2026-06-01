@@ -8,7 +8,7 @@ status: updated
 locale: en
 translation_pair: "docs/zh/web_runtime_guide.md"
 related_tests: ["tests/web/test_web_runtime.py"]
-related_examples: []
+related_examples: ["examples/minimal_app", "examples/middleware_and_module"]
 estimate_pd: 1.5
 last_updated: "2026-06-01T00:00:00Z"
 pr_links: []

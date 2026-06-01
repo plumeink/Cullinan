@@ -146,8 +146,10 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
     captured: dict[str, object] = {}
 
     class DummyTornadoAdapter:
-        def __init__(self, dispatcher, runtime):
+        def __init__(self, dispatcher, settings=None, global_headers=None, runtime=None):
             captured["dispatcher"] = dispatcher
+            captured["settings"] = settings
+            captured["global_headers"] = global_headers
             captured["runtime"] = runtime
 
         def run(self, host="0.0.0.0", port=4080, **kwargs):
@@ -172,6 +174,9 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
         assert app.root_module is root_module
         assert captured["host"] == "127.0.0.1"
         assert captured["port"] == 5091
+        assert captured["settings"]["template_path"].endswith("templates")
+        assert captured["settings"]["static_path"].endswith("static")
+        assert isinstance(captured["global_headers"], list)
         assert not any(isinstance(item.message, PublicAPISemanticWarning) for item in caught)
     finally:
         if app is not None:
@@ -238,6 +243,94 @@ def test_top_level_get_asgi_app_uses_configured_root_module(tmp_path, monkeypatc
         body = b"".join(message.get("body", b"") for message in sent if message["type"] == "http.response.body")
         assert sent[0]["status"] == 200
         assert json.loads(body) == {"message": "hello"}
+    finally:
+        current_app = Application.current()
+        if current_app is not None:
+            current_app.uninstall()
+        _clear_modules(package_name)
+
+
+def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monkeypatch):
+    package_name = "boundary_public_asgi_finalize"
+    _write_package(
+        tmp_path,
+        package_name,
+        {
+            "__init__.py": "",
+            "root.py": """
+                from cullinan import Middleware, controller, get_api, middleware, module
+
+                @middleware(priority=50)
+                class AddExampleHeader(Middleware):
+                    def process_response(self, request, response):
+                        response.set_header("X-Boundary-Test", "ready")
+                        return response
+
+                @controller(url="/api")
+                class GreetingController:
+                    @get_api(url="/ping")
+                    def ping(self):
+                        return {"message": "hello"}
+
+                @module
+                class RootModule:
+                    pass
+            """,
+        },
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    _clear_modules(package_name)
+    root_module = importlib.import_module(f"{package_name}.root").RootModule
+    configure(root_module=root_module)
+
+    async def receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def dispatch(path: str):
+        sent = []
+
+        async def send(message):
+            sent.append(message)
+
+        await app(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": path,
+                "headers": [],
+                "query_string": b"",
+                "client": ("127.0.0.1", 9000),
+                "server": ("localhost", 4080),
+                "scheme": "http",
+            },
+            receive,
+            send,
+        )
+        return sent
+
+    app = get_asgi_app()
+
+    import asyncio
+
+    try:
+        ping_messages = asyncio.run(dispatch("/api/ping"))
+        ping_body = b"".join(
+            message.get("body", b"") for message in ping_messages if message["type"] == "http.response.body"
+        )
+        ping_headers = {
+            key.decode("latin-1").lower(): value.decode("latin-1")
+            for key, value in ping_messages[0].get("headers", [])
+        }
+        assert ping_messages[0]["status"] == 200
+        assert json.loads(ping_body) == {"message": "hello"}
+        assert ping_headers["x-boundary-test"] == "ready"
+
+        openapi_messages = asyncio.run(dispatch("/openapi.json"))
+        openapi_body = b"".join(
+            message.get("body", b"") for message in openapi_messages if message["type"] == "http.response.body"
+        )
+        assert openapi_messages[0]["status"] == 200
+        assert json.loads(openapi_body)["openapi"] == "3.0.3"
     finally:
         current_app = Application.current()
         if current_app is not None:

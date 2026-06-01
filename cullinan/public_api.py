@@ -38,6 +38,17 @@ def _resolve_host_port(host: Optional[str], port: Optional[int]) -> tuple[str, i
     return resolved_host, resolved_port
 
 
+def _finalize_public_runtime() -> tuple[list, dict[str, Any]]:
+    from cullinan.application import (
+        _build_tornado_settings,
+        _collect_global_headers,
+        _finalize_runtime_setup,
+    )
+
+    _finalize_runtime_setup()
+    return _collect_global_headers(), _build_tornado_settings()
+
+
 def run(
     root_module: Optional[type[Any]] = None,
     *,
@@ -75,13 +86,23 @@ def run(
 
     with public_api_context():
         app = Application.run(resolved_root_module, runtime_config=runtime_config)
+        global_headers, tornado_settings = _finalize_public_runtime()
         if actual_engine == "asgi":
-            adapter = ASGIAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+            adapter = ASGIAdapter(
+                dispatcher=app.web_runtime.dispatcher,
+                global_headers=global_headers,
+                runtime=app.web_runtime,
+            )
             adapter_kwargs.setdefault("server", getattr(get_config(), "asgi_server", "uvicorn"))
         else:
             if TornadoAdapter is None:
                 raise ImportError("TornadoAdapter 不可用，请安装 tornado 或改用 engine='asgi'。")
-            adapter = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+            adapter = TornadoAdapter(
+                dispatcher=app.web_runtime.dispatcher,
+                settings=tornado_settings,
+                global_headers=global_headers,
+                runtime=app.web_runtime,
+            )
 
         adapter.run(host=resolved_host, port=resolved_port, **adapter_kwargs)
         return app
@@ -110,5 +131,10 @@ def get_asgi_app(
 
     with public_api_context():
         app = Application.run(resolved_root_module, runtime_config=runtime_config)
-        adapter = ASGIAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+        global_headers, _ = _finalize_public_runtime()
+        adapter = ASGIAdapter(
+            dispatcher=app.web_runtime.dispatcher,
+            global_headers=global_headers,
+            runtime=app.web_runtime,
+        )
         return adapter.create_app()

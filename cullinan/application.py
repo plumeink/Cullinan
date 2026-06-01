@@ -685,6 +685,33 @@ def _setup_openapi():
         logger.debug("OpenAPI setup skipped: %s", exc)
 
 
+def _finalize_runtime_setup():
+    """Apply the standard post-initialization runtime setup steps."""
+    _setup_middleware_pipeline()
+    _setup_openapi()
+
+
+def _collect_global_headers():
+    """Collect global headers from the legacy HeaderRegistry if available."""
+    global_headers = []
+    try:
+        from cullinan.controller.core import get_header_registry
+        hr = get_header_registry()
+        if hr.has_headers():
+            global_headers = hr.get_headers()
+    except Exception:
+        pass
+    return global_headers
+
+
+def _build_tornado_settings():
+    """Build the default Tornado template/static settings."""
+    return dict(
+        template_path=os.path.join(os.getcwd(), 'templates'),
+        static_path=os.path.join(os.getcwd(), 'static'),
+    )
+
+
 def run(handlers=None, engine=None):
     """Start the compatibility scanning application entrypoint.
 
@@ -731,8 +758,7 @@ def run(handlers=None, engine=None):
             engine = 'tornado'
 
     ctx, pending_count = _init_framework()
-    _setup_middleware_pipeline()
-    _setup_openapi()
+    _finalize_runtime_setup()
 
     port = int(os.getenv("SERVER_PORT", 4080))
     host = os.getenv("SERVER_HOST", "0.0.0.0")
@@ -755,19 +781,8 @@ def _run_tornado(host: str, port: int, extra_handlers: list):
     from cullinan.adapter import TornadoAdapter
 
     # Collect global headers from legacy HeaderRegistry
-    global_headers = []
-    try:
-        from cullinan.controller.core import get_header_registry
-        hr = get_header_registry()
-        if hr.has_headers():
-            global_headers = hr.get_headers()
-    except Exception:
-        pass
-
-    settings = dict(
-        template_path=os.path.join(os.getcwd(), 'templates'),
-        static_path=os.path.join(os.getcwd(), 'static'),
-    )
+    global_headers = _collect_global_headers()
+    settings = _build_tornado_settings()
 
     dispatcher = get_dispatcher()
     router = get_router()
@@ -797,14 +812,7 @@ def _run_asgi(host: str, port: int):
     from cullinan.gateway import get_dispatcher
     from cullinan.adapter import ASGIAdapter
 
-    global_headers = []
-    try:
-        from cullinan.controller.core import get_header_registry
-        hr = get_header_registry()
-        if hr.has_headers():
-            global_headers = hr.get_headers()
-    except Exception:
-        pass
+    global_headers = _collect_global_headers()
 
     dispatcher = get_dispatcher()
 
@@ -853,20 +861,12 @@ def get_asgi_app():
         logger.info(BANNER)
 
     _init_framework()
-    _setup_middleware_pipeline()
-    _setup_openapi()
+    _finalize_runtime_setup()
 
     from cullinan.gateway import get_dispatcher
     from cullinan.adapter import ASGIAdapter
 
-    global_headers = []
-    try:
-        from cullinan.controller.core import get_header_registry
-        hr = get_header_registry()
-        if hr.has_headers():
-            global_headers = hr.get_headers()
-    except Exception:
-        pass
+    global_headers = _collect_global_headers()
 
     adapter = ASGIAdapter(
         dispatcher=get_dispatcher(),

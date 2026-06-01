@@ -74,34 +74,45 @@ pytest -q
 
 ## 运行示例应用
 
-### Hello HTTP 示例
+当前维护中的可运行示例已经统一收敛到项目根目录 `examples/` 下，并以小型包的
+方式组织。建议先从最小示例开始，再进入更有针对性的主题示例。
 
-在 Windows（PowerShell）中：
-
-```powershell
-python examples\hello_http.py
-```
-
-在 Linux / macOS 中：
-
-```bash
-python examples/hello_http.py
-```
-
-然后在浏览器中访问 `http://localhost:4080/hello`，验证服务已成功启动。
-
-### 中间件演示示例
-
-在 Windows（PowerShell）中：
+### 最小应用
 
 ```powershell
-python examples\middleware_demo.py
+python -m examples.minimal_app
 ```
 
-在 Linux / macOS 中：
+然后访问 `http://localhost:4080/hello`，确认服务已启动。
 
-```bash
-python examples/middleware_demo.py
+### 业务分层与注入
+
+```powershell
+python -m examples.controller_service_inject
 ```
 
-关于该示例的日志输出和行为说明，请参考中间件相关文档。
+这个示例用于展示推荐的 `@service` + `@controller` + `Inject()` 路径。
+
+### 中间件与模块边界
+
+```powershell
+python -m examples.middleware_and_module
+```
+
+该示例展示 `@module` 表达运行时边界归属，以及 `@middleware` 扩展请求处理管线。
+
+### 参数绑定
+
+```powershell
+python -m examples.parameter_handling
+```
+
+可配合参数系统指南一起查看控制器方法上的 `Path`、`Query`、`Body` 写法。
+
+### 示例级测试流
+
+```powershell
+python -m pytest examples/testing_flow/test_app.py -q
+```
+
+这条路径会通过 `configure(...)` 和 `get_asgi_app()` 直接验证示例，而不需要真的启动外部服务进程。

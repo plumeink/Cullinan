@@ -8,9 +8,9 @@ status: updated
 locale: en
 translation_pair: "docs/zh/getting_started.md"
 related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py"]
-related_examples: ["examples/hello_http.py"]
+related_examples: ["examples/minimal_app"]
 estimate_pd: 2.0
-last_updated: "2026-05-31T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Getting Started with Cullinan
@@ -21,6 +21,7 @@ then let the runtime assemble them. Cullinan is not centered on a manually wired
 
 > **Knowledge role:** [Application Build](start/index.md)  
 > **Read next:** [Framework Semantics](framework_semantics.md), [Engineering Practices](how-to/index.md)  
+> **Runnable repository guide:** `examples/minimal_app/` is the maintained minimal example.<br>
 > **Advanced boundary:** if you intentionally need explicit `Application` orchestration,
 > continue in [Internals & Extensions](internals/index.md) instead of treating that path
 > as the default bootstrap.

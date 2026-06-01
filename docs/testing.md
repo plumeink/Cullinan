@@ -7,8 +7,8 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/testing.md"
-related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_public_api_boundaries.py", "tests/core/test_developer_experience.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py", "tests/integration/test_gateway_integration.py", "tests/web/test_openapi_generator.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
-related_examples: []
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_public_api_boundaries.py", "tests/core/test_developer_experience.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py", "tests/integration/test_gateway_integration.py", "tests/integration/test_examples_public_guides.py", "tests/web/test_openapi_generator.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
+related_examples: ["examples/testing_flow"]
 estimate_pd: 1.5
 last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
@@ -69,6 +69,9 @@ Examples:
 ```
 
 Generic `python -m pytest` also works, but the repository documentation standard uses the `.venv\Scripts\python` form on Windows.
+
+If you want a small developer-facing test example before reading the whole suite,
+see `examples/testing_flow/test_app.py`.
 
 ## Current conventions
 

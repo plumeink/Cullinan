@@ -187,7 +187,7 @@ class InjectionRegistry:
     """Compatibility class - use ApplicationContext instead."""
     pass
 
-__version__ = "0.93a6"
+__version__ = "0.93a6.post1"
 
 __all__ = [
     # ========================================================================
