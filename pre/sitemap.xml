@@ -148,6 +148,34 @@
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/web_runtime_guide/"/>
     </url>
     <url>
+        <loc>/concepts/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/concepts/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/concepts/"/>
+    </url>
+    <url>
+        <loc>/how-to/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/how-to/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/how-to/"/>
+    </url>
+    <url>
+        <loc>/internals/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/internals/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/internals/"/>
+    </url>
+    <url>
+        <loc>/migration/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/migration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration/"/>
+    </url>
+    <url>
         <loc>/modules/app/</loc>
         <lastmod>2026-06-01</lastmod>
         <changefreq>daily</changefreq>
@@ -181,6 +209,20 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="/modules/service/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/service/"/>
+    </url>
+    <url>
+        <loc>/reference/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/reference/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/reference/"/>
+    </url>
+    <url>
+        <loc>/start/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="/start/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/start/"/>
     </url>
     <url>
         <loc>/wiki/application_runtime/</loc>
@@ -386,6 +428,34 @@
         <xhtml:link rel="alternate" hreflang="en" href="/zh/web_runtime_guide/"/>
     </url>
     <url>
+        <loc>/zh/zh/concepts/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/concepts/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/concepts/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/how-to/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/how-to/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/how-to/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/internals/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/internals/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/internals/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/migration/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/migration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/migration/"/>
+    </url>
+    <url>
         <loc>/zh/zh/modules/app/</loc>
         <lastmod>2026-06-01</lastmod>
         <changefreq>daily</changefreq>
@@ -419,6 +489,20 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/modules/service/"/>
         <xhtml:link rel="alternate" hreflang="en" href="/zh/modules/service/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/reference/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/reference/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/reference/"/>
+    </url>
+    <url>
+        <loc>/zh/zh/start/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="/zh/zh/start/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="/zh/start/"/>
     </url>
     <url>
         <loc>/zh/zh/wiki/application_runtime/</loc>
