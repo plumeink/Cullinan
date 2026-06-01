@@ -610,26 +610,8 @@ def file_list_func() -> List[str]:
         from cullinan.support.path_utils import get_packaging_mode
         packaging_mode = get_packaging_mode()
 
-        # Check for explicit registration mode (skip scanning)
-        from cullinan.support.config import get_config
-        config = get_config()
-
         # Initialize statistics collection
         stats_collector = get_scan_stats_collector()
-
-        if config.explicit_services or config.explicit_controllers:
-            stats_collector.start_scan(scan_mode="explicit", packaging_mode=packaging_mode)
-            logger.info(
-                "Explicit registration mode enabled: skipping module scanning. "
-                "Services: %d, Controllers: %d",
-                len(config.explicit_services) if config.explicit_services else 0,
-                len(config.explicit_controllers) if config.explicit_controllers else 0
-            )
-            # Return empty list to skip scanning
-            _module_list_cache = []
-            stats = stats_collector.end_scan(0.0)
-            log_scan_statistics(stats, level="info")
-            return _module_list_cache
 
         # Perform actual scanning with performance measurement
         logger.info("Starting module discovery...")

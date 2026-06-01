@@ -1,9 +1,8 @@
 # Cullinan 依赖注入快速参考
 
-> **版本**: 0.93a8
+> **版本**: 0.93a9
 > **作者**: Plumeink
 
-> **知识角色：** [工程实践](how-to/index.md)  
 > **速查页：** 这页用于快速查看 DI 写法；完整指导请看
 > [依赖注入指南](dependency_injection_guide.md)，查符号请看 [API 参考](reference/index.md)。
 
@@ -12,12 +11,11 @@
 ### 1. 定义服务
 
 ```python
-from cullinan.core.services import service, Service
+from cullinan.core import service
 
 @service
-class UserService(Service):
+class UserService:
     def __init__(self):
-        super().__init__()
         self.name = "UserService"
     
     def get_user(self, user_id):
@@ -27,8 +25,8 @@ class UserService(Service):
 ### 2. 注入服务到 Controller
 
 ```python
-from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject, InjectByName, Lazy, Provider
+from cullinan.web import controller, get_api
 
 @controller(url='/api')
 class UserController:
@@ -48,9 +46,8 @@ class UserController:
 ### 3. 使用注入的服务
 
 ```python
-from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.web.params import Path
+from cullinan.web import controller, get_api, Path
 
 @controller(url='/api')
 class UserController:
@@ -99,26 +96,20 @@ class Repo:
 
 ## 打包应用配置
 
-### 使用显式注册（推荐）
+### 使用根模块发现（推荐）
 
 ```python
-from cullinan import configure
-from my_app.service.user_service import UserService
-from my_app.service.auth_service import AuthService
+from cullinan import configure, module, run
+
 from my_app.controller.user_controller import UserController
+from my_app.service.auth_service import AuthService
+from my_app.service.user_service import UserService
 
-# 在 run() 之前配置
-configure(
-    explicit_services=[
-        UserService,
-        AuthService,
-    ],
-    explicit_controllers=[
-        UserController,
-    ]
-)
+@module
+class RootModule:
+    pass
 
-from cullinan.application import run
+configure(root_module=RootModule)
 run()
 ```
 

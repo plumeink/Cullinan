@@ -1,6 +1,11 @@
 """专项回归：确保 Controller 实例通过 ApplicationContext 完成依赖注入。"""
 
 import json
+import pytest
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def reset_all_registries():
@@ -9,9 +14,7 @@ def reset_all_registries():
     from cullinan.core.pending import PendingRegistry
 
     reset_controller_registry()
-    pending = PendingRegistry.get_instance()
-    pending._registrations.clear()
-    pending._frozen = False
+    PendingRegistry.reset()
     set_application_context(None)
 
 

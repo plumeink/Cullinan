@@ -3,7 +3,6 @@
 > **版本**：v0.90  
 > **作者**：Plumeink
 
-> **知识角色：** [版本迁移](migration/index.md)  
 > **仅用于升级：** 这页用于迁移既有代码，不用于学习新项目的推荐 API 路径。
 
 本指南帮助您从 Cullinan 1.x 迁移到 0.93（0.90）。
@@ -147,18 +146,17 @@ ctx.register(Definition(
 
 ```python
 # 旧风格（app.py）
-from cullinan.application.lifecycle import CullinanApplication
-app = CullinanApplication()
-app.run()
+from cullinan.app import run
 
 # 新风格
-from cullinan.core.container import ApplicationContext
+from cullinan import configure, module, run
 
-ctx = ApplicationContext()
-# ... 注册定义 ...
-ctx.refresh()
-# ... 运行 tornado ...
-ctx.shutdown()
+@module
+class RootModule:
+    pass
+
+configure(root_module=RootModule)
+run()
 ```
 
 ### 第 4 步：处理请求作用域

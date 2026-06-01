@@ -1,10 +1,9 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.93a8
+> **Version**: v0.93a9
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
 
-> **Knowledge role:** [Internals & Extensions](internals/index.md)  
 > **Advanced topic:** this guide is for framework extension work, not the default
 > application learning path.
 
@@ -166,7 +165,7 @@ class AuthMiddleware(Middleware):
 
 ### Complete Example
 
-Reference: `examples/custom_auth_middleware.py`
+Reference: `examples/legacy/custom_auth_middleware.py`
 
 ---
 
@@ -290,7 +289,7 @@ For new extensions, prefer registering `Definition` objects or explicit factorie
 
 ### Complete Example
 
-Reference: `examples/custom_provider_demo.py`
+Reference: `examples/legacy/custom_provider_demo.py`
 
 ---
 
@@ -657,8 +656,8 @@ class TestMyMiddleware(ServiceTestCase):
 - [Quick Start Extensions](quick_start_extensions.md) - Quick start guide for extensions
 
 > **Note**: Example files can be found in the `examples/` directory of the repository:
-> - `examples/custom_auth_middleware.py` - Middleware example
-> - `examples/custom_provider_demo.py` - Provider example
+> - `examples/legacy/custom_auth_middleware.py` - Legacy middleware example
+> - `examples/legacy/custom_provider_demo.py` - Legacy provider example
 > - `examples/extension_registration_demo.py` - Extension registration demo
 
 ---
@@ -671,6 +670,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.93a8
+**Version**: v0.93a9
 **Author**: Plumeink  
 **Last Updated**: 2026-06-01

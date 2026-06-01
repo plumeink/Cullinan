@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Test to diagnose @component decorator registration issue."""
 
-import sys
-import os
+import pytest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def test_component_decorator_registration():
@@ -36,20 +37,10 @@ def test_component_decorator_registration():
     pending = PendingRegistry.get_instance()
     all_registrations = pending.get_all()
 
-    print(f"\nTotal registrations: {len(all_registrations)}")
-
-    for reg in all_registrations:
-        print(f"  - {reg.name}: type={reg.component_type.value}, scope={reg.scope}")
-
     # Verify all types are present
     services = pending.get_by_type(ComponentType.SERVICE)
     controllers = pending.get_by_type(ComponentType.CONTROLLER)
     components = pending.get_by_type(ComponentType.COMPONENT)
-
-    print(f"\nBy type:")
-    print(f"  Services: {len(services)}")
-    print(f"  Controllers: {len(controllers)}")
-    print(f"  Components: {len(components)}")
 
     assert len(services) == 1, f"Expected 1 service, got {len(services)}"
     assert len(controllers) == 1, f"Expected 1 controller, got {len(controllers)}"
@@ -64,9 +55,6 @@ def test_component_decorator_registration():
     assert 'TestController' in controller_names
     assert 'TestComponent' in component_names
     assert 'CustomComponent' in component_names
-
-    print("\n✅ test_component_decorator_registration passed!")
-
 
 def test_component_processed_by_application_context():
     """Test that @component is processed by ApplicationContext.refresh()."""
@@ -97,27 +85,14 @@ def test_component_processed_by_application_context():
 
     # Check that both are registered
     definitions = ctx.list_definitions()
-    print(f"\nRegistered definitions: {definitions}")
 
     assert 'MyService' in definitions, "MyService should be in definitions"
     assert 'MyComponent' in definitions, "MyComponent should be in definitions"
 
-    # Check that lifecycle was called for both
-    print(f"Lifecycle log: {lifecycle_log}")
-
-    # The component should have on_post_construct called if it's a LifecycleAware
-    # Since MyComponent doesn't inherit from SmartLifecycle, it may not be called
-    # Let's check if get() works
-
     service_instance = ctx.get('MyService')
     component_instance = ctx.get('MyComponent')
-
-    print(f"MyService instance: {service_instance}")
-    print(f"MyComponent instance: {component_instance}")
 
     assert service_instance is not None, "MyService instance should not be None"
     assert component_instance is not None, "MyComponent instance should not be None"
 
     ctx.shutdown()
-
-    print("\n✅ test_component_processed_by_application_context passed!")

@@ -19,7 +19,6 @@ pr_links: []
 核心心智是：先用装饰器声明业务方法与组件，再由运行时完成装配；
 Cullinan 不是围绕手工组装 app 对象展开的框架。
 
-> **知识角色：** [应用构建](start/index.md)  
 > **推荐下一步：** [框架语义](framework_semantics.md)、[工程实践](how-to/index.md)  
 > **仓库可运行指引：** `examples/minimal_app/` 是当前维护中的最小示例。<br>
 > **高级边界：** 如果你明确需要显式 `Application` 编排，请进入
@@ -61,7 +60,7 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -124,7 +123,7 @@ python minimal_app.py
 
 ```python
 # minimal_app.py
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -168,12 +167,12 @@ python minimal_app.py
 
 ### 应用生命周期
 1. **声明入口**：`configure(root_module=RootModule)` 告诉 Cullinan 哪个根模块定义运行时边界
-2. **发现与装配**：`run()` 导入所属包、重建待注册项，并装配 `ApplicationContext` 与 `WebRuntime`
-3. **激活**：通过校验的 runtime 成为活动 runtime，并通过框架选择的适配器路径对外提供服务
+2. **发现与装配**：`run()` 导入所属包、完成待注册装饰器项收口，并在该模块边界下装配业务组件
+3. **激活**：通过校验的 runtime 成为活动 runtime，并通过框架选择的后端路径对外提供服务
 4. **Reload / 关闭**：旧 runtime 会先 drain 飞行中请求，然后再关闭
 
 ### 依赖注入
-Cullinan 通过以 `ApplicationContext` 为底层基础的 application-first 运行时模型提供内置 IoC/DI 支持。
+Cullinan 通过装饰器驱动的组件发现与运行时管理的装配流程提供内置 IoC/DI 支持。
 
 #### 推荐运行时模型
 
@@ -182,15 +181,14 @@ Cullinan 通过以 `ApplicationContext` 为底层基础的 application-first 运
 - 按类型注入优先使用 `Inject()`
 - 按名称解析更方便时使用 `InjectByName()`
 - 先从业务装饰器开始；当你需要明确运行时边界时再引入 `@module`
-- 只有在需要底层容器编排时，才直接操作 `ApplicationContext`
+- 如果你明确需要底层容器或运行时内部机制，请转到 [运行时与扩展](internals/index.md)，不要把那条路径当成快速开始模型
 
 ```python
 from cullinan.web import controller, get_api, Path
-from cullinan.core.services import Service, service
-from cullinan.core import Inject
+from cullinan.core import Inject, service
 
 @service
-class UserService(Service):
+class UserService:
     def get_user(self, user_id):
         return {'id': user_id, 'name': 'John'}
 
@@ -313,16 +311,15 @@ class UserController:
 当依赖类型容易导入时，优先使用带类型的 `Inject()`：
 
 ```python
-from cullinan.core import Inject
-from cullinan.core.services import Service, service
+from cullinan.core import Inject, service
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db: DatabaseService = Inject()
 
     def get_users(self):
@@ -334,16 +331,15 @@ class UserRepository(Service):
 按名称注入，无需导入依赖类，避免循环导入问题：
 
 ```python
-from cullinan.core.services import Service, service
-from cullinan.core import InjectByName
+from cullinan.core import InjectByName, service
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db = InjectByName('DatabaseService')
     
     def get_users(self):
@@ -356,20 +352,19 @@ class UserRepository(Service):
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import Inject
-from cullinan.core.services import Service, service
+from cullinan.core import Inject, service
 
 # TYPE_CHECKING 块中的导入不会在运行时执行，避免循环导入
 if TYPE_CHECKING:
     from my_project.services import DatabaseService
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db: 'DatabaseService' = Inject()
     
     def get_users(self):

@@ -2,6 +2,7 @@ import asyncio
 import importlib
 import json
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -25,6 +26,18 @@ def _load_root_module(module_path: str, root_name: str = "RootModule"):
     _clear_example_modules(prefix)
     module = importlib.import_module(module_path)
     return getattr(module, root_name)
+
+
+def _read_example_file(*parts: str) -> str:
+    return Path("examples", *parts).read_text(encoding="utf-8")
+
+
+def _read_doc_file(*parts: str) -> str:
+    return Path("docs", *parts).read_text(encoding="utf-8")
+
+
+def _read_zh_doc_file(*parts: str) -> str:
+    return Path("docs", "zh", *parts).read_text(encoding="utf-8")
 
 
 async def _invoke_asgi_app(app, path: str, method: str = "GET", body: bytes = b"", query_string: bytes = b""):
@@ -171,3 +184,129 @@ def test_testing_flow_example_stays_executable():
     _clear_example_modules("examples.testing_flow")
     module = importlib.import_module("examples.testing_flow.test_app")
     module.run_example_assertions()
+
+
+def test_example_entrypoints_use_top_level_public_api():
+    targets = [
+        ("minimal_app", "root.py"),
+        ("controller_service_inject", "root.py"),
+        ("middleware_and_module", "root.py"),
+        ("parameter_handling", "root.py"),
+        ("testing_flow", "app.py"),
+    ]
+
+    for parts in targets:
+        source = _read_example_file(*parts)
+        assert "from cullinan import configure, module, run" in source
+        assert "from cullinan.application import configure, module, run" not in source
+
+
+def test_examples_directory_keeps_legacy_demos_outside_default_path():
+    examples_readme = Path("examples", "README.md").read_text(encoding="utf-8")
+
+    assert "examples/legacy/" in examples_readme
+    assert "examples/extension_registration_demo.py" in examples_readme
+    assert Path("examples", "legacy", "decorator_demo_090.py").exists()
+    assert Path("examples", "legacy", "custom_provider_demo.py").exists()
+    assert Path("examples", "legacy", "custom_auth_middleware.py").exists()
+    assert Path("examples", "legacy", "ioc_facade_demo.py").exists()
+    assert not Path("examples", "decorator_demo_090.py").exists()
+    assert not Path("examples", "custom_provider_demo.py").exists()
+    assert not Path("examples", "custom_auth_middleware.py").exists()
+    assert not Path("examples", "ioc_facade_demo.py").exists()
+
+
+def test_docs_home_no_longer_exposes_fake_app_module():
+    docs_home = _read_doc_file("README.md")
+    zh_docs_home = _read_zh_doc_file("README.md")
+
+    assert "Module Reference: app" not in docs_home
+    assert "模块参考：app" not in zh_docs_home
+    assert "modules/app.md" not in docs_home
+    assert "modules/app.md" not in zh_docs_home
+    assert not Path("docs", "modules", "application_lifecycle.md").exists()
+    assert not Path("docs", "zh", "modules", "application_lifecycle.md").exists()
+    assert not Path("docs", "modules", "app.md").exists()
+    assert not Path("docs", "zh", "modules", "app.md").exists()
+    assert "`cullinan.application + cullinan.web + cullinan.core`" not in docs_home
+    assert "`cullinan.application + cullinan.web + cullinan.core`" not in zh_docs_home
+
+
+def test_root_readme_keeps_default_path_on_top_level_api():
+    readme = Path("README.MD").read_text(encoding="utf-8")
+
+    assert "def create_app():" not in readme
+    assert "create_app()" not in readme
+    assert "- `cullinan.application` - application definition, configuration, and startup" not in readme
+    assert "top-level `cullinan` API" in readme
+
+
+def test_getting_started_stays_on_business_first_onboarding_path():
+    getting_started = _read_doc_file("getting_started.md")
+    zh_getting_started = _read_zh_doc_file("getting_started.md")
+
+    assert "ApplicationContext" not in getting_started
+    assert "WebRuntime" not in getting_started
+    assert "ApplicationContext" not in zh_getting_started
+    assert "WebRuntime" not in zh_getting_started
+    assert "Internals & Extensions" in getting_started
+    assert "运行时与扩展" in zh_getting_started
+
+
+def test_di_guides_prefer_public_core_and_top_level_startup():
+    di_guide = _read_doc_file("dependency_injection_guide.md")
+    zh_di_guide = _read_zh_doc_file("dependency_injection_guide.md")
+    di_quick = _read_doc_file("quick_reference_di.md")
+    zh_di_quick = _read_zh_doc_file("quick_reference_di.md")
+
+    assert "from cullinan.core.services import service" not in di_guide
+    assert "from cullinan.core.services import service" not in zh_di_guide
+    assert "from cullinan.application import run" not in di_quick
+    assert "from cullinan.application import run" not in zh_di_quick
+    assert "from cullinan import configure, module, run" in di_quick
+    assert "from cullinan import configure, module, run" in zh_di_quick
+
+
+def test_api_reference_removes_compatibility_layer_from_current_surface():
+    api_reference = _read_doc_file("api_reference.md")
+    zh_api_reference = _read_zh_doc_file("api_reference.md")
+
+    assert "explicit runtime assembly" not in api_reference
+    assert "显式运行时装配" not in zh_api_reference
+    assert "decorator-first business code" in api_reference
+    assert "装饰器优先的业务代码" in zh_api_reference
+    assert "Compatibility-oriented modules" not in api_reference
+    assert "兼容保留模块" not in zh_api_reference
+    assert "application.lifecycle" not in api_reference
+    assert "application.lifecycle" not in zh_api_reference
+
+
+def test_tornado_decoupling_docs_keep_top_level_startup_and_backend_neutral_terms():
+    architecture = _read_doc_file("architecture.md")
+    zh_architecture = _read_zh_doc_file("architecture.md")
+    framework_semantics = _read_doc_file("framework_semantics.md")
+    zh_framework_semantics = _read_zh_doc_file("framework_semantics.md")
+    components = _read_doc_file("wiki", "components.md")
+    zh_components = _read_zh_doc_file("wiki", "components.md")
+    migration_v2 = _read_doc_file("migration_guide_v2.md")
+    zh_migration_v2 = _read_zh_doc_file("migration_guide_v2.md")
+
+    assert "cullinan.application -> Application, configure/run/get_asgi_app, @module" not in architecture
+    assert "cullinan.application -> Application、configure/run/get_asgi_app、@module" not in zh_architecture
+    assert "cullinan             -> configure/run/get_asgi_app" in architecture
+    assert "cullinan             -> configure/run/get_asgi_app" in zh_architecture
+
+    assert "- `cullinan.application` for application configuration and startup" not in framework_semantics
+    assert "- `cullinan.application` —— 应用配置与启动" not in zh_framework_semantics
+    assert "- `cullinan` for application startup (`configure`, `run`, `get_asgi_app`)" in framework_semantics
+    assert "- `cullinan` —— 应用启动入口（`configure`、`run`、`get_asgi_app`）" in zh_framework_semantics
+
+    assert "`current_app`" not in components
+    assert "`current_app`" not in zh_components
+    assert "Application.current()" in components
+    assert "Application.current()" in zh_components
+
+    assert "from cullinan.application import run" not in migration_v2
+    assert "from cullinan.application import run" not in zh_migration_v2
+    assert "from cullinan import run" in migration_v2
+    assert "from cullinan import run" in zh_migration_v2

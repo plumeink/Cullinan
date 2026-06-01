@@ -5,14 +5,15 @@ Verifies that lifecycle methods are called even when classes
 don't inherit from Service, SmartLifecycle, or LifecycleAware.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
 
 from cullinan.core import ApplicationContext, set_application_context
 from cullinan.core.pending import PendingRegistry
 from cullinan.core.decorators import service, component, controller
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def test_service_without_inheritance():
@@ -66,9 +67,6 @@ def test_service_without_inheritance():
     assert 'PlainService.on_pre_destroy' in lifecycle_calls, \
         f"on_pre_destroy not called. Calls: {lifecycle_calls}"
 
-    print("✅ test_service_without_inheritance passed!")
-
-
 def test_component_without_inheritance():
     """Test @component without inheriting any base class"""
     PendingRegistry.reset()
@@ -110,7 +108,6 @@ def test_component_without_inheritance():
     assert cache.get('test') == 'value'
 
     ctx.shutdown()
-    print("✅ test_component_without_inheritance passed!")
 
 
 def test_controller_without_inheritance():
@@ -139,9 +136,6 @@ def test_controller_without_inheritance():
     ctx.shutdown()
 
     assert 'ApiController.on_shutdown' in lifecycle_calls
-
-    print("✅ test_controller_without_inheritance passed!")
-
 
 def test_get_phase_without_inheritance():
     """Test get_phase() works without inheriting SmartLifecycle"""
@@ -185,7 +179,6 @@ def test_get_phase_without_inheritance():
         f"Wrong order: {startup_order}"
 
     ctx.shutdown()
-    print("✅ test_get_phase_without_inheritance passed!")
 
 
 def test_async_lifecycle_without_inheritance():
@@ -201,11 +194,11 @@ def test_async_lifecycle_without_inheritance():
         """Async lifecycle without inheritance"""
 
         async def on_startup_async(self):
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
             lifecycle_calls.append('AsyncService.on_startup_async')
 
         async def on_shutdown_async(self):
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
             lifecycle_calls.append('AsyncService.on_shutdown_async')
 
     ctx = ApplicationContext()
@@ -218,9 +211,6 @@ def test_async_lifecycle_without_inheritance():
     ctx.shutdown()
 
     assert 'AsyncService.on_shutdown_async' in lifecycle_calls
-
-    print("✅ test_async_lifecycle_without_inheritance passed!")
-
 
 def test_mixed_inheritance_and_plain():
     """Test mix of classes with and without inheritance"""
@@ -249,5 +239,3 @@ def test_mixed_inheritance_and_plain():
     assert 'InheritedService' in lifecycle_calls
 
     ctx.shutdown()
-    print("✅ test_mixed_inheritance_and_plain passed!")
-

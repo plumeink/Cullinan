@@ -283,64 +283,11 @@ BANNER = (
 
 
 def _register_explicit_classes():
-    """Register explicit services and controllers if configured.
-
-    This allows users to skip module scanning and directly register classes,
-    which improves startup performance for large projects.
-    """
-    from cullinan.support.config import get_config
-
-    config = get_config()
-
-    # Register explicit services
-    if config.explicit_services:
-        logger.info(
-            "Registering %d explicit services (skipping scan)",
-            len(config.explicit_services)
-        )
-        for service_class in config.explicit_services:
-            try:
-                # Import the service's module to trigger decorator registration
-                module = inspect.getmodule(service_class)
-                if module:
-                    logger.debug(
-                        "Explicit service registered: %s from %s",
-                        service_class.__name__,
-                        module.__name__
-                    )
-            except Exception as e:
-                logger.warning(
-                    "Failed to register explicit service %s: %s",
-                    service_class.__name__ if hasattr(service_class, '__name__') else service_class,
-                    str(e)
-                )
-
-    # Register explicit controllers
-    if config.explicit_controllers:
-        logger.info(
-            "Registering %d explicit controllers (skipping scan)",
-            len(config.explicit_controllers)
-        )
-        for controller_class in config.explicit_controllers:
-            try:
-                # Import the controller's module to trigger decorator registration
-                module = inspect.getmodule(controller_class)
-                if module:
-                    logger.debug(
-                        "Explicit controller registered: %s from %s",
-                        controller_class.__name__,
-                        module.__name__
-                    )
-            except Exception as e:
-                logger.warning(
-                    "Failed to register explicit controller %s: %s",
-                    controller_class.__name__ if hasattr(controller_class, '__name__') else controller_class,
-                    str(e)
-                )
+    """Legacy explicit registration mode has been removed."""
 
 
 def run(handlers=None):
-    """Legacy entry point — delegates to ``cullinan.application.run()``.
+    """Legacy entry point — delegates to top-level ``cullinan.run()``.
 
     This function performs the module scanning (services + controllers)
     and then hands off to the gateway-based startup in ``application.py``.
@@ -414,7 +361,7 @@ def run(handlers=None):
         logger.info("└---no services registered")
 
     # Delegate to gateway-based startup
-    from cullinan.application import run as app_run
+    from cullinan import run as app_run
     app_run(extra_handlers=handlers)
 
 

@@ -29,14 +29,6 @@ class CullinanConfig:
         # 是否自动扫描（如果为 False，只导入 user_packages）
         self.auto_scan: bool = True
 
-        # 显式注册的 Service 类列表（优先级高于自动扫描）
-        # 例如: [DatabaseService, CacheService]
-        self.explicit_services: List = []
-
-        # 显式注册的 Controller 类列表（优先级高于自动扫描）
-        # 例如: [UserController, AdminController]
-        self.explicit_controllers: List = []
-
         # 模块扫描黑名单（不扫描这些包）
         self.exclude_packages: List[str] = [
             # Testing
@@ -87,19 +79,6 @@ class CullinanConfig:
             # 自定义请求 ID 生成器（当 request_id_format='custom' 时使用）
             'custom_request_id_generator': None,
         }
-
-        # ====================================================================
-        # BACKWARD_COMPAT: v0.8 - 向后兼容开关
-        # 此选项将在 v1.0 移除，届时将不再支持旧 API
-        # ====================================================================
-
-        # 是否启用向后兼容模式（v1.0 将默认为 False）
-        # 禁用后，使用废弃的 API 将抛出错误而不是警告
-        self.enable_backward_compat: bool = True
-
-        # ====================================================================
-        # END BACKWARD_COMPAT
-        # ====================================================================
 
         # ====================================================================
         # v0.93: Server Engine Configuration
@@ -165,10 +144,6 @@ class CullinanConfig:
             self.verbose = config['verbose']
         if 'auto_scan' in config:
             self.auto_scan = config['auto_scan']
-        if 'explicit_services' in config:
-            self.explicit_services = config['explicit_services']
-        if 'explicit_controllers' in config:
-            self.explicit_controllers = config['explicit_controllers']
         if 'exclude_packages' in config:
             self.exclude_packages = config['exclude_packages']
         if 'startup_error_policy' in config:
@@ -191,8 +166,6 @@ class CullinanConfig:
             'root_module': self.root_module,
             'verbose': self.verbose,
             'auto_scan': self.auto_scan,
-            'explicit_services': self.explicit_services,
-            'explicit_controllers': self.explicit_controllers,
             'exclude_packages': self.exclude_packages,
             'startup_error_policy': self.startup_error_policy,
             'server_engine': self.server_engine,
@@ -217,8 +190,6 @@ def configure(
     project_root: Optional[str] = None,
     verbose: bool = False,
     auto_scan: bool = True,
-    explicit_services: Optional[List] = None,
-    explicit_controllers: Optional[List] = None,
     exclude_packages: Optional[List[str]] = None,
     startup_error_policy: str = 'strict',
     server_engine: Optional[str] = None,
@@ -234,8 +205,6 @@ def configure(
         project_root: 项目根目录（如果不指定，会自动推断）
         verbose: 是否启用详细日志
         auto_scan: 是否自动扫描（False 时只导入指定的包）
-        explicit_services: 显式注册的 Service 类列表，例如 [DatabaseService, CacheService]
-        explicit_controllers: 显式注册的 Controller 类列表，例如 [UserController, AdminController]
         exclude_packages: 排除的包名列表
         startup_error_policy: 启动错误处理策略
             - 'strict': Service 失败时立即退出（默认，最安全）
@@ -253,16 +222,6 @@ def configure(
         ...     user_packages=['your_app'],
         ...     verbose=True,
         ...     startup_error_policy='warn'  # 允许部分 Service 失败
-        ... )
-
-        >>> # 使用显式注册（跳过自动扫描，提升性能）
-        >>> from cullinan import configure
-        >>> from myapp.services import DatabaseService, CacheService
-        >>> from myapp.controllers import UserController
-        >>> configure(
-        ...     explicit_services=[DatabaseService, CacheService],
-        ...     explicit_controllers=[UserController],
-        ...     auto_scan=False  # 禁用自动扫描
         ... )
     """
     global _config
@@ -287,12 +246,6 @@ def configure(
 
     _config.verbose = verbose
     _config.auto_scan = auto_scan
-
-    if explicit_services is not None:
-        _config.explicit_services = explicit_services
-
-    if explicit_controllers is not None:
-        _config.explicit_controllers = explicit_controllers
 
     if exclude_packages is not None:
         _config.exclude_packages = exclude_packages

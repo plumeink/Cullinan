@@ -4,6 +4,7 @@
 import unittest
 import asyncio
 from typing import List
+import pytest
 
 from cullinan.core.lifecycle_enhanced import (
     LifecyclePhase, LifecycleAware, SmartLifecycle,
@@ -11,6 +12,10 @@ from cullinan.core.lifecycle_enhanced import (
 )
 from cullinan.core.services import service, Service, get_service_registry, reset_service_registry
 from cullinan.core import Inject, get_injection_registry, reset_injection_registry
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 class TestLifecyclePhases(unittest.TestCase):
@@ -296,4 +301,3 @@ class TestServiceIntegration(unittest.TestCase):
 
         ctx.shutdown()
         print("  [OK] Service dependency chain with phases works")
-

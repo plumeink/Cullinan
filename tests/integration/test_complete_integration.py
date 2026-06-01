@@ -4,24 +4,22 @@
 Updated to use ApplicationContext (IoC 2.0 unified lifecycle).
 """
 
-import sys
-import os
-
-# Add project to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
 
 from cullinan.core import Inject, ApplicationContext, set_application_context
 from cullinan.core.pending import PendingRegistry
 from cullinan.core.services import service, Service
 from cullinan.web.controller import controller, get_api
 
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
+
 
 def test_complete_flow():
     """Test the complete application flow using ApplicationContext"""
     from cullinan.web.controller import get_controller_registry
     from cullinan.web.handler import get_handler_registry
-
-    print("\n=== Complete Flow Integration Test ===\n")
 
     # Reset state at the beginning of each test
     PendingRegistry.reset()
@@ -139,4 +137,3 @@ def test_complete_flow():
     ctx.shutdown()
 
     assert success, "Some checks failed"
-

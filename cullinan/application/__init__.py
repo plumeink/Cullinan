@@ -9,7 +9,6 @@ from cullinan.application.legacy import (
     _validate_component_scan_results,
     reflect_module,
 )
-from cullinan.application.lifecycle import CullinanApplication, create_app
 from cullinan.application.model import (
     Application,
     Module,
@@ -20,7 +19,6 @@ from cullinan.application.model import (
     _collect_module_specs,
     _resolve_component_owners,
     bind_runtime_request_context,
-    current_app,
     get_module_metadata,
     module,
     release_runtime_request_context,
@@ -44,14 +42,11 @@ __all__ = [
     "ModuleReflectionResult",
     "ModuleSpec",
     "Runtime",
-    "CullinanApplication",
     "CullinanConfig",
     "_collect_module_specs",
     "_resolve_component_owners",
     "bind_runtime_request_context",
     "configure",
-    "create_app",
-    "current_app",
     "get_asgi_app",
     "get_config",
     "get_module_metadata",

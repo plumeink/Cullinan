@@ -15,11 +15,10 @@ pr_links: []
 
 # 应用构建
 
-这个知识域是 Cullinan 文档站的**默认起点**。
+从这里开始安装 Cullinan、运行最小应用，并确认推荐的公开入口。
 
-Cullinan 希望应用代码先从业务装饰器、业务方法，以及顶层
-`from cullinan import configure, run` 开始，因此这里优先保留最短、
-最稳定的推荐路径。
+Cullinan 应用代码应从业务装饰器、业务方法，以及顶层
+`from cullinan import configure, run` 开始。
 
 ## 从这里开始
 

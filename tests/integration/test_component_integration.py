@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Integration test to verify @component works in the full application flow."""
 
-import sys
-import os
 import tempfile
 import shutil
+import pytest
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def test_component_in_full_flow():

@@ -1,7 +1,8 @@
 import asyncio
 import json
 
-from cullinan.application import Application, get_asgi_app
+from cullinan import get_asgi_app
+from cullinan.application import Application
 
 from .app import configure_example
 

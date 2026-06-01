@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """验证旧构造器注入兼容 API 在 0.93 中的当前语义。"""
 
+import pytest
+
 from cullinan.core import (
     ApplicationContext,
     get_injection_registry,
@@ -11,6 +13,11 @@ from cullinan.core import (
     set_application_context,
 )
 from cullinan.core.pending import PendingRegistry
+
+pytestmark = [
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.CompatibilitySemanticWarning"),
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"),
+]
 
 
 def test_injectable_is_no_op_compatibility_decorator():

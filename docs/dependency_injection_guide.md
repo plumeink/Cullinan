@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: 0.93a8
+> **Version**: 0.93a9
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -10,7 +10,6 @@ Cullinan's current DI model is centered on `ApplicationContext` and exposed publ
 
 Before choosing an injection primitive, read [Framework Semantics](framework_semantics.md). That page defines the hard rules behind `Inject()`, `InjectByName()`, `refresh()`, and compatibility APIs.
 
-> **Knowledge role:** [Engineering Practices](how-to/index.md)  
 > **Recommended default:** prefer decorator-based business code plus `Inject()` where the type contract is stable.  
 > **Need symbol lookup instead of guidance?** See [API Reference](reference/index.md).
 
@@ -19,8 +18,7 @@ Before choosing an injection primitive, read [Framework Semantics](framework_sem
 ### 1. Register services with decorators
 
 ```python
-from cullinan.core import Inject
-from cullinan.core.services import service
+from cullinan.core import Inject, service
 
 @service
 class DatabaseService:
@@ -38,9 +36,8 @@ class UserService:
 ### 2. Use the same injection model in controllers
 
 ```python
-from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.web.params import Path
+from cullinan.web import controller, get_api, Path
 
 @controller(url="/users")
 class UserController:
@@ -125,8 +122,7 @@ class AuditService:
 ```python
 from typing import TYPE_CHECKING
 
-from cullinan.core import Inject
-from cullinan.core.services import service
+from cullinan.core import Inject, service
 
 if TYPE_CHECKING:
     from .providers import DatabaseSessionProvider
@@ -143,8 +139,7 @@ As long as `DatabaseSessionProvider` is the only matching registered component, 
 ```python
 from typing import TYPE_CHECKING, Optional
 
-from cullinan.core import Inject, Provider
-from cullinan.core.services import service
+from cullinan.core import Inject, Provider, service
 
 if TYPE_CHECKING:
     from .contracts import Hook

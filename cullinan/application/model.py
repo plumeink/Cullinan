@@ -151,17 +151,6 @@ def get_module_metadata(module_cls: Type[Any]) -> ModuleMetadata:
             "请使用 @module 装饰。"
         )
     return metadata
-
-
-def current_app(default: Optional["Application"] = None) -> Optional["Application"]:
-    current = get_current_context()
-    if current is not None:
-        snapshot = current.get_metadata(_APP_CONTEXT_KEY)
-        if snapshot is not None:
-            return snapshot
-    return Application.current(default=default)
-
-
 def bind_runtime_request_context(runtime: Optional[WebRuntime]) -> Dict[str, Any]:
     request_context = get_current_context()
     created_context = False
@@ -245,6 +234,11 @@ class Application:
 
     @classmethod
     def current(cls, default: Optional["Application"] = None) -> Optional["Application"]:
+        current = get_current_context()
+        if current is not None:
+            snapshot = current.get_metadata(_APP_CONTEXT_KEY)
+            if snapshot is not None:
+                return snapshot
         with cls._active_lock:
             return cls._active_app or default
 
@@ -594,7 +588,6 @@ __all__ = [
     "ModuleSpec",
     "Runtime",
     "bind_runtime_request_context",
-    "current_app",
     "get_module_metadata",
     "module",
     "release_runtime_request_context",

@@ -25,7 +25,7 @@ For the contract behind automatic discovery and registration, read [Framework Se
 
 - Responsibility: module graph discovery, ownership resolution, runtime activation, draining, and active-app lookup
 - Main package: `cullinan.application`
-- Key APIs: `Application`, `module`, `current_app`, `Runtime`
+- Key APIs: `Application`, `module`, `Application.current()`, `Runtime`
 
 ### 2. Core container
 

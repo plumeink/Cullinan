@@ -17,6 +17,10 @@ from cullinan.core.conditions import (
 from cullinan.core.application_context import ApplicationContext
 from cullinan.core.definitions import Definition, ScopeType
 
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
+
 
 class TestConditionalOnClass:
     """Tests for @ConditionalOnClass decorator."""

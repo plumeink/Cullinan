@@ -28,7 +28,6 @@ nav:
     - Overview: reference/index.md
     - API Reference Overview: api_reference.md
     - Module Reference:
-      - app: modules/app.md
       - application: modules/application.md
       - core: modules/core.md
       - controller: modules/controller.md
@@ -116,7 +115,7 @@ plugins:
             Extensions: 扩展
             RESTful API: RESTful API
             Module Reference: 模块参考
-            app: 应用
+            application.lifecycle: 应用生命周期
             application: 应用程序
             core: 核心
             controller: 控制器

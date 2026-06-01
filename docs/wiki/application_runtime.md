@@ -21,7 +21,6 @@ Cullinan's intended experience is decorator-first business development: the
 runtime assembles what your modules declare, instead of asking you to wire a
 manual app object step by step.
 
-> **Knowledge role:** [Internals & Extensions](../internals/index.md)  
 > **Advanced topic:** regular applications should prefer `from cullinan import configure, run`.  
 > **Reference companion:** see [API Reference](../api_reference.md) for the public / advanced / compatibility API split.
 
@@ -36,7 +35,7 @@ For the runtime contracts that now fail fast or warn, see [Framework Semantics](
 - `Application` owns one root module graph, one `ApplicationContext`, and one `WebRuntime`
 - `@module` declares a structured boundary for owned Python packages, reload, draining, and hot-pluggable runtime behavior
 - `Runtime` is the mutable record for a validated / warmed application candidate
-- `current_app()` resolves the active application and prefers the request-bound snapshot during draining
+- `Application.current()` resolves the active application and prefers the request-bound snapshot during draining
 
 ## Typical runtime assembly
 
@@ -102,7 +101,7 @@ module. If activation succeeds:
 3. in-flight requests keep their request-bound app snapshot
 4. the old runtime closes only after request counts drop to zero
 
-This is why `current_app()` may return an older application inside a draining
+This is why `Application.current()` may resolve an older application inside a draining
 request even after a newer runtime is already active globally.
 
 ## Adapters and request binding
@@ -111,7 +110,7 @@ The transport adapters (`ASGIAdapter` / `TornadoAdapter`) bind the runtime into
 the current request context before dispatch. That request binding enables:
 
 - request-scoped dependency resolution against the correct application
-- `current_app()` inside controllers and middleware
+- `Application.current()` inside runtime-aware controllers or middleware
 - safe draining while older requests are still finishing
 
 For normal business applications, this stays an internal transport concern; the
@@ -120,9 +119,8 @@ recommended entrypoint remains Cullinan's application and controller semantics.
 ## When to use ApplicationContext directly
 
 Keep using `ApplicationContext` directly when you need low-level container
-integration, explicit registration, or compatibility-oriented bootstrapping. For
-new application code, start from decorators and use `Application` plus
-`@module` when you need explicit runtime boundaries.
+integration. For new application code, start from decorators and use
+`Application` plus `@module` when you need explicit runtime boundaries.
 
 ## Related documents
 

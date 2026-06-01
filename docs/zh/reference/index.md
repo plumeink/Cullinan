@@ -15,23 +15,22 @@ pr_links: []
 
 # API 参考
 
-这个知识域面向**查阅**，而不是面向 onboarding。
-
 当你已经知道自己要找哪个符号、哪一类 API 或哪个模块族时，
-请从这里进入。这里的页面应保持稳定、可检索、职责清晰。
+请从这里进入。这里的页面保持稳定、可检索。
 
 ## 主要入口
 
-- [API 参考总览](../api_reference.md) —— 推荐、高级与兼容 API 分层
-- `cullinan.application.lifecycle`、`cullinan.application`、`cullinan.core`、`cullinan.web.controller`、`cullinan.core.services` 等模块参考
+- [API 参考总览](../api_reference.md) —— 推荐与高级 API 分层
+- 模块参考覆盖 `cullinan.core`、`cullinan.web.controller`、`cullinan.core.services`
+  等公开查阅面，也包含 `cullinan.application` 这类高级页面
 
 ## 查阅规则
 
 - 常规业务应用应优先从顶层 `cullinan` API 开始
 - 高级运行时 API 应显式从对应子模块导入
-- 兼容模块仍然保留文档，但不再属于默认路径
+- 已移除的历史 wrapper 应直接迁移，不再作为查阅路径保留
 
-## 相关知识域
+## 相关页面
 
 - 需要解释而不是查阅？去 [框架语义](../concepts/index.md)
 - 需要步骤式指导？去 [工程实践](../how-to/index.md)

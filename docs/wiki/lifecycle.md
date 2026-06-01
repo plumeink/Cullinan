@@ -46,8 +46,8 @@ If a component must start or stop before others, implement `get_phase()`. Lower 
 
 Request-scoped dependencies are resolved against the current request context.
 Adapters bind the active runtime into that request context before dispatch and
-release it afterward. During runtime replacement, `current_app()` keeps
-returning the request-bound snapshot until that request finishes.
+release it afterward. During runtime replacement, `Application.current()`
+keeps resolving the request-bound snapshot until that request finishes.
 
 ## Reload and draining
 

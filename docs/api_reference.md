@@ -17,9 +17,8 @@ pr_links: []
 
 > **Note (v0.90)**: The core module has been reorganized. For the new API structure, see [Dependency Injection Guide](dependency_injection_guide.md) and [Import Migration Guide](import_migration_090.md).
 
-This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended, advanced, or compatibility-oriented.
+This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended and which stay in advanced runtime-facing layers.
 
-> **Knowledge role:** [API Reference](reference/index.md)  
 > **Need the recommended learning path first?** Start from [Application Build](start/index.md)
 > and [Framework Semantics](concepts/index.md).  
 > **Need advanced runtime internals?** Continue in [Internals & Extensions](internals/index.md).
@@ -32,25 +31,25 @@ This page provides an overview of the public API surface of Cullinan and clarifi
   - startup: `configure(...)`, `run(...)`, `get_asgi_app(...)`
   - declaration: `@service`, `@controller`, `@module`, route decorators
   - injection / params: `Inject`, `InjectByName`, `Path`, `Query`, `Body`, ...
+  - framework mental model: decorator-first business code, component discovery,
+    IoC/DI wiring, and module boundaries with hot-pluggable runtime semantics
 
 ### Advanced integration API
 
-- `cullinan.application` — explicit runtime assembly (`Application`, `Runtime`, `current_app`)
+- `cullinan.application` — advanced public application semantics for maintainers
+  and framework-aware integrations (`Application`, `Runtime`, `module`)
 - `cullinan.transport.adapter` — server integration (`WebAdapter`, `TornadoAdapter`, `ASGIAdapter`)
 - `cullinan.web.gateway` — request / response / dispatcher contracts
 - `cullinan.core` — low-level container and lifecycle primitives
 
-These advanced transport adapters are integration-layer APIs, not the default
-application-facing mental model. Regular business code should stay on
-Cullinan's own application and Web semantics rather than depending on a
-concrete server adapter.
+These advanced modules are not the default application-facing mental model.
+Regular business code should stay on the top-level `cullinan` API and the
+framework's own decorator / DI / module semantics rather than dropping into
+low-level runtime orchestration or a concrete server adapter.
 
-### Compatibility-oriented modules
-
-- `cullinan.application` — legacy scanning startup helpers kept for existing projects
-- `cullinan.application.lifecycle` — older app wrapper surface kept only for compatibility
-
-For regular applications, prefer the top-level `cullinan` API. Advanced and compatibility modules should be imported explicitly so the boundary stays visible in code review, IDE completion, and onboarding docs.
+For regular applications, prefer the top-level `cullinan` API. Advanced modules
+should be imported explicitly so the boundary stays visible in code review, IDE
+completion, and onboarding docs.
 
 ## New in v0.90+: Parameter System
 

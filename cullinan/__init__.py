@@ -5,8 +5,6 @@ logging.getLogger("cullinan").addHandler(logging.NullHandler())
 from cullinan.application import (
     CullinanConfig,
     configure,
-    create_app,
-    current_app,
     get_asgi_app,
     get_config,
     module,
@@ -49,7 +47,7 @@ from cullinan.web import (
     websocket_handler,
 )
 
-__version__ = "0.93a8"
+__version__ = "0.93a9"
 
 __all__ = [
     "Auto",
@@ -79,8 +77,6 @@ __all__ = [
     "component",
     "configure",
     "controller",
-    "create_app",
-    "current_app",
     "delete_api",
     "get_api",
     "get_asgi_app",

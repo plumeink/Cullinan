@@ -2,7 +2,6 @@
 
 > **Cullinan 框架** — 从 v0.9x 升级到 v0.93 的完整迁移指南。
 
-> **知识角色：** [版本迁移](migration/index.md)  
 > **仅用于升级：** 这页只服务于版本迁移工作，不属于首次 onboarding。
 
 ## 变更总览
@@ -110,14 +109,14 @@ class UserController:
 #### v0.9x：仅 Tornado
 
 ```python
-from cullinan.application import run
+from cullinan import run
 run()  # 在端口 4080 启动 Tornado
 ```
 
 #### v0.93：让 Cullinan 自动解析后端，或显式选择
 
 ```python
-from cullinan.application import run
+from cullinan import run
 
 # 方式 A：让 Cullinan 自动解析后端
 run()

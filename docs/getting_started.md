@@ -19,7 +19,6 @@ This page provides a minimal quick-start to install and run a small Cullinan app
 The key mental model is: write business methods and components with decorators first,
 then let the runtime assemble them. Cullinan is not centered on a manually wired app object.
 
-> **Knowledge role:** [Application Build](start/index.md)  
 > **Read next:** [Framework Semantics](framework_semantics.md), [Engineering Practices](how-to/index.md)  
 > **Runnable repository guide:** `examples/minimal_app/` is the maintained minimal example.<br>
 > **Advanced boundary:** if you intentionally need explicit `Application` orchestration,
@@ -62,7 +61,7 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -125,7 +124,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -169,12 +168,12 @@ Then visit `http://localhost:4080/hello` in your browser.
 
 ### Application lifecycle
 1. **Entry declaration**: `configure(root_module=RootModule)` tells Cullinan which root module defines the runtime boundary
-2. **Discovery and assembly**: `run()` imports owned packages, rebuilds pending registrations, and assembles an `ApplicationContext` plus `WebRuntime`
-3. **Activation**: the validated runtime becomes active and is served through the framework-selected adapter path
+2. **Discovery and assembly**: `run()` imports owned packages, finalizes pending decorator registrations, and assembles business components under that module boundary
+3. **Activation**: the validated runtime becomes active and is served through the framework-selected backend path
 4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
 
 ### Dependency Injection
-Cullinan provides built-in IoC/DI support through the application-first runtime model backed by `ApplicationContext`.
+Cullinan provides built-in IoC/DI support through decorator-driven component discovery and runtime-managed wiring.
 
 #### Recommended runtime model
 
@@ -183,15 +182,14 @@ Cullinan provides built-in IoC/DI support through the application-first runtime 
 - Use `Inject()` for type-based injection
 - Use `InjectByName()` when name-based lookup is more convenient
 - Start from business decorators first, then use `@module` when you need explicit runtime boundaries
-- Reach for `ApplicationContext` directly only when you need low-level container orchestration
+- If you intentionally need low-level container or runtime internals, continue in [Internals & Extensions](internals/index.md) instead of treating that path as the quick-start model
 
 ```python
 from cullinan.web import controller, get_api, Path
-from cullinan.core.services import Service, service
-from cullinan.core import Inject
+from cullinan.core import Inject, service
 
 @service
-class UserService(Service):
+class UserService:
     def get_user(self, user_id):
         return {'id': user_id, 'name': 'John'}
 
@@ -314,16 +312,15 @@ For a deeper dive into URL patterns and all decorator options, see `wiki/restful
 Prefer typed `Inject()` when the dependency type is easy to import:
 
 ```python
-from cullinan.core import Inject
-from cullinan.core.services import Service, service
+from cullinan.core import Inject, service
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db: DatabaseService = Inject()
 
     def get_users(self):
@@ -335,16 +332,15 @@ class UserRepository(Service):
 Inject by name without importing dependencies, avoiding circular import issues:
 
 ```python
-from cullinan.core.services import Service, service
-from cullinan.core import InjectByName
+from cullinan.core import InjectByName, service
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db = InjectByName('DatabaseService')
     
     def get_users(self):
@@ -357,20 +353,19 @@ If you need IDE autocomplete and type checking, use `Inject` with TYPE_CHECKING:
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import Inject
-from cullinan.core.services import Service, service
+from cullinan.core import Inject, service
 
 # TYPE_CHECKING imports are not executed at runtime, avoiding circular imports
 if TYPE_CHECKING:
     from my_project.services import DatabaseService
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
 @service
-class UserRepository(Service):
+class UserRepository:
     db: 'DatabaseService' = Inject()
     
     def get_users(self):

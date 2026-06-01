@@ -19,8 +19,16 @@ This directory is the single source of runnable examples for the current Cullina
 - `python -m pytest examples/testing_flow/test_app.py -q`
 
 Each example keeps one teaching goal and follows the recommended Cullinan path:
-`configure(root_module=...)`, decorator-first business code, and `Inject()` for type-led injection.
+top-level `configure(root_module=...)` / `run()`, decorator-first business code,
+and `Inject()` for type-led injection.
 
 The examples are intentionally engine-neutral at the application layer: business
 code targets Cullinan semantics first, while the framework decides whether to
 bridge into ASGI or Tornado at runtime.
+
+Historical compatibility demos live under `examples/legacy/` and are not part of
+the maintained default learning path.
+
+## Advanced extension demos
+
+- `examples/extension_registration_demo.py` — maintained advanced demo for extension discovery and middleware registration

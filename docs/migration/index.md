@@ -28,7 +28,7 @@ upgrading or when diagnosing version-specific behavior.
 - [Migration Guide v2](../migration_guide_v2.md)
 - [Import Migration 0.90](../import_migration_090.md)
 
-## Knowledge role
+## This section covers
 
 Pages here explain:
 

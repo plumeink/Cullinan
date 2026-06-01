@@ -17,9 +17,8 @@ pr_links: []
 
 > **说明（v0.90）**：核心模块已重新组织。新的 API 结构请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [导入迁移指南](import_migration_090.md)。
 
-本页概览 Cullinan 的公开 API，并明确哪些 API 属于推荐路径、哪些属于高级集成能力、哪些只是兼容保留。
+本页概览 Cullinan 的公开 API，并明确哪些 API 属于推荐路径、哪些属于高级集成能力。
 
-> **知识角色：** [API 参考](reference/index.md)  
 > **如果你还没建立推荐学习路径：** 请先看 [应用构建](start/index.md)
 > 和 [框架语义](concepts/index.md)。  
 > **如果你要进入高级运行时内部机制：** 请转到 [运行时与扩展](internals/index.md)。
@@ -32,22 +31,18 @@ pr_links: []
   - 启动入口：`configure(...)`、`run(...)`、`get_asgi_app(...)`
   - 声明入口：`@service`、`@controller`、`@module`、路由装饰器
   - 注入 / 参数：`Inject`、`InjectByName`、`Path`、`Query`、`Body` 等
+  - 框架心智：装饰器优先的业务代码、组件发现、IoC/DI 装配，以及带有热插拔语义的模块边界
 
 ### 高级集成 API
 
-- `cullinan.application` —— 显式运行时装配（`Application`、`Runtime`、`current_app`）
+- `cullinan.application` —— 面向维护者与框架感知型集成的高级公开应用语义（`Application`、`Runtime`、`module`）
 - `cullinan.transport.adapter` —— 服务器集成（`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`）
 - `cullinan.web.gateway` —— 请求 / 响应 / dispatcher 契约
 - `cullinan.core` —— 低层容器与生命周期原语
 
-这些 transport adapter 属于集成层 API，而不是默认的应用开发心智模型。常规业务代码应停留在 Cullinan 自身的 application / web 语义上，而不是直接依赖具体服务器适配器。
+这些高级模块都不是默认的应用开发心智模型。常规业务代码应停留在顶层 `cullinan` API，以及框架自身的装饰器 / DI / 模块边界语义上，而不是转向低层运行时编排或具体服务器适配器。
 
-### 兼容保留模块
-
-- `cullinan.application` —— 面向既有项目保留的旧扫描式启动 helper
-- `cullinan.application.lifecycle` —— 仅为兼容保留的旧 app wrapper 接口
-
-对于常规应用，请优先使用顶层 `cullinan` API。高级与兼容模块应显式从对应子模块导入，这样在代码评审、IDE 补全和 onboarding 文档中都能更清楚地看到边界。
+对于常规应用，请优先使用顶层 `cullinan` API。高级模块应显式从对应子模块导入，这样在代码评审、IDE 补全和 onboarding 文档中都能更清楚地看到边界。
 
 ## v0.90+ 新增：参数系统
 

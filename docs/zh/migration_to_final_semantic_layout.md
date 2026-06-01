@@ -53,7 +53,7 @@ Cullinan 不再保留以下历史根层 wrapper：
 
 | 旧路径 | 新路径 |
 | --- | --- |
-| `cullinan.app` | `cullinan.application.lifecycle` |
+| `cullinan.app` | 顶层 `cullinan` 启动 API（`configure`、`run`、`get_asgi_app`） |
 | `cullinan.application_model` | `cullinan.application` |
 | `cullinan.public_api` | `cullinan.application.public` |
 | `cullinan.module_scanner` | `cullinan.runtime.module_scanner` |
@@ -79,7 +79,7 @@ Cullinan 不再保留以下历史根层 wrapper：
 from cullinan.public_api import run
 
 # After
-from cullinan.application import run
+from cullinan import run
 ```
 
 ### 运行时模型 helper
@@ -119,7 +119,7 @@ from cullinan.transport.adapter import ASGIAdapter
 
 新的规则是：
 
-1. 业务应用启动放在 `cullinan.application`
+1. 业务应用启动放在顶层 `cullinan`
 2. 业务 Web 开发放在 `cullinan.web`
 3. IoC/DI 与生命周期放在 `cullinan.core`
 4. 自动发现与扫描放在 `cullinan.runtime`

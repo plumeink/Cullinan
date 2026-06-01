@@ -3,7 +3,6 @@
 > **Version**: v0.90  
 > **Author**: Plumeink
 
-> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
 > **Upgrade-only page:** use this when moving existing code, not when learning the
 > recommended API path for a new project.
 
@@ -148,18 +147,17 @@ ctx.register(Definition(
 
 ```python
 # Old style (app.py)
-from cullinan.application.lifecycle import CullinanApplication
-app = CullinanApplication()
-app.run()
+from cullinan.app import run
 
 # New style
-from cullinan.core.container import ApplicationContext
+from cullinan import configure, module, run
 
-ctx = ApplicationContext()
-# ... register definitions ...
-ctx.refresh()
-# ... run tornado ...
-ctx.shutdown()
+@module
+class RootModule:
+    pass
+
+configure(root_module=RootModule)
+run()
 ```
 
 ### Step 4: Handle Request Scope

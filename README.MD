@@ -20,9 +20,9 @@
 
 Cullinan is a Python Web Framework for developers who want to organize applications around
 business services, controllers, and methods instead of manually wiring an app object.
-Its default path is decorator-first discovery plus `cullinan.application.configure(root_module=...)`
-and `cullinan.application.run()`, with `@module` used as the application boundary when
-ownership, runtime structure, and stability matter. The framework-facing API stays engine-neutral:
+Its default path is decorator-first discovery plus `from cullinan import configure, module, run`,
+with `@module` used as the application boundary when ownership, runtime structure, and stability
+matter. The framework-facing API stays engine-neutral:
 Cullinan internally bridges your business application into Tornado or ASGI runtimes instead of
 making a concrete server framework the primary developer mental model.
 
@@ -75,9 +75,10 @@ you intentionally need advanced extension behavior.
 
 Cullinan now exposes a clearer framework-shaped package surface:
 
-- `cullinan.application` - application definition, configuration, and startup
+- `cullinan` - recommended public startup and declaration API for application code
 - `cullinan.web` - controllers, route decorators, request/response, parameters, middleware
 - `cullinan.core` - IoC/DI, lifecycle, context, and semantic rules
+- `cullinan.application` - advanced application semantics for maintainers and framework-aware integrations
 - `cullinan.testing` - test-facing helpers
 - `cullinan.runtime` / `cullinan.transport` - advanced discovery and adapter boundaries
 - `cullinan.support` - constrained support utilities, not a second public app path
@@ -88,7 +89,7 @@ Cullinan now exposes a clearer framework-shaped package surface:
 
 | Capability layer | What Cullinan provides |
 | --- | --- |
-| **Application composition** | `cullinan.application.configure(...)`, decorator-driven discovery, structured runtime assembly |
+| **Application composition** | top-level `configure(...)` / `run()`, decorator-driven discovery, structured runtime assembly |
 | **Web API model** | `cullinan.web` facade for `@controller`, RESTful decorators, `WebResponse`, parameters, middleware |
 | **Parameter system** | Typed `Path`, `Query`, `Body`, validation, conversion, and controller-method binding |
 | **IoC/DI and lifecycle** | `Inject()`, `InjectByName()`, request scope, startup/shutdown hooks, component lifecycle |
@@ -120,7 +121,7 @@ The recommended starting point is: define business components, declare the root 
 configure the app, then run it.
 
 ```python
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -145,12 +146,8 @@ class RootModule:
     """Declare the application boundary when structure matters."""
 
 
-def create_app():
-    return configure(root_module=RootModule)
-
-
 if __name__ == "__main__":
-    create_app()
+    configure(root_module=RootModule)
     run()
 ```
 
@@ -172,7 +169,7 @@ This example shows the default Cullinan path:
 - controller methods as the public web surface
 - `Inject()` for framework-managed wiring
 - `@module` as the runtime boundary
-- `cullinan.application.configure(root_module=...)` plus `run()` as the startup flow
+- top-level `configure(root_module=...)` plus `run()` as the startup flow
 - runtime backend selection delegated to Cullinan instead of driving application structure
 
 ---
@@ -225,14 +222,16 @@ Then move into the documentation knowledge base:
 
 ## Current series
 
-**v0.93a6.post1** focuses the public application path around:
+**v0.93a8** makes the public application path more explicit around:
 
-- `configure(root_module=...)` and `run()`
+- top-level `configure(root_module=...)` and `run()`
 - decorator-first discovery through Python imports
 - `@module` as the structured boundary for runtime ownership
 - built-in IoC/DI, lifecycle, and semantic diagnostics
-- unified example and documentation guidance around the current public API
-- consistency fixes for high-level public runtime entrypoints
+- a semantic package surface centered on the top-level `cullinan` API, with
+  advanced semantic namespaces under `cullinan.application`, `cullinan.web`,
+  and `cullinan.core`
+- engine-neutral runtime selection over Tornado / ASGI backends
 
 Version-specific details and migration notes live in the documentation knowledge base rather
 than in the homepage narrative.

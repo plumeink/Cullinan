@@ -1,9 +1,8 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a8
+> **Version**: 0.93a9
 > **Author**: Plumeink
 
-> **Knowledge role:** [Engineering Practices](how-to/index.md)  
 > **Quick lookup page:** use this page as a compact DI recipe sheet; use
 > [Dependency Injection Guide](dependency_injection_guide.md) for fuller guidance
 > and [API Reference](reference/index.md) for symbol lookup.
@@ -13,12 +12,11 @@
 ### 1. Define a Service
 
 ```python
-from cullinan.core.services import service, Service
+from cullinan.core import service
 
 @service
-class UserService(Service):
+class UserService:
     def __init__(self):
-        super().__init__()
         self.name = "UserService"
     
     def get_user(self, user_id):
@@ -28,8 +26,8 @@ class UserService(Service):
 ### 2. Inject Service into Controller
 
 ```python
-from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject, InjectByName, Lazy, Provider
+from cullinan.web import controller, get_api
 
 @controller(url='/api')
 class UserController:
@@ -49,9 +47,8 @@ class UserController:
 ### 3. Use Injected Service
 
 ```python
-from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.web.params import Path
+from cullinan.web import controller, get_api, Path
 
 @controller(url='/api')
 class UserController:
@@ -100,26 +97,20 @@ Startup still fails fast when:
 
 ## Packaging Configuration
 
-### Using Explicit Registration (Recommended)
+### Using Root Module Discovery (Recommended)
 
 ```python
-from cullinan import configure
-from my_app.service.user_service import UserService
-from my_app.service.auth_service import AuthService
+from cullinan import configure, module, run
+
 from my_app.controller.user_controller import UserController
+from my_app.service.auth_service import AuthService
+from my_app.service.user_service import UserService
 
-# Configure before run()
-configure(
-    explicit_services=[
-        UserService,
-        AuthService,
-    ],
-    explicit_controllers=[
-        UserController,
-    ]
-)
+@module
+class RootModule:
+    pass
 
-from cullinan.application import run
+configure(root_module=RootModule)
 run()
 ```
 

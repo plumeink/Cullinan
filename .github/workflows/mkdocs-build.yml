@@ -184,7 +184,8 @@ jobs:
 
           should_publish_pre = True
           if channel == "pre" and published_pre:
-            should_publish_pre = Version(current_version) > Version(published_pre)
+            # Allow docs-only fixes to refresh the same published pre version.
+            should_publish_pre = Version(current_version) >= Version(published_pre)
 
           github_output = pathlib.Path(os.environ["GITHUB_OUTPUT"])
           with github_output.open("a", encoding="utf-8") as fh:

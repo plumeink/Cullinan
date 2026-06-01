@@ -15,11 +15,11 @@ pr_links: []
 
 # Application Build
 
-This knowledge domain is the **default starting point** for building a Cullinan application.
+Start here to install Cullinan, run a minimal application, and confirm the
+recommended public entrypoint.
 
-Cullinan wants application code to start from business decorators, business methods,
-and the top-level `from cullinan import configure, run` API. This section therefore
-keeps the shortest and safest path first.
+Cullinan application code should start from business decorators, business methods,
+and the top-level `from cullinan import configure, run` API.
 
 ## Start here
 

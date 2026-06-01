@@ -53,7 +53,7 @@ on top of legacy files.
 
 | Old path | New path |
 | --- | --- |
-| `cullinan.app` | `cullinan.application.lifecycle` |
+| `cullinan.app` | top-level `cullinan` startup API (`configure`, `run`, `get_asgi_app`) |
 | `cullinan.application_model` | `cullinan.application` |
 | `cullinan.public_api` | `cullinan.application.public` |
 | `cullinan.module_scanner` | `cullinan.runtime.module_scanner` |
@@ -79,7 +79,7 @@ on top of legacy files.
 from cullinan.public_api import run
 
 # After
-from cullinan.application import run
+from cullinan import run
 ```
 
 ### Runtime model helpers
@@ -119,7 +119,7 @@ Do not treat the migration as “find another old import that still works.”
 
 The new rule is:
 
-1. business application startup lives in `cullinan.application`
+1. business application startup lives in top-level `cullinan`
 2. business web development lives in `cullinan.web`
 3. IoC/DI and lifecycle live in `cullinan.core`
 4. discovery and scanning live in `cullinan.runtime`

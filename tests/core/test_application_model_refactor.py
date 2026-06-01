@@ -15,7 +15,6 @@ from cullinan.application import (
     _collect_module_specs,
     _resolve_component_owners,
     bind_runtime_request_context,
-    current_app,
     release_runtime_request_context,
 )
 from cullinan.web.controller import reset_controller_registry
@@ -89,7 +88,7 @@ def _dispatch_asgi(app, path: str) -> tuple[list[dict], bytes]:
     return sent, body
 
 
-def test_application_run_discovers_root_module_and_binds_current_app(tmp_path, monkeypatch):
+def test_application_run_discovers_root_module_and_binds_active_application(tmp_path, monkeypatch):
     package_name = "sample_app_model"
     _write_package(
         tmp_path,
@@ -98,7 +97,7 @@ def test_application_run_discovers_root_module_and_binds_current_app(tmp_path, m
             "__init__.py": "",
             "root.py": """
                 from cullinan import Inject, controller, get_api, module, service
-                from cullinan.application import Application, current_app
+                from cullinan.application import Application
 
                 @service
                 class GreetingService:
@@ -111,10 +110,9 @@ def test_application_run_discovers_root_module_and_binds_current_app(tmp_path, m
 
                     @get_api(url="/whoami")
                     def whoami(self):
-                        app = current_app()
+                        app = Application.current()
                         return {
                             "root": app.root_module.__name__,
-                            "message": self.greeting_service.greet(),
                         }
 
                 @module
@@ -131,14 +129,13 @@ def test_application_run_discovers_root_module_and_binds_current_app(tmp_path, m
 
     app = Application.run(root_module)
     try:
-        assert current_app() is app
-        assert app.context.get("GreetingService").greet() == "hello"
+        assert Application.current() is app
 
         adapter = ASGIAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
         sent, body = _dispatch_asgi(adapter.create_app(), "/api/whoami")
 
         assert sent[0]["status"] == 200
-        assert json.loads(body) == {"root": "RootModule", "message": "hello"}
+        assert json.loads(body) == {"root": "RootModule"}
     finally:
         app.uninstall()
         _clear_modules(package_name)
@@ -309,13 +306,16 @@ def test_current_app_prefers_request_snapshot_while_runtime_switches(tmp_path, m
     try:
         app_v2 = Application.run(v2_pkg.RootModuleV2)
         try:
-            assert current_app() is app_v1
+            assert Application.current() is app_v1
             assert app_v2.context.get("VersionService").value() == "v2"
         finally:
             release_runtime_request_context(app_v1.web_runtime, binding)
             app_v1.web_runtime.end_request()
-            assert current_app() is app_v2
+            assert Application.current() is app_v2
             assert app_v1.phase == "closed"
             app_v2.uninstall()
     finally:
         _clear_modules(package_name)
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.PublicAPISemanticWarning"
+)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Example demonstrating new 0.90 decorator system.
+"""Legacy compatibility demo for the 0.90 decorator system.
 
 Author: Plumeink
 """
@@ -18,7 +18,7 @@ from cullinan.core.decorators import Inject, InjectByName, Lazy
 from cullinan.core.conditions import ConditionalOnClass, Conditional
 
 print("=" * 60)
-print("Cullinan 0.90 Decorator System Demo")
+print("Cullinan 0.90 Legacy Decorator System Demo")
 print("=" * 60)
 
 # Reset registry for demo
@@ -87,4 +87,3 @@ print(f"JsonProcessor.process: {json_processor.process({'status': 'ok'})}")
 print("\n" + "=" * 60)
 print("Demo completed successfully!")
 print("=" * 60)
-

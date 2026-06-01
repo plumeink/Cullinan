@@ -2,7 +2,6 @@
 
 This guide helps you migrate your imports from the old structure to the new 0.90 structure.
 
-> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
 > **Compatibility page:** use this when updating existing imports; for the current
 > public surface, see [API Reference](reference/index.md).
 

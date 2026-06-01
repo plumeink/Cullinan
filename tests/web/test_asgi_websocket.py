@@ -1,9 +1,28 @@
 # -*- coding: utf-8 -*-
 """Tests for ASGI WebSocket support."""
 import asyncio
+import warnings
+import pytest
+
+from cullinan.core.semantic_rules import CompatibilitySemanticWarning
+
+warnings.filterwarnings(
+    "ignore",
+    message=r"语义规则：兼容 API 只保证旧代码可 继续运行.*",
+    category=CompatibilitySemanticWarning,
+)
 
 from cullinan.transport.adapter.asgi_adapter import _handle_websocket
 from cullinan.web.websocket_registry import get_websocket_registry, reset_websocket_registry, websocket_handler
+
+pytestmark = [
+    pytest.mark.filterwarnings(
+        "ignore:websocket routes are not mounted into the HTTP ASGI app surface:cullinan.core.semantic_rules.PublicAPISemanticWarning"
+    ),
+    pytest.mark.filterwarnings(
+        "ignore:语义规则：兼容 API 只保证旧代码可 继续运行.*:cullinan.core.semantic_rules.CompatibilitySemanticWarning"
+    ),
+]
 
 passed = 0
 failed = 0
@@ -38,30 +57,33 @@ async def _run_asgi_websocket_checks():
     open_called = [False]
     close_called = [False]
 
-    @websocket_handler(url='/ws/echo')
-    class EchoHandler:
-        def on_open(self):
-            open_called[0] = True
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", CompatibilitySemanticWarning)
 
-        def on_message(self, message):
-            message_log.append(message)
-            # Echo back
-            asyncio.ensure_future(self.write_message(f"echo:{message}"))
+        @websocket_handler(url='/ws/echo')
+        class EchoHandler:
+            def on_open(self):
+                open_called[0] = True
 
-        def on_close(self):
-            close_called[0] = True
+            def on_message(self, message):
+                message_log.append(message)
+                # Echo back
+                asyncio.ensure_future(self.write_message(f"echo:{message}"))
 
-    @websocket_handler(url='/ws/async')
-    class AsyncHandler:
-        async def on_open(self):
-            open_called[0] = True
+            def on_close(self):
+                close_called[0] = True
 
-        async def on_message(self, message):
-            message_log.append(f"async:{message}")
-            await self.write_message(f"async-echo:{message}")
+        @websocket_handler(url='/ws/async')
+        class AsyncHandler:
+            async def on_open(self):
+                open_called[0] = True
 
-        async def on_close(self):
-            close_called[0] = True
+            async def on_message(self, message):
+                message_log.append(f"async:{message}")
+                await self.write_message(f"async-echo:{message}")
+
+            async def on_close(self):
+                close_called[0] = True
 
     # ====================================================================
     # 1. Basic WebSocket connect, message, disconnect

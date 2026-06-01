@@ -17,7 +17,6 @@ pr_links: []
 
 This page summarizes the four major updates currently reflected in the codebase and documentation.
 
-> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
 > **Historical summary:** this page explains what changed; it is not part of the
 > default onboarding path for new applications.
 
@@ -40,8 +39,8 @@ The container model is now centered on `ApplicationContext` and publicly surface
 
 ## 2. Application-first runtime
 
-Cullinan now exposes an application-first bootstrap model in `cullinan.application`
-and re-exports it from `cullinan`.
+Cullinan now keeps explicit runtime orchestration in `cullinan.application` while
+re-exporting the shortest public startup path from top-level `cullinan`.
 
 ### What changed
 
@@ -49,13 +48,14 @@ and re-exports it from `cullinan`.
 - `@module` defines module imports, owned packages, warmup hooks, and health checks
 - component discovery rebuilds pending registrations from decorator metadata instead of
   relying on one-shot import timing
-- `current_app()` prefers the request-bound application snapshot while an older runtime drains
+- `Application.current()` prefers the request-bound application snapshot while an older runtime drains
 
 ### Migration implication
 
-New bootstrap code should prefer `Application` + `@module`. Keep using
-`ApplicationContext` for low-level container work and use the legacy
-`cullinan.application.run()` entrypoint only when compatibility matters.
+New bootstrap code should prefer `from cullinan import configure, module, run`.
+Keep using `ApplicationContext` for low-level container work, and use
+`cullinan.application` when you intentionally need explicit runtime orchestration
+rather than the default developer path.
 
 ## 3. Web Runtime consolidation
 
@@ -84,7 +84,7 @@ application-model and adapter coverage now lives in regular collected tests.
 - test discovery is defined by `pytest.ini`
 - topic-based suite layout under `tests/`
 - new and refreshed coverage uses real pytest tests under `tests/core` and `tests/integration`
-- some historical script-style files still remain and are being migrated incrementally
+- example regression and public-boundary coverage now live in regular pytest suites
 
 ### Current directories
 

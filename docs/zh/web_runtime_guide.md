@@ -17,7 +17,6 @@ pr_links: []
 
 Cullinan 当前的 HTTP 运行时是传输无关的。共享的请求/响应行为位于 `cullinan.web.gateway`，而服务器相关的集成位于 `cullinan.transport.adapter`。
 
-> **知识角色：** [工程实践](how-to/index.md)  
 > **推荐应用路径：** 大多数业务代码应停留在 controller 层，并从顶层 `cullinan` API 启动应用。  
 > **高级运行时工作：** 如果你需要显式 runtime 编排或 adapter 内部机制，请继续阅读
 > [运行时与扩展](internals/index.md)。

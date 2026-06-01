@@ -223,18 +223,3 @@ def warn_deprecated(message: str, category: type = DeprecationWarning):
         if manager.is_strict():
             raise DeprecationError(message)
         warnings.warn(message, category=category, stacklevel=2)
-
-
-def check_backward_compat_enabled() -> bool:
-    """Check if backward compatibility mode is enabled.
-
-    Returns:
-        True if backward compatibility is enabled
-    """
-    try:
-        from cullinan.support.config import get_config
-        config = get_config()
-        return getattr(config, 'enable_backward_compat', True)
-    except Exception:
-        return True  # Default to enabled
-

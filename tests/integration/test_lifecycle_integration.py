@@ -5,11 +5,11 @@ This test verifies that services decorated with @service correctly
 receive lifecycle callbacks from ApplicationContext.
 """
 
-import sys
-import os
+import pytest
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def test_service_decorator_with_lifecycle():
@@ -20,8 +20,7 @@ def test_service_decorator_with_lifecycle():
     from cullinan.core.services import Service
 
     # Reset state
-    PendingRegistry.get_instance().clear()
-    PendingRegistry.get_instance()._frozen = False
+    PendingRegistry.reset()
 
     # Track lifecycle calls
     lifecycle_log = []

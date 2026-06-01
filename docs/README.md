@@ -1,4 +1,4 @@
-title: "Cullinan Knowledge Base"
+title: "Cullinan Documentation"
 slug: "docs-home"
 module: []
 tags: ["docs", "home", "knowledge-base"]
@@ -13,15 +13,14 @@ estimate_pd: 0.5
 last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
-# Cullinan Knowledge Base
+# Cullinan Documentation
 
-Cullinan documentation is now organized as a **knowledge base**, not as a mixed
-list of wiki pages, module pages, guides, and migration notes.
-
-> **Current version: 0.93a8**. The recommended application path is
-> `cullinan.application + cullinan.web + cullinan.core`: start from business
-> decorators and business methods first, then enter advanced runtime details
-> only when the application really needs them.
+> **Current version: 0.93a9**. The shortest public startup path is
+> `from cullinan import configure, run`; the semantic learning path starts from
+> top-level `cullinan` plus the business-facing `cullinan.web` / `cullinan.core`
+> vocabulary: begin with business decorators and business methods first, then
+> enter advanced application/runtime details only when the application really
+> needs them.
 
 ## Default learning path
 
@@ -34,7 +33,7 @@ This path is the default for most developers using Cullinan to build business
 applications. It intentionally keeps advanced runtime internals and version
 migration notes outside the first-read path.
 
-## Knowledge domains
+## Documentation map
 
 ### 1. [Application Build](start/index.md)
 
@@ -66,11 +65,9 @@ Use this section for task-oriented guides.
 Use this section for symbol lookup and stable API surface review.
 
 - [API Reference Overview](api_reference.md)
-- [Module Reference: app](modules/app.md)
-- [Module Reference: application](modules/application.md)
-- [Module Reference: core](modules/core.md)
-- [Module Reference: controller](modules/controller.md)
-- [Module Reference: service](modules/service.md)
+- Module references stay in this section for lookup only.
+- Prefer the overview first, then read `controller`, `service`, or `core` references as needed.
+- Advanced application/runtime surfaces remain outside the default first-read path.
 
 ### 5. [Internals & Extensions](internals/index.md)
 
@@ -88,12 +85,5 @@ Use this section when upgrading or reconciling old code with newer semantics.
 - [Migration Guide](migration_guide.md)
 - [Migration Guide v2](migration_guide_v2.md)
 - [Import Migration 0.90](import_migration_090.md)
-
-## Documentation governance
-
-- New content should be written under a clear knowledge role first
-- Teaching pages, reference pages, internals, and migration notes should not share one page's primary responsibility
-- Advanced topics must say that they are advanced
-- English pages live under `docs/`; Chinese mirrors live under `docs/zh/` with matching relative paths
 
 For source code and release history, visit the [GitHub repository](https://github.com/plumeink/Cullinan).

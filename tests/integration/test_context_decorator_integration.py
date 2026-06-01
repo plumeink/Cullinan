@@ -10,6 +10,11 @@ from cullinan.core.decorators import service, controller, component, Inject, Inj
 from cullinan.core.application_context import ApplicationContext
 from cullinan.core.definitions import Definition, ScopeType
 
+pytestmark = [
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"),
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.InjectionSemanticWarning"),
+]
+
 
 class TestApplicationContextDecoratorIntegration:
     """Tests for decorator integration with ApplicationContext."""
@@ -282,4 +287,3 @@ class TestComponentDecorator:
 
         assert ctx.has("myHelper")
         assert not ctx.has("Helper")
-

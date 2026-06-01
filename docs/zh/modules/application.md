@@ -15,16 +15,16 @@ pr_links: []
 
 # cullinan.application
 
-`cullinan.application` 现在属于兼容保留的启动模块。常规应用应优先使用顶层 `cullinan` API：
+`cullinan.application` 是应用定义与高级公开应用装配语义包。常规应用应优先使用更短的
+顶层 `cullinan` 启动 API；但维护者和高级集成场景在需要更完整的应用模型时，仍然会落到这里：
 
-> **知识角色：** [API 参考](../reference/index.md)  
-> **兼容模块：** 这页记录的是保留表面，不是默认学习路径。  
+> **高级但公开的语义层：** 这页记录的是真实语义层，不是默认首读路径。
 > 新应用请优先阅读 [快速开始](../getting_started.md) 并使用顶层 `cullinan` API。
 
 - `configure(root_module=RootModule)`：声明推荐的根入口
 - `run()` 或 `get_asgi_app()`：通过整理后的顶层 API 启动应用
 - `@module`：当你需要模块归属、reload 与热插拔运行时能力时，用来声明结构边界
-- 旧的 `cullinan.application.run()` 入口仍保留，但仅用于兼容已有调用
+- 顶层 `run()` / `get_asgi_app()` 才是最短公开启动路径
 
 这里的启动契约同时依赖[框架语义规则](../framework_semantics.md)：组件发现基于导入执行、自动扫描只保证模块顶层装饰器组件、`refresh()` 之后结构性注册会被冻结。
 
@@ -78,11 +78,11 @@ class RootModule:
 
 ## Runtime 切换
 
-`Application.reload()` 会先构建新的候选 runtime，完成校验与预热，再原子切换当前活动应用。旧 runtime 会进入 draining 状态，而 `current_app()` 在请求结束前仍会返回该请求绑定的旧应用快照。
+`Application.reload()` 会先构建新的候选 runtime，完成校验与预热，再原子切换当前活动应用。旧 runtime 会进入 draining 状态，而 `Application.current()` 在请求结束前仍会解析到该请求绑定的旧应用快照。
 
-## 兼容性说明
+## 维护者 / 高级说明
 
-`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` / `current_app()` 也仍可通过 `cullinan.application` 用于显式运行时编排。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
+`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` 也仍可通过 `cullinan.application` 用于高级、运行时感知的应用装配。新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
 
 ## 相关文档
 

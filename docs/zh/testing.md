@@ -17,7 +17,6 @@ pr_links: []
 
 本文说明 application-model、公开 API 边界、adapter 与测试结构收尾后的当前仓库测试工作流。
 
-> **知识角色：** [工程实践](how-to/index.md)  
 > **仓库正式入口：** `.venv\Scripts\python -m pytest`  
 > **相关语义：** 涉及运行时边界的测试，应与 [框架语义规则](framework_semantics.md)
 > 和 [API 参考](api_reference.md) 保持一致。

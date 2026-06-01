@@ -4,8 +4,11 @@
 Author: Plumeink
 """
 
-import sys
-sys.path.insert(0, '.')
+import pytest
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"
+)
 
 
 def reset_all_registries():
@@ -15,22 +18,12 @@ def reset_all_registries():
     from cullinan.core import set_application_context
 
     reset_controller_registry()
-
-    # 重置 PendingRegistry
-    pending = PendingRegistry.get_instance()
-    pending._registrations.clear()
-    pending._frozen = False
-
-    # 清除全局 ApplicationContext
+    PendingRegistry.reset()
     set_application_context(None)
 
 
 def test_controller_di():
     """测试 Controller 依赖注入"""
-    print("=" * 60)
-    print("测试 1: 基础依赖注入")
-    print("=" * 60)
-
     reset_all_registries()
 
     from cullinan.core import (
@@ -61,18 +54,14 @@ def test_controller_di():
     set_application_context(ctx)
     try:
         ctx.refresh()
-
-        print(f'[OK] ApplicationContext created and refreshed')
-        print(f'[OK] Global context set: {get_application_context() is not None}')
-        print(f'[OK] Is refreshed: {ctx.is_refreshed}')
+        assert get_application_context() is not None
+        assert ctx.is_refreshed is True
 
         from cullinan.web.controller.registry import get_controller_registry
         controller_registry = get_controller_registry()
         controller_registry.register('TestController', TestController, url_prefix='/test')
 
         instance = controller_registry.get_instance('TestController')
-        print(f'[OK] Controller instance created: {instance}')
-        print(f'[INFO] test_service type: {type(instance.test_service).__name__}')
 
         assert isinstance(instance.test_service, Inject) is False
         assert hasattr(instance.test_service, 'get_message')
@@ -84,10 +73,6 @@ def test_controller_di():
 
 def test_multiple_services():
     """测试多个服务注入"""
-    print("\n" + "=" * 60)
-    print("测试 2: 多服务依赖注入")
-    print("=" * 60)
-
     reset_all_registries()
 
     from cullinan.core import (
@@ -137,10 +122,6 @@ def test_multiple_services():
 
 def test_optional_injection():
     """测试可选依赖注入"""
-    print("\n" + "=" * 60)
-    print("测试 3: 可选依赖注入 (required=False)")
-    print("=" * 60)
-
     reset_all_registries()
 
     from cullinan.core import (

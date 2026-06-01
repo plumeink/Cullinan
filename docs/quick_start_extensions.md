@@ -4,7 +4,6 @@
 > **Feature**: Unified Extension Registration and Discovery Pattern  
 > **Author**: Plumeink
 
-> **Knowledge role:** [Internals & Extensions](internals/index.md)  
 > **Advanced topic:** use this page when you are explicitly building extensions or
 > middleware registration flows.
 

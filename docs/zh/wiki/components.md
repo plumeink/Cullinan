@@ -25,7 +25,7 @@ pr_links: []
 
 - 职责：模块图发现、归属解析、运行时激活、draining 与活动应用查询
 - 主包：`cullinan.application`
-- 关键 API：`Application`、`module`、`current_app`、`Runtime`
+- 关键 API：`Application`、`module`、`Application.current()`、`Runtime`
 
 ### 2. 核心容器
 

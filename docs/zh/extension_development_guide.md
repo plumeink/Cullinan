@@ -1,10 +1,9 @@
 # Cullinan 扩展开发指南
 
-> **版本**：v0.93a8
+> **版本**：v0.93a9
 > **作者**：Plumeink  
 > **最后更新**：2026-02-19
 
-> **知识角色：** [运行时与扩展](internals/index.md)  
 > **高级主题：** 这页面向 framework extension 开发，不属于默认应用学习路径。
 
 ---
@@ -165,7 +164,7 @@ class AuthMiddleware(Middleware):
 
 ### 完整示例
 
-参考：`examples/custom_auth_middleware.py`
+参考：`examples/legacy/custom_auth_middleware.py`
 
 ---
 
@@ -289,7 +288,7 @@ ctx.register(Definition(
 
 ### 完整示例
 
-参考：`examples/custom_provider_demo.py`
+参考：`examples/legacy/custom_provider_demo.py`
 
 ---
 
@@ -656,8 +655,8 @@ class TestMyMiddleware(ServiceTestCase):
 - [扩展快速入门](quick_start_extensions.md) - 扩展快速入门指南
 
 > **注意**：示例文件可以在仓库的 `examples/` 目录中找到：
-> - `examples/custom_auth_middleware.py` - 中间件示例
-> - `examples/custom_provider_demo.py` - Provider 示例
+> - `examples/legacy/custom_auth_middleware.py` - 遗留中间件示例
+> - `examples/legacy/custom_provider_demo.py` - 遗留 Provider 示例
 > - `examples/extension_registration_demo.py` - 扩展注册演示
 
 ---
@@ -670,6 +669,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**版本**：v0.93a8
+**版本**：v0.93a9
 **作者**：Plumeink  
 **最后更新**：2026-06-01

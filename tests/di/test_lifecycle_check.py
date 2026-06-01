@@ -1,8 +1,15 @@
 """验证 Service 生命周期钩子会在容器生命周期内触发。"""
 
+import pytest
+
 from cullinan.core import ApplicationContext, InjectByName, set_application_context
 from cullinan.core.pending import PendingRegistry
 from cullinan.core.services import Service, service
+
+pytestmark = [
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.ComponentDiscoveryWarning"),
+    pytest.mark.filterwarnings("ignore::cullinan.core.semantic_rules.InjectionSemanticWarning"),
+]
 
 
 def test_lifecycle_hooks_run_with_application_context():

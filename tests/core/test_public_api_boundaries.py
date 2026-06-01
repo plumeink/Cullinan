@@ -16,6 +16,7 @@ from cullinan import configure, get_config, get_asgi_app, run
 from cullinan.application import Application
 from cullinan.application import public as public_api
 from cullinan.web.controller import reset_controller_registry
+from cullinan.web.params import FileInfo
 from cullinan.core import PendingRegistry, set_application_context
 from cullinan.core.semantic_rules import reset_semantic_warnings
 from cullinan.web.gateway import WebRuntime, reset_gateway
@@ -61,6 +62,8 @@ def test_top_level_public_api_hides_advanced_runtime_symbols():
 
     assert "run" in public_exports
     assert "get_asgi_app" in public_exports
+    assert "create_app" not in public_exports
+    assert "current_app" not in public_exports
     assert "Application" not in public_exports
     assert "ApplicationContext" not in public_exports
     assert "TornadoAdapter" not in public_exports
@@ -71,6 +74,15 @@ def test_top_level_does_not_expose_advanced_runtime_symbols():
     module = importlib.reload(cullinan)
     with pytest.raises(AttributeError):
         getattr(module, "Application")
+    with pytest.raises(AttributeError):
+        getattr(module, "create_app")
+    with pytest.raises(AttributeError):
+        getattr(module, "current_app")
+
+
+def test_web_fileinfo_keeps_backend_neutral_upload_factory():
+    assert hasattr(FileInfo, "from_upload_payload")
+    assert not hasattr(FileInfo, "from_tornado_file")
 
 
 def test_top_level_import_does_not_eagerly_load_tornado(monkeypatch):
@@ -421,3 +433,6 @@ def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monke
         if current_app is not None:
             current_app.uninstall()
         _clear_modules(package_name)
+pytestmark = pytest.mark.filterwarnings(
+    "ignore::cullinan.core.semantic_rules.PublicAPISemanticWarning"
+)

@@ -17,7 +17,6 @@ pr_links: []
 
 本文解释围绕 `cullinan.application` 构建的高级应用运行时模型。Cullinan 的目标体验是让开发者先围绕业务装饰器与业务方法开发，再由运行时去装配模块声明的能力，而不是手工围绕一个 app 对象逐步注册。
 
-> **知识角色：** [运行时与扩展](../internals/index.md)  
 > **高级主题：** 常规应用应优先使用 `from cullinan import configure, run`。  
 > **参考配套：** 公开 / 高级 / 兼容 API 的分层，请同时查看 [API 参考](../api_reference.md)。
 
@@ -30,7 +29,7 @@ pr_links: []
 - `Application` 持有一个根模块图、一个 `ApplicationContext` 和一个 `WebRuntime`
 - `@module` 用于声明拥有的 Python 包及其结构边界，并承载 reload、draining 与热插拔运行时语义
 - `Runtime` 是一个应用候选实例在校验 / 预热过程中的可变记录
-- `current_app()` 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照
+- `Application.current()` 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照
 
 ## 典型运行时装配
 
@@ -95,7 +94,7 @@ app = Application.run(RootModule)
 4. 旧运行时只有在请求计数归零后才会真正关闭
 
 这也是为什么全局已经切换到新运行时后，某个 draining 中的旧请求里
-`current_app()` 仍可能返回旧应用。
+`Application.current()` 仍可能解析到旧应用。
 
 ## 适配器与请求绑定
 
@@ -103,15 +102,14 @@ app = Application.run(RootModule)
 这个绑定提供了：
 
 - 针对正确应用的 request-scoped 依赖解析
-- 控制器与中间件中的 `current_app()`
+- 运行时感知控制器或中间件中的 `Application.current()`
 - 旧请求尚未结束时的安全 draining
 
 对于常规业务应用，这仍应被视为内部 transport 细节；推荐入口依然是 Cullinan 自身的 application / controller 语义。
 
 ## 何时直接使用 ApplicationContext
 
-当你需要底层容器集成、显式注册或兼容性启动方式时，仍应直接使用
-`ApplicationContext`。对于新的应用代码，应先从装饰器声明出发，并在需要明确运行时边界时使用 `Application` + `@module`。
+当你需要底层容器集成时，仍应直接使用 `ApplicationContext`。对于新的应用代码，应先从装饰器声明出发，并在需要明确运行时边界时使用 `Application` + `@module`。
 
 ## 相关文档
 

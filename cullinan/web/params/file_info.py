@@ -221,11 +221,6 @@ class FileInfo:
             field_name=file_obj.get('field_name'),
         )
 
-    @classmethod
-    def from_tornado_file(cls, file_obj) -> 'FileInfo':
-        """兼容旧 Tornado 命名，内部转到中立上传抽象。"""
-        return cls.from_upload_payload(file_obj)
-
     def __repr__(self) -> str:
         return f"FileInfo(filename={self._filename!r}, size={self.size}, type={self._content_type!r})"
 

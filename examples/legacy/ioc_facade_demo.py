@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""示例：统一的依赖解析接口（IoC Facade）
+"""遗留高级示例：统一的依赖解析接口（IoC Facade）
 
 演示如何使用新的 IoC Facade 简化依赖解析，
 无需直接与三层注册表（ProviderRegistry、InjectionRegistry、ServiceRegistry）交互。
@@ -8,7 +8,7 @@ Author: Plumeink
 """
 
 import logging
-from cullinan.application import configure, run
+from cullinan import configure, run
 from cullinan.core.services import service, Service
 from cullinan.core import Inject
 from cullinan.web import controller, get_api

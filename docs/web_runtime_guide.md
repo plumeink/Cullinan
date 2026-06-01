@@ -17,7 +17,6 @@ pr_links: []
 
 Cullinan's current HTTP runtime is transport-agnostic. Shared request/response behavior lives in `cullinan.web.gateway`, while server-specific integration lives in `cullinan.transport.adapter`.
 
-> **Knowledge role:** [Engineering Practices](how-to/index.md)  
 > **Recommended application path:** keep most business code at controller level and start applications from the top-level `cullinan` API.  
 > **Advanced runtime work:** if you need explicit runtime orchestration or adapter internals, continue in [Internals & Extensions](internals/index.md).
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""遗留高级示例：自定义认证中间件。"""
 """示例：自定义认证中间件
 
 演示如何创建一个完整的认证中间件，包括：
@@ -238,7 +239,7 @@ if __name__ == '__main__':
     """
     完整的应用示例，演示认证中间件的使用
     """
-    from cullinan.application import configure, run
+    from cullinan import configure, run
     from cullinan.web import controller, get_api
     from cullinan.core.services import service, Service
     from cullinan.core import Inject

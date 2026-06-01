@@ -2,7 +2,6 @@
 
 > **Cullinan Framework** — Comprehensive migration guide for upgrading from v0.9x to v0.93.
 
-> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
 > **Upgrade-only page:** keep this page for version transition work, not for first-time onboarding.
 
 ## Overview of Changes
@@ -110,14 +109,14 @@ class UserController:
 #### v0.9x: Tornado only
 
 ```python
-from cullinan.application import run
+from cullinan import run
 run()  # starts Tornado on port 4080
 ```
 
 #### v0.93: Let Cullinan resolve the backend, or choose explicitly
 
 ```python
-from cullinan.application import run
+from cullinan import run
 
 # Option A: let Cullinan resolve the backend automatically
 run()

@@ -1,4 +1,4 @@
-from cullinan.application import configure, module, run
+from cullinan import configure, module, run
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 

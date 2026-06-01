@@ -16,7 +16,6 @@ pr_links: []
 
 本文定义 Cullinan **保证什么**、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。目标是把 Cullinan 的运行时模型讲清楚：先写装饰器式业务代码，通过导入执行完成发现，在需要时再引入明确的运行时边界。
 
-> **知识角色：** [框架语义](concepts/index.md)  
 > **推荐下一步：** [架构设计](architecture.md)、[工程实践](how-to/index.md)  
 > **如果你要查符号而不是读解释：** 请转到 [API 参考](reference/index.md)。
 
@@ -24,7 +23,8 @@ pr_links: []
 
 Cullinan 当前推荐的主路径是：
 
-- `cullinan.application` —— 应用配置与启动
+- `cullinan` —— 应用启动入口（`configure`、`run`、`get_asgi_app`）
+- `cullinan.application` —— `Application`、`module` 等高级应用语义
 - `cullinan.web` —— 控制器、路由装饰器、请求/响应、参数与中间件
 - `cullinan.core` —— IoC/DI、生命周期与语义诊断
 

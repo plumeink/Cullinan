@@ -15,17 +15,18 @@ pr_links: []
 
 # cullinan.application
 
-`cullinan.application` is now a compatibility-oriented startup module. Regular
-applications should prefer the top-level `cullinan` API:
+`cullinan.application` is the semantic package for application definition and
+advanced public application composition. Regular applications should prefer the shorter
+top-level `cullinan` startup API, but maintainers and advanced integrations
+still land here when they need the fuller application model:
 
-> **Knowledge role:** [API Reference](../reference/index.md)  
-> **Compatibility module:** this page documents a kept surface, not the default learning path.  
+> **Advanced-but-public module:** this page documents a real semantic layer, not the default first-read path.
 > Prefer [Getting Started](../getting_started.md) and the top-level `cullinan` API for new applications.
 
 - `configure(root_module=RootModule)` declares the recommended root entrypoint
 - `run()` or `get_asgi_app()` starts through the curated top-level API
 - `@module` declares a boundary when you need module ownership, reload, and hot-pluggable runtime behavior
-- legacy `cullinan.application.run()` remains available only for compatibility
+- top-level `run()` / `get_asgi_app()` are the shortest public startup path
 
 The bootstrap contract also depends on the framework semantics documented in [Framework Semantics](../framework_semantics.md): component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after `refresh()`.
 
@@ -84,18 +85,15 @@ class RootModule:
 
 `Application.reload()` builds a fresh candidate runtime, validates and warms it,
 then atomically switches the active application. The previous runtime enters
-draining state, and `current_app()` keeps returning the request-bound snapshot
-until the in-flight request ends.
+draining state, and `Application.current()` continues to resolve the
+request-bound snapshot until the in-flight request ends.
 
-## Compatibility note
+## Maintainer / advanced note
 
 `ApplicationContext` remains the low-level container/runtime primitive, and
-`Application` / `current_app()` remain available from
-`cullinan.application` for explicit runtime orchestration. Existing code
-using `register()`, `refresh()`, `get()`, or the legacy
-`cullinan.application.run()` entrypoint continues to work, but new application
-setup should start from business decorators plus the top-level
-`configure(...)/run()` path.
+`Application` remains available from `cullinan.application` for advanced
+runtime-aware composition. New application setup should still start from
+business decorators plus the top-level `configure(...)/run()` path.
 
 ## Related documents
 

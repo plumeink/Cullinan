@@ -15,8 +15,6 @@ pr_links: []
 
 # Framework Semantics
 
-This knowledge domain forms the **semantic backbone** of the documentation site.
-
 Cullinan is not organized around a manually wired app object. It is organized
 around decorator-first business code, import-executed discovery, explicit module
 boundaries when needed, and a curated public API surface.

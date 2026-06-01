@@ -18,7 +18,6 @@ pr_links: []
 This page describes the current repository test workflow after the latest
 application-model, public API boundary, adapter, and test-structure cleanup.
 
-> **Knowledge role:** [Engineering Practices](how-to/index.md)  
 > **Formal repository entrypoint:** `.venv\Scripts\python -m pytest`  
 > **Related semantics:** runtime-facing tests should stay aligned with [Framework Semantics](framework_semantics.md) and [API Reference](api_reference.md).
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""示例：自定义依赖注入 Provider
+"""遗留高级示例：自定义依赖注入 Provider
 
 演示如何创建自定义的依赖注入 Provider，包括：
 - 自定义 Scope（作用域）
@@ -365,7 +365,7 @@ class ProviderDemoController:
 
 if __name__ == '__main__':
     """运行示例应用"""
-    from cullinan.application import configure, run
+    from cullinan import configure, run
 
     print("=" * 70)
     print("自定义依赖注入 Provider 示例")
