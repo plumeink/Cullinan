@@ -15,16 +15,20 @@ pr_links: []
 
 # cullinan.application
 
-`cullinan.application` now exposes the recommended application-first bootstrap
-surface:
+`cullinan.application` exposes the recommended runtime-assembly surface for
+new Cullinan applications:
 
-- `Application.run(RootModule)` builds, warms, and activates a root module
-- `@module` declares a root/feature/shared module and its imported modules
+- `Application.run(RootModule)` builds, warms, and activates one assembled runtime
+- `@module` declares a boundary when you need module ownership, reload, and hot-pluggable runtime behavior
 - `current_app()` returns the active application, and prefers the request
   snapshot while an older runtime is draining
 - legacy `run(handlers=None, engine=None)` remains available for compatibility
 
 The bootstrap contract also depends on the framework semantics documented in [Framework Semantics](../framework_semantics.md): component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after `refresh()`.
+
+In practice, most application code starts from business decorators and methods.
+`@module` is not a manual app-registration center; it is the structured boundary
+that keeps ownership, reload, draining, and runtime switching explicit and stable.
 
 ## Recommended bootstrap
 
@@ -59,7 +63,7 @@ class RootModule:
 app = Application.run(RootModule)
 ```
 
-## Module ownership
+## Module ownership and boundaries
 
 `@module` uses Python package ownership to discover components. When a component
 matches more than one module package, startup fails fast. Resolve intentional
@@ -86,7 +90,8 @@ until the in-flight request ends.
 `ApplicationContext` remains the low-level container/runtime primitive. Existing
 code using `register()`, `refresh()`, `get()`, or the legacy
 `cullinan.application.run()` entrypoint continues to work, but new application
-setup should prefer `Application` + `@module`.
+setup should start from business decorators and use `Application` plus `@module`
+when it needs explicit runtime boundaries.
 
 ## Related documents
 

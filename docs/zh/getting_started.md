@@ -16,6 +16,8 @@ pr_links: []
 # Cullinan 快速开始
 
 本页提供最小化的快速入门，说明如何安装并运行 Cullinan 示例应用。
+核心心智是：先用装饰器声明业务方法与组件，再由运行时完成装配；
+Cullinan 不是围绕手工组装 app 对象展开的框架。
 
 ## 前置条件
 - Python 3.8+
@@ -77,7 +79,7 @@ class HelloController:
 
 @module
 class RootModule:
-    pass
+    """用于运行时归属与稳定性的边界声明。"""
 
 
 app = Application.run(RootModule)
@@ -105,10 +107,11 @@ python minimal_app.py
 
 ## 这个示例展示了什么
 
+- 你主要写的是 `@service`、`@controller` 和处理方法等业务声明
 - `Application.run(RootModule)` 会装配并激活应用运行时
-- `@module` 用于标记应用根模块，并参与模块归属解析
+- `@module` 表达的是归属、reload、draining 与更高稳定性的运行时边界
 - `Inject()` 会从活动应用上下文中解析控制器依赖
-- `TornadoAdapter` 负责承载已经构建完成的 Web Runtime
+- `app` 是已经装配完成的运行时句柄，`TornadoAdapter` 负责承载 Web Runtime
 
 ## 最小应用示例
 
@@ -160,7 +163,7 @@ python minimal_app.py
 ## 理解基础知识
 
 ### 应用生命周期
-1. **发现**：`Application.run()` 收集根模块图及其拥有的包
+1. **发现**：`Application.run()` 收集运行时边界并导入其拥有的包
 2. **装配**：Cullinan 重建待注册项，并装配 `ApplicationContext` 与 `WebRuntime`
 3. **激活**：通过校验的 runtime 成为活动 runtime，并可通过 adapter 对外提供服务
 4. **Reload / 关闭**：旧 runtime 会先 drain 飞行中请求，然后再关闭
@@ -174,7 +177,7 @@ Cullinan 通过以 `ApplicationContext` 为底层基础的 application-first 运
 - HTTP 控制器使用 `@controller`
 - 按类型注入优先使用 `Inject()`
 - 按名称解析更方便时使用 `InjectByName()`
-- 将 `Application` + `@module` 视为推荐启动路径
+- 先从业务装饰器开始；当你需要明确运行时边界时再引入 `@module`
 - 只有在需要底层容器编排时，才直接操作 `ApplicationContext`
 
 ```python

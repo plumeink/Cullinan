@@ -365,7 +365,7 @@ def _validate_component_scan_results(
                 format_semantic_message(
                     "component-import-execution",
                     "以下模块在组件扫描阶段导入失败，装饰器注册因此没有发生。",
-                    "先修复模块导入错误，再重新 refresh()。",
+                    "先修复模块导入错误，再重新 refresh()；Cullinan 的自动装配依赖导入时执行装饰器，而不是显式 app 注册。",
                 )
             )
             for module_name, error in sorted(import_failures.items()):
@@ -375,7 +375,7 @@ def _validate_component_scan_results(
                 format_semantic_message(
                     "component-top-level",
                     "以下装饰器组件存在注册元数据，但未进入 PendingRegistry。",
-                    "确认组件定义位于模块顶层，且 PendingRegistry 未被提前冻结或替换。",
+                    "确认组件定义位于模块顶层，且 PendingRegistry 未被提前冻结或替换；若需要更强边界，请用 @module 表达运行时归属。",
                 )
             )
             for item in missing_registrations:
@@ -386,7 +386,7 @@ def _validate_component_scan_results(
             message=format_semantic_message(
                 "component-top-level",
                 "组件扫描校验失败，存在导入未执行或装饰器注册未落入 PendingRegistry 的组件。",
-                "Cullinan 只保证模块导入阶段执行过装饰器的顶层组件能被自动发现。",
+                "Cullinan 只保证模块导入阶段执行过装饰器的顶层组件能被自动发现与自动装配。",
             ),
             details={
                 "candidate_module_count": len(modules),

@@ -1,6 +1,6 @@
 # Cullinan Framework Architecture
 
-> **Version**: 0.93a4  
+> **Version**: 0.93a5  
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -10,7 +10,7 @@ Cullinan is a Tornado-oriented application framework whose current runtime is or
 
 1. **Unified container facade** — `cullinan.core` is the public IoC/DI entrypoint.
 2. **Transport-agnostic Web Runtime** — `cullinan.gateway` owns `WebRequest`, `WebResponse`, routing, dispatch, middleware, and exception handling.
-3. **Pytest-first verification** — the repository test suite is structured under `tests/` and runs through a single pytest entrypoint.
+3. **Decorator-first runtime assembly** — application code starts from business decorators, while runtime ownership and hot-pluggable stability are layered in when needed.
 
 ## Architecture layers
 
@@ -27,7 +27,7 @@ Framework facade
 └── cullinan.params    -> Path, Query, Body, Header, File, model resolution
 
 Runtime execution
-├── Module scanning and explicit registration
+├── Decorator declarations -> import-executed discovery -> runtime assembly
 ├── ApplicationContext.refresh()
 ├── Gateway pipeline + dispatcher
 ├── Adapter-specific request/response translation
@@ -53,7 +53,8 @@ from cullinan.core import ApplicationContext, set_application_context
 ctx = ApplicationContext()
 set_application_context(ctx)
 
-# registration happens via decorators, scanning, or explicit Definition objects
+# new application code starts from decorators and runtime assembly;
+# explicit Definition registration is reserved for low-level integration
 ctx.refresh()
 ...
 ctx.shutdown()
@@ -109,9 +110,9 @@ This split keeps request processing logic independent from any single server imp
 
 ## Request flow
 
-1. Application bootstrap creates and stores an `ApplicationContext`.
-2. Module scanning registers services and controllers.
-3. `ctx.refresh()` resolves eager components and runs startup hooks.
+1. Business code declares services, controllers, and handlers with decorators.
+2. Runtime assembly imports owned Python modules and rebuilds registrations from decorator metadata.
+3. `ApplicationContext.refresh()` resolves eager components and runs startup hooks.
 4. The gateway pipeline receives a transport-normalized `WebRequest`.
 5. `Dispatcher` matches a route, resolves parameters, invokes the handler, and produces a `WebResponse`.
 6. A concrete adapter writes the response back to Tornado or ASGI.

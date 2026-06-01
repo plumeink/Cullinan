@@ -15,19 +15,22 @@ pr_links: []
 
 # Application Runtime Model
 
-This page explains the application-first runtime introduced around
+This page explains the application runtime introduced around
 `cullinan.application_model` and re-exported from `cullinan`.
+Cullinan's intended experience is decorator-first business development: the
+runtime assembles what your modules declare, instead of asking you to wire a
+manual app object step by step.
 
 For the runtime contracts that now fail fast or warn, see [Framework Semantics](../framework_semantics.md). In particular, `Application.run()` assumes component decorators have already executed during module import, and `refresh()` marks the end of structural registration.
 
 ## Core concepts
 
 - `Application` owns one root module graph, one `ApplicationContext`, and one `WebRuntime`
-- `@module` declares module imports, owned Python packages, warmup hooks, and health checks
+- `@module` declares a structured boundary for owned Python packages, reload, draining, and hot-pluggable runtime behavior
 - `Runtime` is the mutable record for a validated / warmed application candidate
 - `current_app()` resolves the active application and prefers the request-bound snapshot during draining
 
-## Typical bootstrap
+## Typical runtime assembly
 
 ```python
 from cullinan import Application, controller, get_api, module, service
@@ -75,7 +78,7 @@ you provide `ownership_overrides`.
 
 `Application.run()` performs these stages:
 
-1. Discover the module graph and import owned Python modules.
+1. Discover runtime boundaries and import owned Python modules.
 2. Rebuild pending registrations from decorator metadata.
 3. Assemble an `ApplicationContext` and `WebRuntime`.
 4. Validate, refresh, and warm the runtime.
@@ -106,8 +109,9 @@ context before dispatch. That request binding enables:
 ## When to use ApplicationContext directly
 
 Keep using `ApplicationContext` directly when you need low-level container
-integration, explicit registration, or non-module bootstrapping. For new app
-startup, prefer `Application` + `@module`.
+integration, explicit registration, or compatibility-oriented bootstrapping. For
+new application code, start from decorators and use `Application` plus
+`@module` when you need explicit runtime boundaries.
 
 ## Related documents
 

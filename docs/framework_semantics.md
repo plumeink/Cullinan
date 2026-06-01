@@ -14,9 +14,9 @@ pr_links: []
 
 # Framework Semantics
 
-This page defines the runtime semantics Cullinan **guarantees**, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures.
+This page defines the runtime semantics Cullinan **guarantees**, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures. The goal is to make Cullinan's runtime model legible: decorator-first business code, import-executed discovery, and explicit runtime boundaries when you need them.
 
-## 1. Component discovery is import-executed, not static AST scanning
+## 1. Component discovery is import-executed, not static AST scanning or app-object registration
 
 Cullinan discovers decorated components by **importing Python modules** and letting decorators execute.
 
@@ -40,7 +40,7 @@ def build_repository():
     return LocalRepository
 ```
 
-`TopLevelCache` is in the supported discovery path. `LocalRepository` is not part of the automatic top-level discovery contract; Cullinan now emits a warning for this pattern, and if it happens after `refresh()` it fails fast.
+`TopLevelCache` is in the supported discovery path. `LocalRepository` is not part of the automatic top-level discovery contract; Cullinan now emits a warning for this pattern, and if it happens after `refresh()` it fails fast. If a package needs stronger ownership, reload, or hot-pluggable runtime guarantees, express that boundary with `@module` rather than falling back to manual app registration.
 
 ## 2. `Inject()` is a strict type contract
 

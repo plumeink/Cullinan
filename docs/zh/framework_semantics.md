@@ -14,9 +14,9 @@ pr_links: []
 
 # 框架语义规则
 
-本文定义 Cullinan **保证什么**、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。
+本文定义 Cullinan **保证什么**、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。目标是把 Cullinan 的运行时模型讲清楚：先写装饰器式业务代码，通过导入执行完成发现，在需要时再引入明确的运行时边界。
 
-## 1. 组件发现依赖“导入执行”，不是静态 AST 扫描
+## 1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
 
 Cullinan 通过**导入 Python 模块**并执行装饰器来发现组件。
 
@@ -40,7 +40,7 @@ def build_repository():
     return LocalRepository
 ```
 
-`TopLevelCache` 属于受支持的自动发现路径；`LocalRepository` 不属于自动顶层扫描契约。Cullinan 现在会对这类写法发 warning，如果它发生在 `refresh()` 之后，则会直接失败。
+`TopLevelCache` 属于受支持的自动发现路径；`LocalRepository` 不属于自动顶层扫描契约。Cullinan 现在会对这类写法发 warning，如果它发生在 `refresh()` 之后，则会直接失败。如果某段能力需要更强的归属、reload 或热插拔运行时保证，应通过 `@module` 表达边界，而不是退回到手工 app 注册思路。
 
 ## 2. `Inject()` 是严格类型契约
 

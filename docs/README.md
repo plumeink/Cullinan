@@ -23,7 +23,7 @@ pr_links: []
 
 Welcome to the Cullinan documentation site.
 
-> **Current version: 0.93a4**. The current documentation reflects the application-first bootstrap (`Application` + `@module`), the unified `cullinan.core` container facade, the transport-agnostic Web Runtime (`WebRequest` / `WebResponse` / `WebAdapter`), and the current pytest-led test workflow.
+> **Current version: 0.93a5**. The current documentation reflects the application-first bootstrap (`Application` + `@module`), the unified `cullinan.core` container facade, the transport-agnostic Web Runtime (`WebRequest` / `WebResponse` / `WebAdapter`), and the current pytest-led test workflow.
 
 ## Key updates
 

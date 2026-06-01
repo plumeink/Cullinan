@@ -19,10 +19,13 @@
 
 **A lightweight, modular Python web framework with built-in IoC/DI**
 
-Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
-- A unified registry model for controllers, services, handlers
+Cullinan is built on Tornado (HTTP/WebSocket), but the developer-facing model is
+not "grab an app object and register everything by hand". Instead, Cullinan
+focuses on:
+- Decorator-first business development with `@service`, `@controller`, `@get_api`, ...
+- Runtime assembly from Python imports and decorator metadata, rather than manual app wiring
+- Optional module boundaries with `@module` when you need ownership, reload, hot-plugging, and higher runtime stability
 - Built-in IoC/DI with request scope and service lifecycle hooks
-- Production-friendly startup/shutdown flow on a default port **4080**
 
 ---
 
@@ -41,7 +44,7 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 - **ResponseSerializer** for automatic response serialization (v0.90a5+)
 - **Pluggable model handlers** for Pydantic and custom model integration (v0.90a5+)
 - **Auto type conversion** and validation (ge, le, min_length, regex, etc.)
-- Modular architecture with registry, DI, and lifecycle management
+- Modular runtime with decorator metadata, DI, lifecycle management, and runtime switching
 - Built-in IoC/DI with `InjectByName` and `Inject` support
 - Unified lifecycle hooks (`on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`) on all components
 - Duck Typing lifecycle: no base class inheritance required (v0.92+)
@@ -76,31 +79,13 @@ Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
 
 ### Version Notes
 
-- Current series: **v0.92**
-  - **Unified lifecycle management** with `on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`
-  - **Duck Typing lifecycle**: no base class inheritance required
-  - **Phase ordering control** via `get_phase()` method
-  - **Breaking change**: Removed legacy `on_init()` and `on_destroy()` methods
-  - **New type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File`
-  - **DynamicBody** for flexible request body access with safe accessors
-  - **FileInfo/FileList** for file upload handling with validation
-  - **@field_validator** for dataclass field validation
-  - **ResponseSerializer** for automatic response serialization
-  - **Pluggable model handlers** for Pydantic and custom model integration
-  - **Auto type conversion** and parameter validation
-  - IoC/DI 2.0 architecture with `ApplicationContext`
-  - Single container entry point with freeze-after-startup
-  - Definition/Factory separation for dependency management
-  - Structured diagnostics with stable dependency chains
-  - Core module with registry, DI, lifecycle management
-  - Enhanced service layer with dependency injection
-  - WebSocket support with unified registry
-  - Request context management
-
-- Migration from v0.83:
-  - See [Import Migration Guide](docs/import_migration_090.md) for detailed migration steps
-  - Legacy APIs are deprecated but still functional in v0.90
-  - Will be removed in v1.0
+- Current series: **v0.93a5**
+  - Application/runtime model centered on `Application`, `current_app()`, and the unified Web Runtime
+  - Decorator-first component discovery based on Python import execution
+  - `@module` as the structured boundary for ownership, reload, draining, and hot-pluggable runtime assembly
+  - Unified lifecycle management with `on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`
+  - Built-in IoC/DI with `Inject()` and `InjectByName()`
+  - Structured semantic diagnostics for discovery, injection, lifecycle, and compatibility APIs
 
 ---
 
@@ -120,47 +105,50 @@ Ensure you have a working Python 3.8+ environment (virtualenv/conda/system Pytho
 ### Minimal Application
 
 ```python
-# app.py
-from cullinan import application
-from cullinan.controller import controller, get_api, post_api
-from cullinan.params import Query, Body, DynamicBody
+# minimal_app.py
+from cullinan import Application, controller, get_api, module, service
+from cullinan.adapter import TornadoAdapter
+from cullinan.core import Inject
 
-@controller(url='/api')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
-    # Type-safe query parameters (new unified syntax)
-    @get_api(url='/hello')
-    def hello(self, name: str = Query(default='World')):
-        return self.response_factory(
-            status=200,
-            body={"message": f"Hello, {name}!"}
-        )
-    
-    # Pure type annotation as Query (v0.90a5+)
-    @get_api(url='/users')
-    def list_users(self, page: int = 1, size: int = 10):
-        # page and size are automatically Query parameters
-        return {"page": page, "size": size}
-    
-    # DynamicBody for flexible request body access
-    @post_api(url='/users')
-    def create_user(self, body: DynamicBody):
-        return self.response_factory(
-            status=200,
-            body={"name": body.name, "age": body.get('age', 0)}
-        )
+    greeting_service: GreetingService = Inject()
 
-if __name__ == '__main__':
-    # Framework-level entrypoint, no manual app instantiation required
-    application.run()
+    @get_api(url="")
+    def hello(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@module
+class RootModule:
+    """Boundary declaration for owned packages and runtime assembly."""
+
+
+app = Application.run(RootModule)
+server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+
+if __name__ == "__main__":
+    server.run()
 ```
 
 Run:
 
 ```bash
-python app.py
-# GET:  http://localhost:4080/api/hello?name=Cullinan
-# POST: http://localhost:4080/api/users  {"name": "John", "age": 25}
+python minimal_app.py
+# GET: http://localhost:4080/hello
 ```
+
+In this model, you mainly write business services, controllers, and methods.
+The `app` object above is the assembled runtime handle, not a manual registration center.
+When you need clearer module ownership, reload, draining, and hot-plugging semantics,
+`@module` becomes the boundary declaration that keeps the runtime stable.
 
 For a more detailed onboarding, follow `docs/getting_started.md` (or `docs/zh/getting_started.md`).
 

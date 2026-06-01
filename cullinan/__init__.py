@@ -225,7 +225,7 @@ from cullinan.controller import (
 )
 
 
-__version__ = '0.93a4'
+__version__ = '0.93a5'
 
 __all__ = [
     # Configuration

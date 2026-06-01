@@ -16,6 +16,8 @@ pr_links: []
 # Getting Started with Cullinan
 
 This page provides a minimal quick-start to install and run a small Cullinan application.
+The key mental model is: write business methods and components with decorators first,
+then let the runtime assemble them. Cullinan is not centered on a manually wired app object.
 
 ## Prerequisites
 - Python 3.8+
@@ -77,7 +79,7 @@ class HelloController:
 
 @module
 class RootModule:
-    pass
+    """Boundary declaration for runtime ownership and stability."""
 
 
 app = Application.run(RootModule)
@@ -105,10 +107,11 @@ Then open `http://localhost:4080/hello` in your browser to verify the server is 
 
 ## What this example demonstrates
 
+- You mainly write business components with `@service`, `@controller`, and handler decorators
 - `Application.run(RootModule)` assembles and activates the application runtime
-- `@module` marks the application root and participates in module ownership
+- `@module` marks a runtime boundary for ownership, reload, draining, and higher stability
 - `Inject()` resolves the controller dependency from the active application context
-- `TornadoAdapter` serves the already-built Web Runtime
+- `app` is the assembled runtime handle, and `TornadoAdapter` serves the already-built Web Runtime
 
 ## Minimal application example
 
@@ -160,7 +163,7 @@ Then visit `http://localhost:4080/hello` in your browser.
 ## Understanding the basics
 
 ### Application lifecycle
-1. **Discovery**: `Application.run()` collects the root module graph and owned packages
+1. **Discovery**: `Application.run()` collects runtime boundaries and imports owned packages
 2. **Assembly**: Cullinan rebuilds pending registrations and assembles an `ApplicationContext` plus `WebRuntime`
 3. **Activation**: the validated runtime becomes active and can be served through an adapter
 4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
@@ -174,7 +177,7 @@ Cullinan provides built-in IoC/DI support through the application-first runtime 
 - Use `@controller` for HTTP controllers
 - Use `Inject()` for type-based injection
 - Use `InjectByName()` when name-based lookup is more convenient
-- Treat `Application` + `@module` as the preferred startup path
+- Start from business decorators first, then use `@module` when you need explicit runtime boundaries
 - Reach for `ApplicationContext` directly only when you need low-level container orchestration
 
 ```python

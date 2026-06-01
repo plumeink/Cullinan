@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a4  
+> **Version**: 0.93a5  
 > **Author**: Plumeink
 
 ## Basic Usage

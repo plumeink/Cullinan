@@ -75,6 +75,7 @@ class PendingRegistry:
                 )
                 guidance = (
                     "将所有带装饰器的组件放在模块顶层，并确保其所在模块在 refresh() 之前已完成导入。"
+                    "需要更强运行时归属时，请在 refresh() 前通过 @module 明确边界。"
                 )
                 if not registration.is_top_level:
                     problem = (
@@ -83,6 +84,7 @@ class PendingRegistry:
                     )
                     guidance = (
                         "把该组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描，并在 refresh() 前显式完成创建与注册。"
+                        "Cullinan 的推荐路径是声明业务组件和边界，而不是在运行中回退到手工 app 注册。"
                     )
                 raise RuntimeError(
                     f"{format_semantic_message('refresh-freeze', problem, guidance)} "

@@ -498,7 +498,8 @@ def _resolve_component_owners(
             if override_owner not in spec_lookup:
                 raise RuntimeError(
                     f"组件 {component_path} 的 ownership_overrides 指向了未导入模块 "
-                    f"{override_owner.__module__}.{override_owner.__name__}"
+                    f"{override_owner.__module__}.{override_owner.__name__}。"
+                    "请先把该模块纳入 imports，确保边界声明与运行时归属一致。"
                 )
             owners[component_path] = override_owner
             continue
@@ -506,7 +507,9 @@ def _resolve_component_owners(
         candidates = _matching_specs(specs, source_module)
         if not candidates:
             raise RuntimeError(
-                f"组件 {component_path} 不属于任何已声明模块包，请在 @module(packages=[...]) 中显式声明。"
+                f"组件 {component_path} 不属于任何已声明模块包。"
+                "请把它放入某个 @module 声明拥有的包中，或在 @module(packages=[...]) 中明确声明边界。"
+                "@module 表达的是运行时归属与热插拔边界，而不是显式 app 注册。"
             )
 
         top_prefix = max(prefix_length for _, prefix_length in candidates)
@@ -517,7 +520,7 @@ def _resolve_component_owners(
             )
             raise RuntimeError(
                 f"组件 {component_path} 同时匹配多个模块：{owner_names}。"
-                "请通过 ownership_overrides 显式指定归属。"
+                "请通过 ownership_overrides 显式指定归属，以保持模块边界、reload 与热插拔运行时的稳定性。"
             )
 
         owners[component_path] = next(iter(top_specs))
@@ -533,6 +536,7 @@ def _collect_ownership_overrides(specs: Sequence[ModuleSpec]) -> Dict[str, Type[
             if existing is not None and existing is not owner:
                 raise RuntimeError(
                     f"ownership_overrides 键 {key} 被多个模块重复声明。"
+                    "同一条边界只能有一个明确归属。"
                 )
             overrides[key] = owner
     return overrides

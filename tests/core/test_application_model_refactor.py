@@ -11,7 +11,12 @@ import pytest
 
 from cullinan import Application, current_app, reset_controller_registry
 from cullinan.adapter import ASGIAdapter
-from cullinan.application_model import bind_runtime_request_context, release_runtime_request_context
+from cullinan.application_model import (
+    _collect_module_specs,
+    _resolve_component_owners,
+    bind_runtime_request_context,
+    release_runtime_request_context,
+)
 from cullinan.core import PendingRegistry, set_application_context
 from cullinan.gateway import WebRuntime, reset_gateway
 
@@ -207,6 +212,49 @@ def test_module_conflict_requires_explicit_ownership_override(tmp_path, monkeypa
     finally:
         app.uninstall()
         _clear_modules(package_name)
+
+
+def test_component_outside_module_packages_gets_boundary_guidance(tmp_path, monkeypatch):
+    package_name = "orphan_app_model"
+    _write_package(
+        tmp_path,
+        package_name,
+        {
+            "__init__.py": "",
+            "root_only/__init__.py": "",
+            "feature/__init__.py": "",
+            "feature/services.py": """
+                from cullinan import service
+
+                @service
+                class OrphanService:
+                    pass
+            """,
+            "root.py": """
+                from cullinan import Application, module
+                import orphan_app_model.feature.services
+
+                @module(packages=["orphan_app_model.root_only"])
+                class RootModule:
+                    pass
+            """,
+        },
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    _clear_modules(package_name)
+
+    root_module = _import(f"{package_name}.root").RootModule
+    with pytest.raises(RuntimeError) as error:
+        _resolve_component_owners(
+            _collect_module_specs(root_module),
+            PendingRegistry.get_instance().get_all(),
+        )
+
+    message = str(error.value)
+    assert "@module" in message
+    assert "运行时归属" in message
+    assert "不是显式 app 注册" in message
+    _clear_modules(package_name)
 
 
 def test_current_app_prefers_request_snapshot_while_runtime_switches(tmp_path, monkeypatch):

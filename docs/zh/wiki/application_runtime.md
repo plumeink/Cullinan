@@ -16,18 +16,19 @@ pr_links: []
 # 应用运行时模型
 
 本文解释围绕 `cullinan.application_model` 引入、并由 `cullinan` 顶层重新导出的
-application-first 运行时模型。
+应用运行时模型。Cullinan 的目标体验是让开发者先围绕业务装饰器与业务方法开发，
+再由运行时去装配模块声明的能力，而不是手工围绕一个 app 对象逐步注册。
 
 如果你想了解哪些运行时契约现在会 warning 或直接失败，请同时阅读[框架语义规则](../framework_semantics.md)。尤其要注意：`Application.run()` 假定组件装饰器已在模块导入阶段执行，且 `refresh()` 是结构性注册的结束边界。
 
 ## 核心概念
 
 - `Application` 持有一个根模块图、一个 `ApplicationContext` 和一个 `WebRuntime`
-- `@module` 用于声明模块导入、拥有的 Python 包、warmup hooks 与 health checks
+- `@module` 用于声明拥有的 Python 包及其结构边界，并承载 reload、draining 与热插拔运行时语义
 - `Runtime` 是一个应用候选实例在校验 / 预热过程中的可变记录
 - `current_app()` 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照
 
-## 典型启动方式
+## 典型运行时装配
 
 ```python
 from cullinan import Application, controller, get_api, module, service
@@ -74,7 +75,7 @@ app = Application.run(RootModule)
 
 `Application.run()` 会依次执行：
 
-1. 发现模块图并导入各模块声明拥有的 Python 模块
+1. 发现运行时边界并导入各模块声明拥有的 Python 模块
 2. 基于装饰器元数据重建待注册项
 3. 装配 `ApplicationContext` 与 `WebRuntime`
 4. 校验、`refresh()` 并完成运行时预热
@@ -103,8 +104,8 @@ app = Application.run(RootModule)
 
 ## 何时直接使用 ApplicationContext
 
-当你需要底层容器集成、显式注册或非模块化启动方式时，仍应直接使用
-`ApplicationContext`。对于新的应用启动，优先使用 `Application` + `@module`。
+当你需要底层容器集成、显式注册或兼容性启动方式时，仍应直接使用
+`ApplicationContext`。对于新的应用代码，应先从装饰器声明出发，并在需要明确运行时边界时使用 `Application` + `@module`。
 
 ## 相关文档
 

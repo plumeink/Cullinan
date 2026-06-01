@@ -520,6 +520,7 @@ class ApplicationContext:
                     ),
                     guidance=(
                         "将组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描与自动装配的稳定保证。"
+                        "需要更强归属与热插拔语义时，请用 @module 明确边界。"
                     ),
                     category=ComponentDiscoveryWarning,
                     stacklevel=3,

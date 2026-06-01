@@ -25,10 +25,10 @@ class InjectionSemanticWarning(CullinanSemanticWarning):
 
 SEMANTIC_RULES: Dict[str, str] = {
     "component-import-execution": "组件注册依赖模块导入阶段执行装饰器，而不是静态扫描源代码。",
-    "component-top-level": "自动组件扫描只保证发现模块顶层定义并在导入时执行过装饰器的组件。",
+    "component-top-level": "自动发现/自动装配只保证模块顶层定义且在导入时执行过装饰器的组件。",
     "inject-unique-binding": "Inject() 只接受可被稳定归一化并唯一绑定到一个组件的类型契约。",
     "inject-by-name": "InjectByName() 是显式名称绑定；类型注解只用于表达语义，不参与名称解析。",
-    "refresh-freeze": "ApplicationContext.refresh() 之后 PendingRegistry 与 DefinitionRegistry 都进入冻结状态。",
+    "refresh-freeze": "ApplicationContext.refresh() 之后 PendingRegistry 与 DefinitionRegistry 都进入冻结状态；新的运行时结构边界应在此之前确定。",
     "lifecycle-request-scope": "singleton 组件不能直接依赖 request 作用域组件。",
     "compatibility-api": "兼容 API 只保证旧代码可继续运行，不代表当前推荐编程模型。",
 }
