@@ -1,6 +1,6 @@
 # Cullinan 框架架构
 
-> **版本**：0.93a7
+> **版本**：0.93a8
 > **最后更新**：2026-06-01  
 > **状态**：已更新
 
@@ -11,7 +11,7 @@
 
 ## 概览
 
-Cullinan 是一个面向 Tornado 的应用框架，当前运行时围绕三条已经整合完成的主线组织：
+Cullinan 是一个引擎中立的应用框架，当前运行时围绕三条已经整合完成的主线组织：
 
 1. **统一容器门面** —— `cullinan.core` 是公开的 IoC/DI 入口。
 2. **传输无关的 Web Runtime** —— `cullinan.web.gateway` 承载 `WebRequest`、`WebResponse`、路由、分发、中间件与异常处理。
@@ -137,6 +137,8 @@ ctx.shutdown()
 4. Gateway pipeline 接收已归一化的 `WebRequest`。
 5. `Dispatcher` 匹配路由、解析参数、调用处理器，并生成 `WebResponse`。
 6. 具体适配器把响应写回 Tornado 或 ASGI。
+
+现在默认应以“**先理解框架语义，再理解运行后端**”来阅读 Cullinan：应用代码对接的是 Cullinan 自身的请求/响应、控制器、参数、中间件与生命周期模型，而 Tornado 与 ASGI 则退到适配器边界之后，作为执行后端存在。
 7. 关闭阶段调用 `ctx.shutdown()` 并完成所有受管生命周期清理。
 
 ## 测试策略

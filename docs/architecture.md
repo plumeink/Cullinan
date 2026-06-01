@@ -1,6 +1,6 @@
 # Cullinan Framework Architecture
 
-> **Version**: 0.93a7
+> **Version**: 0.93a8
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -11,7 +11,7 @@
 
 ## Overview
 
-Cullinan is a Tornado-oriented application framework whose current runtime is organized around three consolidated pillars:
+Cullinan is an engine-neutral application framework whose current runtime is organized around three consolidated pillars:
 
 1. **Unified container facade** — `cullinan.core` is the public IoC/DI entrypoint.
 2. **Transport-agnostic Web Runtime** — `cullinan.web.gateway` owns `WebRequest`, `WebResponse`, routing, dispatch, middleware, and exception handling.
@@ -137,6 +137,8 @@ This split keeps request processing logic independent from any single server imp
 4. The gateway pipeline receives a transport-normalized `WebRequest`.
 5. `Dispatcher` matches a route, resolves parameters, invokes the handler, and produces a `WebResponse`.
 6. A concrete adapter writes the response back to Tornado or ASGI.
+
+Cullinan's default developer story is now **framework semantics first, runtime backend second**: application code targets Cullinan's request/response, controller, parameter, middleware, and lifecycle model, while Tornado and ASGI sit behind the adapter boundary as execution backends.
 7. Shutdown calls `ctx.shutdown()` and drains managed lifecycle hooks.
 
 ## Testing strategy

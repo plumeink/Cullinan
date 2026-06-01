@@ -53,9 +53,11 @@ def test_path_utils():
 def test_controller_loading():
     """测试从 controller package 导入主要 API。"""
     from cullinan.web.controller import Handler, controller, get_api, post_api, response
+    from cullinan.web.handler.base import BaseHandler
 
     assert callable(controller)
     assert callable(get_api)
     assert callable(post_api)
     assert callable(response)
     assert isinstance(Handler, type)
+    assert issubclass(Handler, BaseHandler)

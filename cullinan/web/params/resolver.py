@@ -420,19 +420,19 @@ class ParamResolver:
         """解析文件参数
 
         Args:
-            raw_value: 原始文件数据 (来自 Tornado)
+            raw_value: 原始文件数据 (来自传输适配层)
             param_spec: File 参数规格
             name: 参数名
 
         Returns:
             FileInfo 或 FileList
         """
-        # 处理列表格式 (Tornado 的 request.files 返回列表)
+        # 处理列表格式（后端上传集合通常为列表）
         if isinstance(raw_value, list):
             file_list = []
             for item in raw_value:
                 if isinstance(item, dict):
-                    file_info = FileInfo.from_tornado_file(item)
+                    file_info = FileInfo.from_upload_payload(item)
                 elif isinstance(item, FileInfo):
                     file_info = item
                 else:
@@ -461,7 +461,7 @@ class ParamResolver:
 
         # 处理单个文件
         if isinstance(raw_value, dict):
-            file_info = FileInfo.from_tornado_file(raw_value)
+            file_info = FileInfo.from_upload_payload(raw_value)
         elif isinstance(raw_value, FileInfo):
             file_info = raw_value
         else:
@@ -475,4 +475,3 @@ class ParamResolver:
             param_spec.validate_file(file_info)
 
         return file_info
-

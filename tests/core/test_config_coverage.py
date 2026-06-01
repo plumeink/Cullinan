@@ -32,7 +32,7 @@ class TestCullinanConfig(unittest.TestCase):
         self.assertFalse(config.verbose)
         self.assertTrue(config.auto_scan)
         self.assertIn('test', config.exclude_packages)
-        self.assertEqual(config.server_engine, 'tornado')
+        self.assertEqual(config.server_engine, 'auto')
         self.assertEqual(config.server_host, '0.0.0.0')
         self.assertEqual(config.server_port, 4080)
     

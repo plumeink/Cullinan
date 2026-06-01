@@ -2,6 +2,8 @@
 
 import importlib
 import json
+import os
+import subprocess
 import sys
 import textwrap
 import warnings
@@ -69,6 +71,36 @@ def test_top_level_does_not_expose_advanced_runtime_symbols():
     module = importlib.reload(cullinan)
     with pytest.raises(AttributeError):
         getattr(module, "Application")
+
+
+def test_top_level_import_does_not_eagerly_load_tornado(monkeypatch):
+    output = subprocess.check_output(
+        [
+            sys.executable,
+            "-c",
+            "import importlib, sys; importlib.import_module('cullinan'); "
+            "print(any(name.startswith('tornado') for name in sys.modules))",
+        ],
+        text=True,
+        cwd=os.getcwd(),
+    ).strip()
+
+    assert output == "False"
+
+
+def test_application_import_does_not_eagerly_load_tornado(monkeypatch):
+    output = subprocess.check_output(
+        [
+            sys.executable,
+            "-c",
+            "import importlib, sys; importlib.import_module('cullinan.application'); "
+            "print(any(name.startswith('tornado') for name in sys.modules))",
+        ],
+        text=True,
+        cwd=os.getcwd(),
+    ).strip()
+
+    assert output == "False"
 
 
 def test_direct_application_run_stays_explicit_runtime_api(tmp_path, monkeypatch):
@@ -147,7 +179,7 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
             captured["port"] = port
             captured["kwargs"] = kwargs
 
-    monkeypatch.setattr(public_api, "TornadoAdapter", DummyTornadoAdapter)
+    monkeypatch.setattr(public_api, "_load_tornado_adapter", lambda: DummyTornadoAdapter)
 
     configure(
         root_module=root_module,
@@ -168,6 +200,69 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
         assert captured["settings"]["static_path"].endswith("static")
         assert isinstance(captured["global_headers"], list)
         assert not any(isinstance(item.message, PublicAPISemanticWarning) for item in caught)
+    finally:
+        if app is not None:
+            app.uninstall()
+        _clear_modules(package_name)
+
+
+def test_public_run_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch):
+    package_name = "boundary_public_run_auto"
+    _write_package(
+        tmp_path,
+        package_name,
+        {
+            "__init__.py": "",
+            "root.py": """
+                from cullinan import controller, get_api, module
+
+                @controller(url="/api")
+                class GreetingController:
+                    @get_api(url="/ping")
+                    def ping(self):
+                        return {"message": "hello"}
+
+                @module
+                class RootModule:
+                    pass
+            """,
+        },
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    _clear_modules(package_name)
+    root_module = importlib.import_module(f"{package_name}.root").RootModule
+
+    captured: dict[str, object] = {}
+
+    class DummyASGIAdapter:
+        def __init__(self, dispatcher, global_headers=None, runtime=None):
+            captured["dispatcher"] = dispatcher
+            captured["global_headers"] = global_headers
+            captured["runtime"] = runtime
+
+        def run(self, host="0.0.0.0", port=4080, **kwargs):
+            captured["host"] = host
+            captured["port"] = port
+            captured["kwargs"] = kwargs
+
+    monkeypatch.setattr(public_api, "ASGIAdapter", DummyASGIAdapter)
+    monkeypatch.setattr(public_api, "resolve_runtime_engine", lambda engine, asgi_server="uvicorn": "asgi")
+
+    configure(
+        root_module=root_module,
+        server_host="127.0.0.1",
+        server_port=5092,
+        asgi_server="uvicorn",
+    )
+    app = run()
+
+    try:
+        assert app is not None
+        assert app.root_module is root_module
+        assert captured["host"] == "127.0.0.1"
+        assert captured["port"] == 5092
+        assert captured["kwargs"]["server"] == "uvicorn"
+        assert isinstance(captured["global_headers"], list)
     finally:
         if app is not None:
             app.uninstall()

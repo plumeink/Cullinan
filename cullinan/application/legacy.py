@@ -12,18 +12,9 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Tornado imports are now conditional — only loaded when engine='tornado'
-# This allows the framework to run without tornado installed (ASGI mode)
-_tornado_available = False
-try:
-    import tornado.ioloop
-    import tornado.options
-    import tornado.web
-    import tornado.httpserver
-    from tornado.options import define, options
-    _tornado_available = True
-except ImportError:
-    pass
+# Tornado discovery is kept lazy so importing application-facing modules does not
+# eagerly pull a concrete server framework into the semantic layer.
+_tornado_available = importlib.util.find_spec("tornado") is not None
 
 from cullinan.runtime.module_scanner import (
     is_pyinstaller_frozen,
@@ -712,12 +703,16 @@ def _build_tornado_settings():
     )
 
 
+def _build_transport_settings():
+    return _build_tornado_settings()
+
+
 def run(handlers=None, engine=None):
     """Start the compatibility scanning application entrypoint.
 
     Args:
         handlers: Extra (url, handler_class) pairs for Tornado mode.
-        engine: Server engine — ``'tornado'`` (default), ``'asgi'``, or ``'auto'``.
+        engine: Server engine — ``'auto'`` (default), ``'tornado'``, or ``'asgi'``.
                 Can also be set via env-var ``CULLINAN_ENGINE`` or
                 ``CullinanConfig.server_engine``.
     """
@@ -748,14 +743,20 @@ def run(handlers=None, engine=None):
         logger.info(BANNER)
 
     # Determine engine
+    configured_asgi_server = 'uvicorn'
     if engine is None:
         engine = os.getenv('CULLINAN_ENGINE', '').strip().lower() or None
     if engine is None:
         try:
             from cullinan.support.config import get_config
-            engine = getattr(get_config(), 'server_engine', 'tornado')
+            config = get_config()
+            engine = getattr(config, 'server_engine', 'auto')
+            configured_asgi_server = getattr(config, 'asgi_server', 'uvicorn')
         except Exception:
-            engine = 'tornado'
+            engine = 'auto'
+
+    from cullinan.transport.adapter.runtime_selection import resolve_runtime_engine
+    engine = resolve_runtime_engine(engine, asgi_server=configured_asgi_server)
 
     ctx, pending_count = _init_framework()
     _finalize_runtime_setup()
@@ -766,7 +767,6 @@ def run(handlers=None, engine=None):
     if engine == 'asgi':
         _run_asgi(host, port)
     else:
-        # Default: tornado (backward-compatible)
         _run_tornado(host, port, handlers)
 
 
@@ -797,10 +797,6 @@ def _run_tornado(host: str, port: int, extra_handlers: list):
         extra_handlers=extra_handlers,
     )
 
-    try:
-        define("port", default=port, help="run on the given port", type=int)
-    except Exception:
-        pass  # already defined (e.g. during tests or hot-reload)
     logger.info("server is starting")
     logger.info("port is %s", str(port))
 

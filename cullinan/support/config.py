@@ -105,9 +105,9 @@ class CullinanConfig:
         # v0.93: Server Engine Configuration
         # ====================================================================
 
-        # Server engine: 'tornado' (default), 'asgi'
+        # Server engine: 'auto' (default), 'tornado', 'asgi'
         # Can also be set via env var CULLINAN_ENGINE
-        self.server_engine: str = 'tornado'
+        self.server_engine: str = 'auto'
 
         # Default bind address for the top-level run() helper
         self.server_host: str = '0.0.0.0'
@@ -241,7 +241,7 @@ def configure(
             - 'strict': Service 失败时立即退出（默认，最安全）
             - 'warn': Service 失败时记录警告并继续（降级模式）
             - 'ignore': 忽略失败（不推荐，仅调试用）
-        server_engine: 高层 `run()` 的服务器类型（`'tornado'` 或 `'asgi'`）
+        server_engine: 高层 `run()` 的后端类型（`'auto'`、`'tornado'` 或 `'asgi'`）
         asgi_server: ASGI 模式下的底层服务器（如 `uvicorn` / `hypercorn`）
         server_host: 高层 `run()` 默认绑定地址
         server_port: 高层 `run()` 默认绑定端口

@@ -205,11 +205,11 @@ class FileInfo:
         return content_type or 'application/octet-stream'
 
     @classmethod
-    def from_tornado_file(cls, file_obj) -> 'FileInfo':
-        """从 Tornado HTTPFile 对象创建 FileInfo
+    def from_upload_payload(cls, file_obj) -> 'FileInfo':
+        """从传输层上传对象创建 FileInfo。
 
         Args:
-            file_obj: Tornado HTTPFile 对象
+            file_obj: 由具体 Web 后端提供的文件上传对象或字典
 
         Returns:
             FileInfo 实例
@@ -220,6 +220,11 @@ class FileInfo:
             content_type=file_obj.get('content_type'),
             field_name=file_obj.get('field_name'),
         )
+
+    @classmethod
+    def from_tornado_file(cls, file_obj) -> 'FileInfo':
+        """兼容旧 Tornado 命名，内部转到中立上传抽象。"""
+        return cls.from_upload_payload(file_obj)
 
     def __repr__(self) -> str:
         return f"FileInfo(filename={self._filename!r}, size={self.size}, type={self._content_type!r})"
@@ -320,4 +325,3 @@ class FileList:
 
     def __repr__(self) -> str:
         return f"FileList({len(self._files)} files, total {self.total_size} bytes)"
-

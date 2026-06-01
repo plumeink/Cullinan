@@ -56,6 +56,7 @@ pr_links: []
 - 职责：把 Web Runtime 绑定到具体服务器环境
 - 主包：`cullinan.transport.adapter`
 - 关键 API：`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`
+- 定位：位于 Cullinan 语义化 Web 门面之后的后端集成层
 
 ### 7. 参数与模型绑定
 

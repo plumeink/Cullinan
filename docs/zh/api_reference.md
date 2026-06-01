@@ -40,6 +40,8 @@ pr_links: []
 - `cullinan.web.gateway` —— 请求 / 响应 / dispatcher 契约
 - `cullinan.core` —— 低层容器与生命周期原语
 
+这些 transport adapter 属于集成层 API，而不是默认的应用开发心智模型。常规业务代码应停留在 Cullinan 自身的 application / web 语义上，而不是直接依赖具体服务器适配器。
+
 ### 兼容保留模块
 
 - `cullinan.application` —— 面向既有项目保留的旧扫描式启动 helper

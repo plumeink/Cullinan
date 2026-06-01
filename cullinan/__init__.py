@@ -49,7 +49,7 @@ from cullinan.web import (
     websocket_handler,
 )
 
-__version__ = "0.93a7"
+__version__ = "0.93a8"
 
 __all__ = [
     "Auto",

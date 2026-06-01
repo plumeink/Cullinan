@@ -99,12 +99,14 @@ app = Application.run(RootModule)
 
 ## 适配器与请求绑定
 
-`ASGIAdapter` 与 `TornadoAdapter` 会在分发前把运行时绑定到当前请求上下文。
+传输适配器（`ASGIAdapter` / `TornadoAdapter`）会在分发前把运行时绑定到当前请求上下文。
 这个绑定提供了：
 
 - 针对正确应用的 request-scoped 依赖解析
 - 控制器与中间件中的 `current_app()`
 - 旧请求尚未结束时的安全 draining
+
+对于常规业务应用，这仍应被视为内部 transport 细节；推荐入口依然是 Cullinan 自身的 application / controller 语义。
 
 ## 何时直接使用 ApplicationContext
 

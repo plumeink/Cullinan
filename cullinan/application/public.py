@@ -7,28 +7,29 @@ import os
 from typing import Any, Optional
 
 from cullinan._api_boundary import public_api_context
-from cullinan.application.legacy import _build_tornado_settings, _collect_global_headers, _finalize_runtime_setup
+from cullinan.application.legacy import _build_transport_settings, _collect_global_headers, _finalize_runtime_setup
 from cullinan.application.model import Application
 from cullinan.support.config import get_config
-from cullinan.transport import ASGIAdapter
-
-try:
-    from cullinan.transport.adapter import TornadoAdapter
-except (ImportError, TypeError):
-    TornadoAdapter = None  # type: ignore[assignment,misc]
+from cullinan.transport.adapter.asgi_adapter import ASGIAdapter
+from cullinan.transport.adapter.runtime_selection import resolve_runtime_engine
 
 
 def _resolve_root_module(root_module: Optional[type[Any]]) -> Optional[type[Any]]:
     return root_module or getattr(get_config(), "root_module", None)
 
 
-def _resolve_engine(engine: Optional[str]) -> str:
+def _resolve_engine_setting(engine: Optional[str]) -> str:
     if engine:
-        return engine
+        return engine.strip().lower()
     env_engine = os.getenv("CULLINAN_ENGINE", "").strip().lower()
     if env_engine:
         return env_engine
-    return getattr(get_config(), "server_engine", "tornado")
+    return getattr(get_config(), "server_engine", "auto")
+
+
+def _resolve_engine(engine: Optional[str]) -> str:
+    asgi_server = getattr(get_config(), "asgi_server", "uvicorn")
+    return resolve_runtime_engine(_resolve_engine_setting(engine), asgi_server=asgi_server)
 
 
 def _resolve_host_port(host: Optional[str], port: Optional[int]) -> tuple[str, int]:
@@ -40,7 +41,13 @@ def _resolve_host_port(host: Optional[str], port: Optional[int]) -> tuple[str, i
 
 def _finalize_public_runtime() -> tuple[list, dict[str, Any]]:
     _finalize_runtime_setup()
-    return _collect_global_headers(), _build_tornado_settings()
+    return _collect_global_headers(), _build_transport_settings()
+
+
+def _load_tornado_adapter():
+    from cullinan.transport.adapter.tornado_adapter import TornadoAdapter
+
+    return TornadoAdapter
 
 
 def run(
@@ -65,7 +72,7 @@ def run(
 
     with public_api_context():
         app = Application.run(resolved_root_module, runtime_config=runtime_config)
-        global_headers, tornado_settings = _finalize_public_runtime()
+        global_headers, transport_settings = _finalize_public_runtime()
         if actual_engine == "asgi":
             adapter = ASGIAdapter(
                 dispatcher=app.web_runtime.dispatcher,
@@ -74,11 +81,9 @@ def run(
             )
             adapter_kwargs.setdefault("server", getattr(get_config(), "asgi_server", "uvicorn"))
         else:
-            if TornadoAdapter is None:
-                raise ImportError("TornadoAdapter 不可用，请安装 tornado 或改用 engine='asgi'。")
-            adapter = TornadoAdapter(
+            adapter = _load_tornado_adapter()(
                 dispatcher=app.web_runtime.dispatcher,
-                settings=tornado_settings,
+                settings=transport_settings,
                 global_headers=global_headers,
                 runtime=app.web_runtime,
             )

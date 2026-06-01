@@ -13,14 +13,11 @@ Author: Plumeink
 
 from .base import WebAdapter
 from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter, WebDriver
-from .asgi_adapter import ASGIAdapter
-
-# TornadoAdapter requires tornado — import conditionally
-try:
-    from .tornado_adapter import TornadoAdapter
-except ImportError:
-    TornadoAdapter = None  # type: ignore[assignment,misc]
-
+from .runtime_selection import (
+    get_available_runtime_engines,
+    is_runtime_engine_available,
+    resolve_runtime_engine,
+)
 __all__ = [
     'WebAdapter',
     'WebDriver',
@@ -29,4 +26,21 @@ __all__ = [
     'DriverResponseWriter',
     'TornadoAdapter',
     'ASGIAdapter',
+    'get_available_runtime_engines',
+    'is_runtime_engine_available',
+    'resolve_runtime_engine',
 ]
+
+
+def __getattr__(name):
+    if name == "ASGIAdapter":
+        from .asgi_adapter import ASGIAdapter
+
+        return ASGIAdapter
+    if name == "TornadoAdapter":
+        try:
+            from .tornado_adapter import TornadoAdapter
+        except ImportError:
+            return None
+        return TornadoAdapter
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

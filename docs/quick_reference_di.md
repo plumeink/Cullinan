@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a7
+> **Version**: 0.93a8
 > **Author**: Plumeink
 
 > **Knowledge role:** [Engineering Practices](how-to/index.md)  

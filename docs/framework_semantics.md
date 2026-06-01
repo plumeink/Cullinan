@@ -30,6 +30,8 @@ Cullinan's default semantic path is now:
 
 Lower-level layers such as `cullinan.runtime`, `cullinan.transport`, and `cullinan.support` remain available, but they are not the default onboarding path for normal business applications.
 
+This also means the default semantic path is **not** "learn Tornado first, then learn Cullinan". Tornado and ASGI are execution backends behind the framework boundary; the primary contract for application code is Cullinan's own Web and application semantics.
+
 ## 1. Component discovery is import-executed, not static AST scanning or app-object registration
 
 Cullinan discovers decorated components by **importing Python modules** and letting decorators execute.

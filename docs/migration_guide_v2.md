@@ -25,7 +25,7 @@ Cullinan v0.93 is a major architectural rewrite introducing:
 ## Installation
 
 ```bash
-# Tornado mode (default, backward-compatible)
+# Tornado mode
 pip install cullinan[tornado]
 
 # ASGI mode (uvicorn)
@@ -47,15 +47,17 @@ from cullinan.web.controller import controller, get_api, post_api
 from cullinan.core.services import service, Service
 from cullinan.core import Inject
 
-# v0.93 — new imports available
+# v0.93 — new semantic imports available
 from cullinan import (
-    WebRequest, WebResponse,               # Unified request/response
-    Router, Dispatcher,                     # Gateway layer
-    GatewayMiddleware, CORSMiddleware,      # Middleware pipeline
-    OpenAPIGenerator,                       # OpenAPI spec
-    TornadoAdapter, ASGIAdapter, WebAdapter,# Server adapters
-    get_asgi_app,                           # ASGI convenience
+    WebRequest, WebResponse,          # Unified request/response
+    Router, Dispatcher,               # Gateway layer
+    GatewayMiddleware, CORSMiddleware,# Middleware pipeline
+    OpenAPIGenerator,                 # OpenAPI spec
+    get_asgi_app,                     # ASGI convenience
 )
+
+# Advanced transport integration stays explicit
+from cullinan.transport.adapter import ASGIAdapter, TornadoAdapter, WebAdapter
 ```
 
 ### 2. Controller Changes
@@ -112,12 +114,12 @@ from cullinan.application import run
 run()  # starts Tornado on port 4080
 ```
 
-#### v0.93: Choose your engine
+#### v0.93: Let Cullinan resolve the backend, or choose explicitly
 
 ```python
 from cullinan.application import run
 
-# Option A: Tornado (default, backward-compatible)
+# Option A: let Cullinan resolve the backend automatically
 run()
 
 # Option B: Tornado (explicit)
@@ -132,7 +134,7 @@ app = get_asgi_app()
 # Then: uvicorn myapp:app
 ```
 
-Environment variable: `CULLINAN_ENGINE=asgi` or config: `server_engine='asgi'`.
+Environment variable: `CULLINAN_ENGINE=asgi`, or config: `server_engine='auto'` / `'asgi'` / `'tornado'`.
 
 ### 5. Configuration Changes
 
@@ -142,7 +144,7 @@ from cullinan import configure
 configure(
     user_packages=['myapp'],
     # New v0.93 options:
-    # server_engine='tornado',        # 'tornado' or 'asgi'
+    # server_engine='auto',           # 'auto', 'tornado', or 'asgi'
     # asgi_server='uvicorn',          # 'uvicorn' or 'hypercorn'
     # route_trailing_slash=False,
     # route_case_sensitive=True,

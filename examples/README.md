@@ -21,3 +21,6 @@ This directory is the single source of runnable examples for the current Cullina
 Each example keeps one teaching goal and follows the recommended Cullinan path:
 `configure(root_module=...)`, decorator-first business code, and `Inject()` for type-led injection.
 
+The examples are intentionally engine-neutral at the application layer: business
+code targets Cullinan semantics first, while the framework decides whether to
+bridge into ASGI or Tornado at runtime.

@@ -107,12 +107,15 @@ request even after a newer runtime is already active globally.
 
 ## Adapters and request binding
 
-`ASGIAdapter` and `TornadoAdapter` bind the runtime into the current request
-context before dispatch. That request binding enables:
+The transport adapters (`ASGIAdapter` / `TornadoAdapter`) bind the runtime into
+the current request context before dispatch. That request binding enables:
 
 - request-scoped dependency resolution against the correct application
 - `current_app()` inside controllers and middleware
 - safe draining while older requests are still finishing
+
+For normal business applications, this stays an internal transport concern; the
+recommended entrypoint remains Cullinan's application and controller semantics.
 
 ## When to use ApplicationContext directly
 

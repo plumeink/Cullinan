@@ -25,7 +25,7 @@ Cullinan v0.93 是一次重大架构重写，引入了以下变化：
 ## 安装
 
 ```bash
-# Tornado 模式（默认，向后兼容）
+# Tornado 模式
 pip install cullinan[tornado]
 
 # ASGI 模式（uvicorn）
@@ -47,15 +47,17 @@ from cullinan.web.controller import controller, get_api, post_api
 from cullinan.core.services import service, Service
 from cullinan.core import Inject
 
-# v0.93 — 新增可用导入
+# v0.93 — 新增语义导入
 from cullinan import (
-    WebRequest, WebResponse,               # 统一请求/响应
-    Router, Dispatcher,                     # 网关层
-    GatewayMiddleware, CORSMiddleware,      # 中间件管线
-    OpenAPIGenerator,                       # OpenAPI 规范
-    TornadoAdapter, ASGIAdapter, WebAdapter,# 服务器适配器
-    get_asgi_app,                           # ASGI 便捷函数
+    WebRequest, WebResponse,          # 统一请求/响应
+    Router, Dispatcher,               # 网关层
+    GatewayMiddleware, CORSMiddleware,# 中间件管线
+    OpenAPIGenerator,                 # OpenAPI 规范
+    get_asgi_app,                     # ASGI 便捷函数
 )
+
+# 高级 transport 集成保持显式导入
+from cullinan.transport.adapter import ASGIAdapter, TornadoAdapter, WebAdapter
 ```
 
 ### 2. Controller 变更
@@ -112,12 +114,12 @@ from cullinan.application import run
 run()  # 在端口 4080 启动 Tornado
 ```
 
-#### v0.93：选择你的引擎
+#### v0.93：让 Cullinan 自动解析后端，或显式选择
 
 ```python
 from cullinan.application import run
 
-# 方式 A：Tornado（默认，向后兼容）
+# 方式 A：让 Cullinan 自动解析后端
 run()
 
 # 方式 B：Tornado（显式指定）
@@ -132,7 +134,7 @@ app = get_asgi_app()
 # 然后：uvicorn myapp:app
 ```
 
-环境变量：`CULLINAN_ENGINE=asgi`，或配置：`server_engine='asgi'`。
+环境变量：`CULLINAN_ENGINE=asgi`，或配置：`server_engine='auto'` / `'asgi'` / `'tornado'`。
 
 ### 5. 配置变更
 
@@ -142,7 +144,7 @@ from cullinan import configure
 configure(
     user_packages=['myapp'],
     # v0.93 新增选项：
-    # server_engine='tornado',        # 'tornado' 或 'asgi'
+    # server_engine='auto',           # 'auto'、'tornado' 或 'asgi'
     # asgi_server='uvicorn',          # 'uvicorn' 或 'hypercorn'
     # route_trailing_slash=False,
     # route_case_sensitive=True,

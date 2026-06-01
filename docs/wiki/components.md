@@ -56,6 +56,7 @@ For the contract behind automatic discovery and registration, read [Framework Se
 - Responsibility: bind the Web Runtime to a specific server environment
 - Main package: `cullinan.transport.adapter`
 - Key APIs: `WebAdapter`, `TornadoAdapter`, `ASGIAdapter`
+- Positioning: backend integration layer behind Cullinan's semantic Web facade
 
 ### 7. Parameters and model binding
 

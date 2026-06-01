@@ -3,8 +3,6 @@
 
 import json
 import inspect
-import tornado.web
-import tornado.websocket
 import types
 import functools
 import contextvars
@@ -20,6 +18,7 @@ from cullinan.support.exceptions import (
     HandlerError, ParameterError, ResponseError, RequestError, MissingHeaderException
 )
 from cullinan.support.logging_utils import should_log, log_if_enabled
+from cullinan.web.handler.base import BaseHandler
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol, List
 
 # New parameter system imports
@@ -348,7 +347,8 @@ class EncapsulationHandler(object):
 
 
 
-class Handler(tornado.web.RequestHandler):
+class Handler(BaseHandler):
+    """Transport-agnostic compatibility handler base."""
 
     @classmethod
     def set_instance_method(cls, cls_name, func):
@@ -365,9 +365,10 @@ class Handler(tornado.web.RequestHandler):
     def set_default_headers(self):
         # Use header registry instead of global list
         header_registry = get_header_registry()
-        if header_registry.has_headers():
+        setter = getattr(self, "set_header", None)
+        if callable(setter) and header_registry.has_headers():
             for header in header_registry.get_headers():
-                self.set_header(header[0], header[1])
+                setter(header[0], header[1])
 
     def options(self):
         pass
@@ -560,7 +561,7 @@ def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional
       - 'json': structured JSON object
 
     Args:
-        request: The HTTP request object (Tornado RequestHandler)
+        request: The HTTP request object or handler-like request wrapper
         resp_obj: The response object (HttpResponse or compatible)
         status_code: HTTP status code
         duration: Request processing time in seconds
@@ -573,7 +574,7 @@ def emit_access_log(request: Any, resp_obj: Optional[Any], status_code: Optional
         method = getattr(request, 'method', '-')
         uri = getattr(request, 'uri', getattr(request, 'path', '-'))
         client = getattr(request, 'remote_ip', None) or getattr(request, 'remote_addr', None) or getattr(request, 'remote_ip', None) or '-'
-        # headers may be present on Tornado request
+        # headers may be present on transport-native request objects
         headers = getattr(request, 'headers', {}) or {}
         referer = headers.get('Referer', headers.get('referer', '-'))
         user_agent = headers.get('User-Agent', headers.get('user-agent', '-'))
@@ -627,7 +628,7 @@ async def request_handler(self, func: Callable, params: Tuple, headers: Optional
     6. Emits access logs
     
     Args:
-        self: The Tornado RequestHandler instance
+        self: The transport-native handler or request wrapper instance
         func: The controller function to invoke (can be sync or async)
         params: Tuple of (url_params, query_params, body_params, file_params)
         headers: Dictionary of required headers
@@ -1469,4 +1470,3 @@ def get_response_pool_stats() -> Optional[dict]:
     if _response_pool is not None:
         return _response_pool.get_stats()
     return None
-

@@ -1,6 +1,6 @@
 # Cullinan 扩展开发指南
 
-> **版本**：v0.93a7
+> **版本**：v0.93a8
 > **作者**：Plumeink  
 > **最后更新**：2026-02-19
 
@@ -670,6 +670,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**版本**：v0.93a7
+**版本**：v0.93a8
 **作者**：Plumeink  
 **最后更新**：2026-06-01

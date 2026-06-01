@@ -41,6 +41,9 @@ Cullinan's current HTTP runtime is transport-agnostic. Shared request/response b
 - `TornadoAdapter`
 - `ASGIAdapter`
 
+Treat these adapters as transport backends, not as the recommended entrypoint
+for normal controller-driven application code.
+
 ## Controller-level usage
 
 Most applications stay at the controller layer and let the framework build `WebResponse` objects from return values.

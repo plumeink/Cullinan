@@ -59,7 +59,7 @@ class BodyDecoderMiddleware(Middleware):
         """请求预处理: 解码请求体
 
         Args:
-            handler: Tornado RequestHandler 实例
+            handler: 传输层 handler-like 对象
 
         Returns:
             handler 或 None (短路请求处理)
@@ -170,4 +170,3 @@ def set_decoded_body(request: Any, data: dict) -> None:
         data: 要设置的数据
     """
     setattr(request, '_decoded_body', data)
-

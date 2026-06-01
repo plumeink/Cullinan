@@ -30,6 +30,8 @@ Cullinan 当前推荐的主路径是：
 
 像 `cullinan.runtime`、`cullinan.transport`、`cullinan.support` 这样的更底层层级仍然可用，但不应成为普通业务应用的默认入门路径。
 
+这也意味着默认学习路径**不是先学 Tornado 再学 Cullinan**。Tornado 与 ASGI 是框架边界之后的执行后端；对应用代码真正构成主契约的，是 Cullinan 自身的 Web 与 application 语义。
+
 ## 1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
 
 Cullinan 通过**导入 Python 模块**并执行装饰器来发现组件。

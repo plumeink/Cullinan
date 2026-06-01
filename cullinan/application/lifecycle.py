@@ -8,20 +8,24 @@ service discovery verification, and graceful process shutdown.
 
 import signal
 import asyncio
+import importlib
+import importlib.util
 import logging
 from typing import Optional, List, Callable
 
-_tornado_available = False
-try:
-    import tornado.ioloop
-    _tornado_available = True
-except ImportError:
-    pass
+_tornado_available = importlib.util.find_spec("tornado") is not None
 
 from cullinan.core.services.registry import get_service_registry
 from cullinan.core import ApplicationContext, PendingRegistry
 
 logger = logging.getLogger(__name__)
+
+
+def _get_tornado_ioloop():
+    if not _tornado_available:
+        return None
+    tornado_ioloop = importlib.import_module("tornado.ioloop")
+    return tornado_ioloop.IOLoop.current()
 
 
 class CullinanApplication:
@@ -138,7 +142,7 @@ class CullinanApplication:
         self._shutdown_handlers.append(handler)
 
     def run(self) -> None:
-        """Run the application with IOLoop (Tornado) or asyncio fallback.
+        """Run the application with an available backend loop or asyncio fallback.
 
         This method:
         1. Executes startup
@@ -147,7 +151,7 @@ class CullinanApplication:
         4. Handles graceful shutdown on signals
         """
         if _tornado_available:
-            self._ioloop = tornado.ioloop.IOLoop.current()
+            self._ioloop = _get_tornado_ioloop()
 
             logger.info("Initializing application...")
             self._ioloop.run_sync(self.startup)

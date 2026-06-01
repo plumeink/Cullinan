@@ -22,9 +22,9 @@ Cullinan is a Python Web Framework for developers who want to organize applicati
 business services, controllers, and methods instead of manually wiring an app object.
 Its default path is decorator-first discovery plus `cullinan.application.configure(root_module=...)`
 and `cullinan.application.run()`, with `@module` used as the application boundary when
-ownership, runtime structure, and stability matter. The root namespace is now a thin
-gateway to the final framework surface rather than a place where historical wrapper files
-continue to coexist.
+ownership, runtime structure, and stability matter. The framework-facing API stays engine-neutral:
+Cullinan internally bridges your business application into Tornado or ASGI runtimes instead of
+making a concrete server framework the primary developer mental model.
 
 ---
 
@@ -37,6 +37,7 @@ other way around.
 - **Decorator-first discovery** - let Python imports and decorator metadata assemble the runtime
 - **Structured module boundaries** - use `@module` to express ownership and runtime boundaries
 - **Built-in IoC/DI and lifecycle** - keep application wiring inside the framework model
+- **Engine-neutral Web facade** - build against Cullinan semantics while the framework adapts to Tornado or ASGI internally
 - **Public semantic path** - build, run, test, and extend applications through stable public APIs
 
 Cullinan is not centered on treating an app object as a manual registration hub. The
@@ -172,6 +173,7 @@ This example shows the default Cullinan path:
 - `Inject()` for framework-managed wiring
 - `@module` as the runtime boundary
 - `cullinan.application.configure(root_module=...)` plus `run()` as the startup flow
+- runtime backend selection delegated to Cullinan instead of driving application structure
 
 ---
 

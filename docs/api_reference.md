@@ -40,6 +40,11 @@ This page provides an overview of the public API surface of Cullinan and clarifi
 - `cullinan.web.gateway` — request / response / dispatcher contracts
 - `cullinan.core` — low-level container and lifecycle primitives
 
+These advanced transport adapters are integration-layer APIs, not the default
+application-facing mental model. Regular business code should stay on
+Cullinan's own application and Web semantics rather than depending on a
+concrete server adapter.
+
 ### Compatibility-oriented modules
 
 - `cullinan.application` — legacy scanning startup helpers kept for existing projects

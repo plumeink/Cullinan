@@ -67,6 +67,7 @@ The web stack was reorganized around a transport-agnostic runtime in `cullinan.w
 - `Router`, `Dispatcher`, `MiddlewarePipeline`, and `ExceptionHandler` now live behind the gateway facade
 - `cullinan.web.gateway.web_core` owns the shared request/response model
 - adapters are separated into `cullinan.transport.adapter` (`TornadoAdapter`, `ASGIAdapter`)
+- runtime backend selection is now engine-neutral (`auto` / `asgi` / `tornado`) instead of treating Tornado as the default application-facing story
 
 ### Migration implication
 
