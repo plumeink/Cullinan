@@ -295,7 +295,3 @@ class TestExceptionFormatting(unittest.TestCase):
         self.assertIn("Simple error", formatted)
         self.assertNotIn("Details:", formatted)
         self.assertNotIn("Caused by:", formatted)
-
-
-if __name__ == '__main__':
-    unittest.main()

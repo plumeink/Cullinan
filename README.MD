@@ -106,9 +106,7 @@ Ensure you have a working Python 3.8+ environment (virtualenv/conda/system Pytho
 
 ```python
 # minimal_app.py
-from cullinan import Application, controller, get_api, module, service
-from cullinan.adapter import TornadoAdapter
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -131,11 +129,10 @@ class RootModule:
     """Boundary declaration for owned packages and runtime assembly."""
 
 
-app = Application.run(RootModule)
-server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+configure(root_module=RootModule)
 
 if __name__ == "__main__":
-    server.run()
+    run()
 ```
 
 Run:

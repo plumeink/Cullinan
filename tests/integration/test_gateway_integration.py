@@ -10,11 +10,6 @@ Tests:
 6. Response coercion (dict, str, tuple, None, legacy HttpResponse)
 """
 import asyncio
-import sys
-import os
-
-# Ensure project root is on path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import (
     WebRequest, WebResponse, Router, Dispatcher, ReturnValueHandler,
@@ -24,6 +19,13 @@ from cullinan.gateway import (
 
 passed = 0
 failed = 0
+
+
+def _reset_results():
+    global passed, failed
+    passed = 0
+    failed = 0
+
 
 def check(name, condition):
     global passed, failed
@@ -35,7 +37,7 @@ def check(name, condition):
         print(f"  [FAIL] {name}")
 
 
-async def main():
+async def _run_gateway_integration():
     print("=" * 60)
     print("Cullinan v0.93 Gateway Integration Test")
     print("=" * 60)
@@ -238,6 +240,6 @@ async def main():
     return failed == 0
 
 
-if __name__ == '__main__':
-    success = asyncio.run(main())
-    sys.exit(0 if success else 1)
+def test_gateway_integration_flow():
+    _reset_results()
+    assert asyncio.run(_run_gateway_integration())

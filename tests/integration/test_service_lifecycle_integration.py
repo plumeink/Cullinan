@@ -153,37 +153,3 @@ def test_async_lifecycle_hooks():
     assert 'shutdown_begin' in async_log
     assert 'shutdown_complete' in async_log
     print("    [OK] 异步关闭钩子执行成功")
-
-
-if __name__ == '__main__':
-    try:
-        print("\n" + "="*70)
-        print("Cullinan Service 生命周期集成测试 (使用 ApplicationContext)")
-        print("="*70)
-
-        success1 = test_service_lifecycle_with_phase()
-        success2 = test_async_lifecycle_hooks()
-
-        if success1 and success2:
-            print("\n" + "="*70)
-            print("🎉 所有测试通过！")
-            print("="*70)
-            print("\n现在您的应用启动流程是:")
-            print("  1. 扫描 Services 和 Controllers")
-            print("  2. 创建 ApplicationContext")
-            print("  3. 调用 refresh() 处理所有组件")
-            print("  4. 按 phase 顺序执行 on_startup")
-            print("     - DatabaseService (phase=-100)")
-            print("     - BotService (phase=-50) ← 您的 Bot 在这里启动")
-            print("     - 其他 Services (phase=0)")
-            print("  5. 启动 Web 服务器")
-            print("  6. 处理请求")
-            print("  7. 关闭时按逆序执行 on_shutdown")
-            print("\n[INFO] 您的 BotService 会在 Web 服务器启动前完成登录！")
-            print("="*70 + "\n")
-            exit(0)
-    except Exception as e:
-        print(f"\n[FAIL] 测试失败: {e}")
-        import traceback
-        traceback.print_exc()
-        exit(1)

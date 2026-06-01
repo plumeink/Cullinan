@@ -15,14 +15,17 @@ pr_links: []
 
 # cullinan.application
 
-`cullinan.application` exposes the recommended runtime-assembly surface for
-new Cullinan applications:
+`cullinan.application` is now a compatibility-oriented startup module. Regular
+applications should prefer the top-level `cullinan` API:
 
-- `Application.run(RootModule)` builds, warms, and activates one assembled runtime
+> **Knowledge role:** [API Reference](../reference/index.md)  
+> **Compatibility module:** this page documents a kept surface, not the default learning path.  
+> Prefer [Getting Started](../getting_started.md) and the top-level `cullinan` API for new applications.
+
+- `configure(root_module=RootModule)` declares the recommended root entrypoint
+- `run()` or `get_asgi_app()` starts through the curated top-level API
 - `@module` declares a boundary when you need module ownership, reload, and hot-pluggable runtime behavior
-- `current_app()` returns the active application, and prefers the request
-  snapshot while an older runtime is draining
-- legacy `run(handlers=None, engine=None)` remains available for compatibility
+- legacy `cullinan.application.run()` remains available only for compatibility
 
 The bootstrap contract also depends on the framework semantics documented in [Framework Semantics](../framework_semantics.md): component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after `refresh()`.
 
@@ -33,8 +36,7 @@ that keeps ownership, reload, draining, and runtime switching explicit and stabl
 ## Recommended bootstrap
 
 ```python
-from cullinan import Application, controller, current_app, get_api, module, service
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -49,10 +51,7 @@ class GreetingController:
 
     @get_api(url="/whoami")
     def whoami(self):
-        return {
-            "root": current_app().root_module.__name__,
-            "message": self.greeting_service.greet(),
-        }
+        return {"message": self.greeting_service.greet()}
 
 
 @module
@@ -60,7 +59,10 @@ class RootModule:
     pass
 
 
-app = Application.run(RootModule)
+configure(root_module=RootModule)
+
+if __name__ == "__main__":
+    run()
 ```
 
 ## Module ownership and boundaries
@@ -87,11 +89,13 @@ until the in-flight request ends.
 
 ## Compatibility note
 
-`ApplicationContext` remains the low-level container/runtime primitive. Existing
-code using `register()`, `refresh()`, `get()`, or the legacy
+`ApplicationContext` remains the low-level container/runtime primitive, and
+`Application` / `current_app()` remain available from
+`cullinan.application_model` for explicit runtime orchestration. Existing code
+using `register()`, `refresh()`, `get()`, or the legacy
 `cullinan.application.run()` entrypoint continues to work, but new application
-setup should start from business decorators and use `Application` plus `@module`
-when it needs explicit runtime boundaries.
+setup should start from business decorators plus the top-level
+`configure(...)/run()` path.
 
 ## Related documents
 

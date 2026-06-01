@@ -415,7 +415,3 @@ class TestMiddlewareIntegration(unittest.TestCase):
             "auth_cleanup",  # Response in reverse order
             "response_log: 200"
         ])
-
-
-if __name__ == '__main__':
-    unittest.main()

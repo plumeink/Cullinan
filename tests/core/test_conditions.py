@@ -245,7 +245,3 @@ class TestMultipleConditions:
 
         svc = ctx.try_get("PartialConditionService")
         assert svc is None
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

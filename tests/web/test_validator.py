@@ -181,7 +181,3 @@ class TestParamValidatorWithParam(unittest.TestCase):
         param = Query(int, name="page", default=1)
         ParamValidator.validate_param(param, None)  # 不抛出，因为有默认值 = 不必填
 
-
-if __name__ == '__main__':
-    unittest.main()
-

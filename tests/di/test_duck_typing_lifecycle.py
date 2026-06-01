@@ -251,16 +251,3 @@ def test_mixed_inheritance_and_plain():
     ctx.shutdown()
     print("✅ test_mixed_inheritance_and_plain passed!")
 
-
-if __name__ == '__main__':
-    test_service_without_inheritance()
-    test_component_without_inheritance()
-    test_controller_without_inheritance()
-    test_get_phase_without_inheritance()
-    test_async_lifecycle_without_inheritance()
-    test_mixed_inheritance_and_plain()
-
-    print("\n" + "=" * 60)
-    print("🎉 All Duck Typing lifecycle tests passed!")
-    print("=" * 60)
-

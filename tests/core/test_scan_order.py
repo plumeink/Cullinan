@@ -97,8 +97,3 @@ class TestScanOrder(unittest.TestCase):
             self.assertEqual(import_order[3][1], 'controller')
 
             print("  OK: Services scanned before controllers")
-
-
-
-if __name__ == '__main__':
-    unittest.main()

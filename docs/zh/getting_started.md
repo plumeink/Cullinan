@@ -1,6 +1,6 @@
 title: "Cullinan 快速开始"
 slug: "getting-started"
-module: ["cullinan.application"]
+module: ["cullinan"]
 tags: ["getting-started", "tutorial"]
 author: "Plumeink"
 reviewers: []
@@ -18,6 +18,11 @@ pr_links: []
 本页提供最小化的快速入门，说明如何安装并运行 Cullinan 示例应用。
 核心心智是：先用装饰器声明业务方法与组件，再由运行时完成装配；
 Cullinan 不是围绕手工组装 app 对象展开的框架。
+
+> **知识角色：** [应用构建](start/index.md)  
+> **推荐下一步：** [框架语义](framework_semantics.md)、[工程实践](how-to/index.md)  
+> **高级边界：** 如果你明确需要显式 `Application` 编排，请进入
+> [运行时与扩展](internals/index.md)，不要把那条路径当成默认启动方式。
 
 ## 前置条件
 - Python 3.8+
@@ -55,9 +60,7 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import Application, controller, get_api, module, service
-from cullinan.adapter import TornadoAdapter
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -82,11 +85,10 @@ class RootModule:
     """用于运行时归属与稳定性的边界声明。"""
 
 
-app = Application.run(RootModule)
-server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+configure(root_module=RootModule)
 
 if __name__ == '__main__':
-    server.run()
+    run()
 ```
 
 4. 运行你的应用：
@@ -108,10 +110,10 @@ python minimal_app.py
 ## 这个示例展示了什么
 
 - 你主要写的是 `@service`、`@controller` 和处理方法等业务声明
-- `Application.run(RootModule)` 会装配并激活应用运行时
+- `configure(root_module=RootModule)` 用来声明推荐的运行时根入口
 - `@module` 表达的是归属、reload、draining 与更高稳定性的运行时边界
 - `Inject()` 会从活动应用上下文中解析控制器依赖
-- `app` 是已经装配完成的运行时句柄，`TornadoAdapter` 负责承载 Web Runtime
+- `run()` 会通过框架推荐的顶层启动入口完成装配并启动服务
 
 ## 最小应用示例
 
@@ -119,9 +121,7 @@ python minimal_app.py
 
 ```python
 # minimal_app.py
-from cullinan import Application, controller, get_api, module, service
-from cullinan.adapter import TornadoAdapter
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -144,11 +144,10 @@ class RootModule:
     pass
 
 
-app = Application.run(RootModule)
-server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+configure(root_module=RootModule)
 
 if __name__ == "__main__":
-    server.run()
+    run()
 ```
 
 运行此示例：
@@ -163,9 +162,9 @@ python minimal_app.py
 ## 理解基础知识
 
 ### 应用生命周期
-1. **发现**：`Application.run()` 收集运行时边界并导入其拥有的包
-2. **装配**：Cullinan 重建待注册项，并装配 `ApplicationContext` 与 `WebRuntime`
-3. **激活**：通过校验的 runtime 成为活动 runtime，并可通过 adapter 对外提供服务
+1. **声明入口**：`configure(root_module=RootModule)` 告诉 Cullinan 哪个根模块定义运行时边界
+2. **发现与装配**：`run()` 导入所属包、重建待注册项，并装配 `ApplicationContext` 与 `WebRuntime`
+3. **激活**：通过校验的 runtime 成为活动 runtime，并通过框架选择的适配器路径对外提供服务
 4. **Reload / 关闭**：旧 runtime 会先 drain 飞行中请求，然后再关闭
 
 ### 依赖注入

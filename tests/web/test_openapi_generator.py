@@ -3,16 +3,19 @@
 import asyncio
 import inspect
 import json
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import Router, WebRequest, WebResponse, Dispatcher
 from cullinan.gateway.openapi import OpenAPIGenerator
 
 passed = 0
 failed = 0
+
+
+def _reset_results():
+    global passed, failed
+    passed = 0
+    failed = 0
+
 
 def check(name, condition):
     global passed, failed
@@ -24,7 +27,7 @@ def check(name, condition):
         print(f"  [FAIL] {name}")
 
 
-async def main():
+async def _run_openapi_generator_checks():
     print("=" * 60)
     print("OpenAPI Generator Tests")
     print("=" * 60)
@@ -196,6 +199,6 @@ async def main():
     return failed == 0
 
 
-if __name__ == '__main__':
-    success = asyncio.run(main())
-    sys.exit(0 if success else 1)
+def test_openapi_generator_end_to_end():
+    _reset_results()
+    assert asyncio.run(_run_openapi_generator_checks())

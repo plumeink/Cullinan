@@ -15,12 +15,16 @@ pr_links: []
 
 # cullinan.application
 
-`cullinan.application` 现在提供推荐的运行时装配入口：
+`cullinan.application` 现在属于兼容保留的启动模块。常规应用应优先使用顶层 `cullinan` API：
 
-- `Application.run(RootModule)`：构建、预热并激活一套已装配运行时
+> **知识角色：** [API 参考](../reference/index.md)  
+> **兼容模块：** 这页记录的是保留表面，不是默认学习路径。  
+> 新应用请优先阅读 [快速开始](../getting_started.md) 并使用顶层 `cullinan` API。
+
+- `configure(root_module=RootModule)`：声明推荐的根入口
+- `run()` 或 `get_asgi_app()`：通过整理后的顶层 API 启动应用
 - `@module`：当你需要模块归属、reload 与热插拔运行时能力时，用来声明结构边界
-- `current_app()`：返回当前活动应用；当旧 runtime 正在 draining 时，会优先返回请求绑定的应用快照
-- 旧的 `run(handlers=None, engine=None)` 入口仍保留，用于兼容已有调用
+- 旧的 `cullinan.application.run()` 入口仍保留，但仅用于兼容已有调用
 
 这里的启动契约同时依赖[框架语义规则](../framework_semantics.md)：组件发现基于导入执行、自动扫描只保证模块顶层装饰器组件、`refresh()` 之后结构性注册会被冻结。
 
@@ -30,8 +34,7 @@ pr_links: []
 ## 推荐启动方式
 
 ```python
-from cullinan import Application, controller, current_app, get_api, module, service
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -46,10 +49,7 @@ class GreetingController:
 
     @get_api(url="/whoami")
     def whoami(self):
-        return {
-            "root": current_app().root_module.__name__,
-            "message": self.greeting_service.greet(),
-        }
+        return {"message": self.greeting_service.greet()}
 
 
 @module
@@ -57,7 +57,10 @@ class RootModule:
     pass
 
 
-app = Application.run(RootModule)
+configure(root_module=RootModule)
+
+if __name__ == "__main__":
+    run()
 ```
 
 ## 模块归属与边界
@@ -79,7 +82,7 @@ class RootModule:
 
 ## 兼容性说明
 
-`ApplicationContext` 仍然是底层容器 / 运行时原语。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用代码应先从业务装饰器出发，并在需要明确运行时边界时使用 `Application` + `@module`。
+`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` / `current_app()` 也仍可通过 `cullinan.application_model` 用于显式运行时编排。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
 
 ## 相关文档
 

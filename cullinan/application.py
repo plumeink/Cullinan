@@ -31,7 +31,12 @@ from cullinan.module_scanner import (
     file_list_func
 )
 from cullinan.application_model import Application, Module, Runtime, current_app, module
-from cullinan.core.semantic_rules import describe_semantic_rule, format_semantic_message
+from cullinan.core.semantic_rules import (
+    CompatibilitySemanticWarning,
+    describe_semantic_rule,
+    format_semantic_message,
+    warn_semantic_once,
+)
 from cullinan.exceptions import PackageDiscoveryError
 
 # Module-level logger
@@ -681,7 +686,7 @@ def _setup_openapi():
 
 
 def run(handlers=None, engine=None):
-    """Start the Cullinan application.
+    """Start the compatibility scanning application entrypoint.
 
     Args:
         handlers: Extra (url, handler_class) pairs for Tornado mode.
@@ -689,6 +694,14 @@ def run(handlers=None, engine=None):
                 Can also be set via env-var ``CULLINAN_ENGINE`` or
                 ``CullinanConfig.server_engine``.
     """
+    warn_semantic_once(
+        key="public-api:legacy-application-run",
+        rule_key="compatibility-api",
+        problem="cullinan.application.run() 属于兼容扫描启动入口。",
+        guidance="常规业务应用请优先使用 from cullinan import configure, run；只有在维护旧扫描式项目时再使用 cullinan.application.run()。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
     if handlers is None:
         handlers = []
 
@@ -806,7 +819,7 @@ def _run_asgi(host: str, port: int):
 
 
 def get_asgi_app():
-    """Create and return an ASGI application callable.
+    """Create and return an ASGI application callable via the compatibility entrypoint.
 
     This function performs full framework initialization and returns an ASGI 3.0
     app that can be served by uvicorn, hypercorn, or any ASGI server::
@@ -817,6 +830,14 @@ def get_asgi_app():
 
         # Then: uvicorn myapp:app
     """
+    warn_semantic_once(
+        key="public-api:legacy-application-get-asgi-app",
+        rule_key="compatibility-api",
+        problem="cullinan.application.get_asgi_app() 属于兼容扫描入口。",
+        guidance="常规业务应用请优先使用 from cullinan import configure, get_asgi_app；只有在维护旧扫描式部署方式时再使用 cullinan.application.get_asgi_app()。",
+        category=CompatibilitySemanticWarning,
+        stacklevel=2,
+    )
     installed_handler = _ensure_console_logging()
     if installed_handler is not None:
         old_fmt = getattr(installed_handler, 'formatter', None)

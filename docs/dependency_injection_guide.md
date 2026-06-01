@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: 0.93a5  
+> **Version**: 0.93a6  
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -9,6 +9,10 @@
 Cullinan's current DI model is centered on `ApplicationContext` and exposed publicly through `cullinan.core`. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.
 
 Before choosing an injection primitive, read [Framework Semantics](framework_semantics.md). That page defines the hard rules behind `Inject()`, `InjectByName()`, `refresh()`, and compatibility APIs.
+
+> **Knowledge role:** [Engineering Practices](how-to/index.md)  
+> **Recommended default:** prefer decorator-based business code plus `Inject()` where the type contract is stable.  
+> **Need symbol lookup instead of guidance?** See [API Reference](reference/index.md).
 
 ## Recommended usage
 

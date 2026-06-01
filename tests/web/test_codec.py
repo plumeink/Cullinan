@@ -165,7 +165,3 @@ class TestCodecRegistry(unittest.TestCase):
         self.assertIn('application/json', content_type)
         self.assertEqual(json.loads(encoded.decode('utf-8')), data)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

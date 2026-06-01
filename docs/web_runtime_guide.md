@@ -10,12 +10,16 @@ translation_pair: "docs/zh/web_runtime_guide.md"
 related_tests: ["tests/web/test_web_runtime.py"]
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2026-05-30T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Web Runtime Guide
 
 Cullinan's current HTTP runtime is transport-agnostic. Shared request/response behavior lives in `cullinan.gateway`, while server-specific integration lives in `cullinan.adapter`.
+
+> **Knowledge role:** [Engineering Practices](how-to/index.md)  
+> **Recommended application path:** keep most business code at controller level and start applications from the top-level `cullinan` API.  
+> **Advanced runtime work:** if you need explicit runtime orchestration or adapter internals, continue in [Internals & Extensions](internals/index.md).
 
 ## Public API surface
 

@@ -2,6 +2,9 @@
 
 > **Cullinan Framework** — Comprehensive migration guide for upgrading from v0.9x to v0.93.
 
+> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
+> **Upgrade-only page:** keep this page for version transition work, not for first-time onboarding.
+
 ## Overview of Changes
 
 Cullinan v0.93 is a major architectural rewrite introducing:

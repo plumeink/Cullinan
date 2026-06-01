@@ -1,6 +1,6 @@
 # Cullinan 依赖注入指南
 
-> **版本**：0.93a5  
+> **版本**：0.93a6  
 > **最后更新**：2026-06-01  
 > **状态**：已更新
 
@@ -9,6 +9,10 @@
 Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cullinan.core` 作为公开入口。装饰器仍然是推荐的编写方式；旧式 registry API 仅保留兼容意义。
 
 在选择注入原语之前，建议先阅读[框架语义规则](framework_semantics.md)。其中定义了 `Inject()`、`InjectByName()`、`refresh()` 以及兼容 API 的硬约束。
+
+> **知识角色：** [工程实践](how-to/index.md)  
+> **推荐默认方式：** 优先使用装饰器式业务代码，并在类型契约稳定时优先使用 `Inject()`。  
+> **如果你需要查符号而不是看指导：** 请转到 [API 参考](reference/index.md)。
 
 ## 推荐用法
 

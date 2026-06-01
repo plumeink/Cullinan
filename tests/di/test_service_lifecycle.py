@@ -102,8 +102,3 @@ def test_service_lifecycle():
     finally:
         set_application_context(None)
         PendingRegistry.reset()
-
-
-if __name__ == '__main__':
-    success = test_service_lifecycle()
-    exit(0 if success else 1)

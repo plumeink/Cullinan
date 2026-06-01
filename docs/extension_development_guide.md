@@ -1,8 +1,12 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.93a5  
+> **Version**: v0.93a6  
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
+
+> **Knowledge role:** [Internals & Extensions](internals/index.md)  
+> **Advanced topic:** this guide is for framework extension work, not the default
+> application learning path.
 
 ---
 
@@ -667,6 +671,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.93a5  
+**Version**: v0.93a6  
 **Author**: Plumeink  
 **Last Updated**: 2026-06-01

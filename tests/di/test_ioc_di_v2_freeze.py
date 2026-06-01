@@ -137,7 +137,3 @@ class TestRegistryFrozenErrorDetails(unittest.TestCase):
 
         self.assertTrue(issubclass(RegistryFrozenError, RegistryError))
 
-
-if __name__ == '__main__':
-    unittest.main()
-

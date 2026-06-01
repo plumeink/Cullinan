@@ -15,9 +15,13 @@ pr_links: []
 
 # 应用运行时模型
 
-本文解释围绕 `cullinan.application_model` 引入、并由 `cullinan` 顶层重新导出的
-应用运行时模型。Cullinan 的目标体验是让开发者先围绕业务装饰器与业务方法开发，
-再由运行时去装配模块声明的能力，而不是手工围绕一个 app 对象逐步注册。
+本文解释围绕 `cullinan.application_model` 构建的高级应用运行时模型。Cullinan 的目标体验是让开发者先围绕业务装饰器与业务方法开发，再由运行时去装配模块声明的能力，而不是手工围绕一个 app 对象逐步注册。
+
+> **知识角色：** [运行时与扩展](../internals/index.md)  
+> **高级主题：** 常规应用应优先使用 `from cullinan import configure, run`。  
+> **参考配套：** 公开 / 高级 / 兼容 API 的分层，请同时查看 [API 参考](../api_reference.md)。
+
+对于常规应用，请优先使用顶层 `from cullinan import configure, run`。只有在你明确需要显式运行时编排时，才应进入 `cullinan.application_model`。
 
 如果你想了解哪些运行时契约现在会 warning 或直接失败，请同时阅读[框架语义规则](../framework_semantics.md)。尤其要注意：`Application.run()` 假定组件装饰器已在模块导入阶段执行，且 `refresh()` 是结构性注册的结束边界。
 
@@ -31,8 +35,8 @@ pr_links: []
 ## 典型运行时装配
 
 ```python
-from cullinan import Application, controller, get_api, module, service
-from cullinan.core import Inject
+from cullinan import Inject, controller, get_api, module, service
+from cullinan.application_model import Application
 
 
 @service

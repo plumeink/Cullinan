@@ -3,6 +3,9 @@
 > **版本**：v0.90  
 > **作者**：Plumeink
 
+> **知识角色：** [版本迁移](migration/index.md)  
+> **仅用于升级：** 这页用于迁移既有代码，不用于学习新项目的推荐 API 路径。
+
 本指南帮助您从 Cullinan 1.x 迁移到 0.93（0.90）。
 
 ## 破坏性变更
@@ -210,4 +213,3 @@ python -m pytest tests/test_ioc_di_v2_*.py -v
 - [依赖注入指南](dependency_injection_guide.md)
 - [API 参考](api_reference.md)
 - [GitHub Issues](https://github.com/your-repo/cullinan/issues)
-

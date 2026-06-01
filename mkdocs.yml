@@ -6,41 +6,50 @@ use_directory_urls: true
 
 nav:
   - Home: README.md
-  - Getting Started: getting_started.md
-  - Architecture: architecture.md
-  - Runtime Consolidation: runtime_updates_v093.md
-  - Framework Semantics: framework_semantics.md
-  - Wiki:
-    - Components: wiki/components.md
-    - Decorators: wiki/decorators.md
-    - Injection: wiki/injection.md
-    - Application Runtime: wiki/application_runtime.md
-    - Lifecycle: wiki/lifecycle.md
-    - Middleware: wiki/middleware.md
-    - Extensions: wiki/extensions.md
-    - RESTful API: wiki/restful_api.md
-  - Modules:
-    - app: modules/app.md
-    - application: modules/application.md
-    - core: modules/core.md
-    - controller: modules/controller.md
-    - service: modules/service.md
-  - Examples: examples.md
-  - API Reference: api_reference.md
-  - Guides:
-    - Migration Guide: migration_guide.md
-    - Migration Guide v2: migration_guide_v2.md
-    - Import Migration 0.90: import_migration_090.md
+  - Application Build:
+    - Overview: start/index.md
+    - Getting Started: getting_started.md
+    - Examples: examples.md
+    - Build & Run: build_run.md
+  - Framework Semantics:
+    - Overview: concepts/index.md
+    - Framework Semantics: framework_semantics.md
+    - Architecture: architecture.md
+  - Engineering Practices:
+    - Overview: how-to/index.md
     - Dependency Injection Guide: dependency_injection_guide.md
     - Web Runtime Guide: web_runtime_guide.md
     - DI Quick Reference: quick_reference_di.md
     - Parameter System Guide: parameter_system_guide.md
-    - Extension Development: extension_development_guide.md
-    - Quick Start Extensions: quick_start_extensions.md
-  - Development:
-    - Build & Run: build_run.md
     - Testing: testing.md
     - Contributing: contributing.md
+  - API Reference:
+    - Overview: reference/index.md
+    - API Reference Overview: api_reference.md
+    - Module Reference:
+      - app: modules/app.md
+      - application: modules/application.md
+      - core: modules/core.md
+      - controller: modules/controller.md
+      - service: modules/service.md
+  - Internals & Extensions:
+    - Overview: internals/index.md
+    - Application Runtime: wiki/application_runtime.md
+    - Components: wiki/components.md
+    - Decorators: wiki/decorators.md
+    - Injection: wiki/injection.md
+    - Lifecycle: wiki/lifecycle.md
+    - Middleware: wiki/middleware.md
+    - Extensions: wiki/extensions.md
+    - RESTful API: wiki/restful_api.md
+    - Extension Development: extension_development_guide.md
+    - Quick Start Extensions: quick_start_extensions.md
+  - Migration & Version Notes:
+    - Overview: migration/index.md
+    - Runtime Consolidation: runtime_updates_v093.md
+    - Migration Guide: migration_guide.md
+    - Migration Guide v2: migration_guide_v2.md
+    - Import Migration 0.90: import_migration_090.md
 
 # Exclude internal documentation files from nav warnings
 not_in_nav: |
@@ -84,11 +93,17 @@ plugins:
           site_url: /zh/
           nav_translations:
             Home: 首页
+            Application Build: 应用构建
+            Framework Semantics: 框架语义
+            Engineering Practices: 工程实践
+            API Reference: API 参考
+            Internals & Extensions: 运行时与扩展
+            Migration & Version Notes: 版本迁移
+            Overview: 总览
             Getting Started: 快速开始
+            API Reference Overview: API 参考总览
             Architecture: 架构设计
             Runtime Consolidation: 运行时整合
-            Framework Semantics: 框架语义规则
-            Wiki: 维基
             Components: 组件
             Decorators: 装饰器
             Injection: 注入
@@ -97,15 +112,13 @@ plugins:
             Middleware: 中间件
             Extensions: 扩展
             RESTful API: RESTful API
-            Modules: 模块
+            Module Reference: 模块参考
             app: 应用
             application: 应用程序
             core: 核心
             controller: 控制器
             service: 服务
             Examples: 示例
-            API Reference: API 参考
-            Guides: 指南
             Runtime Consolidation Overview: 运行时整合概览
             Migration Guide: 迁移指南
             Migration Guide v2: 迁移指南 v2
@@ -116,7 +129,6 @@ plugins:
             Parameter System Guide: 参数系统指南
             Extension Development: 扩展开发
             Quick Start Extensions: 扩展快速入门
-            Development: 开发
             Build & Run: 构建与运行
             Testing: 测试
             Contributing: 贡献指南

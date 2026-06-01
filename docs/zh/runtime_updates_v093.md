@@ -10,12 +10,15 @@ translation_pair: "docs/runtime_updates_v093.md"
 related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-31T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # 运行时整合概览
 
 本文汇总当前代码库与文档已落地的四次主要更新。
+
+> **知识角色：** [版本迁移](migration/index.md)  
+> **历史总结页：** 这页用于解释发生了哪些变化，不属于新应用的默认入门路径。
 
 ## 1. IoC/DI 整合
 

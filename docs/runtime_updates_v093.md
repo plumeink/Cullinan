@@ -10,12 +10,16 @@ translation_pair: "docs/zh/runtime_updates_v093.md"
 related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2026-05-31T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Runtime consolidation overview
 
 This page summarizes the four major updates currently reflected in the codebase and documentation.
+
+> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
+> **Historical summary:** this page explains what changed; it is not part of the
+> default onboarding path for new applications.
 
 ## 1. IoC/DI consolidation
 

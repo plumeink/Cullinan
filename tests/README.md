@@ -40,7 +40,8 @@ tests/
 1. 正式测试文件统一命名为 `test_*.py`。
 2. 新增测试时优先放入对应领域目录；只有跨模块场景才放 `integration`。
 3. 新增或刷新测试时，不再使用 `run_*`、`quick_*`、`verify_*`、`diagnose_*` 这类脚本式主线测试。
-4. 若需要共享测试工具，放到 `tests\helpers\`，不要直接作为测试入口执行。
+4. 历史 `if __name__ == "__main__"`、`main()`、`run_all_tests()` 直跑入口已清理；正式验证统一交给 pytest 收集。
+5. 若需要共享测试工具，放到 `tests\helpers\`，不要直接作为测试入口执行。
 
 ## 编写建议
 
@@ -51,5 +52,8 @@ tests/
 ## 本次更新相关测试
 
 - `tests\core\test_application_model_refactor.py`：application-first 启动、模块归属、runtime 切换
+- `tests\core\test_public_api_boundaries.py`：顶层推荐 API、兼容导出 warning、公开边界收敛
 - `tests\core\test_decorators.py`：装饰器注册元数据与重扫能力
 - `tests\integration\test_adapter_integration.py`：ASGI / Tornado 适配器集成路径
+- `tests\integration\test_gateway_integration.py`：gateway 端到端行为的 pytest 化集成覆盖
+- `tests\web\test_openapi_generator.py`：OpenAPI 自动生成与公开 spec 路径覆盖

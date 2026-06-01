@@ -15,6 +15,8 @@ from cullinan.core.container_manager import get_container_manager
 from cullinan.core.context import create_context, destroy_context, get_current_context
 from cullinan.core.decorators import get_component_registration_metadata
 from cullinan.core.pending import PendingRegistration, PendingRegistry
+from cullinan._api_boundary import in_public_api_context
+from cullinan.core.semantic_rules import PublicAPISemanticWarning, warn_semantic_once
 from cullinan.gateway import (
     get_dispatcher,
     get_exception_handler,
@@ -204,7 +206,10 @@ def release_runtime_request_context(runtime: Optional[WebRuntime], binding: Opti
 
 
 class Application:
-    """Application-first facade for module discovery and runtime switching."""
+    """Advanced runtime facade for module discovery and runtime switching.
+
+    Regular business applications should prefer ``from cullinan import configure, run``.
+    """
 
     _active_app: Optional["Application"] = None
     _active_lock = threading.RLock()
@@ -250,6 +255,15 @@ class Application:
         *,
         runtime_config: Optional[WebRuntimeConfig] = None,
     ) -> "Application":
+        if not in_public_api_context():
+            warn_semantic_once(
+                key="public-api:application-model-run",
+                rule_key="public-api-boundary",
+                problem="直接调用 Application.run() 属于高级运行时装配入口。",
+                guidance="常规业务应用请优先使用 from cullinan import configure, run；只有在需要显式运行时编排时再直接使用 Application.run()。",
+                category=PublicAPISemanticWarning,
+                stacklevel=2,
+            )
         return cls(root_module, runtime_config=runtime_config).install()
 
     def discover(self) -> "Application":

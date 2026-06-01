@@ -180,20 +180,3 @@ def test_optional_injection():
     finally:
         ctx.shutdown()
         reset_all_registries()
-
-
-if __name__ == '__main__':
-    results = []
-
-    results.append(test_controller_di())
-    results.append(test_multiple_services())
-    results.append(test_optional_injection())
-
-    print("\n" + "=" * 60)
-    print("测试总结")
-    print("=" * 60)
-    passed = sum(results)
-    total = len(results)
-    print(f'通过: {passed}/{total}')
-
-    sys.exit(0 if all(results) else 1)

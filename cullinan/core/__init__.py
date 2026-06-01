@@ -74,6 +74,7 @@ from .semantic_rules import (
     ComponentDiscoveryWarning,
     CullinanSemanticWarning,
     InjectionSemanticWarning,
+    PublicAPISemanticWarning,
     warn_semantic_once,
 )
 
@@ -186,7 +187,7 @@ class InjectionRegistry:
     """Compatibility class - use ApplicationContext instead."""
     pass
 
-__version__ = "0.93a5"
+__version__ = "0.93a6"
 
 __all__ = [
     # ========================================================================
@@ -239,6 +240,7 @@ __all__ = [
     'ComponentDiscoveryWarning',
     'CompatibilitySemanticWarning',
     'InjectionSemanticWarning',
+    'PublicAPISemanticWarning',
 
     # Conditional Decorators
     'ConditionalOnProperty',

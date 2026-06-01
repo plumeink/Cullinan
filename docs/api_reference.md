@@ -10,27 +10,42 @@ translation_pair: "docs/zh/api_reference.md"
 related_tests: []
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # API Reference
 
 > **Note (v0.90)**: The core module has been reorganized. For the new API structure, see [Dependency Injection Guide](dependency_injection_guide.md) and [Import Migration Guide](import_migration_090.md).
 
-This page provides an overview of the public API surface of Cullinan and acts as an entry point for generated or manually maintained per-module API pages. The recommended structure includes: a module index, the public symbols and signatures for each module, and a brief description of how to regenerate API documentation.
+This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended, advanced, or compatibility-oriented.
 
-## Module index (example)
+> **Knowledge role:** [API Reference](reference/index.md)  
+> **Need the recommended learning path first?** Start from [Application Build](start/index.md)
+> and [Framework Semantics](concepts/index.md).  
+> **Need advanced runtime internals?** Continue in [Internals & Extensions](internals/index.md).
 
-The following module list is for illustration only. The concrete index should be derived from the actual code structure and/or automated generation results:
+## API layering
 
-- `cullinan.app` — Application creation and run entrypoints
-- `cullinan.application` — Application lifecycle and startup flow
-- `cullinan.core` — IoC/DI core (providers, registries, scopes, injection APIs)
-- `cullinan.controller` — Controllers and RESTful API decorators
-- `cullinan.service` — Service base class and the `@service` decorator
-- `cullinan.middleware` — Middleware base classes and extension points
-- `cullinan.codec` — Request/response encoding/decoding (JSON, Form, etc.)
-- `cullinan.params` — Parameter handling (Path, Query, Body, Header, File, validators)
+### Recommended default API
+
+- `cullinan` — top-level application API for regular business projects:
+  - startup: `configure(...)`, `run(...)`, `get_asgi_app(...)`
+  - declaration: `@service`, `@controller`, `@module`, route decorators
+  - injection / params: `Inject`, `InjectByName`, `Path`, `Query`, `Body`, ...
+
+### Advanced integration API
+
+- `cullinan.application_model` — explicit runtime assembly (`Application`, `Runtime`, `current_app`)
+- `cullinan.adapter` — server integration (`WebAdapter`, `TornadoAdapter`, `ASGIAdapter`)
+- `cullinan.gateway` — request / response / dispatcher contracts
+- `cullinan.core` — low-level container and lifecycle primitives
+
+### Compatibility-oriented modules
+
+- `cullinan.application` — legacy scanning startup helpers kept for existing projects
+- `cullinan.app` — older app wrapper surface kept only for compatibility
+
+For regular applications, prefer the top-level `cullinan` API. Advanced and compatibility modules should be imported explicitly so the boundary stays visible in code review, IDE completion, and onboarding docs.
 
 ## New in v0.90+: Parameter System
 

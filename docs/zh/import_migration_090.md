@@ -2,6 +2,9 @@
 
 本手册帮助您将导入语句从旧结构迁移到新的 0.90 结构。
 
+> **知识角色：** [版本迁移](migration/index.md)  
+> **兼容页：** 这页用于更新既有导入；当前公开 API 表面请结合 [API 参考](reference/index.md) 阅读。
+
 ## 概述
 
 Cullinan 0.90 重新组织了 `core/` 模块，实现了清晰的职责分离：
@@ -238,4 +241,3 @@ python -m pytest tests/ -v --tb=short
 
 - [依赖注入指南](dependency_injection_guide.md)
 - [完整迁移指南](migration_guide.md)
-

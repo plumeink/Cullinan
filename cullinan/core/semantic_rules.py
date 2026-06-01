@@ -23,6 +23,10 @@ class InjectionSemanticWarning(CullinanSemanticWarning):
     """Warning for injection semantics that are valid but discouraged."""
 
 
+class PublicAPISemanticWarning(CullinanSemanticWarning):
+    """Warning for advanced/internal entrypoints used as default app APIs."""
+
+
 SEMANTIC_RULES: Dict[str, str] = {
     "component-import-execution": "组件注册依赖模块导入阶段执行装饰器，而不是静态扫描源代码。",
     "component-top-level": "自动发现/自动装配只保证模块顶层定义且在导入时执行过装饰器的组件。",
@@ -31,6 +35,7 @@ SEMANTIC_RULES: Dict[str, str] = {
     "refresh-freeze": "ApplicationContext.refresh() 之后 PendingRegistry 与 DefinitionRegistry 都进入冻结状态；新的运行时结构边界应在此之前确定。",
     "lifecycle-request-scope": "singleton 组件不能直接依赖 request 作用域组件。",
     "compatibility-api": "兼容 API 只保证旧代码可继续运行，不代表当前推荐编程模型。",
+    "public-api-boundary": "常规业务应用应优先使用 cullinan 顶层推荐 API；runtime、adapter、core 等路径属于高级或内部入口。",
 }
 
 _warned_keys = set()
@@ -79,6 +84,7 @@ __all__ = [
     "ComponentDiscoveryWarning",
     "CompatibilitySemanticWarning",
     "InjectionSemanticWarning",
+    "PublicAPISemanticWarning",
     "describe_semantic_rule",
     "format_semantic_message",
     "warn_semantic_once",

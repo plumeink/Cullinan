@@ -120,7 +120,3 @@ class TestModuleScannerIntegration(unittest.TestCase):
         self.assertIsInstance(result, list)
         # Should return at least some modules (like tests)
         self.assertGreaterEqual(len(result), 0)
-
-
-if __name__ == '__main__':
-    unittest.main()

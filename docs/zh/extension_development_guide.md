@@ -1,8 +1,11 @@
 # Cullinan 扩展开发指南
 
-> **版本**：v0.93a5  
+> **版本**：v0.93a6  
 > **作者**：Plumeink  
 > **最后更新**：2026-02-19
+
+> **知识角色：** [运行时与扩展](internals/index.md)  
+> **高级主题：** 这页面向 framework extension 开发，不属于默认应用学习路径。
 
 ---
 
@@ -667,6 +670,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**版本**：v0.93a5  
+**版本**：v0.93a6  
 **作者**：Plumeink  
 **最后更新**：2026-06-01

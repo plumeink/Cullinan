@@ -4,6 +4,10 @@
 > **Feature**: Unified Extension Registration and Discovery Pattern  
 > **Author**: Plumeink
 
+> **Knowledge role:** [Internals & Extensions](internals/index.md)  
+> **Advanced topic:** use this page when you are explicitly building extensions or
+> middleware registration flows.
+
 ---
 
 ## Quick Start
@@ -299,4 +303,3 @@ A: Decorator registration overhead is minimal (~1μs), with no runtime overhead.
 For questions or suggestions:
 1. Check example code: `examples/extension_registration_demo.py`
 2. Submit an Issue or PR to the project repository
-

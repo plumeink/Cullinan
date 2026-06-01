@@ -143,7 +143,3 @@ class TestHeaderRegistryAPI(unittest.TestCase):
         header = ('Content-Type', 'application/json')
         registry.register(header)
         self.assertTrue(registry.has_headers())
-
-
-if __name__ == '__main__':
-    unittest.main()

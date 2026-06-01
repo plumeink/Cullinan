@@ -187,7 +187,3 @@ class TestPostProcessors(unittest.TestCase):
 
         self.assertIn('Service', processed)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

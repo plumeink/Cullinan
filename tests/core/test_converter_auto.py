@@ -268,7 +268,3 @@ class TestDynamicBody(unittest.TestCase):
         copy.name = 'modified'
         self.assertEqual(self.body.name, 'test')  # 原始不变
 
-
-if __name__ == '__main__':
-    unittest.main()
-

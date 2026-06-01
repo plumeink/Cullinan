@@ -121,16 +121,3 @@ def test_component_processed_by_application_context():
     ctx.shutdown()
 
     print("\n✅ test_component_processed_by_application_context passed!")
-
-
-if __name__ == '__main__':
-    print("\n" + "=" * 60)
-    print("Diagnosing @component decorator registration")
-    print("=" * 60)
-
-    test_component_decorator_registration()
-    test_component_processed_by_application_context()
-
-    print("\n" + "=" * 60)
-    print("All tests passed!")
-    print("=" * 60 + "\n")

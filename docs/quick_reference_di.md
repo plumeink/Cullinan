@@ -1,7 +1,12 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a5  
+> **Version**: 0.93a6  
 > **Author**: Plumeink
+
+> **Knowledge role:** [Engineering Practices](how-to/index.md)  
+> **Quick lookup page:** use this page as a compact DI recipe sheet; use
+> [Dependency Injection Guide](dependency_injection_guide.md) for fuller guidance
+> and [API Reference](reference/index.md) for symbol lookup.
 
 ## Basic Usage
 

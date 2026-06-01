@@ -1,7 +1,11 @@
 # Cullinan 依赖注入快速参考
 
-> **版本**: 0.93a5  
+> **版本**: 0.93a6  
 > **作者**: Plumeink
+
+> **知识角色：** [工程实践](how-to/index.md)  
+> **速查页：** 这页用于快速查看 DI 写法；完整指导请看
+> [依赖注入指南](dependency_injection_guide.md)，查符号请看 [API 参考](reference/index.md)。
 
 ## 基本用法
 

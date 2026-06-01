@@ -206,7 +206,3 @@ class TestTryGetWithRequestScope(unittest.TestCase):
         # 按照 2.6.3 Contract，系统错误仍应抛出
         with self.assertRaises(ScopeNotActiveError):
             ctx.try_get('RequestService')
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -199,7 +199,3 @@ class TestApplicationImports(unittest.TestCase):
         from cullinan import application
         self.assertTrue(hasattr(application, 'reflect_module'))
         self.assertTrue(callable(application.reflect_module))
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 """Tests for ASGI WebSocket support."""
 import asyncio
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.adapter.asgi_adapter import _handle_websocket
 from cullinan.websocket_registry import get_websocket_registry, reset_websocket_registry, websocket_handler
 
 passed = 0
 failed = 0
+
+
+def _reset_results():
+    global passed, failed
+    passed = 0
+    failed = 0
+
 
 def check(name, condition):
     global passed, failed
@@ -22,7 +25,7 @@ def check(name, condition):
         print(f"  [FAIL] {name}")
 
 
-async def main():
+async def _run_asgi_websocket_checks():
     print("=" * 60)
     print("ASGI WebSocket Tests")
     print("=" * 60)
@@ -222,7 +225,6 @@ async def main():
     return failed == 0
 
 
-if __name__ == '__main__':
-    success = asyncio.run(main())
-    sys.exit(0 if success else 1)
-
+def test_asgi_websocket_support():
+    _reset_results()
+    assert asyncio.run(_run_asgi_websocket_checks())

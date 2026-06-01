@@ -54,7 +54,3 @@ class TestBackwardCompatibleImports:
         pending = PendingRegistry.get_instance()
         assert pending.count == 2
 
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
-

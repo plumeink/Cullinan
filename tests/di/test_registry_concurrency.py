@@ -231,7 +231,3 @@ def test_concurrent_update():
     assert final_value is not None
     assert final_value.startswith("value_")
 
-
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
-

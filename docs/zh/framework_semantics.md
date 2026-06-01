@@ -16,6 +16,10 @@ pr_links: []
 
 本文定义 Cullinan **保证什么**、哪些行为只是兼容保留，以及哪些场景现在会触发 warning 或启动期失败。目标是把 Cullinan 的运行时模型讲清楚：先写装饰器式业务代码，通过导入执行完成发现，在需要时再引入明确的运行时边界。
 
+> **知识角色：** [框架语义](concepts/index.md)  
+> **推荐下一步：** [架构设计](architecture.md)、[工程实践](how-to/index.md)  
+> **如果你要查符号而不是读解释：** 请转到 [API 参考](reference/index.md)。
+
 ## 1. 组件发现依赖“导入执行”，不是静态 AST 扫描，也不是显式 app 注册
 
 Cullinan 通过**导入 Python 模块**并执行装饰器来发现组件。

@@ -215,19 +215,3 @@ def test_service_registry_no_lifecycle_methods():
         "ServiceRegistry.destroy_all_async should be removed"
 
     print("✅ test_service_registry_no_lifecycle_methods passed!")
-
-
-if __name__ == '__main__':
-    print("\n" + "=" * 60)
-    print("Testing Unified Lifecycle Management")
-    print("=" * 60 + "\n")
-
-    test_service_class_uses_unified_lifecycle()
-    test_no_legacy_lifecycle_methods()
-    test_service_registry_no_lifecycle_methods()
-    test_unified_lifecycle_basic()
-    test_lifecycle_phase_ordering()
-
-    print("\n" + "=" * 60)
-    print("All tests passed!")
-    print("=" * 60 + "\n")

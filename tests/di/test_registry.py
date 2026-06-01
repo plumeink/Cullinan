@@ -256,7 +256,3 @@ class TestGlobalRegistries(unittest.TestCase):
         # Should be cleared
         self.assertEqual(handler_reg.count(), 0)
         self.assertEqual(header_reg.count(), 0)
-
-
-if __name__ == '__main__':
-    unittest.main()

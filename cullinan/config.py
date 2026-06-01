@@ -7,7 +7,7 @@ Cullinan Framework Configuration
 
 import os
 import sys
-from typing import List, Optional
+from typing import Any, List, Optional
 
 class CullinanConfig:
     """Cullinan 框架配置类"""
@@ -19,6 +19,9 @@ class CullinanConfig:
 
         # 项目根目录（自动检测或手动设置）
         self.project_root: Optional[str] = None
+
+        # 推荐高层启动入口使用的根模块
+        self.root_module: Optional[Any] = None
 
         # 是否启用详细日志
         self.verbose: bool = False
@@ -106,6 +109,10 @@ class CullinanConfig:
         # Can also be set via env var CULLINAN_ENGINE
         self.server_engine: str = 'tornado'
 
+        # Default bind address for the top-level run() helper
+        self.server_host: str = '0.0.0.0'
+        self.server_port: int = 4080
+
         # ASGI server: 'uvicorn' (default), 'hypercorn'
         self.asgi_server: str = 'uvicorn'
 
@@ -152,6 +159,8 @@ class CullinanConfig:
             self.user_packages = config['user_packages']
         if 'project_root' in config:
             self.project_root = config['project_root']
+        if 'root_module' in config:
+            self.root_module = config['root_module']
         if 'verbose' in config:
             self.verbose = config['verbose']
         if 'auto_scan' in config:
@@ -164,6 +173,14 @@ class CullinanConfig:
             self.exclude_packages = config['exclude_packages']
         if 'startup_error_policy' in config:
             self.startup_error_policy = config['startup_error_policy']
+        if 'server_engine' in config:
+            self.server_engine = config['server_engine']
+        if 'asgi_server' in config:
+            self.asgi_server = config['asgi_server']
+        if 'server_host' in config:
+            self.server_host = config['server_host']
+        if 'server_port' in config:
+            self.server_port = config['server_port']
         return self
 
     def to_dict(self) -> dict:
@@ -171,12 +188,17 @@ class CullinanConfig:
         return {
             'user_packages': self.user_packages,
             'project_root': self.project_root,
+            'root_module': self.root_module,
             'verbose': self.verbose,
             'auto_scan': self.auto_scan,
             'explicit_services': self.explicit_services,
             'explicit_controllers': self.explicit_controllers,
             'exclude_packages': self.exclude_packages,
-            'startup_error_policy': self.startup_error_policy
+            'startup_error_policy': self.startup_error_policy,
+            'server_engine': self.server_engine,
+            'asgi_server': self.asgi_server,
+            'server_host': self.server_host,
+            'server_port': self.server_port,
         }
 
 
@@ -190,6 +212,7 @@ def get_config() -> CullinanConfig:
 
 
 def configure(
+    root_module: Optional[Any] = None,
     user_packages: Optional[List[str]] = None,
     project_root: Optional[str] = None,
     verbose: bool = False,
@@ -197,11 +220,16 @@ def configure(
     explicit_services: Optional[List] = None,
     explicit_controllers: Optional[List] = None,
     exclude_packages: Optional[List[str]] = None,
-    startup_error_policy: str = 'strict'
+    startup_error_policy: str = 'strict',
+    server_engine: Optional[str] = None,
+    asgi_server: Optional[str] = None,
+    server_host: Optional[str] = None,
+    server_port: Optional[int] = None,
 ):
     """配置 Cullinan 框架
 
     Args:
+        root_module: 推荐高层启动入口使用的根模块（通常为 `@module` 声明的 RootModule）
         user_packages: 用户包列表，例如 ['myapp', 'myapp.controllers']
         project_root: 项目根目录（如果不指定，会自动推断）
         verbose: 是否启用详细日志
@@ -213,10 +241,15 @@ def configure(
             - 'strict': Service 失败时立即退出（默认，最安全）
             - 'warn': Service 失败时记录警告并继续（降级模式）
             - 'ignore': 忽略失败（不推荐，仅调试用）
+        server_engine: 高层 `run()` 的服务器类型（`'tornado'` 或 `'asgi'`）
+        asgi_server: ASGI 模式下的底层服务器（如 `uvicorn` / `hypercorn`）
+        server_host: 高层 `run()` 默认绑定地址
+        server_port: 高层 `run()` 默认绑定端口
 
     Example:
         >>> from cullinan import configure
         >>> configure(
+        ...     root_module=RootModule,
         ...     user_packages=['your_app'],
         ...     verbose=True,
         ...     startup_error_policy='warn'  # 允许部分 Service 失败
@@ -233,6 +266,9 @@ def configure(
         ... )
     """
     global _config
+
+    if root_module is not None:
+        _config.root_module = root_module
 
     if user_packages is not None:
         _config.user_packages = user_packages
@@ -269,6 +305,14 @@ def configure(
             f"Must be one of: {', '.join(valid_policies)}"
         )
     _config.startup_error_policy = startup_error_policy
+    if server_engine is not None:
+        _config.server_engine = server_engine
+    if asgi_server is not None:
+        _config.asgi_server = asgi_server
+    if server_host is not None:
+        _config.server_host = server_host
+    if server_port is not None:
+        _config.server_port = int(server_port)
 
     return _config
 
@@ -341,4 +385,3 @@ def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
 
     finally:
         del frame
-

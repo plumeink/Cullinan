@@ -44,6 +44,7 @@ from cullinan.core import (
     ComponentDiscoveryWarning,
     CompatibilitySemanticWarning,
     InjectionSemanticWarning,
+    PublicAPISemanticWarning,
     # Core infrastructure
     Registry,
     SimpleRegistry,
@@ -224,85 +225,48 @@ from cullinan.controller import (
     get_missing_header_handler,
 )
 
+from cullinan.public_api import get_asgi_app, run
 
-__version__ = '0.93a5'
+# Restore decorator-style public names after importing same-named submodules.
+from cullinan.core import (
+    service as _service_decorator,
+    controller as _controller_decorator,
+    component as _component_decorator,
+    warn_semantic_once,
+)
+from cullinan.application_model import module as _module_decorator
+from cullinan.middleware import middleware as _middleware_decorator
+
+service = _service_decorator
+controller = _controller_decorator
+component = _component_decorator
+module = _module_decorator
+middleware = _middleware_decorator
+_public_api_semantic_warning = PublicAPISemanticWarning
+
+
+__version__ = '0.93a6'
 
 __all__ = [
-    # Configuration
     'configure',
     'get_config',
     'CullinanConfig',
-    
-    # Core module
-    'Registry',
-    'SimpleRegistry',
-    'LifecycleManager',
-    'LifecycleState',
-    'LifecycleAware',
-    'RequestContext',
-    'get_current_context',
-    'set_current_context',
-    'create_context',
-    'destroy_context',
-    'ContextManager',
-    'get_context_value',
-    'set_context_value',
-    
-    # Service layer
-    'Service',
-    'ServiceRegistry',
+    'run',
+    'get_asgi_app',
     'service',
-    'Provider',
-    'get_service_registry',
-    'reset_service_registry',
-    
-    # Middleware
-    'Middleware',
-    'MiddlewareChain',
-    'MiddlewareRegistry',
-    'get_middleware_registry',
-    'reset_middleware_registry',
+    'controller',
+    'component',
+    'module',
     'middleware',
-
-    # Extensions
-    'ExtensionCategory',
-    'ExtensionPoint',
-    'ExtensionRegistry',
-    'get_extension_registry',
-    'reset_extension_registry',
-    'list_extension_points',
-
-    # Monitoring
-    'MonitoringHook',
-    'MonitoringManager',
-    'get_monitoring_manager',
-    'reset_monitoring_manager',
-    
-    # Testing
-    'ServiceTestCase',
-    'MockService',
-    'TestRegistry',
-    
-    # WebSocket
-    'WebSocketRegistry',
     'websocket_handler',
-    'get_websocket_registry',
-    'reset_websocket_registry',
-
-    # Codec module
-    'BodyCodec',
-    'ResponseCodec',
-    'CodecError',
-    'DecodeError',
-    'EncodeError',
-    'JsonBodyCodec',
-    'JsonResponseCodec',
-    'FormBodyCodec',
-    'CodecRegistry',
-    'get_codec_registry',
-    'reset_codec_registry',
-
-    # Params module
+    'Inject',
+    'InjectByName',
+    'Lazy',
+    'Provider',
+    'Service',
+    'Middleware',
+    'BodyDecoderMiddleware',
+    'get_decoded_body',
     'Param',
     'UNSET',
     'Path',
@@ -321,15 +285,66 @@ __all__ = [
     'ModelError',
     'ParamResolver',
     'ResolveError',
-
-    # Body decoder middleware
-    'BodyDecoderMiddleware',
-    'get_decoded_body',
-    'set_decoded_body',
-
-    # Gateway module
     'WebRequest',
     'WebResponse',
+    'WebAdapter',
+    'get_api',
+    'post_api',
+    'patch_api',
+    'delete_api',
+    'put_api',
+    'response',
+]
+
+_COMPAT_EXPORT_NAMES = [
+    'Registry',
+    'SimpleRegistry',
+    'LifecycleManager',
+    'LifecycleState',
+    'LifecycleAware',
+    'RequestContext',
+    'get_current_context',
+    'set_current_context',
+    'create_context',
+    'destroy_context',
+    'ContextManager',
+    'get_context_value',
+    'set_context_value',
+    'ServiceRegistry',
+    'get_service_registry',
+    'reset_service_registry',
+    'MiddlewareChain',
+    'MiddlewareRegistry',
+    'get_middleware_registry',
+    'reset_middleware_registry',
+    'ExtensionCategory',
+    'ExtensionPoint',
+    'ExtensionRegistry',
+    'get_extension_registry',
+    'reset_extension_registry',
+    'list_extension_points',
+    'MonitoringHook',
+    'MonitoringManager',
+    'get_monitoring_manager',
+    'reset_monitoring_manager',
+    'ServiceTestCase',
+    'MockService',
+    'TestRegistry',
+    'WebSocketRegistry',
+    'get_websocket_registry',
+    'reset_websocket_registry',
+    'BodyCodec',
+    'ResponseCodec',
+    'CodecError',
+    'DecodeError',
+    'EncodeError',
+    'JsonBodyCodec',
+    'JsonResponseCodec',
+    'FormBodyCodec',
+    'CodecRegistry',
+    'get_codec_registry',
+    'reset_codec_registry',
+    'set_decoded_body',
     'WebHeaders',
     'WebCookies',
     'WebExchange',
@@ -351,27 +366,14 @@ __all__ = [
     'get_pipeline',
     'get_exception_handler',
     'reset_gateway',
-
-    # Adapter module
-    'WebAdapter',
     'TornadoAdapter',
     'ASGIAdapter',
-
-    # Controller module (import controller decorator from cullinan.controller)
     'ControllerRegistry',
     'get_controller_registry',
     'reset_controller_registry',
-    'get_api',
-    'post_api',
-    'patch_api',
-    'delete_api',
-    'put_api',
     'Handler',
-    'response',
     'set_missing_header_handler',
     'get_missing_header_handler',
-
-    # Path utilities (packaging support)
     'is_frozen',
     'is_pyinstaller_frozen',
     'is_nuitka_compiled',
@@ -386,43 +388,42 @@ __all__ = [
     'import_module_from_path',
     'get_path_info',
     'log_path_info',
-
-    # Dependency Injection
-    'Inject',
-    'InjectByName',
-    'Lazy',
     'CullinanSemanticWarning',
     'ComponentDiscoveryWarning',
     'CompatibilitySemanticWarning',
     'InjectionSemanticWarning',
+    'PublicAPISemanticWarning',
     'injectable',
     'get_injection_registry',
     'reset_injection_registry',
-
-    # IoC/DI 2.0
     'ApplicationContext',
     'PendingRegistry',
-    'service',
-    'controller',
-    'component',
     'Application',
     'Module',
     'Runtime',
-    'module',
     'current_app',
-
-    # Application helpers
-    'get_asgi_app',
 ]
+_COMPAT_EXPORTS = {name: globals()[name] for name in _COMPAT_EXPORT_NAMES if name in globals()}
 
-# ============================================================================
-# IMPORTANT: Re-import decorators to override submodule names
-# Python's import system may return submodules (cullinan.service, cullinan.controller)
-# instead of the decorator functions we imported earlier.
-# These explicit assignments ensure the decorators are available at package level.
-# ============================================================================
-from cullinan.core.decorators import service, controller, component
-from cullinan.core.decorators import Inject, InjectByName, Lazy
+for _compat_name in _COMPAT_EXPORT_NAMES:
+    globals().pop(_compat_name, None)
 
-# Export get_asgi_app for convenient ASGI deployment
-from cullinan.application import get_asgi_app
+
+def __getattr__(name):
+    if name in _COMPAT_EXPORTS:
+        warn_semantic_once(
+            key=f"public-api:top-level:{name}",
+            rule_key="public-api-boundary",
+            problem=f"顶层导入 {name} 会绕过 Cullinan 推荐 API 分层。",
+            guidance="常规业务应用请优先使用 from cullinan import configure, run 以及业务装饰器；如果确实需要高级能力，请从对应子模块显式导入。",
+            category=_public_api_semantic_warning,
+            stacklevel=2,
+        )
+        value = _COMPAT_EXPORTS[name]
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module 'cullinan' has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(__all__ + ['__version__']))

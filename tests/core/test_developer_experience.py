@@ -12,10 +12,6 @@ This test does NOT start a real HTTP server - it exercises the entire
 dispatch pipeline in-process.
 """
 import asyncio
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.gateway import (
     WebRequest, WebResponse, Router, Dispatcher,
@@ -24,6 +20,12 @@ from cullinan.gateway import (
 
 passed = 0
 failed = 0
+
+
+def _reset_results():
+    global passed, failed
+    passed = 0
+    failed = 0
 
 
 def check(name, condition):
@@ -94,7 +96,7 @@ async def health_handler(request):
     return {"status": "healthy", "version": "0.93"}
 
 
-async def main():
+async def _run_developer_experience():
     print("=" * 60)
     print("Cullinan v0.93 - Developer Experience Test")
     print("=" * 60)
@@ -263,6 +265,6 @@ async def main():
     return failed == 0
 
 
-if __name__ == "__main__":
-    success = asyncio.run(main())
-    sys.exit(0 if success else 1)
+def test_developer_experience_flow():
+    _reset_results()
+    assert asyncio.run(_run_developer_experience())

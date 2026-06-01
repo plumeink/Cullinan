@@ -320,7 +320,3 @@ class TestPendingRegistry:
         assert "PendingRegistry" in repr_str
         assert "count=0" in repr_str
         assert "frozen=False" in repr_str
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

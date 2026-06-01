@@ -166,16 +166,3 @@ def test_component_without_lifecycle_base():
     ctx.shutdown()
 
     print("✅ test_component_without_lifecycle_base passed!")
-
-
-if __name__ == '__main__':
-    print("\n" + "=" * 60)
-    print("Integration Test: @component in full application flow")
-    print("=" * 60)
-
-    test_component_without_lifecycle_base()
-    test_component_in_full_flow()
-
-    print("\n" + "=" * 60)
-    print("All integration tests passed!")
-    print("=" * 60 + "\n")

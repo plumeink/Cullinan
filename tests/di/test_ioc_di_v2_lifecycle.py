@@ -211,7 +211,3 @@ class TestContextLifecycle(unittest.TestCase):
         
         self.assertIn('context:shutdown', LifecycleTracker.events)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

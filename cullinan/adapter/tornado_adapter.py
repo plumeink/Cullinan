@@ -18,6 +18,8 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+from cullinan._api_boundary import in_public_api_context
+from cullinan.core.semantic_rules import PublicAPISemanticWarning, warn_semantic_once
 from .driver import DriverCapabilities, DriverRequestAdapter, DriverResponseWriter
 from cullinan.application_model import (
     bind_runtime_request_context,
@@ -220,6 +222,15 @@ class TornadoAdapter(WebAdapter):
 
     def run(self, host: str = '0.0.0.0', port: int = 4080, **kwargs: Any) -> None:
         """Start the Tornado HTTP server (blocking)."""
+        if self.runtime is not None and getattr(self.runtime, 'application', None) is not None and not in_public_api_context():
+            warn_semantic_once(
+                key="public-api:tornado-adapter-run",
+                rule_key="public-api-boundary",
+                problem="直接调用 TornadoAdapter.run() 会把运行时适配层当作默认启动入口。",
+                guidance="常规业务应用请优先使用 from cullinan import configure, run；如果你在做高级服务器集成，请显式从 cullinan.adapter 导入并只在集成层使用这条路径。",
+                category=PublicAPISemanticWarning,
+                stacklevel=2,
+            )
         if self._app is None:
             self.create_app()
 

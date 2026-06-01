@@ -157,15 +157,3 @@ class ApiController:
 
         # Remove temp directory
         shutil.rmtree(temp_dir)
-
-
-if __name__ == '__main__':
-    print("\n" + "=" * 60)
-    print("Diagnostic: @component in module scanning scenario")
-    print("=" * 60)
-
-    test_component_module_scanning()
-
-    print("\n" + "=" * 60)
-    print("Test passed!")
-    print("=" * 60 + "\n")

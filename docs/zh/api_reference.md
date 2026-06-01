@@ -10,27 +10,42 @@ translation_pair: "docs/api_reference.md"
 related_tests: []
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # API 参考
 
 > **说明（v0.90）**：核心模块已重新组织。新的 API 结构请参阅 [依赖注入指南](dependency_injection_guide.md) 和 [导入迁移指南](import_migration_090.md)。
 
-本文档用于汇总 Cullinan 的公共 API 概览，并为后续自动生成或手动维护的 API 页面提供入口。推荐的结构包括：模块索引、每个模块的公有符号与签名、以及重新生成 API 文档的步骤说明。
+本页概览 Cullinan 的公开 API，并明确哪些 API 属于推荐路径、哪些属于高级集成能力、哪些只是兼容保留。
 
-## 模块索引（示例）
+> **知识角色：** [API 参考](reference/index.md)  
+> **如果你还没建立推荐学习路径：** 请先看 [应用构建](start/index.md)
+> 和 [框架语义](concepts/index.md)。  
+> **如果你要进入高级运行时内部机制：** 请转到 [运行时与扩展](internals/index.md)。
 
-以下模块列表仅为示例，具体内容应根据实际代码结构和自动化生成结果补全：
+## API 分层
 
-- `cullinan.app` — 应用创建与运行入口
-- `cullinan.application` — 应用生命周期与启动流程
-- `cullinan.core` — IoC/DI 核心（Provider、Registry、Scope、注入 API）
-- `cullinan.controller` — 控制器与 RESTful API 装饰器
-- `cullinan.service` — Service 基类与 `@service` 装饰器
-- `cullinan.middleware` — 中间件基类与扩展点
-- `cullinan.codec` — 请求/响应编解码（JSON、Form 等）
-- `cullinan.params` — 参数处理（Path、Query、Body、Header、File、校验器）
+### 推荐默认 API
+
+- `cullinan` —— 常规业务项目应优先使用的顶层应用 API：
+  - 启动入口：`configure(...)`、`run(...)`、`get_asgi_app(...)`
+  - 声明入口：`@service`、`@controller`、`@module`、路由装饰器
+  - 注入 / 参数：`Inject`、`InjectByName`、`Path`、`Query`、`Body` 等
+
+### 高级集成 API
+
+- `cullinan.application_model` —— 显式运行时装配（`Application`、`Runtime`、`current_app`）
+- `cullinan.adapter` —— 服务器集成（`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`）
+- `cullinan.gateway` —— 请求 / 响应 / dispatcher 契约
+- `cullinan.core` —— 低层容器与生命周期原语
+
+### 兼容保留模块
+
+- `cullinan.application` —— 面向既有项目保留的旧扫描式启动 helper
+- `cullinan.app` —— 仅为兼容保留的旧 app wrapper 接口
+
+对于常规应用，请优先使用顶层 `cullinan` API。高级与兼容模块应显式从对应子模块导入，这样在代码评审、IDE 补全和 onboarding 文档中都能更清楚地看到边界。
 
 ## v0.90+ 新增：参数系统
 

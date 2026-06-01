@@ -283,7 +283,3 @@ class TestComponentDecorator:
         assert ctx.has("myHelper")
         assert not ctx.has("Helper")
 
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
-

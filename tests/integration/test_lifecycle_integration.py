@@ -108,15 +108,3 @@ def test_service_decorator_with_lifecycle():
 
     print("\n✅ test_service_decorator_with_lifecycle passed!")
     print(f"Full lifecycle log: {lifecycle_log}")
-
-
-if __name__ == '__main__':
-    print("\n" + "=" * 60)
-    print("Integration Test: @service decorator with unified lifecycle")
-    print("=" * 60 + "\n")
-
-    test_service_decorator_with_lifecycle()
-
-    print("\n" + "=" * 60)
-    print("Integration test passed!")
-    print("=" * 60 + "\n")

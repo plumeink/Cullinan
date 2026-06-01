@@ -159,7 +159,3 @@ def test_policy_replace_mode_override():
     assert registry.get('config') == 'v3'
     assert registry.count() == 1
 
-
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
-

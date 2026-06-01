@@ -232,7 +232,3 @@ class TestBackwardCompatibility(unittest.TestCase):
         registry = get_handler_registry()
         self.assertIsNotNone(registry)
         self.assertIsInstance(registry, HandlerRegistry)
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -16,6 +16,10 @@ pr_links: []
 
 This page defines the runtime semantics Cullinan **guarantees**, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures. The goal is to make Cullinan's runtime model legible: decorator-first business code, import-executed discovery, and explicit runtime boundaries when you need them.
 
+> **Knowledge role:** [Framework Semantics](concepts/index.md)  
+> **Read next:** [Architecture](architecture.md), [Engineering Practices](how-to/index.md)  
+> **Lookup instead of explanation?** Go to [API Reference](reference/index.md).
+
 ## 1. Component discovery is import-executed, not static AST scanning or app-object registration
 
 Cullinan discovers decorated components by **importing Python modules** and letting decorators execute.

@@ -28,9 +28,13 @@ class TestCullinanConfig(unittest.TestCase):
         
         self.assertEqual(config.user_packages, [])
         self.assertIsNone(config.project_root)
+        self.assertIsNone(config.root_module)
         self.assertFalse(config.verbose)
         self.assertTrue(config.auto_scan)
         self.assertIn('test', config.exclude_packages)
+        self.assertEqual(config.server_engine, 'tornado')
+        self.assertEqual(config.server_host, '0.0.0.0')
+        self.assertEqual(config.server_port, 4080)
     
     def test_add_user_package(self):
         """Test adding user packages."""
@@ -59,30 +63,46 @@ class TestCullinanConfig(unittest.TestCase):
         config_dict = {
             'user_packages': ['app1', 'app2'],
             'project_root': '/test/root',
+            'root_module': 'RootModule',
             'verbose': True,
             'auto_scan': False,
-            'exclude_packages': ['test', 'build']
+            'exclude_packages': ['test', 'build'],
+            'server_engine': 'asgi',
+            'server_host': '127.0.0.1',
+            'server_port': 9000,
         }
         
         self.config.from_dict(config_dict)
         
         self.assertEqual(self.config.user_packages, ['app1', 'app2'])
         self.assertEqual(self.config.project_root, '/test/root')
+        self.assertEqual(self.config.root_module, 'RootModule')
         self.assertTrue(self.config.verbose)
         self.assertFalse(self.config.auto_scan)
         self.assertEqual(self.config.exclude_packages, ['test', 'build'])
+        self.assertEqual(self.config.server_engine, 'asgi')
+        self.assertEqual(self.config.server_host, '127.0.0.1')
+        self.assertEqual(self.config.server_port, 9000)
     
     def test_to_dict(self):
         """Test exporting configuration to dictionary."""
         self.config.user_packages = ['myapp']
         self.config.project_root = '/test'
+        self.config.root_module = 'RootModule'
         self.config.verbose = True
+        self.config.server_engine = 'asgi'
+        self.config.server_host = '127.0.0.1'
+        self.config.server_port = 9000
         
         config_dict = self.config.to_dict()
         
         self.assertEqual(config_dict['user_packages'], ['myapp'])
         self.assertEqual(config_dict['project_root'], '/test')
+        self.assertEqual(config_dict['root_module'], 'RootModule')
         self.assertTrue(config_dict['verbose'])
+        self.assertEqual(config_dict['server_engine'], 'asgi')
+        self.assertEqual(config_dict['server_host'], '127.0.0.1')
+        self.assertEqual(config_dict['server_port'], 9000)
 
 
 class TestConfigureFunction(unittest.TestCase):
@@ -109,6 +129,25 @@ class TestConfigureFunction(unittest.TestCase):
         """Test configure with custom exclude packages."""
         result = configure(exclude_packages=['custom_exclude'])
         self.assertEqual(result.exclude_packages, ['custom_exclude'])
+
+    def test_configure_recommended_public_entrypoint_fields(self):
+        """Test configure with top-level public run() settings."""
+        class RootModule:
+            pass
+
+        result = configure(
+            root_module=RootModule,
+            server_engine='asgi',
+            asgi_server='hypercorn',
+            server_host='127.0.0.1',
+            server_port=9000,
+        )
+
+        self.assertIs(result.root_module, RootModule)
+        self.assertEqual(result.server_engine, 'asgi')
+        self.assertEqual(result.asgi_server, 'hypercorn')
+        self.assertEqual(result.server_host, '127.0.0.1')
+        self.assertEqual(result.server_port, 9000)
     
     def test_get_config_returns_same_instance(self):
         """Test that get_config returns the global config instance."""
@@ -186,7 +225,3 @@ class TestProjectRootDetection(unittest.TestCase):
         config.set_project_root(cwd)
         
         self.assertEqual(config.project_root, cwd)
-
-
-if __name__ == '__main__':
-    unittest.main()

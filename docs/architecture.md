@@ -1,8 +1,13 @@
 # Cullinan Framework Architecture
 
-> **Version**: 0.93a5  
+> **Version**: 0.93a6  
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
+
+> **Knowledge role:** [Framework Semantics](concepts/index.md)  
+> **This page explains framework structure, not the default startup tutorial.**  
+> Start from [Application Build](start/index.md) for the recommended bootstrap path,
+> and use [Internals & Extensions](internals/index.md) when you intentionally need deeper runtime details.
 
 ## Overview
 

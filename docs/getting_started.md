@@ -1,6 +1,6 @@
 title: "Getting Started with Cullinan"
 slug: "getting-started"
-module: ["cullinan.application"]
+module: ["cullinan"]
 tags: ["getting-started", "tutorial"]
 author: "Plumeink"
 reviewers: []
@@ -18,6 +18,12 @@ pr_links: []
 This page provides a minimal quick-start to install and run a small Cullinan application.
 The key mental model is: write business methods and components with decorators first,
 then let the runtime assemble them. Cullinan is not centered on a manually wired app object.
+
+> **Knowledge role:** [Application Build](start/index.md)  
+> **Read next:** [Framework Semantics](framework_semantics.md), [Engineering Practices](how-to/index.md)  
+> **Advanced boundary:** if you intentionally need explicit `Application` orchestration,
+> continue in [Internals & Extensions](internals/index.md) instead of treating that path
+> as the default bootstrap.
 
 ## Prerequisites
 - Python 3.8+
@@ -55,9 +61,7 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import Application, controller, get_api, module, service
-from cullinan.adapter import TornadoAdapter
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -82,11 +86,10 @@ class RootModule:
     """Boundary declaration for runtime ownership and stability."""
 
 
-app = Application.run(RootModule)
-server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+configure(root_module=RootModule)
 
 if __name__ == '__main__':
-    server.run()
+    run()
 ```
 
 4. Run your app:
@@ -108,10 +111,10 @@ Then open `http://localhost:4080/hello` in your browser to verify the server is 
 ## What this example demonstrates
 
 - You mainly write business components with `@service`, `@controller`, and handler decorators
-- `Application.run(RootModule)` assembles and activates the application runtime
+- `configure(root_module=RootModule)` declares the recommended root entry for the runtime
 - `@module` marks a runtime boundary for ownership, reload, draining, and higher stability
 - `Inject()` resolves the controller dependency from the active application context
-- `app` is the assembled runtime handle, and `TornadoAdapter` serves the already-built Web Runtime
+- `run()` assembles and serves the application through the framework's recommended top-level startup API
 
 ## Minimal application example
 
@@ -119,9 +122,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan import Application, controller, get_api, module, service
-from cullinan.adapter import TornadoAdapter
-from cullinan.core import Inject
+from cullinan import Inject, configure, controller, get_api, module, run, service
 
 
 @service
@@ -144,11 +145,10 @@ class RootModule:
     pass
 
 
-app = Application.run(RootModule)
-server = TornadoAdapter(dispatcher=app.web_runtime.dispatcher, runtime=app.web_runtime)
+configure(root_module=RootModule)
 
 if __name__ == "__main__":
-    server.run()
+    run()
 ```
 
 To run this example:
@@ -163,9 +163,9 @@ Then visit `http://localhost:4080/hello` in your browser.
 ## Understanding the basics
 
 ### Application lifecycle
-1. **Discovery**: `Application.run()` collects runtime boundaries and imports owned packages
-2. **Assembly**: Cullinan rebuilds pending registrations and assembles an `ApplicationContext` plus `WebRuntime`
-3. **Activation**: the validated runtime becomes active and can be served through an adapter
+1. **Entry declaration**: `configure(root_module=RootModule)` tells Cullinan which root module defines the runtime boundary
+2. **Discovery and assembly**: `run()` imports owned packages, rebuilds pending registrations, and assembles an `ApplicationContext` plus `WebRuntime`
+3. **Activation**: the validated runtime becomes active and is served through the framework-selected adapter path
 4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
 
 ### Dependency Injection

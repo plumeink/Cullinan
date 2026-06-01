@@ -263,7 +263,3 @@ class TestConditions(unittest.TestCase):
         result = ctx.try_get('ConditionalService')
         self.assertIsNone(result)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

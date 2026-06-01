@@ -176,7 +176,3 @@ class TestModelResolverErrors(unittest.TestCase):
             self.assertIn('message', d)
             self.assertIn('field_errors', d)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

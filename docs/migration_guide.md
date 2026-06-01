@@ -3,6 +3,10 @@
 > **Version**: v0.90  
 > **Author**: Plumeink
 
+> **Knowledge role:** [Migration & Version Notes](migration/index.md)  
+> **Upgrade-only page:** use this when moving existing code, not when learning the
+> recommended API path for a new project.
+
 This guide helps you migrate from Cullinan 1.x to 0.93 (0.90).
 
 ## Breaking Changes
@@ -210,4 +214,3 @@ python -m pytest tests/test_ioc_di_v2_*.py -v
 - [Dependency Injection Guide](dependency_injection_guide.md)
 - [API Reference](api_reference.md)
 - [GitHub Issues](https://github.com/your-repo/cullinan/issues)
-

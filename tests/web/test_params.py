@@ -210,7 +210,3 @@ class TestFile(unittest.TestCase):
         self.assertIn('File', repr_str)
         self.assertIn('avatar', repr_str)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

@@ -140,14 +140,3 @@ def test_complete_flow():
 
     assert success, "Some checks failed"
 
-
-if __name__ == '__main__':
-    try:
-        test_complete_flow()
-        exit(0)
-    except Exception as e:
-        print(f"\n[FAIL] Test failed with error: {e}")
-        import traceback
-        traceback.print_exc()
-        exit(1)
-

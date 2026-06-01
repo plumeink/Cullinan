@@ -270,7 +270,3 @@ class TestDiagnosticsRendering(unittest.TestCase):
         self.assertIn('MissingService', result)
         self.assertIn('ServiceA', result)
 
-
-if __name__ == '__main__':
-    unittest.main()
-

@@ -277,7 +277,3 @@ class TestParamResolverCache(unittest.TestCase):
         ParamResolver.clear_cache()
         self.assertNotIn(func_with_path_params, ParamResolver._signature_cache)
 
-
-if __name__ == '__main__':
-    unittest.main()
-
