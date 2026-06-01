@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a4"
+      data-current-version="0.93a5"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a4"
+      data-pre-version="0.93a5"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -471,10 +471,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning" class="md-nav__link">
+  <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Component discovery is import-executed, not static AST scanning
+        1. Component discovery is import-executed, not static AST scanning or app-object registration
       
     </span>
   </a>
@@ -1685,10 +1685,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning" class="md-nav__link">
+  <a href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Component discovery is import-executed, not static AST scanning
+        1. Component discovery is import-executed, not static AST scanning or app-object registration
       
     </span>
   </a>
@@ -1779,8 +1779,8 @@
 
 
 <h1 id="framework-semantics">Framework Semantics<a class="headerlink" href="#framework-semantics" title="Permanent link">&para;</a></h1>
-<p>This page defines the runtime semantics Cullinan <strong>guarantees</strong>, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures.</p>
-<h2 id="1-component-discovery-is-import-executed-not-static-ast-scanning">1. Component discovery is import-executed, not static AST scanning<a class="headerlink" href="#1-component-discovery-is-import-executed-not-static-ast-scanning" title="Permanent link">&para;</a></h2>
+<p>This page defines the runtime semantics Cullinan <strong>guarantees</strong>, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures. The goal is to make Cullinan's runtime model legible: decorator-first business code, import-executed discovery, and explicit runtime boundaries when you need them.</p>
+<h2 id="1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration">1. Component discovery is import-executed, not static AST scanning or app-object registration<a class="headerlink" href="#1-component-discovery-is-import-executed-not-static-ast-scanning-or-app-object-registration" title="Permanent link">&para;</a></h2>
 <p>Cullinan discovers decorated components by <strong>importing Python modules</strong> and letting decorators execute.</p>
 <ul>
 <li>guaranteed: module-top-level <code>@service</code>, <code>@controller</code>, <code>@component</code>, and <code>@provider</code> definitions that execute during module import</li>
@@ -1801,7 +1801,7 @@
 
     <span class="k">return</span> <span class="n">LocalRepository</span>
 </code></pre></div>
-<p><code>TopLevelCache</code> is in the supported discovery path. <code>LocalRepository</code> is not part of the automatic top-level discovery contract; Cullinan now emits a warning for this pattern, and if it happens after <code>refresh()</code> it fails fast.</p>
+<p><code>TopLevelCache</code> is in the supported discovery path. <code>LocalRepository</code> is not part of the automatic top-level discovery contract; Cullinan now emits a warning for this pattern, and if it happens after <code>refresh()</code> it fails fast. If a package needs stronger ownership, reload, or hot-pluggable runtime guarantees, express that boundary with <code>@module</code> rather than falling back to manual app registration.</p>
 <h2 id="2-inject-is-a-strict-type-contract">2. <code>Inject()</code> is a strict type contract<a class="headerlink" href="#2-inject-is-a-strict-type-contract" title="Permanent link">&para;</a></h2>
 <p><code>Inject()</code> only succeeds when Cullinan can normalize the annotation into a <strong>stable and unique</strong> dependency contract.</p>
 <p>Supported examples include:</p>
@@ -1918,7 +1918,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a4", "pre_is_available": true, "pre_label": "0.93a4", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a5", "pre_is_available": true, "pre_label": "0.93a5", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

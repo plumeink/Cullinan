@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a4"
+      data-current-version="0.93a5"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a4"
+      data-pre-version="0.93a5"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -1963,7 +1963,7 @@
 
 <h1 id="cullinan-framework-architecture">Cullinan Framework Architecture<a class="headerlink" href="#cullinan-framework-architecture" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: 0.93a4<br />
+<p><strong>Version</strong>: 0.93a5<br />
 <strong>Last Updated</strong>: 2026-06-01<br />
 <strong>Status</strong>: Updated</p>
 </blockquote>
@@ -1972,7 +1972,7 @@
 <ol>
 <li><strong>Unified container facade</strong> — <code>cullinan.core</code> is the public IoC/DI entrypoint.</li>
 <li><strong>Transport-agnostic Web Runtime</strong> — <code>cullinan.gateway</code> owns <code>WebRequest</code>, <code>WebResponse</code>, routing, dispatch, middleware, and exception handling.</li>
-<li><strong>Pytest-first verification</strong> — the repository test suite is structured under <code>tests/</code> and runs through a single pytest entrypoint.</li>
+<li><strong>Decorator-first runtime assembly</strong> — application code starts from business decorators, while runtime ownership and hot-pluggable stability are layered in when needed.</li>
 </ol>
 <h2 id="architecture-layers">Architecture layers<a class="headerlink" href="#architecture-layers" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>Application code
@@ -1987,7 +1987,7 @@ Framework facade
 └── cullinan.params    -&gt; Path, Query, Body, Header, File, model resolution
 
 Runtime execution
-├── Module scanning and explicit registration
+├── Decorator declarations -&gt; import-executed discovery -&gt; runtime assembly
 ├── ApplicationContext.refresh()
 ├── Gateway pipeline + dispatcher
 ├── Adapter-specific request/response translation
@@ -2008,7 +2008,8 @@ Runtime execution
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
 <span class="n">set_application_context</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 
-<span class="c1"># registration happens via decorators, scanning, or explicit Definition objects</span>
+<span class="c1"># new application code starts from decorators and runtime assembly;</span>
+<span class="c1"># explicit Definition registration is reserved for low-level integration</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 <span class="o">...</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
@@ -2054,9 +2055,9 @@ Runtime execution
 <p>This split keeps request processing logic independent from any single server implementation.</p>
 <h2 id="request-flow">Request flow<a class="headerlink" href="#request-flow" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Application bootstrap creates and stores an <code>ApplicationContext</code>.</li>
-<li>Module scanning registers services and controllers.</li>
-<li><code>ctx.refresh()</code> resolves eager components and runs startup hooks.</li>
+<li>Business code declares services, controllers, and handlers with decorators.</li>
+<li>Runtime assembly imports owned Python modules and rebuilds registrations from decorator metadata.</li>
+<li><code>ApplicationContext.refresh()</code> resolves eager components and runs startup hooks.</li>
 <li>The gateway pipeline receives a transport-normalized <code>WebRequest</code>.</li>
 <li><code>Dispatcher</code> matches a route, resolves parameters, invokes the handler, and produces a <code>WebResponse</code>.</li>
 <li>A concrete adapter writes the response back to Tornado or ASGI.</li>
@@ -2142,7 +2143,7 @@ Runtime execution
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a4", "pre_is_available": true, "pre_label": "0.93a4", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a5", "pre_is_available": true, "pre_label": "0.93a5", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

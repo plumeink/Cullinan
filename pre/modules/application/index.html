@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a4"
+      data-current-version="0.93a5"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a4"
+      data-pre-version="0.93a5"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -927,10 +927,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#module-ownership" class="md-nav__link">
+  <a href="#module-ownership-and-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Module ownership
+        Module ownership and boundaries
       
     </span>
   </a>
@@ -1676,10 +1676,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#module-ownership" class="md-nav__link">
+  <a href="#module-ownership-and-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Module ownership
+        Module ownership and boundaries
       
     </span>
   </a>
@@ -1737,16 +1737,19 @@
 
 
 <h1 id="cullinanapplication">cullinan.application<a class="headerlink" href="#cullinanapplication" title="Permanent link">&para;</a></h1>
-<p><code>cullinan.application</code> now exposes the recommended application-first bootstrap
-surface:</p>
+<p><code>cullinan.application</code> exposes the recommended runtime-assembly surface for
+new Cullinan applications:</p>
 <ul>
-<li><code>Application.run(RootModule)</code> builds, warms, and activates a root module</li>
-<li><code>@module</code> declares a root/feature/shared module and its imported modules</li>
+<li><code>Application.run(RootModule)</code> builds, warms, and activates one assembled runtime</li>
+<li><code>@module</code> declares a boundary when you need module ownership, reload, and hot-pluggable runtime behavior</li>
 <li><code>current_app()</code> returns the active application, and prefers the request
   snapshot while an older runtime is draining</li>
 <li>legacy <code>run(handlers=None, engine=None)</code> remains available for compatibility</li>
 </ul>
 <p>The bootstrap contract also depends on the framework semantics documented in <a href="../../framework_semantics/">Framework Semantics</a>: component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after <code>refresh()</code>.</p>
+<p>In practice, most application code starts from business decorators and methods.
+<code>@module</code> is not a manual app-registration center; it is the structured boundary
+that keeps ownership, reload, draining, and runtime switching explicit and stable.</p>
 <h2 id="recommended-bootstrap">Recommended bootstrap<a class="headerlink" href="#recommended-bootstrap" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Application</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
@@ -1777,7 +1780,7 @@ surface:</p>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">RootModule</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="module-ownership">Module ownership<a class="headerlink" href="#module-ownership" title="Permanent link">&para;</a></h2>
+<h2 id="module-ownership-and-boundaries">Module ownership and boundaries<a class="headerlink" href="#module-ownership-and-boundaries" title="Permanent link">&para;</a></h2>
 <p><code>@module</code> uses Python package ownership to discover components. When a component
 matches more than one module package, startup fails fast. Resolve intentional
 overlap with <code>ownership_overrides</code>.</p>
@@ -1797,7 +1800,8 @@ until the in-flight request ends.</p>
 <p><code>ApplicationContext</code> remains the low-level container/runtime primitive. Existing
 code using <code>register()</code>, <code>refresh()</code>, <code>get()</code>, or the legacy
 <code>cullinan.application.run()</code> entrypoint continues to work, but new application
-setup should prefer <code>Application</code> + <code>@module</code>.</p>
+setup should start from business decorators and use <code>Application</code> plus <code>@module</code>
+when it needs explicit runtime boundaries.</p>
 <h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../wiki/application_runtime/">Application Runtime Model</a></li>
@@ -1871,7 +1875,7 @@ setup should prefer <code>Application</code> + <code>@module</code>.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a4", "pre_is_available": true, "pre_label": "0.93a4", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a5", "pre_is_available": true, "pre_label": "0.93a5", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

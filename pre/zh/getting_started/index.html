@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a4"
+      data-current-version="0.93a5"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a4"
+      data-pre-version="0.93a5"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -2057,7 +2057,9 @@
 
 
 <h1 id="cullinan">Cullinan 快速开始<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
-<p>本页提供最小化的快速入门，说明如何安装并运行 Cullinan 示例应用。</p>
+<p>本页提供最小化的快速入门，说明如何安装并运行 Cullinan 示例应用。
+核心心智是：先用装饰器声明业务方法与组件，再由运行时完成装配；
+Cullinan 不是围绕手工组装 app 对象展开的框架。</p>
 <h2 id="_1">前置条件<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python 3.8+</li>
@@ -2111,7 +2113,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 
 <span class="nd">@module</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RootModule</span><span class="p">:</span>
-    <span class="k">pass</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;用于运行时归属与稳定性的边界声明。&quot;&quot;&quot;</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">RootModule</span><span class="p">)</span>
@@ -2132,10 +2134,11 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <p>在浏览器中打开 <code>http://localhost:4080/hello</code> 验证服务器是否启动。</p>
 <h2 id="_4">这个示例展示了什么<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <ul>
+<li>你主要写的是 <code>@service</code>、<code>@controller</code> 和处理方法等业务声明</li>
 <li><code>Application.run(RootModule)</code> 会装配并激活应用运行时</li>
-<li><code>@module</code> 用于标记应用根模块，并参与模块归属解析</li>
+<li><code>@module</code> 表达的是归属、reload、draining 与更高稳定性的运行时边界</li>
 <li><code>Inject()</code> 会从活动应用上下文中解析控制器依赖</li>
-<li><code>TornadoAdapter</code> 负责承载已经构建完成的 Web Runtime</li>
+<li><code>app</code> 是已经装配完成的运行时句柄，<code>TornadoAdapter</code> 负责承载 Web Runtime</li>
 </ul>
 <h2 id="_5">最小应用示例<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>这是一个演示 Cullinan 核心功能的最小应用：</p>
@@ -2179,7 +2182,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h2 id="_6">理解基础知识<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <h3 id="_7">应用生命周期<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>发现</strong>：<code>Application.run()</code> 收集根模块图及其拥有的包</li>
+<li><strong>发现</strong>：<code>Application.run()</code> 收集运行时边界并导入其拥有的包</li>
 <li><strong>装配</strong>：Cullinan 重建待注册项，并装配 <code>ApplicationContext</code> 与 <code>WebRuntime</code></li>
 <li><strong>激活</strong>：通过校验的 runtime 成为活动 runtime，并可通过 adapter 对外提供服务</li>
 <li><strong>Reload / 关闭</strong>：旧 runtime 会先 drain 飞行中请求，然后再关闭</li>
@@ -2192,7 +2195,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li>HTTP 控制器使用 <code>@controller</code></li>
 <li>按类型注入优先使用 <code>Inject()</code></li>
 <li>按名称解析更方便时使用 <code>InjectByName()</code></li>
-<li>将 <code>Application</code> + <code>@module</code> 视为推荐启动路径</li>
+<li>先从业务装饰器开始；当你需要明确运行时边界时再引入 <code>@module</code></li>
 <li>只有在需要底层容器编排时，才直接操作 <code>ApplicationContext</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
@@ -2480,7 +2483,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a4", "pre_is_available": true, "pre_label": "0.93a4", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a5", "pre_is_available": true, "pre_label": "0.93a5", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

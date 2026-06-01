@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a4"
+      data-current-version="0.93a5"
       data-stable-version="None"
       data-stable-url="/"
-      data-pre-version="0.93a4"
+      data-pre-version="0.93a5"
       data-pre-url="/pre/"
       data-pre-available="True"
     >
@@ -1963,7 +1963,7 @@
 
 <h1 id="cullinan">Cullinan 框架架构<a class="headerlink" href="#cullinan" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>版本</strong>：0.93a4<br />
+<p><strong>版本</strong>：0.93a5<br />
 <strong>最后更新</strong>：2026-06-01<br />
 <strong>状态</strong>：已更新</p>
 </blockquote>
@@ -1972,7 +1972,7 @@
 <ol>
 <li><strong>统一容器门面</strong> —— <code>cullinan.core</code> 是公开的 IoC/DI 入口。</li>
 <li><strong>传输无关的 Web Runtime</strong> —— <code>cullinan.gateway</code> 承载 <code>WebRequest</code>、<code>WebResponse</code>、路由、分发、中间件与异常处理。</li>
-<li><strong>pytest 优先的验证体系</strong> —— 仓库测试统一收敛到 <code>tests/</code> 目录和单一 pytest 入口。</li>
+<li><strong>装饰器优先的运行时装配</strong> —— 应用代码先从业务装饰器出发，运行时边界、热插拔与稳定性能力按需叠加。</li>
 </ol>
 <h2 id="_2">架构分层<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>应用代码
@@ -1987,7 +1987,7 @@
 └── cullinan.params    -&gt; Path、Query、Body、Header、File、模型解析
 
 运行时执行
-├── 模块扫描与显式注册
+├── 装饰器声明 -&gt; 导入执行发现 -&gt; 运行时装配
 ├── ApplicationContext.refresh()
 ├── Gateway pipeline + dispatcher
 ├── 适配器层请求/响应转换
@@ -2008,7 +2008,8 @@
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
 <span class="n">set_application_context</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 
-<span class="c1"># 注册可来自装饰器、扫描器或显式 Definition</span>
+<span class="c1"># 新应用代码先从装饰器声明和运行时装配出发；</span>
+<span class="c1"># 显式 Definition 注册保留给底层集成场景</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 <span class="o">...</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
@@ -2054,8 +2055,8 @@
 <p>这种分层让请求处理逻辑不再绑定单一服务器实现。</p>
 <h2 id="_11">请求流程<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
 <ol>
-<li>应用启动时创建并保存 <code>ApplicationContext</code>。</li>
-<li>模块扫描注册服务与控制器。</li>
+<li>业务代码用装饰器声明服务、控制器与处理方法。</li>
+<li>运行时装配阶段导入受管 Python 模块，并依据装饰器元数据重建注册项。</li>
 <li><code>ctx.refresh()</code> 解析 eager 组件并执行启动钩子。</li>
 <li>Gateway pipeline 接收已归一化的 <code>WebRequest</code>。</li>
 <li><code>Dispatcher</code> 匹配路由、解析参数、调用处理器，并生成 <code>WebResponse</code>。</li>
@@ -2142,7 +2143,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a4", "pre_is_available": true, "pre_label": "0.93a4", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a5", "pre_is_available": true, "pre_label": "0.93a5", "pre_url": "/pre/", "stable_label": null, "stable_url": "/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
