@@ -12,7 +12,7 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/migration_guide/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/migration_guide/">
       
       
         <link rel="prev" href="../runtime_updates_v093/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1089,41 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2391,8 +2356,7 @@
 <blockquote>
 <p><strong>Version</strong>: v0.90<br />
 <strong>Author</strong>: Plumeink</p>
-<p><strong>Knowledge role:</strong> <a href="../migration/">Migration &amp; Version Notes</a><br />
-<strong>Upgrade-only page:</strong> use this when moving existing code, not when learning the
+<p><strong>Upgrade-only page:</strong> use this when moving existing code, not when learning the
 recommended API path for a new project.</p>
 </blockquote>
 <p>This guide helps you migrate from Cullinan 1.x to 0.93 (0.90).</p>
@@ -2496,18 +2460,17 @@ recommended API path for a new project.</p>
 </code></pre></div>
 <h3 id="step-3-update-application-startup">Step 3: Update Application Startup<a class="headerlink" href="#step-3-update-application-startup" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Old style (app.py)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">CullinanApplication</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">CullinanApplication</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
 <span class="c1"># New style</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">run</span>
 
-<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
-<span class="c1"># ... register definitions ...</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-<span class="c1"># ... run tornado ...</span>
-<span class="n">ctx</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+<span class="nd">@module</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RootModule</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">configure</span><span class="p">(</span><span class="n">root_module</span><span class="o">=</span><span class="n">RootModule</span><span class="p">)</span>
+<span class="n">run</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="step-4-handle-request-scope">Step 4: Handle Request Scope<a class="headerlink" href="#step-4-handle-request-scope" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># In request handler</span>
@@ -2635,7 +2598,7 @@ recommended API path for a new project.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

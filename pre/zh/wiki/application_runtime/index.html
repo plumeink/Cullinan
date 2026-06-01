@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/wiki/application_runtime/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/zh/wiki/application_runtime/">
       
       
         <link rel="prev" href="../../internals/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1089,41 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    应用
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2219,8 +2184,7 @@
 <h1 id="_1">应用运行时模型<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>本文解释围绕 <code>cullinan.application</code> 构建的高级应用运行时模型。Cullinan 的目标体验是让开发者先围绕业务装饰器与业务方法开发，再由运行时去装配模块声明的能力，而不是手工围绕一个 app 对象逐步注册。</p>
 <blockquote>
-<p><strong>知识角色：</strong> <a href="../../internals/">运行时与扩展</a><br />
-<strong>高级主题：</strong> 常规应用应优先使用 <code>from cullinan import configure, run</code>。<br />
+<p><strong>高级主题：</strong> 常规应用应优先使用 <code>from cullinan import configure, run</code>。<br />
 <strong>参考配套：</strong> 公开 / 高级 / 兼容 API 的分层，请同时查看 <a href="../../api_reference/">API 参考</a>。</p>
 </blockquote>
 <p>对于常规应用，请优先使用顶层 <code>from cullinan import configure, run</code>。只有在你明确需要显式运行时编排时，才应进入 <code>cullinan.application</code>。</p>
@@ -2230,7 +2194,7 @@
 <li><code>Application</code> 持有一个根模块图、一个 <code>ApplicationContext</code> 和一个 <code>WebRuntime</code></li>
 <li><code>@module</code> 用于声明拥有的 Python 包及其结构边界，并承载 reload、draining 与热插拔运行时语义</li>
 <li><code>Runtime</code> 是一个应用候选实例在校验 / 预热过程中的可变记录</li>
-<li><code>current_app()</code> 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照</li>
+<li><code>Application.current()</code> 用于解析当前活动应用，并会在 draining 期间优先返回请求绑定的快照</li>
 </ul>
 <h2 id="_3">典型运行时装配<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">service</span>
@@ -2288,19 +2252,18 @@
 <li>旧运行时只有在请求计数归零后才会真正关闭</li>
 </ol>
 <p>这也是为什么全局已经切换到新运行时后，某个 draining 中的旧请求里
-<code>current_app()</code> 仍可能返回旧应用。</p>
+<code>Application.current()</code> 仍可能解析到旧应用。</p>
 <h2 id="_6">适配器与请求绑定<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>传输适配器（<code>ASGIAdapter</code> / <code>TornadoAdapter</code>）会在分发前把运行时绑定到当前请求上下文。
 这个绑定提供了：</p>
 <ul>
 <li>针对正确应用的 request-scoped 依赖解析</li>
-<li>控制器与中间件中的 <code>current_app()</code></li>
+<li>运行时感知控制器或中间件中的 <code>Application.current()</code></li>
 <li>旧请求尚未结束时的安全 draining</li>
 </ul>
 <p>对于常规业务应用，这仍应被视为内部 transport 细节；推荐入口依然是 Cullinan 自身的 application / controller 语义。</p>
 <h2 id="applicationcontext">何时直接使用 ApplicationContext<a class="headerlink" href="#applicationcontext" title="Permanent link">&para;</a></h2>
-<p>当你需要底层容器集成、显式注册或兼容性启动方式时，仍应直接使用
-<code>ApplicationContext</code>。对于新的应用代码，应先从装饰器声明出发，并在需要明确运行时边界时使用 <code>Application</code> + <code>@module</code>。</p>
+<p>当你需要底层容器集成时，仍应直接使用 <code>ApplicationContext</code>。对于新的应用代码，应先从装饰器声明出发，并在需要明确运行时边界时使用 <code>Application</code> + <code>@module</code>。</p>
 <h2 id="_7">相关文档<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../modules/application/">cullinan.application 模块</a></li>
@@ -2375,7 +2338,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>

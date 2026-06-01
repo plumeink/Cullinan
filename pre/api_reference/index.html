@@ -12,13 +12,13 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/api_reference/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/api_reference/">
       
       
         <link rel="prev" href="../reference/">
       
       
-        <link rel="next" href="../modules/app/">
+        <link rel="next" href="../modules/application/">
       
       
         
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1124,17 +1124,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#compatibility-oriented-modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compatibility-oriented modules
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1289,41 +1278,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2201,17 +2155,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#compatibility-oriented-modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compatibility-oriented modules
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -2332,10 +2275,9 @@
 <blockquote>
 <p><strong>Note (v0.90)</strong>: The core module has been reorganized. For the new API structure, see <a href="../dependency_injection_guide/">Dependency Injection Guide</a> and <a href="../import_migration_090/">Import Migration Guide</a>.</p>
 </blockquote>
-<p>This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended, advanced, or compatibility-oriented.</p>
+<p>This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended and which stay in advanced runtime-facing layers.</p>
 <blockquote>
-<p><strong>Knowledge role:</strong> <a href="../reference/">API Reference</a><br />
-<strong>Need the recommended learning path first?</strong> Start from <a href="../start/">Application Build</a>
+<p><strong>Need the recommended learning path first?</strong> Start from <a href="../start/">Application Build</a>
 and <a href="../concepts/">Framework Semantics</a>.<br />
 <strong>Need advanced runtime internals?</strong> Continue in <a href="../internals/">Internals &amp; Extensions</a>.</p>
 </blockquote>
@@ -2346,24 +2288,24 @@ and <a href="../concepts/">Framework Semantics</a>.<br />
 <li>startup: <code>configure(...)</code>, <code>run(...)</code>, <code>get_asgi_app(...)</code></li>
 <li>declaration: <code>@service</code>, <code>@controller</code>, <code>@module</code>, route decorators</li>
 <li>injection / params: <code>Inject</code>, <code>InjectByName</code>, <code>Path</code>, <code>Query</code>, <code>Body</code>, ...</li>
+<li>framework mental model: decorator-first business code, component discovery,
+    IoC/DI wiring, and module boundaries with hot-pluggable runtime semantics</li>
 </ul>
 <h3 id="advanced-integration-api">Advanced integration API<a class="headerlink" href="#advanced-integration-api" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>cullinan.application</code> — explicit runtime assembly (<code>Application</code>, <code>Runtime</code>, <code>current_app</code>)</li>
+<li><code>cullinan.application</code> — advanced public application semantics for maintainers
+  and framework-aware integrations (<code>Application</code>, <code>Runtime</code>, <code>module</code>)</li>
 <li><code>cullinan.transport.adapter</code> — server integration (<code>WebAdapter</code>, <code>TornadoAdapter</code>, <code>ASGIAdapter</code>)</li>
 <li><code>cullinan.web.gateway</code> — request / response / dispatcher contracts</li>
 <li><code>cullinan.core</code> — low-level container and lifecycle primitives</li>
 </ul>
-<p>These advanced transport adapters are integration-layer APIs, not the default
-application-facing mental model. Regular business code should stay on
-Cullinan's own application and Web semantics rather than depending on a
-concrete server adapter.</p>
-<h3 id="compatibility-oriented-modules">Compatibility-oriented modules<a class="headerlink" href="#compatibility-oriented-modules" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>cullinan.application</code> — legacy scanning startup helpers kept for existing projects</li>
-<li><code>cullinan.application.lifecycle</code> — older app wrapper surface kept only for compatibility</li>
-</ul>
-<p>For regular applications, prefer the top-level <code>cullinan</code> API. Advanced and compatibility modules should be imported explicitly so the boundary stays visible in code review, IDE completion, and onboarding docs.</p>
+<p>These advanced modules are not the default application-facing mental model.
+Regular business code should stay on the top-level <code>cullinan</code> API and the
+framework's own decorator / DI / module semantics rather than dropping into
+low-level runtime orchestration or a concrete server adapter.</p>
+<p>For regular applications, prefer the top-level <code>cullinan</code> API. Advanced modules
+should be imported explicitly so the boundary stays visible in code review, IDE
+completion, and onboarding docs.</p>
 <h2 id="new-in-v090-parameter-system">New in v0.90+: Parameter System<a class="headerlink" href="#new-in-v090-parameter-system" title="Permanent link">&para;</a></h2>
 <p>The parameter system provides type-safe request parameter handling. See <a href="../parameter_system_guide/">Parameter System Guide</a> for details.</p>
 <h3 id="cullinanwebparams-v090a4">cullinan.web.params (v0.90a4+)<a class="headerlink" href="#cullinanwebparams-v090a4" title="Permanent link">&para;</a></h3>
@@ -2770,7 +2712,7 @@ concrete server adapter.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

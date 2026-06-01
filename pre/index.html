@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/">
       
       
       
@@ -20,9 +20,9 @@
       
       
         
-          <link rel="alternate" href="/Cullinan/" hreflang="en">
+          <link rel="alternate" href="/Cullinan/pre/" hreflang="en">
         
-          <link rel="alternate" href="/Cullinan/zh/" hreflang="zh">
+          <link rel="alternate" href="/Cullinan/pre/zh/" hreflang="zh">
         
       
       
@@ -31,7 +31,7 @@
     
     
       
-        <title>"Cullinan Knowledge Base" - Cullinan Documentation</title>
+        <title>"Cullinan Documentation" - Cullinan Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cullinan-knowledge-base" class="md-skip">
+        <a href="#cullinan-documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -90,10 +90,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -144,7 +144,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "Cullinan Knowledge Base"
+              "Cullinan Documentation"
             
           </span>
         </div>
@@ -165,13 +165,13 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="/Cullinan/" hreflang="en" class="md-select__link">
+            <a href="/Cullinan/pre/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="/Cullinan/zh/" hreflang="zh" class="md-select__link">
+            <a href="/Cullinan/pre/zh/" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -351,15 +351,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#knowledge-domains" class="md-nav__link">
+  <a href="#documentation-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Knowledge domains
+        Documentation map
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Knowledge domains">
+    <nav class="md-nav" aria-label="Documentation map">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -430,17 +430,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-governance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation governance
-      
-    </span>
-  </a>
   
 </li>
       
@@ -1246,41 +1235,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2136,15 +2090,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#knowledge-domains" class="md-nav__link">
+  <a href="#documentation-map" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Knowledge domains
+        Documentation map
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Knowledge domains">
+    <nav class="md-nav" aria-label="Documentation map">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2218,17 +2172,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#documentation-governance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation governance
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2246,14 +2189,14 @@
 
 
 
-<h1 id="cullinan-knowledge-base">Cullinan Knowledge Base<a class="headerlink" href="#cullinan-knowledge-base" title="Permanent link">&para;</a></h1>
-<p>Cullinan documentation is now organized as a <strong>knowledge base</strong>, not as a mixed
-list of wiki pages, module pages, guides, and migration notes.</p>
+<h1 id="cullinan-documentation">Cullinan Documentation<a class="headerlink" href="#cullinan-documentation" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Current version: 0.93a8</strong>. The recommended application path is
-<code>cullinan.application + cullinan.web + cullinan.core</code>: start from business
-decorators and business methods first, then enter advanced runtime details
-only when the application really needs them.</p>
+<p><strong>Current version: 0.93a9</strong>. The shortest public startup path is
+<code>from cullinan import configure, run</code>; the semantic learning path starts from
+top-level <code>cullinan</code> plus the business-facing <code>cullinan.web</code> / <code>cullinan.core</code>
+vocabulary: begin with business decorators and business methods first, then
+enter advanced application/runtime details only when the application really
+needs them.</p>
 </blockquote>
 <h2 id="default-learning-path">Default learning path<a class="headerlink" href="#default-learning-path" title="Permanent link">&para;</a></h2>
 <ol>
@@ -2265,7 +2208,7 @@ only when the application really needs them.</p>
 <p>This path is the default for most developers using Cullinan to build business
 applications. It intentionally keeps advanced runtime internals and version
 migration notes outside the first-read path.</p>
-<h2 id="knowledge-domains">Knowledge domains<a class="headerlink" href="#knowledge-domains" title="Permanent link">&para;</a></h2>
+<h2 id="documentation-map">Documentation map<a class="headerlink" href="#documentation-map" title="Permanent link">&para;</a></h2>
 <h3 id="1-application-build">1. <a href="start/">Application Build</a><a class="headerlink" href="#1-application-build" title="Permanent link">&para;</a></h3>
 <p>Use this section to bootstrap a new application with the recommended public API.</p>
 <ul>
@@ -2292,11 +2235,9 @@ explicit app-centric wiring.</p>
 <p>Use this section for symbol lookup and stable API surface review.</p>
 <ul>
 <li><a href="api_reference/">API Reference Overview</a></li>
-<li><a href="modules/app/">Module Reference: app</a></li>
-<li><a href="modules/application/">Module Reference: application</a></li>
-<li><a href="modules/core/">Module Reference: core</a></li>
-<li><a href="modules/controller/">Module Reference: controller</a></li>
-<li><a href="modules/service/">Module Reference: service</a></li>
+<li>Module references stay in this section for lookup only.</li>
+<li>Prefer the overview first, then read <code>controller</code>, <code>service</code>, or <code>core</code> references as needed.</li>
+<li>Advanced application/runtime surfaces remain outside the default first-read path.</li>
 </ul>
 <h3 id="5-internals-extensions">5. <a href="internals/">Internals &amp; Extensions</a><a class="headerlink" href="#5-internals-extensions" title="Permanent link">&para;</a></h3>
 <p>Use this section only when you intentionally need advanced runtime or extension knowledge.</p>
@@ -2312,13 +2253,6 @@ explicit app-centric wiring.</p>
 <li><a href="migration_guide/">Migration Guide</a></li>
 <li><a href="migration_guide_v2/">Migration Guide v2</a></li>
 <li><a href="import_migration_090/">Import Migration 0.90</a></li>
-</ul>
-<h2 id="documentation-governance">Documentation governance<a class="headerlink" href="#documentation-governance" title="Permanent link">&para;</a></h2>
-<ul>
-<li>New content should be written under a clear knowledge role first</li>
-<li>Teaching pages, reference pages, internals, and migration notes should not share one page's primary responsibility</li>
-<li>Advanced topics must say that they are advanced</li>
-<li>English pages live under <code>docs/</code>; Chinese mirrors live under <code>docs/zh/</code> with matching relative paths</li>
 </ul>
 <p>For source code and release history, visit the <a href="https://github.com/plumeink/Cullinan">GitHub repository</a>.</p>
 
@@ -2389,7 +2323,7 @@ explicit app-centric wiring.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="assets/javascripts/bundle.e71a0d61.min.js"></script>

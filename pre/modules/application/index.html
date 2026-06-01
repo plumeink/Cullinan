@@ -12,10 +12,10 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/modules/application/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/modules/application/">
       
       
-        <link rel="prev" href="../app/">
+        <link rel="prev" href="../../api_reference/">
       
       
         <link rel="next" href="../core/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1098,41 +1098,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -1243,10 +1208,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#compatibility-note" class="md-nav__link">
+  <a href="#maintainer-advanced-note" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compatibility note
+        Maintainer / advanced note
       
     </span>
   </a>
@@ -2114,10 +2079,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#compatibility-note" class="md-nav__link">
+  <a href="#maintainer-advanced-note" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compatibility note
+        Maintainer / advanced note
       
     </span>
   </a>
@@ -2153,18 +2118,19 @@
 
 
 <h1 id="cullinanapplication">cullinan.application<a class="headerlink" href="#cullinanapplication" title="Permanent link">&para;</a></h1>
-<p><code>cullinan.application</code> is now a compatibility-oriented startup module. Regular
-applications should prefer the top-level <code>cullinan</code> API:</p>
+<p><code>cullinan.application</code> is the semantic package for application definition and
+advanced public application composition. Regular applications should prefer the shorter
+top-level <code>cullinan</code> startup API, but maintainers and advanced integrations
+still land here when they need the fuller application model:</p>
 <blockquote>
-<p><strong>Knowledge role:</strong> <a href="../../reference/">API Reference</a><br />
-<strong>Compatibility module:</strong> this page documents a kept surface, not the default learning path.<br />
+<p><strong>Advanced-but-public module:</strong> this page documents a real semantic layer, not the default first-read path.
 Prefer <a href="../../getting_started/">Getting Started</a> and the top-level <code>cullinan</code> API for new applications.</p>
 </blockquote>
 <ul>
 <li><code>configure(root_module=RootModule)</code> declares the recommended root entrypoint</li>
 <li><code>run()</code> or <code>get_asgi_app()</code> starts through the curated top-level API</li>
 <li><code>@module</code> declares a boundary when you need module ownership, reload, and hot-pluggable runtime behavior</li>
-<li>legacy <code>cullinan.application.run()</code> remains available only for compatibility</li>
+<li>top-level <code>run()</code> / <code>get_asgi_app()</code> are the shortest public startup path</li>
 </ul>
 <p>The bootstrap contract also depends on the framework semantics documented in <a href="../../framework_semantics/">Framework Semantics</a>: component discovery is import-executed, automatic scanning only guarantees module-top-level decorated components, and structural registration freezes after <code>refresh()</code>.</p>
 <p>In practice, most application code starts from business decorators and methods.
@@ -2213,16 +2179,13 @@ overlap with <code>ownership_overrides</code>.</p>
 <h2 id="runtime-switching">Runtime switching<a class="headerlink" href="#runtime-switching" title="Permanent link">&para;</a></h2>
 <p><code>Application.reload()</code> builds a fresh candidate runtime, validates and warms it,
 then atomically switches the active application. The previous runtime enters
-draining state, and <code>current_app()</code> keeps returning the request-bound snapshot
-until the in-flight request ends.</p>
-<h2 id="compatibility-note">Compatibility note<a class="headerlink" href="#compatibility-note" title="Permanent link">&para;</a></h2>
+draining state, and <code>Application.current()</code> continues to resolve the
+request-bound snapshot until the in-flight request ends.</p>
+<h2 id="maintainer-advanced-note">Maintainer / advanced note<a class="headerlink" href="#maintainer-advanced-note" title="Permanent link">&para;</a></h2>
 <p><code>ApplicationContext</code> remains the low-level container/runtime primitive, and
-<code>Application</code> / <code>current_app()</code> remain available from
-<code>cullinan.application</code> for explicit runtime orchestration. Existing code
-using <code>register()</code>, <code>refresh()</code>, <code>get()</code>, or the legacy
-<code>cullinan.application.run()</code> entrypoint continues to work, but new application
-setup should start from business decorators plus the top-level
-<code>configure(...)/run()</code> path.</p>
+<code>Application</code> remains available from <code>cullinan.application</code> for advanced
+runtime-aware composition. New application setup should still start from
+business decorators plus the top-level <code>configure(...)/run()</code> path.</p>
 <h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../wiki/application_runtime/">Application Runtime Model</a></li>
@@ -2296,7 +2259,7 @@ setup should start from business decorators plus the top-level
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

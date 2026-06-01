@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/getting_started/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/zh/getting_started/">
       
       
         <link rel="prev" href="../start/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1369,41 +1369,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    应用
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../modules/application/" class="md-nav__link">
         
   
@@ -2477,8 +2442,7 @@
 核心心智是：先用装饰器声明业务方法与组件，再由运行时完成装配；
 Cullinan 不是围绕手工组装 app 对象展开的框架。</p>
 <blockquote>
-<p><strong>知识角色：</strong> <a href="../start/">应用构建</a><br />
-<strong>推荐下一步：</strong> <a href="../framework_semantics/">框架语义</a>、<a href="../how-to/">工程实践</a><br />
+<p><strong>推荐下一步：</strong> <a href="../framework_semantics/">框架语义</a>、<a href="../how-to/">工程实践</a><br />
 <strong>仓库可运行指引：</strong> <code>examples/minimal_app/</code> 是当前维护中的最小示例。<br>
 <strong>高级边界：</strong> 如果你明确需要显式 <code>Application</code> 编排，请进入
 <a href="../internals/">运行时与扩展</a>，不要把那条路径当成默认启动方式。</p>
@@ -2512,7 +2476,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li>在项目根目录创建一个最小应用文件 <code>minimal_app.py</code>，内容如下：</li>
 </ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">run</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
@@ -2565,7 +2529,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h2 id="_5">最小应用示例<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>这是一个演示 Cullinan 核心功能的最小应用：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">run</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
@@ -2604,12 +2568,12 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h3 id="_7">应用生命周期<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>声明入口</strong>：<code>configure(root_module=RootModule)</code> 告诉 Cullinan 哪个根模块定义运行时边界</li>
-<li><strong>发现与装配</strong>：<code>run()</code> 导入所属包、重建待注册项，并装配 <code>ApplicationContext</code> 与 <code>WebRuntime</code></li>
-<li><strong>激活</strong>：通过校验的 runtime 成为活动 runtime，并通过框架选择的适配器路径对外提供服务</li>
+<li><strong>发现与装配</strong>：<code>run()</code> 导入所属包、完成待注册装饰器项收口，并在该模块边界下装配业务组件</li>
+<li><strong>激活</strong>：通过校验的 runtime 成为活动 runtime，并通过框架选择的后端路径对外提供服务</li>
 <li><strong>Reload / 关闭</strong>：旧 runtime 会先 drain 飞行中请求，然后再关闭</li>
 </ol>
 <h3 id="_8">依赖注入<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p>Cullinan 通过以 <code>ApplicationContext</code> 为底层基础的 application-first 运行时模型提供内置 IoC/DI 支持。</p>
+<p>Cullinan 通过装饰器驱动的组件发现与运行时管理的装配流程提供内置 IoC/DI 支持。</p>
 <h4 id="_9">推荐运行时模型<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
 <ul>
 <li>业务服务使用 <code>@service</code></li>
@@ -2617,14 +2581,13 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li>按类型注入优先使用 <code>Inject()</code></li>
 <li>按名称解析更方便时使用 <code>InjectByName()</code></li>
 <li>先从业务装饰器开始；当你需要明确运行时边界时再引入 <code>@module</code></li>
-<li>只有在需要底层容器编排时，才直接操作 <code>ApplicationContext</code></li>
+<li>如果你明确需要底层容器或运行时内部机制，请转到 <a href="../internals/">运行时与扩展</a>，不要把那条路径当成快速开始模型</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">}</span>
 
@@ -2732,16 +2695,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <h4 id="_10">推荐的依赖注入方式<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
 <p><strong>方式一：Inject（推荐）</strong></p>
 <p>当依赖类型容易导入时，优先使用带类型的 <code>Inject()</code>：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
     <span class="n">db</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2749,16 +2711,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </code></pre></div>
 <p><strong>方式二：InjectByName</strong></p>
 <p>按名称注入，无需导入依赖类，避免循环导入问题：</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;DatabaseService&#39;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2767,20 +2728,19 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <p><strong>方式三：Inject + TYPE_CHECKING（支持 IDE 联想）</strong></p>
 <p>如果需要 IDE 自动补全和类型检查，可以使用 <code>Inject</code> 配合 TYPE_CHECKING：</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="c1"># TYPE_CHECKING 块中的导入不会在运行时执行，避免循环导入</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">my_project.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseService</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
     <span class="n">db</span><span class="p">:</span> <span class="s1">&#39;DatabaseService&#39;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2903,7 +2863,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>

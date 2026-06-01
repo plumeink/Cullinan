@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/runtime_updates_v093/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/runtime_updates_v093/">
       
       
         <link rel="prev" href="../migration_to_final_semantic_layout/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1089,41 +1089,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -2377,8 +2342,7 @@
 <h1 id="runtime-consolidation-overview">Runtime consolidation overview<a class="headerlink" href="#runtime-consolidation-overview" title="Permanent link">&para;</a></h1>
 <p>This page summarizes the four major updates currently reflected in the codebase and documentation.</p>
 <blockquote>
-<p><strong>Knowledge role:</strong> <a href="../migration/">Migration &amp; Version Notes</a><br />
-<strong>Historical summary:</strong> this page explains what changed; it is not part of the
+<p><strong>Historical summary:</strong> this page explains what changed; it is not part of the
 default onboarding path for new applications.</p>
 </blockquote>
 <h2 id="1-iocdi-consolidation">1. IoC/DI consolidation<a class="headerlink" href="#1-iocdi-consolidation" title="Permanent link">&para;</a></h2>
@@ -2397,20 +2361,21 @@ default onboarding path for new applications.</p>
 <li><code>ApplicationContext</code> for explicit registration or integration work</li>
 </ul>
 <h2 id="2-application-first-runtime">2. Application-first runtime<a class="headerlink" href="#2-application-first-runtime" title="Permanent link">&para;</a></h2>
-<p>Cullinan now exposes an application-first bootstrap model in <code>cullinan.application</code>
-and re-exports it from <code>cullinan</code>.</p>
+<p>Cullinan now keeps explicit runtime orchestration in <code>cullinan.application</code> while
+re-exporting the shortest public startup path from top-level <code>cullinan</code>.</p>
 <h3 id="what-changed_1">What changed<a class="headerlink" href="#what-changed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>Application.run(RootModule)</code> builds, validates, warms, and activates a root module</li>
 <li><code>@module</code> defines module imports, owned packages, warmup hooks, and health checks</li>
 <li>component discovery rebuilds pending registrations from decorator metadata instead of
   relying on one-shot import timing</li>
-<li><code>current_app()</code> prefers the request-bound application snapshot while an older runtime drains</li>
+<li><code>Application.current()</code> prefers the request-bound application snapshot while an older runtime drains</li>
 </ul>
 <h3 id="migration-implication">Migration implication<a class="headerlink" href="#migration-implication" title="Permanent link">&para;</a></h3>
-<p>New bootstrap code should prefer <code>Application</code> + <code>@module</code>. Keep using
-<code>ApplicationContext</code> for low-level container work and use the legacy
-<code>cullinan.application.run()</code> entrypoint only when compatibility matters.</p>
+<p>New bootstrap code should prefer <code>from cullinan import configure, module, run</code>.
+Keep using <code>ApplicationContext</code> for low-level container work, and use
+<code>cullinan.application</code> when you intentionally need explicit runtime orchestration
+rather than the default developer path.</p>
 <h2 id="3-web-runtime-consolidation">3. Web Runtime consolidation<a class="headerlink" href="#3-web-runtime-consolidation" title="Permanent link">&para;</a></h2>
 <p>The web stack was reorganized around a transport-agnostic runtime in <code>cullinan.web.gateway</code>.</p>
 <h3 id="what-changed_2">What changed<a class="headerlink" href="#what-changed_2" title="Permanent link">&para;</a></h3>
@@ -2432,7 +2397,7 @@ application-model and adapter coverage now lives in regular collected tests.</p>
 <li>test discovery is defined by <code>pytest.ini</code></li>
 <li>topic-based suite layout under <code>tests/</code></li>
 <li>new and refreshed coverage uses real pytest tests under <code>tests/core</code> and <code>tests/integration</code></li>
-<li>some historical script-style files still remain and are being migrated incrementally</li>
+<li>example regression and public-boundary coverage now live in regular pytest suites</li>
 </ul>
 <h3 id="current-directories">Current directories<a class="headerlink" href="#current-directories" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2519,7 +2484,7 @@ application-model and adapter coverage now lives in regular collected tests.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

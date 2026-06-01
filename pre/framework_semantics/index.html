@@ -12,7 +12,7 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/framework_semantics/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/framework_semantics/">
       
       
         <link rel="prev" href="../concepts/">
@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a8"
+      data-current-version="0.93a9"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a8"
+      data-pre-version="0.93a9"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1241,41 +1241,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../modules/application/" class="md-nav__link">
         
   
@@ -2219,14 +2184,14 @@
 <h1 id="framework-semantics">Framework Semantics<a class="headerlink" href="#framework-semantics" title="Permanent link">&para;</a></h1>
 <p>This page defines the runtime semantics Cullinan <strong>guarantees</strong>, the behaviors it only keeps for compatibility, and the situations that now produce warnings or startup failures. The goal is to make Cullinan's runtime model legible: decorator-first business code, import-executed discovery, and explicit runtime boundaries when you need them.</p>
 <blockquote>
-<p><strong>Knowledge role:</strong> <a href="../concepts/">Framework Semantics</a><br />
-<strong>Read next:</strong> <a href="../architecture/">Architecture</a>, <a href="../how-to/">Engineering Practices</a><br />
+<p><strong>Read next:</strong> <a href="../architecture/">Architecture</a>, <a href="../how-to/">Engineering Practices</a><br />
 <strong>Lookup instead of explanation?</strong> Go to <a href="../reference/">API Reference</a>.</p>
 </blockquote>
 <h2 id="recommended-semantic-package-path">Recommended semantic package path<a class="headerlink" href="#recommended-semantic-package-path" title="Permanent link">&para;</a></h2>
 <p>Cullinan's default semantic path is now:</p>
 <ul>
-<li><code>cullinan.application</code> for application configuration and startup</li>
+<li><code>cullinan</code> for application startup (<code>configure</code>, <code>run</code>, <code>get_asgi_app</code>)</li>
+<li><code>cullinan.application</code> for advanced application semantics such as <code>Application</code> and <code>module</code></li>
 <li><code>cullinan.web</code> for controllers, route decorators, request/response, parameters, and middleware</li>
 <li><code>cullinan.core</code> for IoC/DI, lifecycle, and semantic diagnostics</li>
 </ul>
@@ -2370,7 +2335,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a8", "pre_is_available": true, "pre_label": "0.93a8", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
