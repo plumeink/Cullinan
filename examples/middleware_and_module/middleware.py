@@ -1,4 +1,4 @@
-from cullinan import Middleware, middleware
+from cullinan.web import Middleware, middleware
 
 
 @middleware(priority=50)
@@ -14,4 +14,3 @@ class ExampleModuleBoundaryMiddleware(Middleware):
             request.attributes.get("module_boundary", "unknown"),
         )
         return response
-

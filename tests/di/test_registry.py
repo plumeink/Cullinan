@@ -11,12 +11,12 @@ This test module validates:
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 
-from cullinan.handler import (
+from cullinan.web.handler import (
     HandlerRegistry,
     get_handler_registry,
     reset_handler_registry,
 )
-from cullinan.controller import (
+from cullinan.web.controller import (
     HeaderRegistry,
     get_header_registry,
 )

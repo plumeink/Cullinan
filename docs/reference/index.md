@@ -23,7 +23,7 @@ inspect. The pages here should stay stable, searchable, and role-clear.
 ## Main entrypoints
 
 - [API Reference Overview](../api_reference.md) — recommended, advanced, and compatibility API layers
-- Module references under `cullinan.app`, `cullinan.application`, `cullinan.core`, `cullinan.controller`, and `cullinan.service`
+- Module references under `cullinan.application.lifecycle`, `cullinan.application`, `cullinan.core`, `cullinan.web.controller`, and `cullinan.core.services`
 
 ## Reference rules
 

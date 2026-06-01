@@ -147,7 +147,7 @@ ctx.register(Definition(
 
 ```python
 # 旧风格（app.py）
-from cullinan.app import CullinanApplication
+from cullinan.application.lifecycle import CullinanApplication
 app = CullinanApplication()
 app.run()
 

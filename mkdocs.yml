@@ -46,6 +46,7 @@ nav:
     - Quick Start Extensions: quick_start_extensions.md
   - Migration & Version Notes:
     - Overview: migration/index.md
+    - Final Structure Migration: migration_to_final_semantic_layout.md
     - Runtime Consolidation: runtime_updates_v093.md
     - Migration Guide: migration_guide.md
     - Migration Guide v2: migration_guide_v2.md
@@ -104,6 +105,7 @@ plugins:
             API Reference Overview: API 参考总览
             Architecture: 架构设计
             Runtime Consolidation: 运行时整合
+            Final Structure Migration: 最终结构迁移
             Components: 组件
             Decorators: 装饰器
             Injection: 注入

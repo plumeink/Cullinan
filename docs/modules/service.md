@@ -1,6 +1,6 @@
-title: "cullinan.service"
+title: "cullinan.core.services"
 slug: "modules-service"
-module: ["cullinan.service"]
+module: ["cullinan.core.services"]
 tags: ["api", "module", "service"]
 author: "Plumeink"
 reviewers: []
@@ -13,9 +13,9 @@ estimate_pd: 1.0
 last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# cullinan.service
+# cullinan.core.services
 
-`cullinan.service` exposes the primary service decorator plus convenience re-exports for dependency markers.
+`cullinan.core.services` holds the advanced service base class and registry helpers. For most application code, import `@service` and dependency markers from `cullinan.core`.
 
 ## Main exports
 
@@ -34,7 +34,7 @@ Compatibility registry exports:
 ## Example
 
 ```python
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 from cullinan.core import Inject
 
 @service

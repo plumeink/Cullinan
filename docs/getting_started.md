@@ -62,7 +62,9 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import Inject, configure, controller, get_api, module, run, service
+from cullinan.application import configure, module, run
+from cullinan.core import Inject, service
+from cullinan.web import controller, get_api
 
 
 @service
@@ -123,7 +125,9 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan import Inject, configure, controller, get_api, module, run, service
+from cullinan.application import configure, module, run
+from cullinan.core import Inject, service
+from cullinan.web import controller, get_api
 
 
 @service
@@ -182,10 +186,9 @@ Cullinan provides built-in IoC/DI support through the application-first runtime 
 - Reach for `ApplicationContext` directly only when you need low-level container orchestration
 
 ```python
-from cullinan.controller import controller, get_api
-from cullinan.service import Service, service
+from cullinan.web import controller, get_api, Path
+from cullinan.core.services import Service, service
 from cullinan.core import Inject
-from cullinan.params import Path
 
 @service
 class UserService(Service):
@@ -225,7 +228,7 @@ Key points:
 **v0.90+ Recommended: Type-Safe Parameter System**
 
 ```python
-from cullinan.params import Path, Query, Body, DynamicBody
+from cullinan.web.params import Path, Query, Body, DynamicBody
 
 @controller(url='/api/users')
 class UserController:
@@ -312,7 +315,7 @@ Prefer typed `Inject()` when the dependency type is easy to import:
 
 ```python
 from cullinan.core import Inject
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 
 @service
 class DatabaseService(Service):
@@ -332,7 +335,7 @@ class UserRepository(Service):
 Inject by name without importing dependencies, avoiding circular import issues:
 
 ```python
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 from cullinan.core import InjectByName
 
 @service
@@ -355,7 +358,7 @@ If you need IDE autocomplete and type checking, use `Inject` with TYPE_CHECKING:
 ```python
 from typing import TYPE_CHECKING
 from cullinan.core import Inject
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 
 # TYPE_CHECKING imports are not executed at runtime, avoiding circular imports
 if TYPE_CHECKING:
@@ -385,7 +388,7 @@ For detailed information on injection patterns, see `wiki/injection.md`.
 
 ### Adding middleware
 ```python
-from cullinan.middleware import MiddlewareBase
+from cullinan.web.middleware import MiddlewareBase
 
 class LoggingMiddleware(MiddlewareBase):
     def process_request(self, request):
@@ -397,7 +400,7 @@ app.add_middleware(LoggingMiddleware())
 
 ### Configuration
 ```python
-from cullinan.config import Config
+from cullinan.support.config import Config
 
 config = Config()
 config.set('database.url', 'postgresql://localhost/mydb')

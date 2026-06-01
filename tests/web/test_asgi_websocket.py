@@ -2,8 +2,8 @@
 """Tests for ASGI WebSocket support."""
 import asyncio
 
-from cullinan.adapter.asgi_adapter import _handle_websocket
-from cullinan.websocket_registry import get_websocket_registry, reset_websocket_registry, websocket_handler
+from cullinan.transport.adapter.asgi_adapter import _handle_websocket
+from cullinan.web.websocket_registry import get_websocket_registry, reset_websocket_registry, websocket_handler
 
 passed = 0
 failed = 0

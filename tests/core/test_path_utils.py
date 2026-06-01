@@ -4,13 +4,10 @@
 
 def test_path_utils():
     """测试 path_utils 模块。"""
-    from cullinan import (
-        Inject,
-        Registry,
-        controller,
-        get_api,
+    from cullinan import Inject, controller, get_api, post_api
+    from cullinan.core import Registry, injectable
+    from cullinan.support import (
         get_base_path,
-        get_controller_registry,
         get_cullinan_package_path,
         get_executable_dir,
         get_module_file_path,
@@ -18,12 +15,11 @@ def test_path_utils():
         get_path_info,
         get_resource_path,
         get_user_data_dir,
-        injectable,
         is_frozen,
         is_nuitka_compiled,
         is_pyinstaller_frozen,
-        post_api,
     )
+    from cullinan.web.controller import get_controller_registry
 
     assert isinstance(is_frozen(), bool)
     assert isinstance(is_nuitka_compiled(), bool)
@@ -36,8 +32,8 @@ def test_path_utils():
     assert isinstance(get_path_info(), dict)
 
     controller_path = (
-        get_module_file_path('controller\\__init__.py', relative_to_cullinan=True)
-        or get_module_file_path('controller.py', relative_to_cullinan=True)
+        get_module_file_path('web\\controller\\__init__.py', relative_to_cullinan=True)
+        or get_module_file_path('web\\controller.py', relative_to_cullinan=True)
     )
     assert controller_path is not None
     assert controller_path.exists()
@@ -56,7 +52,7 @@ def test_path_utils():
 
 def test_controller_loading():
     """测试从 controller package 导入主要 API。"""
-    from cullinan.controller import Handler, controller, get_api, post_api, response
+    from cullinan.web.controller import Handler, controller, get_api, post_api, response
 
     assert callable(controller)
     assert callable(get_api)

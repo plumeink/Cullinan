@@ -43,8 +43,8 @@ Keep existing controller/service imports as-is, but use the new Web entry names:
 
 ```python
 # v0.9x — still works in v0.93
-from cullinan.controller import controller, get_api, post_api
-from cullinan.service import service, Service
+from cullinan.web.controller import controller, get_api, post_api
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
 
 # v0.93 — new imports available
@@ -155,7 +155,7 @@ configure(
 #### v0.9x: Middleware registered but not in request pipeline
 
 ```python
-from cullinan.middleware import Middleware, middleware
+from cullinan.web.middleware import Middleware, middleware
 
 @middleware(order=1)
 class AuthMiddleware(Middleware):
@@ -224,7 +224,7 @@ The `@websocket_handler` API is unchanged. When running in ASGI mode, WebSocket 
 
 ### 9. Parameter System
 
-The `cullinan.params` system (`Path`, `Query`, `Body`, `Header`) is unchanged and works identically in v0.93. Parameters are now resolved by the `Dispatcher` instead of Tornado handlers.
+The `cullinan.web.params` system (`Path`, `Query`, `Body`, `Header`) is unchanged and works identically in v0.93. Parameters are now resolved by the `Dispatcher` instead of Tornado handlers.
 
 ## Architecture Comparison
 

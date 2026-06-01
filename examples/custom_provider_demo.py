@@ -12,9 +12,9 @@ Author: Plumeink
 
 import logging
 from typing import Any, Optional, Callable
-from cullinan.service import service, Service
-from cullinan.controller import controller, get_api
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
+from cullinan.web import controller, get_api
 from cullinan.core.provider import Provider, ScopedProvider
 from cullinan.core.scope import Scope, get_request_scope
 from cullinan.core.injection import get_injection_registry
@@ -365,7 +365,7 @@ class ProviderDemoController:
 
 if __name__ == '__main__':
     """运行示例应用"""
-    from cullinan import configure, run
+    from cullinan.application import configure, run
 
     print("=" * 70)
     print("自定义依赖注入 Provider 示例")
@@ -397,4 +397,3 @@ if __name__ == '__main__':
     )
 
     run()
-

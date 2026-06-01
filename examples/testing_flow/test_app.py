@@ -1,8 +1,7 @@
 import asyncio
 import json
 
-from cullinan import get_asgi_app
-from cullinan.application_model import Application
+from cullinan.application import Application, get_asgi_app
 
 from .app import configure_example
 
@@ -53,4 +52,3 @@ def run_example_assertions():
 
 def test_testing_flow_example():
     run_example_assertions()
-

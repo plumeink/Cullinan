@@ -40,7 +40,7 @@ Use component lifecycle hooks or application startup/shutdown orchestration.
 1. Create explicit registration code for your extension
 2. Register definitions or middleware during application startup
 3. Keep registration idempotent for tests and repeated bootstraps
-4. Prefer public facades (`cullinan.core`, `cullinan.gateway`, `cullinan.adapter`)
+4. Prefer public facades (`cullinan.core`, `cullinan.web.gateway`, `cullinan.transport.adapter`)
 
 ## See also
 

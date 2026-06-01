@@ -10,7 +10,7 @@ import unittest
 from dataclasses import dataclass
 from typing import Optional, List
 
-from cullinan.params import (
+from cullinan.web.params import (
     ModelResolver,
     ModelError,
 )

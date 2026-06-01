@@ -10,7 +10,7 @@ sys.path.insert(0, '.')
 
 def reset_all_registries():
     """重置所有注册表以便独立测试"""
-    from cullinan.controller.registry import reset_controller_registry
+    from cullinan.web.controller.registry import reset_controller_registry
     from cullinan.core.pending import PendingRegistry
     from cullinan.core import set_application_context
 
@@ -66,7 +66,7 @@ def test_controller_di():
         print(f'[OK] Global context set: {get_application_context() is not None}')
         print(f'[OK] Is refreshed: {ctx.is_refreshed}')
 
-        from cullinan.controller.registry import get_controller_registry
+        from cullinan.web.controller.registry import get_controller_registry
         controller_registry = get_controller_registry()
         controller_registry.register('TestController', TestController, url_prefix='/test')
 
@@ -122,7 +122,7 @@ def test_multiple_services():
     try:
         ctx.refresh()
 
-        from cullinan.controller.registry import get_controller_registry
+        from cullinan.web.controller.registry import get_controller_registry
         controller_registry = get_controller_registry()
         controller_registry.register('MultiServiceController', MultiServiceController, url_prefix='/multi')
 
@@ -170,7 +170,7 @@ def test_optional_injection():
     try:
         ctx.refresh()
 
-        from cullinan.controller.registry import get_controller_registry
+        from cullinan.web.controller.registry import get_controller_registry
         controller_registry = get_controller_registry()
         controller_registry.register('OptionalController', OptionalController, url_prefix='/optional')
 

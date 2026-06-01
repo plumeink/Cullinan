@@ -8,7 +8,7 @@ import sys
 import os
 from unittest.mock import patch, MagicMock
 
-from cullinan.config import (
+from cullinan.support.config import (
     CullinanConfig,
     get_config,
     configure,

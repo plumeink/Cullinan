@@ -17,7 +17,7 @@ from cullinan.core import (
 )
 from cullinan.core.exceptions import DependencyNotFoundError, DependencyTypeResolutionError
 from cullinan.core.semantic_rules import reset_semantic_warnings
-from cullinan.exceptions import PackageDiscoveryError
+from cullinan.support.exceptions import PackageDiscoveryError
 
 
 @pytest.fixture(autouse=True)

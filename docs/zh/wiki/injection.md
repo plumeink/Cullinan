@@ -30,9 +30,9 @@ Cullinan 当前的依赖模型已经统一到 `ApplicationContext` 与公开的 
 ## 示例
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 @service
 class UserService:

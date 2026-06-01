@@ -16,7 +16,7 @@
 使用 `@middleware` 装饰器自动注册中间件：
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -59,7 +59,7 @@ class LoggingMiddleware(Middleware):
 查询框架提供的扩展点：
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # 查询所有扩展点
 all_points = list_extension_points()
@@ -82,7 +82,7 @@ Middleware.process_response: Intercept and process responses before they are sen
 ### 4. 查询已注册中间件
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 registered = registry.get_registered_middleware()
@@ -106,11 +106,11 @@ for mw in registered:
 
 ```python
 from cullinan import configure, run
-from cullinan.middleware import middleware, Middleware
-from cullinan.controller import controller, get_api
-from cullinan.service import service, Service
+from cullinan.web.middleware import middleware, Middleware
+from cullinan.web.controller import controller, get_api
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 # 1. 定义中间件（按优先级自动排序）
 
@@ -199,7 +199,7 @@ CorsMiddleware (响应，逆序)
 手动注册方式仍然可用：
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -263,7 +263,7 @@ def process_request(self, handler):
 A: 使用注册表查询：
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 for mw in registry.get_registered_middleware():

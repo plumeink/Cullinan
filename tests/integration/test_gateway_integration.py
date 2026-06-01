@@ -11,7 +11,7 @@ Tests:
 """
 import asyncio
 
-from cullinan.gateway import (
+from cullinan.web.gateway import (
     WebRequest, WebResponse, Router, Dispatcher, ReturnValueHandler,
     MiddlewarePipeline, GatewayMiddleware, ExceptionHandler,
     CORSMiddleware, RequestTimingMiddleware,

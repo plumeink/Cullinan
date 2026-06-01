@@ -10,13 +10,13 @@ from pathlib import Path
 import pytest
 
 import cullinan
-import cullinan.public_api as public_api
 from cullinan import configure, get_config, get_asgi_app, run
-from cullinan.application_model import Application
-from cullinan.controller import reset_controller_registry
+from cullinan.application import Application
+from cullinan.application import public as public_api
+from cullinan.web.controller import reset_controller_registry
 from cullinan.core import PendingRegistry, set_application_context
-from cullinan.core.semantic_rules import PublicAPISemanticWarning, reset_semantic_warnings
-from cullinan.gateway import WebRuntime, reset_gateway
+from cullinan.core.semantic_rules import reset_semantic_warnings
+from cullinan.web.gateway import WebRuntime, reset_gateway
 
 
 def _write_package(tmp_path: Path, package_name: str, files: dict[str, str]) -> str:
@@ -65,20 +65,13 @@ def test_top_level_public_api_hides_advanced_runtime_symbols():
     assert "reset_controller_registry" not in public_exports
 
 
-def test_top_level_compat_import_warns_for_application():
+def test_top_level_does_not_expose_advanced_runtime_symbols():
     module = importlib.reload(cullinan)
-    reset_semantic_warnings()
-
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        application_cls = getattr(module, "Application")
-
-    assert application_cls is Application
-    assert any(isinstance(item.message, PublicAPISemanticWarning) for item in caught)
-    assert any("configure, run" in str(item.message) for item in caught)
+    with pytest.raises(AttributeError):
+        getattr(module, "Application")
 
 
-def test_direct_application_run_warns(tmp_path, monkeypatch):
+def test_direct_application_run_stays_explicit_runtime_api(tmp_path, monkeypatch):
     package_name = "boundary_application_run"
     _write_package(
         tmp_path,
@@ -98,13 +91,10 @@ def test_direct_application_run_warns(tmp_path, monkeypatch):
     _clear_modules(package_name)
 
     root_module = importlib.import_module(f"{package_name}.root").RootModule
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        app = Application.run(root_module)
+    app = Application.run(root_module)
 
     try:
-        assert any(isinstance(item.message, PublicAPISemanticWarning) for item in caught)
-        assert any("Application.run()" in str(item.message) for item in caught)
+        assert app.root_module is root_module
     finally:
         app.uninstall()
         _clear_modules(package_name)

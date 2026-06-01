@@ -43,8 +43,8 @@ pip install cullinan[full]
 
 ```python
 # v0.9x — 在 v0.93 中仍然有效
-from cullinan.controller import controller, get_api, post_api
-from cullinan.service import service, Service
+from cullinan.web.controller import controller, get_api, post_api
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
 
 # v0.93 — 新增可用导入
@@ -155,7 +155,7 @@ configure(
 #### v0.9x：中间件注册但未接入请求管线
 
 ```python
-from cullinan.middleware import Middleware, middleware
+from cullinan.web.middleware import Middleware, middleware
 
 @middleware(order=1)
 class AuthMiddleware(Middleware):
@@ -224,7 +224,7 @@ class ChatHandler:
 
 ### 9. 参数系统
 
-`cullinan.params` 系统（`Path`、`Query`、`Body`、`Header`）不变，在 v0.93 中工作方式完全相同。参数现在由 `Dispatcher` 而非 Tornado handler 解析。
+`cullinan.web.params` 系统（`Path`、`Query`、`Body`、`Header`）不变，在 v0.93 中工作方式完全相同。参数现在由 `Dispatcher` 而非 Tornado handler 解析。
 
 ## 架构对比
 

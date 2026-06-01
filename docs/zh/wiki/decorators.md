@@ -56,9 +56,9 @@ class NotificationService:
 将类标记为控制器组件。控制器处理 HTTP 请求。
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 # 简单用法
 @controller
@@ -281,11 +281,11 @@ class ProductionOnlyService:
 ## 完整示例
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import service, ApplicationContext, PendingRegistry
 from cullinan.core.decorators import Inject, InjectByName
 from cullinan.core.conditions import ConditionalOnClass
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 # 重置以获得干净状态
 PendingRegistry.reset()
@@ -393,14 +393,14 @@ assert pending.is_frozen  # True
 
 | v0.83 | v0.90 |
 |-------|-------|
-| `@service`（来自 `cullinan.service`） | `@service`（来自 `cullinan.core`） |
-| `@controller(url=...)`（来自 `cullinan.controller`） | `@controller(url=...)`（来自 `cullinan.core`） |
+| `@service`（来自 `cullinan.core.service`） | `@service`（来自 `cullinan.core`） |
+| `@controller(url=...)`（来自 `cullinan.web.controller`） | `@controller(url=...)`（来自 `cullinan.core`） |
 | 手动服务注册 | `ApplicationContext.refresh()` |
 
 ```python
 # 之前 (v0.83)
-from cullinan.service import service
-from cullinan.controller import controller
+from cullinan.core.services import service
+from cullinan.web.controller import controller
 
 # 之后 (v0.90)
 from cullinan.core import service, controller

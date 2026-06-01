@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 from cullinan.core import ApplicationContext, set_application_context, InjectByName
 from cullinan.core.pending import PendingRegistry
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 
 def test_service_lifecycle():

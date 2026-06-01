@@ -9,7 +9,7 @@ from unittest.mock import Mock
 from cullinan.application import (
     reflect_module,
 )
-from cullinan.handler import get_handler_registry, reset_handler_registry
+from cullinan.web.handler import get_handler_registry, reset_handler_registry
 
 
 class TestURLSorting(unittest.TestCase):

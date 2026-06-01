@@ -47,7 +47,7 @@ class RequestContext:
         """Get feature flags from configuration (cached)."""
         if cls._features is None:
             try:
-                from cullinan.config import get_config
+                from cullinan.support.config import get_config
                 config = get_config()
                 cls._features = config.context_features.copy()
             except Exception:

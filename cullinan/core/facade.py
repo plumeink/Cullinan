@@ -93,7 +93,7 @@ class IoCFacade:
                 self._injection_registry = None
 
             if not self._service_registry:
-                from cullinan.service import get_service_registry
+                from cullinan.core.services import get_service_registry
                 self._service_registry = get_service_registry()
 
             logger.debug("Auto-discovered registries successfully")

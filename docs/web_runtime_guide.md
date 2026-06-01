@@ -1,6 +1,6 @@
 title: "Web Runtime Guide"
 slug: "web-runtime-guide"
-module: ["cullinan.gateway", "cullinan.adapter"]
+module: ["cullinan.web.gateway", "cullinan.transport.adapter"]
 tags: ["web", "runtime", "gateway"]
 author: "Plumeink"
 reviewers: []
@@ -15,7 +15,7 @@ pr_links: []
 
 # Web Runtime Guide
 
-Cullinan's current HTTP runtime is transport-agnostic. Shared request/response behavior lives in `cullinan.gateway`, while server-specific integration lives in `cullinan.adapter`.
+Cullinan's current HTTP runtime is transport-agnostic. Shared request/response behavior lives in `cullinan.web.gateway`, while server-specific integration lives in `cullinan.transport.adapter`.
 
 > **Knowledge role:** [Engineering Practices](how-to/index.md)  
 > **Recommended application path:** keep most business code at controller level and start applications from the top-level `cullinan` API.  
@@ -46,7 +46,7 @@ Cullinan's current HTTP runtime is transport-agnostic. Shared request/response b
 Most applications stay at the controller layer and let the framework build `WebResponse` objects from return values.
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 
 @controller(url="/health")
 class HealthController:
@@ -64,7 +64,7 @@ For runtime customization, you can work with the gateway layer directly.
 ```python
 import asyncio
 
-from cullinan.gateway import Dispatcher, Router, WebRequest
+from cullinan.web.gateway import Dispatcher, Router, WebRequest
 
 router = Router()
 router.add_route("GET", "/health", handler=lambda: {"status": "ok"})
@@ -88,7 +88,7 @@ assert response.status_code == 200
 Example:
 
 ```python
-from cullinan.gateway import WebResponse
+from cullinan.web.gateway import WebResponse
 
 response = WebResponse.json({"ok": True})
 response.set_cookie("sid", "abc", http_only=True)

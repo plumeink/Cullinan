@@ -10,7 +10,7 @@ import unittest
 from dataclasses import dataclass
 from typing import Optional
 
-from cullinan.params import (
+from cullinan.web.params import (
     ParamResolver,
     ResolveError,
     Path,

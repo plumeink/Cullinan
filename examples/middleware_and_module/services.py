@@ -1,4 +1,4 @@
-from cullinan import service
+from cullinan.core import service
 
 
 @service
@@ -8,4 +8,3 @@ class InventoryService:
             "module_boundary": "examples.middleware_and_module",
             "items": ["apples", "oranges", "pears"],
         }
-

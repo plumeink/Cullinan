@@ -21,6 +21,7 @@ pr_links: []
 
 ## 迁移页面
 
+- [最终结构迁移说明](../migration_to_final_semantic_layout.md)
 - [运行时整合概览](../runtime_updates_v093.md)
 - [迁移指南](../migration_guide.md)
 - [迁移指南 v2](../migration_guide_v2.md)
@@ -32,6 +33,6 @@ pr_links: []
 
 - 版本之间发生了什么变化
 - 旧代码如何迁移到新表面
-- 目前仍保留哪些兼容层
+- 被移除的兼容入口如何映射到最终语义结构
 
 它们**不负责**定义新项目的默认学习路径。

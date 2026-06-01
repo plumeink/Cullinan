@@ -10,7 +10,7 @@ def test_required_classmethod():
     """测试 .as_required() 类方法"""
     print("1. 测试 .as_required() 类方法...")
 
-    from cullinan.params import Query, Body, Header, File, Path
+    from cullinan.web.params import Query, Body, Header, File, Path
 
     # Query.as_required()
     q = Query.as_required(int)
@@ -44,7 +44,7 @@ def test_default_value_syntax():
     """测试默认值语法 param: Type = ParamType(...)"""
     print("2. 测试默认值语法...")
 
-    from cullinan.params import Query, Body, Header, File, ParamResolver
+    from cullinan.web.params import Query, Body, Header, File, ParamResolver
 
     def handler(
         self,
@@ -77,7 +77,7 @@ def test_pure_type_annotation_as_query():
     """测试纯类型注解默认作为 Query"""
     print("3. 测试纯类型注解默认作为 Query...")
 
-    from cullinan.params import ParamResolver
+    from cullinan.web.params import ParamResolver
 
     def handler(
         self,
@@ -111,7 +111,7 @@ def test_file_required_syntax():
     """测试 File.as_required() 语法"""
     print("4. 测试 File.as_required() 语法...")
 
-    from cullinan.params import File, ParamResolver
+    from cullinan.web.params import File, ParamResolver
 
     def handler(
         self,
@@ -133,7 +133,7 @@ def test_backward_compatibility():
     """测试向后兼容性"""
     print("5. 测试向后兼容性...")
 
-    from cullinan.params import Path, Query, Body, Header, DynamicBody, RawBody, ParamResolver
+    from cullinan.web.params import Path, Query, Body, Header, DynamicBody, RawBody, ParamResolver
 
     # 旧语法仍然有效
     def old_style(
@@ -163,7 +163,7 @@ def test_mixed_syntax():
     """测试混合语法"""
     print("6. 测试混合语法...")
 
-    from cullinan.params import Path, Query, Body, Header, File, DynamicBody, ParamResolver
+    from cullinan.web.params import Path, Query, Body, Header, File, DynamicBody, ParamResolver
 
     def handler(
         self,

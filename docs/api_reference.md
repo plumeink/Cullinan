@@ -35,15 +35,15 @@ This page provides an overview of the public API surface of Cullinan and clarifi
 
 ### Advanced integration API
 
-- `cullinan.application_model` — explicit runtime assembly (`Application`, `Runtime`, `current_app`)
-- `cullinan.adapter` — server integration (`WebAdapter`, `TornadoAdapter`, `ASGIAdapter`)
-- `cullinan.gateway` — request / response / dispatcher contracts
+- `cullinan.application` — explicit runtime assembly (`Application`, `Runtime`, `current_app`)
+- `cullinan.transport.adapter` — server integration (`WebAdapter`, `TornadoAdapter`, `ASGIAdapter`)
+- `cullinan.web.gateway` — request / response / dispatcher contracts
 - `cullinan.core` — low-level container and lifecycle primitives
 
 ### Compatibility-oriented modules
 
 - `cullinan.application` — legacy scanning startup helpers kept for existing projects
-- `cullinan.app` — older app wrapper surface kept only for compatibility
+- `cullinan.application.lifecycle` — older app wrapper surface kept only for compatibility
 
 For regular applications, prefer the top-level `cullinan` API. Advanced and compatibility modules should be imported explicitly so the boundary stays visible in code review, IDE completion, and onboarding docs.
 
@@ -51,7 +51,7 @@ For regular applications, prefer the top-level `cullinan` API. Advanced and comp
 
 The parameter system provides type-safe request parameter handling. See [Parameter System Guide](parameter_system_guide.md) for details.
 
-### cullinan.params (v0.90a4+)
+### cullinan.web.params (v0.90a4+)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -76,7 +76,7 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `ParamResolver` | class | Parameter resolution orchestrator |
 | `ResolveError` | exception | Parameter resolution error |
 
-### cullinan.params (v0.90a5+)
+### cullinan.web.params (v0.90a5+)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -91,7 +91,7 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `serialize_response` | function | Convenience serialization function |
 | `get_response_models` | function | Get response models from function |
 
-### cullinan.params.model_handlers (v0.90a5+)
+### cullinan.web.params.model_handlers (v0.90a5+)
 
 Pluggable model handler architecture for third-party library integration.
 
@@ -121,7 +121,7 @@ Pluggable model handler architecture for third-party library integration.
 | `EncodeError` | exception | Encoding error |
 | `CodecError` | exception | Base codec error |
 
-### cullinan.middleware (new additions)
+### cullinan.web.middleware (new additions)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -133,7 +133,7 @@ Pluggable model handler architecture for third-party library integration.
 
 For each module, the API reference is recommended to follow this structure:
 
-- Module path, for example: `cullinan.controller`
+- Module path, for example: `cullinan.web.controller`
 - Short description: primary responsibility and typical usage scenarios
 - List of public classes and functions (example):
   - `@controller(...)` — Controller decorator, responsible for auto-registering controllers and their routes

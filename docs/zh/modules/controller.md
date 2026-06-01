@@ -1,6 +1,6 @@
-title: "cullinan.controller"
+title: "cullinan.web.controller"
 slug: "modules-controller"
-module: ["cullinan.controller"]
+module: ["cullinan.web.controller"]
 tags: ["api", "module", "controller"]
 author: "Plumeink"
 reviewers: []
@@ -13,9 +13,9 @@ estimate_pd: 1.0
 last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# cullinan.controller
+# cullinan.web.controller
 
-`cullinan.controller` 包含控制器装饰器、REST 风格路由装饰器以及兼容层 registry API。
+`cullinan.web.controller` 包含控制器装饰器、REST 风格路由装饰器以及兼容层 registry API。
 
 ## 主要导出
 
@@ -39,9 +39,9 @@ pr_links: []
 ## 示例
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url="/users")
 class UserController:

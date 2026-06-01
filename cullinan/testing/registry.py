@@ -8,7 +8,7 @@ the global registry.
 from typing import Optional, List, Any
 import logging
 
-from cullinan.service import ServiceRegistry, Service
+from cullinan.core.services import ServiceRegistry, Service
 
 logger = logging.getLogger(__name__)
 

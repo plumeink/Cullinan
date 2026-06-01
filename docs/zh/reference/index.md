@@ -23,7 +23,7 @@ pr_links: []
 ## 主要入口
 
 - [API 参考总览](../api_reference.md) —— 推荐、高级与兼容 API 分层
-- `cullinan.app`、`cullinan.application`、`cullinan.core`、`cullinan.controller`、`cullinan.service` 等模块参考
+- `cullinan.application.lifecycle`、`cullinan.application`、`cullinan.core`、`cullinan.web.controller`、`cullinan.core.services` 等模块参考
 
 ## 查阅规则
 

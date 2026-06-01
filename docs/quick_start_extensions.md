@@ -17,7 +17,7 @@
 Use the `@middleware` decorator to automatically register middleware:
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -60,7 +60,7 @@ class LoggingMiddleware(Middleware):
 Query available extension points:
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # Query all extension points
 all_points = list_extension_points()
@@ -83,7 +83,7 @@ Middleware.process_response: Intercept and process responses before they are sen
 ### 4. Query Registered Middleware
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 registered = registry.get_registered_middleware()
@@ -107,11 +107,11 @@ Example output:
 
 ```python
 from cullinan import configure, run
-from cullinan.middleware import middleware, Middleware
-from cullinan.controller import controller, get_api
-from cullinan.service import service, Service
+from cullinan.web.middleware import middleware, Middleware
+from cullinan.web.controller import controller, get_api
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 # 1. Define middleware (auto-sorted by priority)
 
@@ -200,7 +200,7 @@ Response sent
 Manual registration is still supported:
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -264,7 +264,7 @@ def process_request(self, handler):
 A: Use the registry query:
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 for mw in registry.get_registered_middleware():

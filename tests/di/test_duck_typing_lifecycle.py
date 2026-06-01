@@ -224,7 +224,7 @@ def test_async_lifecycle_without_inheritance():
 
 def test_mixed_inheritance_and_plain():
     """Test mix of classes with and without inheritance"""
-    from cullinan.service import Service
+    from cullinan.core.services import Service
 
     PendingRegistry.reset()
 

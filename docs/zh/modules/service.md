@@ -1,6 +1,6 @@
-title: "cullinan.service"
+title: "cullinan.core.services"
 slug: "modules-service"
-module: ["cullinan.service"]
+module: ["cullinan.core.services"]
 tags: ["api", "module", "service"]
 author: "Plumeink"
 reviewers: []
@@ -13,9 +13,9 @@ estimate_pd: 1.0
 last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# cullinan.service
+# cullinan.core.services
 
-`cullinan.service` 暴露主服务装饰器，并便捷重导出常用依赖标记。
+`cullinan.core.services` 承载高级 Service 基类与 registry helper。对大多数业务代码，`@service` 与依赖标记应直接从 `cullinan.core` 导入。
 
 ## 主要导出
 
@@ -34,7 +34,7 @@ pr_links: []
 ## 示例
 
 ```python
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 from cullinan.core import Inject
 
 @service

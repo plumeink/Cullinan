@@ -4,7 +4,7 @@ import json
 
 
 def reset_all_registries():
-    from cullinan.controller.registry import reset_controller_registry
+    from cullinan.web.controller.registry import reset_controller_registry
     from cullinan.core import set_application_context
     from cullinan.core.pending import PendingRegistry
 
@@ -16,7 +16,7 @@ def reset_all_registries():
 
 
 def test_bot_controller_regression():
-    from cullinan.controller.registry import get_controller_registry
+    from cullinan.web.controller.registry import get_controller_registry
     from cullinan.core import ApplicationContext, Inject, controller, service, set_application_context
 
     reset_all_registries()

@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cullinan.params import Header, ParamResolver, RawBody
+from cullinan.web.params import Header, ParamResolver, RawBody
 
 # 测试1: RawBody 不带括号（推荐，与 DynamicBody 一致）
 def handle_webhook_v1(

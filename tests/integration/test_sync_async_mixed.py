@@ -9,8 +9,8 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from cullinan.controller import controller, post_api, get_api
-from cullinan.handler import get_handler_registry
+from cullinan.web.controller import controller, post_api, get_api
+from cullinan.web.handler import get_handler_registry
 
 print("=" * 70)
 print("测试场景：同步和异步方法混合")
@@ -26,7 +26,7 @@ class MixedController:
         print("🔥 SYNC METHOD EXECUTED!")
         print(f"🔥 Body: {request_body}")
 
-        from cullinan.controller import response_build
+        from cullinan.web.controller import response_build
 
         result = {'sync': True, 'executed': True}
         resp = response_build()
@@ -42,7 +42,7 @@ class MixedController:
         print("🔥 ASYNC METHOD EXECUTED!")
         await asyncio.sleep(0.001)
 
-        from cullinan.controller import response_build
+        from cullinan.web.controller import response_build
 
         result = {'async': True, 'executed': True}
         resp = response_build()
@@ -56,7 +56,7 @@ class MixedController:
     def health_check(self):
         """同步 GET 方法"""
         print("🔥 HEALTH CHECK EXECUTED!")
-        from cullinan.controller import response_build
+        from cullinan.web.controller import response_build
         resp = response_build()
         resp.set_status(200)
         resp.set_body('{"status": "ok"}')

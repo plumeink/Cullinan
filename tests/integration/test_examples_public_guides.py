@@ -6,12 +6,12 @@ import sys
 import pytest
 
 from cullinan import configure, get_asgi_app, get_config
-from cullinan.application_model import Application
-from cullinan.controller import reset_controller_registry
+from cullinan.application import Application
+from cullinan.web.controller import reset_controller_registry
 from cullinan.core import PendingRegistry, set_application_context
 from cullinan.core.semantic_rules import reset_semantic_warnings
-from cullinan.gateway import WebRuntime, reset_gateway
-from cullinan.middleware import reset_middleware_registry
+from cullinan.web.gateway import WebRuntime, reset_gateway
+from cullinan.web.middleware import reset_middleware_registry
 
 
 def _clear_example_modules(prefix: str):

@@ -1,6 +1,6 @@
-title: "cullinan.app module"
+title: "cullinan.application.lifecycle module"
 slug: "modules-app"
-module: ["cullinan.app"]
+module: ["cullinan.application.lifecycle"]
 tags: ["api", "module"]
 author: "Plumeink"
 reviewers: []
@@ -13,13 +13,13 @@ estimate_pd: 0.8
 last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
-# cullinan.app
+# cullinan.application.lifecycle
 
 > **Note (v0.90)**: The application lifecycle is now managed by `ApplicationContext`.
 > For the new IoC/DI 2.0 lifecycle, see [Dependency Injection Guide](../dependency_injection_guide.md).
 > Use `ApplicationContext.refresh()` and `ApplicationContext.shutdown()` for lifecycle management.
 
-Summary: placeholder for `cullinan.app` module documentation. Describe entry-points and how to create app instances.
+Summary: placeholder for `cullinan.application.lifecycle` module documentation. Describe entry-points and how to create app instances.
 
 Public symbols to document: App, main (if present)
 
@@ -27,12 +27,12 @@ Public symbols to document: App, main (if present)
 
 <!-- generated: docs/work/generated_modules/cullinan_app.md -->
 
-### cullinan.app
+### cullinan.application.lifecycle
 
 | Name | Kind | Signature / Value |
 | --- | --- | --- |
 | `CullinanApplication` | class | `CullinanApplication(shutdown_timeout: int = 30)` |
-| `create_app` | function | `create_app(shutdown_timeout: int = 30) -> cullinan.app.CullinanApplication` |
+| `create_app` | function | `create_app(shutdown_timeout: int = 30) -> cullinan.application.lifecycle.CullinanApplication` |
 
 ## Example: create and run an application
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     application.run()
 
 # Advanced (optional): programmatic control (e.g., tests or adding shutdown handlers)
-from cullinan.app import create_app
+from cullinan.application.lifecycle import create_app
 
 application_instance = create_app()
 # application_instance.startup()/application_instance.shutdown() or application_instance.add_shutdown_handler(...)

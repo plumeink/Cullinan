@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # 简单测试：检查 controller core 是否能正确导入新参数系统
 print("=== 测试1: 导入检查 ===")
 try:
-    from cullinan.controller.core import (
+    from cullinan.web.controller.core import (
         Param, DynamicBody, ParamResolver, ResolveError
     )
     print("[OK] 新参数系统模块已成功导入到 controller.core")
@@ -24,7 +24,7 @@ print()
 # 测试2：检查 request_handler 函数签名
 print("=== 测试2: request_handler 函数检查 ===")
 try:
-    from cullinan.controller.core import request_handler
+    from cullinan.web.controller.core import request_handler
     import inspect
     sig = inspect.signature(request_handler)
     print(f"[OK] request_handler 签名: {sig}")
@@ -36,7 +36,7 @@ print()
 # 测试3：模拟控制器类和方法
 print("=== 测试3: 模拟控制器分析 ===")
 
-from cullinan.params import Path, Query, Body, DynamicBody, ParamResolver
+from cullinan.web.params import Path, Query, Body, DynamicBody, ParamResolver
 
 class MockController:
     """模拟控制器"""

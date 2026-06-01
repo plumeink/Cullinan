@@ -52,8 +52,8 @@ Cullinan 0.90 重新组织了 `core/` 模块，实现了清晰的职责分离：
 | 旧导入 | 新导入 |
 |--------|--------|
 | `from cullinan.core.lifecycle import LifecycleManager` | `from cullinan.core.lifecycle import LifecycleManager` |
-| `from cullinan.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
-| `from cullinan.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
 
 ### 请求上下文
 

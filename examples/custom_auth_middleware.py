@@ -12,7 +12,7 @@ Author: Plumeink
 
 import logging
 from typing import Optional
-from cullinan.middleware import middleware, Middleware
+from cullinan.web import middleware, Middleware
 
 logger = logging.getLogger(__name__)
 
@@ -238,9 +238,9 @@ if __name__ == '__main__':
     """
     完整的应用示例，演示认证中间件的使用
     """
-    from cullinan import configure, run
-    from cullinan.controller import controller, get_api
-    from cullinan.service import service, Service
+    from cullinan.application import configure, run
+    from cullinan.web import controller, get_api
+    from cullinan.core.services import service, Service
     from cullinan.core import Inject
 
     # 定义服务
@@ -332,4 +332,3 @@ if __name__ == '__main__':
     )
 
     run()
-

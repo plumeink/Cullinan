@@ -566,10 +566,10 @@ class ApplicationContext:
 
     def _register_controller_routes(self, cls: type, url_prefix: str) -> None:
         try:
-            from cullinan.controller.core import _controller_decoration_context
-            from cullinan.controller.registry import get_controller_registry
-            from cullinan.gateway import get_router
-            from cullinan.handler import get_handler_registry
+            from cullinan.web.controller.core import _controller_decoration_context
+            from cullinan.web.controller.registry import get_controller_registry
+            from cullinan.web.gateway import get_router
+            from cullinan.web.handler import get_handler_registry
 
             gateway_router = get_router()
             handler_registry = get_handler_registry()

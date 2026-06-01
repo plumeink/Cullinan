@@ -1,6 +1,6 @@
 # Cullinan Framework Architecture
 
-> **Version**: 0.93a6.post1
+> **Version**: 0.93a7
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -14,7 +14,7 @@
 Cullinan is a Tornado-oriented application framework whose current runtime is organized around three consolidated pillars:
 
 1. **Unified container facade** — `cullinan.core` is the public IoC/DI entrypoint.
-2. **Transport-agnostic Web Runtime** — `cullinan.gateway` owns `WebRequest`, `WebResponse`, routing, dispatch, middleware, and exception handling.
+2. **Transport-agnostic Web Runtime** — `cullinan.web.gateway` owns `WebRequest`, `WebResponse`, routing, dispatch, middleware, and exception handling.
 3. **Decorator-first runtime assembly** — application code starts from business decorators, while runtime ownership and hot-pluggable stability are layered in when needed.
 
 ## Architecture layers
@@ -26,10 +26,12 @@ Application code
 └── Business services and middleware
 
 Framework facade
-├── cullinan.core      -> ApplicationContext, scopes, lifecycle, request context
-├── cullinan.gateway   -> WebRequest, WebResponse, Router, Dispatcher, WebRuntime
-├── cullinan.adapter   -> WebAdapter, TornadoAdapter, ASGIAdapter
-└── cullinan.params    -> Path, Query, Body, Header, File, model resolution
+├── cullinan.application -> Application, configure/run/get_asgi_app, @module
+├── cullinan.web         -> controller decorators, WebRequest/WebResponse, params, middleware
+├── cullinan.core        -> ApplicationContext, scopes, lifecycle, request context
+├── cullinan.testing     -> testing helpers and verification entrypoints
+├── cullinan.runtime     -> discovery, scanning, runtime assembly
+└── cullinan.transport   -> WebAdapter, TornadoAdapter, ASGIAdapter
 
 Runtime execution
 ├── Decorator declarations -> import-executed discovery -> runtime assembly
@@ -38,6 +40,20 @@ Runtime execution
 ├── Adapter-specific request/response translation
 └── ApplicationContext.shutdown()
 ```
+
+## Semantic package surface
+
+Cullinan's recommended package surface now follows a clearer framework-semantic split:
+
+- `cullinan.application` — application definition, runtime boundary, startup, and ASGI app creation
+- `cullinan.web` — business-facing Web development surface
+- `cullinan.core` — IoC/DI, lifecycle, request context, semantic diagnostics
+- `cullinan.testing` — test-facing support
+- `cullinan.runtime` — discovery, scanning, and runtime assembly internals
+- `cullinan.transport` — server adapter boundary
+- `cullinan.support` — constrained support utilities, not a default first-read surface
+
+This split keeps the default path business-first while still giving maintainers and advanced users explicit lower-level layers. Historical root-level wrappers such as `cullinan.app` or `cullinan.public_api` are no longer part of the maintained structure.
 
 ## Core container model
 
@@ -91,7 +107,7 @@ Async hook variants with `_async` are supported. Ordering can be influenced with
 
 ## Web Runtime
 
-The current web stack is centered on `cullinan.gateway.web_core` and the exported `cullinan.gateway` facade.
+The current web stack is centered on `cullinan.web.gateway.web_core`, but the recommended business-facing entry now goes through `cullinan.web`.
 
 ### Public runtime objects
 
@@ -105,7 +121,7 @@ The current web stack is centered on `cullinan.gateway.web_core` and the exporte
 
 ### Adapter boundary
 
-Server integration lives in `cullinan.adapter`:
+Server integration lives behind `cullinan.transport` and its underlying `cullinan.transport.adapter` implementation:
 
 - `WebAdapter` — common adapter contract
 - `TornadoAdapter` — Tornado integration

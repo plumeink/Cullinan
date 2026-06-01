@@ -9,7 +9,7 @@ def test_imports():
     """测试所有新模块导入"""
     print("1. 测试导入...")
     
-    from cullinan.params import (
+    from cullinan.web.params import (
         FileInfo, FileList,
         field_validator, FieldValidationError, validated_dataclass,
         Response, ResponseModel, ResponseSerializer, serialize_response,
@@ -22,7 +22,7 @@ def test_file_info():
     """测试 FileInfo"""
     print("2. 测试 FileInfo...")
     
-    from cullinan.params import FileInfo, FileList
+    from cullinan.web.params import FileInfo, FileList
     
     # 创建 FileInfo
     file = FileInfo(
@@ -62,7 +62,7 @@ def test_field_validator():
     print("3. 测试 field_validator...")
     
     from dataclasses import dataclass
-    from cullinan.params import field_validator, validated_dataclass, FieldValidationError
+    from cullinan.web.params import field_validator, validated_dataclass, FieldValidationError
     
     @validated_dataclass
     class User:
@@ -104,7 +104,7 @@ def test_response():
     print("4. 测试 Response...")
     
     from dataclasses import dataclass
-    from cullinan.params import Response, get_response_models, ResponseSerializer
+    from cullinan.web.params import Response, get_response_models, ResponseSerializer
     
     @dataclass
     class UserResponse:
@@ -139,7 +139,7 @@ def test_file_param_enhanced():
     """测试增强的 File 参数"""
     print("5. 测试增强的 File 参数...")
     
-    from cullinan.params import File, FileInfo
+    from cullinan.web.params import File, FileInfo
     
     # 创建带校验的 File 参数
     file_param = File(
@@ -182,7 +182,7 @@ def test_response_serializer():
     
     from dataclasses import dataclass
     from typing import List
-    from cullinan.params import ResponseSerializer, DynamicBody
+    from cullinan.web.params import ResponseSerializer, DynamicBody
     
     @dataclass
     class Address:
@@ -222,8 +222,8 @@ def test_file_resolver():
     """测试文件参数解析器"""
     print("7. 测试文件参数解析器...")
 
-    from cullinan.params import File, FileInfo, FileList
-    from cullinan.params.resolver import ParamResolver
+    from cullinan.web.params import File, FileInfo, FileList
+    from cullinan.web.params.resolver import ParamResolver
 
     # 模拟 Tornado 文件格式
     tornado_file = {

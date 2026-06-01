@@ -10,7 +10,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cullinan.params import DynamicBody, SafeAccessor, EMPTY
+from cullinan.web.params import DynamicBody, SafeAccessor, EMPTY
 
 
 def test_basic_access():

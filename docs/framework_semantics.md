@@ -20,6 +20,16 @@ This page defines the runtime semantics Cullinan **guarantees**, the behaviors i
 > **Read next:** [Architecture](architecture.md), [Engineering Practices](how-to/index.md)  
 > **Lookup instead of explanation?** Go to [API Reference](reference/index.md).
 
+## Recommended semantic package path
+
+Cullinan's default semantic path is now:
+
+- `cullinan.application` for application configuration and startup
+- `cullinan.web` for controllers, route decorators, request/response, parameters, and middleware
+- `cullinan.core` for IoC/DI, lifecycle, and semantic diagnostics
+
+Lower-level layers such as `cullinan.runtime`, `cullinan.transport`, and `cullinan.support` remain available, but they are not the default onboarding path for normal business applications.
+
 ## 1. Component discovery is import-executed, not static AST scanning or app-object registration
 
 Cullinan discovers decorated components by **importing Python modules** and letting decorators execute.
@@ -28,7 +38,7 @@ Cullinan discovers decorated components by **importing Python modules** and lett
 - not guaranteed: classes defined inside functions, factories, branches, or other local scopes that only run later
 
 ```python
-from cullinan import component
+from cullinan.core import component
 
 
 @component
@@ -70,7 +80,7 @@ Cullinan does **not** fall back to attribute-name guessing anymore. If the annot
 Recommended form:
 
 ```python
-from cullinan import InjectByName
+from cullinan.core import InjectByName
 
 
 class ReportController:

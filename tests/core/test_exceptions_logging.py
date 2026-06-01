@@ -7,7 +7,7 @@ import unittest
 import logging
 from io import StringIO
 
-from cullinan.exceptions import (
+from cullinan.support.exceptions import (
     CullinanError,
     ConfigurationError,
     PackageDiscoveryError,
@@ -20,7 +20,7 @@ from cullinan.exceptions import (
     HandlerError,
     ServiceError,
 )
-from cullinan.logging_utils import (
+from cullinan.support.logging_utils import (
     StructuredLogger,
     PerformanceLogger,
     should_log,

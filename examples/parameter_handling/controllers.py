@@ -1,4 +1,4 @@
-from cullinan import Body, Path, Query, controller, get_api, post_api
+from cullinan.web import Body, Path, Query, controller, get_api, post_api
 
 
 @controller(url="/catalog")
@@ -32,4 +32,3 @@ class CatalogController:
             "limit": limit,
             "strategy": "controller-method-parameters",
         }
-

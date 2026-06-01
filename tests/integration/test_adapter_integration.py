@@ -6,10 +6,10 @@ import json
 
 import pytest
 
-from cullinan.adapter import ASGIAdapter, TornadoAdapter
-from cullinan.adapter.asgi_adapter import _build_request_from_scope
-from cullinan.adapter.tornado_adapter import _CullinanTornadoHandler
-from cullinan.gateway import (
+from cullinan.transport.adapter import ASGIAdapter, TornadoAdapter
+from cullinan.transport.adapter.asgi_adapter import _build_request_from_scope
+from cullinan.transport.adapter.tornado_adapter import _CullinanTornadoHandler
+from cullinan.web.gateway import (
     Dispatcher,
     GatewayMiddleware,
     MiddlewarePipeline,

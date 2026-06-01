@@ -35,15 +35,15 @@ pr_links: []
 
 ### 高级集成 API
 
-- `cullinan.application_model` —— 显式运行时装配（`Application`、`Runtime`、`current_app`）
-- `cullinan.adapter` —— 服务器集成（`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`）
-- `cullinan.gateway` —— 请求 / 响应 / dispatcher 契约
+- `cullinan.application` —— 显式运行时装配（`Application`、`Runtime`、`current_app`）
+- `cullinan.transport.adapter` —— 服务器集成（`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`）
+- `cullinan.web.gateway` —— 请求 / 响应 / dispatcher 契约
 - `cullinan.core` —— 低层容器与生命周期原语
 
 ### 兼容保留模块
 
 - `cullinan.application` —— 面向既有项目保留的旧扫描式启动 helper
-- `cullinan.app` —— 仅为兼容保留的旧 app wrapper 接口
+- `cullinan.application.lifecycle` —— 仅为兼容保留的旧 app wrapper 接口
 
 对于常规应用，请优先使用顶层 `cullinan` API。高级与兼容模块应显式从对应子模块导入，这样在代码评审、IDE 补全和 onboarding 文档中都能更清楚地看到边界。
 
@@ -51,7 +51,7 @@ pr_links: []
 
 参数系统提供类型安全的请求参数处理。详见 [参数系统指南](parameter_system_guide.md)。
 
-### cullinan.params (v0.90a4+)
+### cullinan.web.params (v0.90a4+)
 
 | 符号 | 类型 | 说明 |
 |------|------|------|
@@ -76,7 +76,7 @@ pr_links: []
 | `ParamResolver` | 类 | 参数解析编排器 |
 | `ResolveError` | 异常 | 参数解析错误 |
 
-### cullinan.params (v0.90a5+)
+### cullinan.web.params (v0.90a5+)
 
 | 符号 | 类型 | 说明 |
 |------|------|------|
@@ -91,7 +91,7 @@ pr_links: []
 | `serialize_response` | 函数 | 便捷序列化函数 |
 | `get_response_models` | 函数 | 获取函数的响应模型 |
 
-### cullinan.params.model_handlers (v0.90a5+)
+### cullinan.web.params.model_handlers (v0.90a5+)
 
 可插拔模型处理器架构，用于第三方库集成。
 
@@ -121,7 +121,7 @@ pr_links: []
 | `EncodeError` | 异常 | 编码错误 |
 | `CodecError` | 异常 | 编解码错误基类 |
 
-### cullinan.middleware（新增）
+### cullinan.web.middleware（新增）
 
 | 符号 | 类型 | 说明 |
 |------|------|------|
@@ -133,7 +133,7 @@ pr_links: []
 
 每个模块建议按以下结构列出公共符号：
 
-- 模块路径，例如：`cullinan.controller`
+- 模块路径，例如：`cullinan.web.controller`
 - 简要说明：模块的主要职责与使用场景
 - 公有类与函数列表（示例）：
   - `@controller(...)` — 控制器装饰器，负责自动注册控制器与路由

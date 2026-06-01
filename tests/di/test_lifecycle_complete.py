@@ -9,7 +9,7 @@ from cullinan.core.lifecycle_enhanced import (
     LifecyclePhase, LifecycleAware, SmartLifecycle,
     LifecycleManager, get_lifecycle_manager, reset_lifecycle_manager
 )
-from cullinan.service import service, Service, get_service_registry, reset_service_registry
+from cullinan.core.services import service, Service, get_service_registry, reset_service_registry
 from cullinan.core import Inject, get_injection_registry, reset_injection_registry
 
 

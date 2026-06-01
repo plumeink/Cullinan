@@ -1,6 +1,6 @@
-title: "cullinan.app 模块"
+title: "cullinan.application.lifecycle 模块"
 slug: "modules-app"
-module: ["cullinan.app"]
+module: ["cullinan.application.lifecycle"]
 tags: ["api", "module"]
 author: "Plumeink"
 reviewers: []
@@ -13,13 +13,13 @@ estimate_pd: 0.8
 last_updated: "2025-12-25T00:00:00Z"
 pr_links: []
 
-# cullinan.app
+# cullinan.application.lifecycle
 
 > **说明（v0.90）**：应用生命周期现在由 `ApplicationContext` 管理。
 > 新的 IoC/DI 2.0 生命周期请参阅 [依赖注入指南](../dependency_injection_guide.md)。
 > 使用 `ApplicationContext.refresh()` 和 `ApplicationContext.shutdown()` 进行生命周期管理。
 
-摘要：`cullinan.app` 模块文档占位。描述入口点以及如何创建应用实例。
+摘要：`cullinan.application.lifecycle` 模块文档占位。描述入口点以及如何创建应用实例。
 
 建议记录的公有符号：App，main（如存在）
 
@@ -27,12 +27,12 @@ pr_links: []
 
 <!-- generated: docs/work/generated_modules/cullinan_app.md -->
 
-### cullinan.app
+### cullinan.application.lifecycle
 
 | 名称 | 类型 | 签名 / 值 |
 | --- | --- | --- |
 | `CullinanApplication` | class | `CullinanApplication(shutdown_timeout: int = 30)` |
-| `create_app` | function | `create_app(shutdown_timeout: int = 30) -> cullinan.app.CullinanApplication` |
+| `create_app` | function | `create_app(shutdown_timeout: int = 30) -> cullinan.application.lifecycle.CullinanApplication` |
 
 ## 示例：创建并运行应用
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     application.run()
 
 # 高级（可选）: 编程化控制（例如在测试或需要添加关闭处理器时）
-from cullinan.app import create_app
+from cullinan.application.lifecycle import create_app
 
 application_instance = create_app()
 # 现在可以以编程方式调用 application_instance.startup()/application_instance.shutdown() 或 application_instance.add_shutdown_handler(...)

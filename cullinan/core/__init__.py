@@ -80,13 +80,13 @@ from .semantic_rules import (
 
 # Decorators - Primary Registration API
 from .decorators import (
-    service,
-    controller,
-    component,
+    service as _service_decorator,
+    controller as _controller_decorator,
+    component as _component_decorator,
     provider as provider_decorator,
-    Inject,
-    InjectByName,
-    Lazy,
+    Inject as _Inject_marker,
+    InjectByName as _InjectByName_marker,
+    Lazy as _Lazy_marker,
     get_injection_markers,
 )
 
@@ -187,7 +187,16 @@ class InjectionRegistry:
     """Compatibility class - use ApplicationContext instead."""
     pass
 
-__version__ = "0.93a6.post1"
+
+# Rebind decorator markers from the public core facade.
+service = _service_decorator
+controller = _controller_decorator
+component = _component_decorator
+Inject = _Inject_marker
+InjectByName = _InjectByName_marker
+Lazy = _Lazy_marker
+
+__version__ = "0.93a7"
 
 __all__ = [
     # ========================================================================

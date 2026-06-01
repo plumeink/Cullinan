@@ -9,7 +9,7 @@ import unittest
 import sys
 import os
 from unittest.mock import patch, MagicMock
-from cullinan.module_scanner import (
+from cullinan.runtime.module_scanner import (
     is_pyinstaller_frozen,
     is_nuitka_compiled,
     get_nuitka_standalone_mode,
@@ -99,7 +99,7 @@ class TestModuleScannerIntegration(unittest.TestCase):
     
     def test_module_scanner_imports(self):
         """Test that all expected functions are importable."""
-        from cullinan import module_scanner
+        from cullinan.runtime import module_scanner
         
         # Check that all key functions exist
         self.assertTrue(hasattr(module_scanner, 'is_pyinstaller_frozen'))
@@ -114,7 +114,7 @@ class TestModuleScannerIntegration(unittest.TestCase):
     
     def test_file_list_func_returns_list(self):
         """Test that file_list_func returns a list."""
-        from cullinan.module_scanner import file_list_func
+        from cullinan.runtime.module_scanner import file_list_func
         
         result = file_list_func()
         self.assertIsInstance(result, list)

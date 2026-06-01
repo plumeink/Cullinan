@@ -6,7 +6,7 @@ import logging
 
 from cullinan.core import Inject, ApplicationContext, set_application_context
 from cullinan.core.pending import PendingRegistry
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 from cullinan.core.lifecycle_enhanced import reset_lifecycle_manager
 
 logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')

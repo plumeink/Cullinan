@@ -1,6 +1,6 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.93a6.post1
+> **Version**: v0.93a7
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
 
@@ -37,7 +37,7 @@ The Cullinan framework provides rich extension points, allowing developers to cu
 ### Query Available Extension Points
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # Query all extension points
 all_points = list_extension_points()
@@ -80,7 +80,7 @@ Middleware are interceptors in the request processing pipeline that can:
 #### Method 1: Decorator Registration (Recommended)
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -100,7 +100,7 @@ class LoggingMiddleware(Middleware):
 #### Method 2: Manual Registration
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -299,7 +299,7 @@ Reference: `examples/custom_provider_demo.py`
 ### Service Lifecycle Hooks
 
 ```python
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 @service
 class DatabaseService(Service):
@@ -378,7 +378,7 @@ if __name__ == '__main__':
 ### Mixed Use with Controller
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 
 @controller(url='/api/users')
 class UserController:
@@ -671,6 +671,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.93a6.post1
+**Version**: v0.93a7
 **Author**: Plumeink  
 **Last Updated**: 2026-06-01

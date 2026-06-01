@@ -16,8 +16,8 @@ class TestBackwardCompatibleImports:
         PendingRegistry.reset()
     
     def test_import_from_cullinan_service(self):
-        """Test import from cullinan.service."""
-        from cullinan.service import service, Inject
+        """Test import from cullinan.core.services."""
+        from cullinan.core.services import service, Inject
         
         @service
         class TestService:
@@ -28,8 +28,8 @@ class TestBackwardCompatibleImports:
         assert pending.contains("TestService")
     
     def test_import_from_cullinan_controller(self):
-        """Test import from cullinan.controller."""
-        from cullinan.controller import controller
+        """Test import from cullinan.web.controller."""
+        from cullinan.web.controller import controller
         
         @controller(url="/api/test")
         class TestController:

@@ -8,7 +8,7 @@ Author: Plumeink
 
 import unittest
 
-from cullinan.params import (
+from cullinan.web.params import (
     TypeConverter,
     ConversionError,
     Auto,

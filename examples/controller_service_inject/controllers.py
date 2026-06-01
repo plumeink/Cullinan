@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from cullinan import Inject, Path, WebResponse, controller, get_api
+from cullinan.core import Inject
+from cullinan.web import Path, WebResponse, controller, get_api
 
 if TYPE_CHECKING:
     from .services import UserDirectoryService
@@ -21,4 +22,3 @@ class UserController:
         if user is None:
             return WebResponse.json({"message": "User not found."}, status_code=404)
         return user
-

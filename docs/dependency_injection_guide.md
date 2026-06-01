@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: 0.93a6.post1
+> **Version**: 0.93a7
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -20,7 +20,7 @@ Before choosing an injection primitive, read [Framework Semantics](framework_sem
 
 ```python
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 @service
 class DatabaseService:
@@ -38,9 +38,9 @@ class UserService:
 ### 2. Use the same injection model in controllers
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url="/users")
 class UserController:
@@ -126,7 +126,7 @@ class AuditService:
 from typing import TYPE_CHECKING
 
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 if TYPE_CHECKING:
     from .providers import DatabaseSessionProvider
@@ -144,7 +144,7 @@ As long as `DatabaseSessionProvider` is the only matching registered component, 
 from typing import TYPE_CHECKING, Optional
 
 from cullinan.core import Inject, Provider
-from cullinan.service import service
+from cullinan.core.services import service
 
 if TYPE_CHECKING:
     from .contracts import Hook

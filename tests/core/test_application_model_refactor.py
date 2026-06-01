@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from cullinan.adapter import ASGIAdapter
-from cullinan.application_model import (
+from cullinan.transport.adapter import ASGIAdapter
+from cullinan.application import (
     Application,
     _collect_module_specs,
     _resolve_component_owners,
@@ -18,9 +18,9 @@ from cullinan.application_model import (
     current_app,
     release_runtime_request_context,
 )
-from cullinan.controller import reset_controller_registry
+from cullinan.web.controller import reset_controller_registry
 from cullinan.core import PendingRegistry, set_application_context
-from cullinan.gateway import WebRuntime, reset_gateway
+from cullinan.web.gateway import WebRuntime, reset_gateway
 
 
 @pytest.fixture(autouse=True)
@@ -98,7 +98,7 @@ def test_application_run_discovers_root_module_and_binds_current_app(tmp_path, m
             "__init__.py": "",
             "root.py": """
                 from cullinan import Inject, controller, get_api, module, service
-                from cullinan.application_model import Application, current_app
+                from cullinan.application import Application, current_app
 
                 @service
                 class GreetingService:
@@ -177,7 +177,7 @@ def test_module_conflict_requires_explicit_ownership_override(tmp_path, monkeypa
             """,
             "root.py": """
                 from cullinan import module
-                from cullinan.application_model import Application
+                from cullinan.application import Application
                 from conflict_app_model.alpha.module import AlphaModule
                 from conflict_app_model.beta.module import BetaModule
 
@@ -187,7 +187,7 @@ def test_module_conflict_requires_explicit_ownership_override(tmp_path, monkeypa
             """,
             "root_resolved.py": """
                 from cullinan import module
-                from cullinan.application_model import Application
+                from cullinan.application import Application
                 from conflict_app_model.alpha.module import AlphaModule
                 from conflict_app_model.beta.module import BetaModule
 
@@ -237,7 +237,7 @@ def test_component_outside_module_packages_gets_boundary_guidance(tmp_path, monk
             """,
             "root.py": """
                 from cullinan import module
-                from cullinan.application_model import Application
+                from cullinan.application import Application
                 import orphan_app_model.feature.services
 
                 @module(packages=["orphan_app_model.root_only"])

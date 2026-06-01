@@ -91,7 +91,7 @@ until the in-flight request ends.
 
 `ApplicationContext` remains the low-level container/runtime primitive, and
 `Application` / `current_app()` remain available from
-`cullinan.application_model` for explicit runtime orchestration. Existing code
+`cullinan.application` for explicit runtime orchestration. Existing code
 using `register()`, `refresh()`, `get()`, or the legacy
 `cullinan.application.run()` entrypoint continues to work, but new application
 setup should start from business decorators plus the top-level

@@ -13,7 +13,7 @@ dispatch pipeline in-process.
 """
 import asyncio
 
-from cullinan.gateway import (
+from cullinan.web.gateway import (
     WebRequest, WebResponse, Router, Dispatcher,
     MiddlewarePipeline, GatewayMiddleware, CORSMiddleware,
 )
@@ -231,7 +231,7 @@ async def _run_developer_experience():
     # 12. Full ASGI simulation
     # ====================================================================
     print("\n--- 12. Full ASGI simulation ---")
-    from cullinan.adapter.asgi_adapter import ASGIAdapter
+    from cullinan.transport.adapter.asgi_adapter import ASGIAdapter
 
     adapter = ASGIAdapter(dispatcher=dispatcher)
     app = adapter.create_app()

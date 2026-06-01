@@ -2,8 +2,8 @@
 
 import asyncio
 
-from cullinan.adapter import ASGIAdapter, TornadoAdapter
-from cullinan.gateway import (
+from cullinan.transport.adapter import ASGIAdapter, TornadoAdapter
+from cullinan.web.gateway import (
     Dispatcher,
     HeaderPolicy,
     Router,

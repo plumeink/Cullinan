@@ -1,6 +1,6 @@
 title: "Application Runtime Model"
 slug: "wiki-application-runtime"
-module: ["cullinan.application_model"]
+module: ["cullinan.application"]
 tags: ["wiki", "application", "runtime", "module"]
 author: "Plumeink"
 reviewers: []
@@ -16,7 +16,7 @@ pr_links: []
 # Application Runtime Model
 
 This page explains the advanced runtime model built around
-`cullinan.application_model`.
+`cullinan.application`.
 Cullinan's intended experience is decorator-first business development: the
 runtime assembles what your modules declare, instead of asking you to wire a
 manual app object step by step.
@@ -26,7 +26,7 @@ manual app object step by step.
 > **Reference companion:** see [API Reference](../api_reference.md) for the public / advanced / compatibility API split.
 
 For regular applications, prefer the top-level `from cullinan import configure, run`.
-Reach for `cullinan.application_model` only when you intentionally need explicit
+Reach for `cullinan.application` only when you intentionally need explicit
 runtime orchestration.
 
 For the runtime contracts that now fail fast or warn, see [Framework Semantics](../framework_semantics.md). In particular, `Application.run()` assumes component decorators have already executed during module import, and `refresh()` marks the end of structural registration.
@@ -42,7 +42,7 @@ For the runtime contracts that now fail fast or warn, see [Framework Semantics](
 
 ```python
 from cullinan import Inject, controller, get_api, module, service
-from cullinan.application_model import Application
+from cullinan.application import Application
 
 
 @service

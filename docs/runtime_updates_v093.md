@@ -40,7 +40,7 @@ The container model is now centered on `ApplicationContext` and publicly surface
 
 ## 2. Application-first runtime
 
-Cullinan now exposes an application-first bootstrap model in `cullinan.application_model`
+Cullinan now exposes an application-first bootstrap model in `cullinan.application`
 and re-exports it from `cullinan`.
 
 ### What changed
@@ -59,14 +59,14 @@ New bootstrap code should prefer `Application` + `@module`. Keep using
 
 ## 3. Web Runtime consolidation
 
-The web stack was reorganized around a transport-agnostic runtime in `cullinan.gateway`.
+The web stack was reorganized around a transport-agnostic runtime in `cullinan.web.gateway`.
 
 ### What changed
 
 - `WebRequest`, `WebResponse`, and `WebAdapter` define the current public HTTP abstraction
 - `Router`, `Dispatcher`, `MiddlewarePipeline`, and `ExceptionHandler` now live behind the gateway facade
-- `cullinan.gateway.web_core` owns the shared request/response model
-- adapters are separated into `cullinan.adapter` (`TornadoAdapter`, `ASGIAdapter`)
+- `cullinan.web.gateway.web_core` owns the shared request/response model
+- adapters are separated into `cullinan.transport.adapter` (`TornadoAdapter`, `ASGIAdapter`)
 
 ### Migration implication
 

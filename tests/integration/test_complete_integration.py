@@ -12,14 +12,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cullinan.core import Inject, ApplicationContext, set_application_context
 from cullinan.core.pending import PendingRegistry
-from cullinan.service import service, Service
-from cullinan.controller import controller, get_api
+from cullinan.core.services import service, Service
+from cullinan.web.controller import controller, get_api
 
 
 def test_complete_flow():
     """Test the complete application flow using ApplicationContext"""
-    from cullinan.controller import get_controller_registry
-    from cullinan.handler import get_handler_registry
+    from cullinan.web.controller import get_controller_registry
+    from cullinan.web.handler import get_handler_registry
 
     print("\n=== Complete Flow Integration Test ===\n")
 

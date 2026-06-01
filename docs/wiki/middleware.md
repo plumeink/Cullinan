@@ -1,6 +1,6 @@
 title: "Middleware"
 slug: "middleware"
-module: ["cullinan.middleware"]
+module: ["cullinan.web.middleware"]
 tags: ["middleware"]
 author: "Plumeink"
 reviewers: []
@@ -37,7 +37,7 @@ Legacy registration helpers still exist, but new code should favor decorator-bas
 ## Example
 
 ```python
-from cullinan.middleware import Middleware
+from cullinan.web.middleware import Middleware
 
 class AuditMiddleware(Middleware):
     async def process_request(self, request):

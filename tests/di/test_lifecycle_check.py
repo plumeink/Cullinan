@@ -2,7 +2,7 @@
 
 from cullinan.core import ApplicationContext, InjectByName, set_application_context
 from cullinan.core.pending import PendingRegistry
-from cullinan.service import Service, service
+from cullinan.core.services import Service, service
 
 
 def test_lifecycle_hooks_run_with_application_context():

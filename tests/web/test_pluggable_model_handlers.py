@@ -13,7 +13,7 @@ def test_registry_basic():
     """测试注册表基本功能"""
     print("1. 测试注册表基本功能...")
 
-    from cullinan.params.model_handlers import (
+    from cullinan.web.params.model_handlers import (
         get_model_handler_registry,
         reset_model_handler_registry,
         DataclassHandler,
@@ -37,7 +37,7 @@ def test_dataclass_handler():
     """测试 dataclass 处理器"""
     print("2. 测试 dataclass 处理器...")
 
-    from cullinan.params.model_handlers import (
+    from cullinan.web.params.model_handlers import (
         get_model_handler_registry,
         reset_model_handler_registry,
     )
@@ -76,8 +76,8 @@ def test_param_resolver_with_dataclass():
     """测试 ParamResolver 使用注册表"""
     print("3. 测试 ParamResolver 使用模型处理器...")
 
-    from cullinan.params import ParamResolver
-    from cullinan.params.model_handlers import reset_model_handler_registry
+    from cullinan.web.params import ParamResolver
+    from cullinan.web.params.model_handlers import reset_model_handler_registry
 
     reset_model_handler_registry()
 
@@ -104,7 +104,7 @@ def test_custom_handler():
     """测试自定义处理器注册"""
     print("4. 测试自定义处理器注册...")
 
-    from cullinan.params.model_handlers import (
+    from cullinan.web.params.model_handlers import (
         ModelHandler,
         ModelHandlerError,
         get_model_handler_registry,
@@ -157,7 +157,7 @@ def test_pydantic_handler_optional():
     """测试 Pydantic 处理器（可选）"""
     print("5. 测试 Pydantic 处理器...")
 
-    from cullinan.params.model_handlers import (
+    from cullinan.web.params.model_handlers import (
         get_model_handler_registry,
         reset_model_handler_registry,
     )
@@ -198,7 +198,7 @@ def test_handler_priority():
     """测试处理器优先级"""
     print("6. 测试处理器优先级...")
 
-    from cullinan.params.model_handlers import (
+    from cullinan.web.params.model_handlers import (
         get_model_handler_registry,
         reset_model_handler_registry,
     )

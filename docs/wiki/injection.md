@@ -30,9 +30,9 @@ For the hard contract behind discovery, typed binding, `refresh()`, and compatib
 ## Example
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 @service
 class UserService:

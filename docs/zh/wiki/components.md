@@ -24,7 +24,7 @@ pr_links: []
 ### 1. 应用编排层
 
 - 职责：模块图发现、归属解析、运行时激活、draining 与活动应用查询
-- 主包：`cullinan.application_model`
+- 主包：`cullinan.application`
 - 关键 API：`Application`、`module`、`current_app`、`Runtime`
 
 ### 2. 核心容器
@@ -36,31 +36,31 @@ pr_links: []
 ### 3. 服务层
 
 - 职责：业务逻辑与受框架管理的长生命周期服务
-- 主包：`cullinan.service`
+- 主包：`cullinan.core`（`@service`），高级 `Service`/registry helper 位于 `cullinan.core.services`
 - 关键 API：`service`、`Service`
 
 ### 4. 控制器层
 
 - 职责：路由声明与处理器方法
-- 主包：`cullinan.controller`
+- 主包：`cullinan.web.controller`
 - 关键 API：`controller`、`get_api`、`post_api`、`response_build`
 
 ### 5. Web Runtime
 
 - 职责：标准化请求/响应模型、路由、分发、中间件、异常处理
-- 主包：`cullinan.gateway`
+- 主包：`cullinan.web.gateway`
 - 关键 API：`WebRequest`、`WebResponse`、`Router`、`Dispatcher`、`MiddlewarePipeline`、`WebRuntime`
 
 ### 6. 适配器层
 
 - 职责：把 Web Runtime 绑定到具体服务器环境
-- 主包：`cullinan.adapter`
+- 主包：`cullinan.transport.adapter`
 - 关键 API：`WebAdapter`、`TornadoAdapter`、`ASGIAdapter`
 
 ### 7. 参数与模型绑定
 
 - 职责：把 path/query/body/header/file 输入映射为处理器参数
-- 主包：`cullinan.params`
+- 主包：`cullinan.web.params`
 - 关键 API：`Path`、`Query`、`Body`、`Header`、`File`
 
 ## 建议阅读顺序

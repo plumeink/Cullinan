@@ -18,10 +18,10 @@ pr_links: []
 Cullinan documentation is now organized as a **knowledge base**, not as a mixed
 list of wiki pages, module pages, guides, and migration notes.
 
-> **Current version: 0.93a6.post1**. The recommended application path is
-> `from cullinan import configure, run`: start from business decorators and
-> business methods first, then enter advanced runtime details only when the
-> application really needs them.
+> **Current version: 0.93a7**. The recommended application path is
+> `cullinan.application + cullinan.web + cullinan.core`: start from business
+> decorators and business methods first, then enter advanced runtime details
+> only when the application really needs them.
 
 ## Default learning path
 

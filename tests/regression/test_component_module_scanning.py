@@ -30,7 +30,7 @@ def test_component_module_scanning():
         # Create service module
         with open(os.path.join(pkg_dir, 'services.py'), 'w') as f:
             f.write('''
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 @service
 class UserService(Service):

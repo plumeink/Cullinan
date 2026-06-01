@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a6.post1
+> **Version**: 0.93a7
 > **Author**: Plumeink
 
 > **Knowledge role:** [Engineering Practices](how-to/index.md)  
@@ -13,7 +13,7 @@
 ### 1. Define a Service
 
 ```python
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 @service
 class UserService(Service):
@@ -28,7 +28,7 @@ class UserService(Service):
 ### 2. Inject Service into Controller
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject, InjectByName, Lazy, Provider
 
 @controller(url='/api')
@@ -49,9 +49,9 @@ class UserController:
 ### 3. Use Injected Service
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url='/api')
 class UserController:

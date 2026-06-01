@@ -82,7 +82,7 @@ class RootModule:
 
 ## 兼容性说明
 
-`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` / `current_app()` 也仍可通过 `cullinan.application_model` 用于显式运行时编排。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
+`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` / `current_app()` 也仍可通过 `cullinan.application` 用于显式运行时编排。已有依赖 `register()`、`refresh()`、`get()` 或旧 `cullinan.application.run()` 的代码仍可继续工作，但新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
 
 ## 相关文档
 

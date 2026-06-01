@@ -1,6 +1,6 @@
 # Cullinan 依赖注入快速参考
 
-> **版本**: 0.93a6.post1
+> **版本**: 0.93a7
 > **作者**: Plumeink
 
 > **知识角色：** [工程实践](how-to/index.md)  
@@ -12,7 +12,7 @@
 ### 1. 定义服务
 
 ```python
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 @service
 class UserService(Service):
@@ -27,7 +27,7 @@ class UserService(Service):
 ### 2. 注入服务到 Controller
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject, InjectByName, Lazy, Provider
 
 @controller(url='/api')
@@ -48,9 +48,9 @@ class UserController:
 ### 3. 使用注入的服务
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url='/api')
 class UserController:

@@ -20,9 +20,11 @@
 
 Cullinan is a Python Web Framework for developers who want to organize applications around
 business services, controllers, and methods instead of manually wiring an app object.
-Its default path is decorator-first discovery plus `configure(root_module=...)` and `run()`,
-with `@module` used as the application boundary when ownership, runtime structure, and
-stability matter.
+Its default path is decorator-first discovery plus `cullinan.application.configure(root_module=...)`
+and `cullinan.application.run()`, with `@module` used as the application boundary when
+ownership, runtime structure, and stability matter. The root namespace is now a thin
+gateway to the final framework surface rather than a place where historical wrapper files
+continue to coexist.
 
 ---
 
@@ -68,14 +70,25 @@ Cullinan is designed to keep developers focused on business architecture and bus
 You can stay on the public path for most application work and only move into internals when
 you intentionally need advanced extension behavior.
 
+### 5. A clearer semantic package surface
+
+Cullinan now exposes a clearer framework-shaped package surface:
+
+- `cullinan.application` - application definition, configuration, and startup
+- `cullinan.web` - controllers, route decorators, request/response, parameters, middleware
+- `cullinan.core` - IoC/DI, lifecycle, context, and semantic rules
+- `cullinan.testing` - test-facing helpers
+- `cullinan.runtime` / `cullinan.transport` - advanced discovery and adapter boundaries
+- `cullinan.support` - constrained support utilities, not a second public app path
+
 ---
 
 ## Framework capabilities
 
 | Capability layer | What Cullinan provides |
 | --- | --- |
-| **Application composition** | `configure(root_module=...)`, decorator-driven discovery, structured runtime assembly |
-| **Web API model** | `@controller`, RESTful decorators, WebResponse, middleware pipeline, WebSocket support |
+| **Application composition** | `cullinan.application.configure(...)`, decorator-driven discovery, structured runtime assembly |
+| **Web API model** | `cullinan.web` facade for `@controller`, RESTful decorators, `WebResponse`, parameters, middleware |
 | **Parameter system** | Typed `Path`, `Query`, `Body`, validation, conversion, and controller-method binding |
 | **IoC/DI and lifecycle** | `Inject()`, `InjectByName()`, request scope, startup/shutdown hooks, component lifecycle |
 | **Runtime boundaries** | `@module` ownership, clearer package structure, better runtime organization |
@@ -106,7 +119,9 @@ The recommended starting point is: define business components, declare the root 
 configure the app, then run it.
 
 ```python
-from cullinan import Inject, configure, controller, get_api, module, run, service
+from cullinan.application import configure, module, run
+from cullinan.core import Inject, service
+from cullinan.web import controller, get_api
 
 
 @service
@@ -156,7 +171,7 @@ This example shows the default Cullinan path:
 - controller methods as the public web surface
 - `Inject()` for framework-managed wiring
 - `@module` as the runtime boundary
-- `configure(root_module=...)` plus `run()` as the startup flow
+- `cullinan.application.configure(root_module=...)` plus `run()` as the startup flow
 
 ---
 

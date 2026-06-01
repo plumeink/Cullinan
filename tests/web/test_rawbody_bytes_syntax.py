@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from cullinan.params import ParamResolver, RawBody, Header, DynamicBody
+from cullinan.web.params import ParamResolver, RawBody, Header, DynamicBody
 
 def handle_webhook(
     self,

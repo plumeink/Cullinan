@@ -8,7 +8,7 @@ Author: Plumeink
 
 import unittest
 
-from cullinan.params import (
+from cullinan.web.params import (
     Param,
     Path,
     Query,
@@ -24,7 +24,7 @@ class TestUNSET(unittest.TestCase):
 
     def test_singleton(self):
         """UNSET 应该是单例"""
-        from cullinan.params.base import _UNSET
+        from cullinan.web.params.base import _UNSET
         a = _UNSET()
         b = _UNSET()
         self.assertIs(a, b)

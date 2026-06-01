@@ -1,4 +1,4 @@
-from cullinan import configure, module, run
+from cullinan.application import configure, module, run
 
 from . import controllers as _controllers  # noqa: F401
 from . import middleware as _middleware  # noqa: F401
@@ -17,4 +17,3 @@ def configure_example():
 def main():
     configure_example()
     run()
-

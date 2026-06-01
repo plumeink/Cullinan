@@ -1,6 +1,6 @@
-title: "cullinan.controller"
+title: "cullinan.web.controller"
 slug: "modules-controller"
-module: ["cullinan.controller"]
+module: ["cullinan.web.controller"]
 tags: ["api", "module", "controller"]
 author: "Plumeink"
 reviewers: []
@@ -13,9 +13,9 @@ estimate_pd: 1.0
 last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# cullinan.controller
+# cullinan.web.controller
 
-`cullinan.controller` contains the controller decorator plus REST-style route decorators and compatibility registries.
+`cullinan.web.controller` contains the controller decorator plus REST-style route decorators and compatibility registries.
 
 ## Main exports
 
@@ -39,9 +39,9 @@ Compatibility and advanced exports:
 ## Example
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url="/users")
 class UserController:

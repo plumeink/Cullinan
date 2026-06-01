@@ -9,7 +9,7 @@ Uses unified lifecycle methods (on_post_construct, on_startup, on_shutdown, on_p
 import unittest
 from unittest.mock import Mock, MagicMock
 
-from cullinan.middleware import Middleware, MiddlewareChain
+from cullinan.web.middleware import Middleware, MiddlewareChain
 
 
 class ConcreteMiddleware(Middleware):

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
-from cullinan import Inject, controller, get_api
+from cullinan.core import Inject
+from cullinan.web import controller, get_api
 
 if TYPE_CHECKING:
     from .services import InventoryService
@@ -13,4 +14,3 @@ class InventoryController:
     @get_api(url="/summary")
     def summary(self):
         return self.inventory_service.summary()
-

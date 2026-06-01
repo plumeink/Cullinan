@@ -24,7 +24,7 @@ For the contract behind automatic discovery and registration, read [Framework Se
 ### 1. Application orchestration
 
 - Responsibility: module graph discovery, ownership resolution, runtime activation, draining, and active-app lookup
-- Main package: `cullinan.application_model`
+- Main package: `cullinan.application`
 - Key APIs: `Application`, `module`, `current_app`, `Runtime`
 
 ### 2. Core container
@@ -36,31 +36,31 @@ For the contract behind automatic discovery and registration, read [Framework Se
 ### 3. Service layer
 
 - Responsibility: business logic and long-lived framework-managed services
-- Main package: `cullinan.service`
+- Main package: `cullinan.core` (`@service`) with advanced `Service`/registry helpers under `cullinan.core.services`
 - Key APIs: `service`, `Service`
 
 ### 4. Controller layer
 
 - Responsibility: route declaration and handler methods
-- Main package: `cullinan.controller`
+- Main package: `cullinan.web.controller`
 - Key APIs: `controller`, `get_api`, `post_api`, `response_build`
 
 ### 5. Web Runtime
 
 - Responsibility: normalized request/response model, routing, dispatch, middleware, exceptions
-- Main package: `cullinan.gateway`
+- Main package: `cullinan.web.gateway`
 - Key APIs: `WebRequest`, `WebResponse`, `Router`, `Dispatcher`, `MiddlewarePipeline`, `WebRuntime`
 
 ### 6. Adapters
 
 - Responsibility: bind the Web Runtime to a specific server environment
-- Main package: `cullinan.adapter`
+- Main package: `cullinan.transport.adapter`
 - Key APIs: `WebAdapter`, `TornadoAdapter`, `ASGIAdapter`
 
 ### 7. Parameters and model binding
 
 - Responsibility: map path/query/body/header/file inputs into handler arguments
-- Main package: `cullinan.params`
+- Main package: `cullinan.web.params`
 - Key APIs: `Path`, `Query`, `Body`, `Header`, `File`
 
 ## Suggested reading order

@@ -10,11 +10,11 @@ import unittest
 from unittest.mock import Mock, patch
 import sys
 
-from cullinan.handler import (
+from cullinan.web.handler import (
     get_handler_registry,
     reset_handler_registry,
 )
-from cullinan.controller import (
+from cullinan.web.controller import (
     get_header_registry,
 )
 

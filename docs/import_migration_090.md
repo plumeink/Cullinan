@@ -53,8 +53,8 @@ Cullinan 0.90 introduces a reorganized `core/` module with clear separation of c
 | Old Import | New Import |
 |------------|------------|
 | `from cullinan.core.lifecycle import LifecycleManager` | `from cullinan.core.lifecycle import LifecycleManager` |
-| `from cullinan.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
-| `from cullinan.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
 
 ### Request Context
 

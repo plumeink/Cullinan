@@ -8,10 +8,10 @@ Author: Plumeink
 """
 
 import logging
-from cullinan import configure, run
-from cullinan.service import service, Service
-from cullinan.controller import controller, get_api
+from cullinan.application import configure, run
+from cullinan.core.services import service, Service
 from cullinan.core import Inject
+from cullinan.web import controller, get_api
 
 # 新的统一接口
 from cullinan.core.facade import (
@@ -260,4 +260,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

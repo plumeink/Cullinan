@@ -20,8 +20,8 @@ Cullinan's current REST stack combines controller decorators with the unified We
 ## Recommended controller style
 
 ```python
-from cullinan.controller import controller, get_api, post_api
-from cullinan.params import Body, Path
+from cullinan.web.controller import controller, get_api, post_api
+from cullinan.web.params import Body, Path
 
 @controller(url="/users")
 class UserController:
@@ -49,7 +49,7 @@ Plain dictionaries, models, or explicit `WebResponse` objects are all valid hand
 Return `WebResponse` directly when you need explicit headers, cookies, or status handling.
 
 ```python
-from cullinan.gateway import WebResponse
+from cullinan.web.gateway import WebResponse
 
 return WebResponse.json({"ok": True}, status_code=201)
 ```

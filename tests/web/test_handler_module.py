@@ -9,7 +9,7 @@ backward compatibility with existing tests.
 import unittest
 from unittest.mock import Mock
 
-from cullinan.handler import (
+from cullinan.web.handler import (
     HandlerRegistry,
     get_handler_registry,
     reset_handler_registry,
@@ -226,8 +226,8 @@ class TestBackwardCompatibility(unittest.TestCase):
         reset_handler_registry()
     
     def test_handler_registry_exported_from_main(self):
-        """Test that handler registry is available from cullinan.handler."""
-        from cullinan.handler import HandlerRegistry, get_handler_registry
+        """Test that handler registry is available from cullinan.web.handler."""
+        from cullinan.web.handler import HandlerRegistry, get_handler_registry
 
         registry = get_handler_registry()
         self.assertIsNotNone(registry)

@@ -161,7 +161,7 @@ def test_lifecycle_phase_ordering():
 
 def test_service_class_uses_unified_lifecycle():
     """Test that Service class correctly inherits unified lifecycle."""
-    from cullinan.service import Service
+    from cullinan.core.services import Service
     from cullinan.core.lifecycle_enhanced import LifecycleAware, SmartLifecycle
 
     s = Service()
@@ -185,7 +185,7 @@ def test_service_class_uses_unified_lifecycle():
 
 def test_no_legacy_lifecycle_methods():
     """Test that legacy lifecycle methods (on_init, on_destroy) are removed."""
-    from cullinan.service import Service
+    from cullinan.core.services import Service
 
     s = Service()
 
@@ -200,7 +200,7 @@ def test_no_legacy_lifecycle_methods():
 
 def test_service_registry_no_lifecycle_methods():
     """Test that ServiceRegistry no longer has lifecycle management methods."""
-    from cullinan.service import ServiceRegistry, get_service_registry
+    from cullinan.core.services import ServiceRegistry, get_service_registry
 
     registry = get_service_registry()
 

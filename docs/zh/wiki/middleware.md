@@ -1,6 +1,6 @@
 title: "Middleware"
 slug: "middleware"
-module: ["cullinan.middleware"]
+module: ["cullinan.web.middleware"]
 tags: ["middleware"]
 author: "Plumeink"
 reviewers: []
@@ -37,7 +37,7 @@ Cullinan 的 middleware 现在参与统一后的 Web Runtime pipeline。
 ## 示例
 
 ```python
-from cullinan.middleware import Middleware
+from cullinan.web.middleware import Middleware
 
 class AuditMiddleware(Middleware):
     async def process_request(self, request):

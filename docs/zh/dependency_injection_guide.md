@@ -1,6 +1,6 @@
 # Cullinan 依赖注入指南
 
-> **版本**：0.93a6.post1
+> **版本**：0.93a7
 > **最后更新**：2026-06-01  
 > **状态**：已更新
 
@@ -20,7 +20,7 @@ Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cull
 
 ```python
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 @service
 class DatabaseService:
@@ -38,9 +38,9 @@ class UserService:
 ### 2. 在控制器中复用同一套注入模型
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
 from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan.web.params import Path
 
 @controller(url="/users")
 class UserController:
@@ -126,7 +126,7 @@ class AuditService:
 from typing import TYPE_CHECKING
 
 from cullinan.core import Inject
-from cullinan.service import service
+from cullinan.core.services import service
 
 if TYPE_CHECKING:
     from .providers import DatabaseSessionProvider
@@ -144,7 +144,7 @@ class ChannelBindingRepository:
 from typing import TYPE_CHECKING, Optional
 
 from cullinan.core import Inject, Provider
-from cullinan.service import service
+from cullinan.core.services import service
 
 if TYPE_CHECKING:
     from .contracts import Hook

@@ -1,4 +1,4 @@
-from cullinan import service
+from cullinan.core import service
 
 
 @service
@@ -14,4 +14,3 @@ class UserDirectoryService:
 
     def get_user(self, user_id: int):
         return self._users.get(user_id)
-

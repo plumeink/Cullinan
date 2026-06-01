@@ -1,7 +1,7 @@
 ---
 title: "参数系统指南"
 slug: "parameter-system-guide"
-module: ["cullinan.params", "cullinan.codec"]
+module: ["cullinan.web.params", "cullinan.codec"]
 tags: ["params", "api", "guide"]
 author: "Plumeink"
 reviewers: []
@@ -67,7 +67,7 @@ cullinan/
 
 ```python
 from cullinan import get_api, post_api
-from cullinan.params import Path, Query, Body
+from cullinan.web.params import Path, Query, Body
 
 @controller
 class UserController:
@@ -114,7 +114,7 @@ async def list_users(
 使用 `.as_required()` 声明必填参数：
 
 ```python
-from cullinan.params import Body, File
+from cullinan.web.params import Body, File
 
 @post_api(url="/users")
 async def create_user(
@@ -130,7 +130,7 @@ async def create_user(
 对于带别名的参数（如包含 `-` 的 HTTP 头），直接在类型注解中指定：
 
 ```python
-from cullinan.params import Header, Query, Body, DynamicBody
+from cullinan.web.params import Header, Query, Body, DynamicBody
 
 @post_api(url="/webhook")
 async def handle_webhook(
@@ -162,7 +162,7 @@ async def list_items(
 获取未解析的原始请求体 (bytes)，用于签名验证或自定义解析：
 
 ```python
-from cullinan.params import Header, RawBody
+from cullinan.web.params import Header, RawBody
 import hmac
 import hashlib
 
@@ -197,7 +197,7 @@ async def handle_webhook(
 ### 使用 DynamicBody
 
 ```python
-from cullinan.params import DynamicBody
+from cullinan.web.params import DynamicBody
 
 @post_api(url="/users")
 async def create_user(self, body: DynamicBody):
@@ -291,7 +291,7 @@ async def create_user(self, user: CreateUserRequest):
 使用 `@field_validator` 进行自定义字段校验：
 
 ```python
-from cullinan.params import validated_dataclass, field_validator, FieldValidationError
+from cullinan.web.params import validated_dataclass, field_validator, FieldValidationError
 
 @validated_dataclass
 class CreateUserRequest:
@@ -385,7 +385,7 @@ async def protected_resource(
 文件上传参数。在 v0.90a5+ 中返回 `FileInfo`（单文件）或 `FileList`（多文件）。
 
 ```python
-from cullinan.params import File, FileInfo, FileList
+from cullinan.web.params import File, FileInfo, FileList
 
 @post_api(url="/upload")
 async def upload_file(
@@ -484,7 +484,7 @@ async def register(
 使用 `AutoType` 进行自动类型检测：
 
 ```python
-from cullinan.params import AutoType
+from cullinan.web.params import AutoType
 
 @get_api(url="/search")
 async def search(self, value: Query(AutoType)):
@@ -522,7 +522,7 @@ registry.register_body_codec(XmlBodyCodec)
 `BodyDecoderMiddleware` 自动解码请求体：
 
 ```python
-from cullinan.middleware import BodyDecoderMiddleware, get_decoded_body
+from cullinan.web.middleware import BodyDecoderMiddleware, get_decoded_body
 
 # 在处理器中获取已解码的请求体
 class MyController:
@@ -540,7 +540,7 @@ class MyController:
 
 ```python
 from dataclasses import dataclass
-from cullinan.params import ResponseSerializer
+from cullinan.web.params import ResponseSerializer
 
 @dataclass
 class UserResponse:
@@ -564,7 +564,7 @@ json_str = ResponseSerializer.to_json(user)
 为 API 文档定义响应模型：
 
 ```python
-from cullinan.params import Response, get_response_models
+from cullinan.web.params import Response, get_response_models
 
 @dataclass
 class SuccessResponse:
@@ -601,7 +601,7 @@ async def create_user(self, body_params):
 参数错误返回结构化响应：
 
 ```python
-from cullinan.params import ValidationError, ResolveError
+from cullinan.web.params import ValidationError, ResolveError
 
 # ValidationError 用于单个参数校验失败
 # ResolveError 用于多个参数解析失败
@@ -637,7 +637,7 @@ from cullinan.params import ValidationError, ResolveError
 ### 注册自定义处理器
 
 ```python
-from cullinan.params import ModelHandler, get_model_handler_registry
+from cullinan.web.params import ModelHandler, get_model_handler_registry
 
 class MyModelHandler(ModelHandler):
     priority = 100  # 数值越大优先级越高
@@ -682,7 +682,7 @@ async def create_user(self, user: CreateUserRequest):
 
 ## API 参考
 
-### cullinan.params
+### cullinan.web.params
 
 | 类 | 说明 |
 |---|------|
@@ -726,7 +726,7 @@ async def create_user(self, user: CreateUserRequest):
 | `DecodeError` | 解码错误 |
 | `EncodeError` | 编码错误 |
 
-### cullinan.middleware
+### cullinan.web.middleware
 
 | 类 | 说明 |
 |---|------|

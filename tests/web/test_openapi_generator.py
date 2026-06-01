@@ -4,8 +4,8 @@ import asyncio
 import inspect
 import json
 
-from cullinan.gateway import Router, WebRequest, WebResponse, Dispatcher
-from cullinan.gateway.openapi import OpenAPIGenerator
+from cullinan.web.gateway import Router, WebRequest, WebResponse, Dispatcher
+from cullinan.web.gateway.openapi import OpenAPIGenerator
 
 passed = 0
 failed = 0
@@ -96,7 +96,7 @@ async def _run_openapi_generator_checks():
     # ====================================================================
     print("\n--- 4. Param annotations ---")
     try:
-        from cullinan.params import Path, Query, Body, Header
+        from cullinan.web.params import Path, Query, Body, Header
 
         async def annotated_handler(
             self,
@@ -136,7 +136,7 @@ async def _run_openapi_generator_checks():
                 check("Query le constraint", size_param['schema'].get('maximum') == 100)
 
     except ImportError:
-        print("  [SKIP] cullinan.params not available")
+        print("  [SKIP] cullinan.web.params not available")
 
     # ====================================================================
     # 5. JSON serialization

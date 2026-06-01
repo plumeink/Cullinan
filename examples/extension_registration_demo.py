@@ -14,8 +14,8 @@ Author: Plumeink
 """
 
 import logging
-from cullinan.middleware import middleware, Middleware
-from cullinan.extensions import list_extension_points, ExtensionCategory
+from cullinan.web import middleware, Middleware
+from cullinan.support.extensions import list_extension_points, ExtensionCategory
 
 # Configure logging
 logging.basicConfig(
@@ -132,7 +132,7 @@ def discover_extension_points():
 
 def demo_middleware_execution():
     """Demonstrate middleware execution order."""
-    from cullinan.middleware import get_middleware_registry
+    from cullinan.web.middleware import get_middleware_registry
     
     print("\n" + "=" * 70)
     print("Middleware Execution Demo")
@@ -184,7 +184,7 @@ class CustomMiddleware(Middleware):
 
 def demo_manual_registration():
     """Demonstrate manual registration for backward compatibility."""
-    from cullinan.middleware import get_middleware_registry
+    from cullinan.web.middleware import get_middleware_registry
     
     print("\n" + "=" * 70)
     print("Manual Registration (Backward Compatibility)")
@@ -214,7 +214,7 @@ def query_middleware_extensions():
     print("Middleware Extension Points")
     print("=" * 70)
     
-    from cullinan.extensions import get_extension_registry, ExtensionCategory
+    from cullinan.support.extensions import get_extension_registry, ExtensionCategory
     
     registry = get_extension_registry()
     middleware_points = registry.get_extension_points(
@@ -265,4 +265,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

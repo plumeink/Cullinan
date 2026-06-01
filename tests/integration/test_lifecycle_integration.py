@@ -17,7 +17,7 @@ def test_service_decorator_with_lifecycle():
     from cullinan.core import ApplicationContext, set_application_context
     from cullinan.core.pending import PendingRegistry
     from cullinan.core.decorators import service
-    from cullinan.service import Service
+    from cullinan.core.services import Service
 
     # Reset state
     PendingRegistry.get_instance().clear()
