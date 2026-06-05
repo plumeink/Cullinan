@@ -67,6 +67,9 @@ class RootModule:
 app = Application.run(RootModule)
 ```
 
+`RootModule` in the example is only a placeholder class name. `Application.run()`
+accepts any class you declare with `@module` as the root module.
+
 ## Module graph and ownership
 
 Each module contributes:

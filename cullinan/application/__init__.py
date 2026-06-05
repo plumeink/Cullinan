@@ -11,6 +11,7 @@ from cullinan.application.legacy import (
 )
 from cullinan.application.model import (
     Application,
+    ApplicationMetadata,
     Module,
     ModuleGraph,
     ModuleMetadata,
@@ -18,8 +19,11 @@ from cullinan.application.model import (
     Runtime,
     _collect_module_specs,
     _resolve_component_owners,
+    application,
     bind_runtime_request_context,
+    get_application_metadata,
     get_module_metadata,
+    has_application_metadata,
     module,
     release_runtime_request_context,
 )
@@ -36,6 +40,7 @@ def scan_service(modules: list):
 
 __all__ = [
     "Application",
+    "ApplicationMetadata",
     "Module",
     "ModuleGraph",
     "ModuleMetadata",
@@ -45,10 +50,13 @@ __all__ = [
     "CullinanConfig",
     "_collect_module_specs",
     "_resolve_component_owners",
+    "application",
     "bind_runtime_request_context",
     "configure",
     "get_asgi_app",
+    "get_application_metadata",
     "get_config",
+    "has_application_metadata",
     "get_module_metadata",
     "module",
     "reflect_module",

@@ -28,14 +28,33 @@ class PublicAPISemanticWarning(CullinanSemanticWarning):
 
 
 SEMANTIC_RULES: Dict[str, str] = {
-    "component-import-execution": "组件注册依赖模块导入阶段执行装饰器，而不是静态扫描源代码。",
-    "component-top-level": "自动发现/自动装配只保证模块顶层定义且在导入时执行过装饰器的组件。",
-    "inject-unique-binding": "Inject() 只接受可被稳定归一化并唯一绑定到一个组件的类型契约。",
-    "inject-by-name": "InjectByName() 是显式名称绑定；类型注解只用于表达语义，不参与名称解析。",
-    "refresh-freeze": "ApplicationContext.refresh() 之后 PendingRegistry 与 DefinitionRegistry 都进入冻结状态；新的运行时结构边界应在此之前确定。",
-    "lifecycle-request-scope": "singleton 组件不能直接依赖 request 作用域组件。",
-    "compatibility-api": "兼容 API 只保证旧代码可继续运行，不代表当前推荐编程模型。",
-    "public-api-boundary": "常规业务应用应优先使用 cullinan 顶层推荐 API；runtime、adapter、core 等路径属于高级或内部入口。",
+    "component-import-execution": (
+        "Component registration depends on decorators running during module import, "
+        "not on static source scanning."
+    ),
+    "component-top-level": (
+        "Automatic discovery and assembly only guarantee module-top-level components "
+        "whose decorators ran during import."
+    ),
+    "inject-unique-binding": (
+        "Inject() only accepts type contracts that normalize stably and map to exactly one component."
+    ),
+    "inject-by-name": (
+        "InjectByName() performs explicit name-based binding. Type annotations describe intent only "
+        "and do not participate in name resolution."
+    ),
+    "refresh-freeze": (
+        "After ApplicationContext.refresh(), PendingRegistry and DefinitionRegistry are frozen. "
+        "Define new runtime structure boundaries before that point."
+    ),
+    "lifecycle-request-scope": "Singleton components cannot depend directly on request-scoped components.",
+    "compatibility-api": (
+        "Compatibility APIs only keep older code running. They are not the recommended programming model."
+    ),
+    "public-api-boundary": (
+        "Regular applications should prefer Cullinan's top-level public APIs. "
+        "runtime, adapter, and core paths are advanced or internal entrypoints."
+    ),
 }
 
 _warned_keys = set()
@@ -47,11 +66,11 @@ def describe_semantic_rule(rule_key: str) -> str:
 
 def format_semantic_message(rule_key: str, problem: str, guidance: str | None = None) -> str:
     parts = [
-        f"语义规则：{describe_semantic_rule(rule_key)}",
-        f"当前问题：{problem}",
+        f"Semantic rule: {describe_semantic_rule(rule_key)}",
+        f"Problem: {problem}",
     ]
     if guidance:
-        parts.append(f"建议：{guidance}")
+        parts.append(f"Guidance: {guidance}")
     return " ".join(parts)
 
 

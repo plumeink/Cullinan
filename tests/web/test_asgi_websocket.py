@@ -8,7 +8,7 @@ from cullinan.core.semantic_rules import CompatibilitySemanticWarning
 
 warnings.filterwarnings(
     "ignore",
-    message=r"语义规则：兼容 API 只保证旧代码可 继续运行.*",
+    message=r"Semantic rule: Compatibility APIs only keep older code running.*",
     category=CompatibilitySemanticWarning,
 )
 
@@ -18,9 +18,6 @@ from cullinan.web.websocket_registry import get_websocket_registry, reset_websoc
 pytestmark = [
     pytest.mark.filterwarnings(
         "ignore:websocket routes are not mounted into the HTTP ASGI app surface:cullinan.core.semantic_rules.PublicAPISemanticWarning"
-    ),
-    pytest.mark.filterwarnings(
-        "ignore:语义规则：兼容 API 只保证旧代码可 继续运行.*:cullinan.core.semantic_rules.CompatibilitySemanticWarning"
     ),
 ]
 

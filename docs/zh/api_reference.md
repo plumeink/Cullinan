@@ -28,8 +28,8 @@ pr_links: []
 ### 推荐默认 API
 
 - `cullinan` —— 常规业务项目应优先使用的顶层应用 API：
-  - 启动入口：`configure(...)`、`run(...)`、`get_asgi_app(...)`
-  - 声明入口：`@service`、`@controller`、`@module`、路由装饰器
+  - 启动入口：`@application`、`configure(...)`、`run(...)`、`get_asgi_app(...)`
+  - 声明入口：`@service`、`@controller`、`@module`（高级边界）、路由装饰器
   - 注入 / 参数：`Inject`、`InjectByName`、`Path`、`Query`、`Body` 等
   - 框架心智：装饰器优先的业务代码、组件发现、IoC/DI 装配，以及带有热插拔语义的模块边界
 

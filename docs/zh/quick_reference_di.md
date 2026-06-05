@@ -96,22 +96,23 @@ class Repo:
 
 ## 打包应用配置
 
-### 使用根模块发现（推荐）
+### 使用入口方法（推荐）
 
 ```python
-from cullinan import configure, module, run
+from cullinan import application, configure
 
 from my_app.controller.user_controller import UserController
 from my_app.service.auth_service import AuthService
 from my_app.service.user_service import UserService
 
-@module
-class RootModule:
-    pass
+@configure(user_packages=["my_app"])
+@application
+def main(): ...
 
-configure(root_module=RootModule)
-run()
+main()
 ```
+
+`@module` 只应在你需要显式高级运行时边界（例如包归属或热插拔模块结构）时再引入。
 
 ### PyInstaller 配置
 

@@ -4,18 +4,40 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+import inspect
+from typing import Any, Callable, Optional
 
 from cullinan._api_boundary import public_api_context
 from cullinan.application.legacy import _build_transport_settings, _collect_global_headers, _finalize_runtime_setup
-from cullinan.application.model import Application
-from cullinan.support.config import get_config
+from cullinan.application.model import Application, has_application_metadata, has_module_metadata
+from cullinan.support.config import get_class_config, get_config, push_config_overrides
+from cullinan.support.diagnostics import (
+    invalid_application_entry,
+    legacy_public_entry_removed,
+    legacy_root_module_entry_removed,
+    require_application_entry,
+)
 from cullinan.transport.adapter.asgi_adapter import ASGIAdapter
 from cullinan.transport.adapter.runtime_selection import resolve_runtime_engine
 
 
-def _resolve_root_module(root_module: Optional[type[Any]]) -> Optional[type[Any]]:
-    return root_module or getattr(get_config(), "root_module", None)
+def _resolve_entry_method(
+    api_name: str,
+    entry_method: Optional[Callable[..., Any]],
+    root_module: Optional[type[Any]],
+) -> Callable[..., Any]:
+    if root_module is not None:
+        raise RuntimeError(legacy_root_module_entry_removed())
+
+    if entry_method is None:
+        raise RuntimeError(require_application_entry(api_name))
+    if inspect.isclass(entry_method):
+        raise RuntimeError(legacy_public_entry_removed(api_name, entry_method))
+    if has_module_metadata(entry_method) and not has_application_metadata(entry_method):
+        raise RuntimeError(legacy_public_entry_removed(api_name, entry_method))
+    if callable(entry_method) and has_application_metadata(entry_method):
+        return entry_method
+    raise RuntimeError(invalid_application_entry(api_name, entry_method))
 
 
 def _resolve_engine_setting(engine: Optional[str]) -> str:
@@ -51,8 +73,9 @@ def _load_tornado_adapter():
 
 
 def run(
-    root_module: Optional[type[Any]] = None,
+    entry_method: Optional[Callable[..., Any]] = None,
     *,
+    root_module: Optional[type[Any]] = None,
     engine: Optional[str] = None,
     host: Optional[str] = None,
     port: Optional[int] = None,
@@ -61,56 +84,50 @@ def run(
 ) -> Optional[Application]:
     """Run a regular Cullinan application through the recommended top-level API."""
 
-    resolved_root_module = _resolve_root_module(root_module)
-    if resolved_root_module is None:
-        raise RuntimeError(
-            "cullinan.run() 需要显式提供 root_module，或先调用 configure(root_module=RootModule)。"
-        )
-
-    actual_engine = _resolve_engine(engine)
-    resolved_host, resolved_port = _resolve_host_port(host, port)
+    resolved_entry_method = _resolve_entry_method("cullinan.run", entry_method, root_module)
 
     with public_api_context():
-        app = Application.run(resolved_root_module, runtime_config=runtime_config)
-        global_headers, transport_settings = _finalize_public_runtime()
-        if actual_engine == "asgi":
+        with push_config_overrides(get_class_config(resolved_entry_method)):
+            actual_engine = _resolve_engine(engine)
+            resolved_host, resolved_port = _resolve_host_port(host, port)
+            app = Application.run(resolved_entry_method, runtime_config=runtime_config)
+            global_headers, transport_settings = _finalize_public_runtime()
+            if actual_engine == "asgi":
+                adapter = ASGIAdapter(
+                    dispatcher=app.web_runtime.dispatcher,
+                    global_headers=global_headers,
+                    runtime=app.web_runtime,
+                )
+                adapter_kwargs.setdefault("server", getattr(get_config(), "asgi_server", "uvicorn"))
+            else:
+                adapter = _load_tornado_adapter()(
+                    dispatcher=app.web_runtime.dispatcher,
+                    settings=transport_settings,
+                    global_headers=global_headers,
+                    runtime=app.web_runtime,
+                )
+
+            adapter.run(host=resolved_host, port=resolved_port, **adapter_kwargs)
+            return app
+
+
+def get_asgi_app(
+    entry_method: Optional[Callable[..., Any]] = None,
+    *,
+    root_module: Optional[type[Any]] = None,
+    runtime_config: Optional[Any] = None,
+):
+    """Create an ASGI app through the recommended top-level API."""
+
+    resolved_entry_method = _resolve_entry_method("cullinan.get_asgi_app", entry_method, root_module)
+
+    with public_api_context():
+        with push_config_overrides(get_class_config(resolved_entry_method)):
+            app = Application.run(resolved_entry_method, runtime_config=runtime_config)
+            global_headers, _ = _finalize_public_runtime()
             adapter = ASGIAdapter(
                 dispatcher=app.web_runtime.dispatcher,
                 global_headers=global_headers,
                 runtime=app.web_runtime,
             )
-            adapter_kwargs.setdefault("server", getattr(get_config(), "asgi_server", "uvicorn"))
-        else:
-            adapter = _load_tornado_adapter()(
-                dispatcher=app.web_runtime.dispatcher,
-                settings=transport_settings,
-                global_headers=global_headers,
-                runtime=app.web_runtime,
-            )
-
-        adapter.run(host=resolved_host, port=resolved_port, **adapter_kwargs)
-        return app
-
-
-def get_asgi_app(
-    root_module: Optional[type[Any]] = None,
-    *,
-    runtime_config: Optional[Any] = None,
-):
-    """Create an ASGI app through the recommended top-level API."""
-
-    resolved_root_module = _resolve_root_module(root_module)
-    if resolved_root_module is None:
-        raise RuntimeError(
-            "cullinan.get_asgi_app() 需要显式提供 root_module，或先调用 configure(root_module=RootModule)。"
-        )
-
-    with public_api_context():
-        app = Application.run(resolved_root_module, runtime_config=runtime_config)
-        global_headers, _ = _finalize_public_runtime()
-        adapter = ASGIAdapter(
-            dispatcher=app.web_runtime.dispatcher,
-            global_headers=global_headers,
-            runtime=app.web_runtime,
-        )
-        return adapter.create_app()
+            return adapter.create_app()

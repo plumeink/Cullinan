@@ -28,8 +28,8 @@ This page provides an overview of the public API surface of Cullinan and clarifi
 ### Recommended default API
 
 - `cullinan` — top-level application API for regular business projects:
-  - startup: `configure(...)`, `run(...)`, `get_asgi_app(...)`
-  - declaration: `@service`, `@controller`, `@module`, route decorators
+  - startup: `@application`, `configure(...)`, `run(...)`, `get_asgi_app(...)`
+  - declaration: `@service`, `@controller`, `@module` (advanced boundary), route decorators
   - injection / params: `Inject`, `InjectByName`, `Path`, `Query`, `Body`, ...
   - framework mental model: decorator-first business code, component discovery,
     IoC/DI wiring, and module boundaries with hot-pluggable runtime semantics

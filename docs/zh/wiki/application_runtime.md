@@ -61,6 +61,9 @@ class RootModule:
 app = Application.run(RootModule)
 ```
 
+这里的 `RootModule` 只是占位示例名。`Application.run()` 接受任何使用 `@module`
+声明的模块类作为根模块。
+
 ## 模块图与归属解析
 
 每个模块都可提供：

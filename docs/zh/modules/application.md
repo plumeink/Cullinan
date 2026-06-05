@@ -21,20 +21,21 @@ pr_links: []
 > **高级但公开的语义层：** 这页记录的是真实语义层，不是默认首读路径。
 > 新应用请优先阅读 [快速开始](../getting_started.md) 并使用顶层 `cullinan` API。
 
-- `configure(root_module=RootModule)`：声明推荐的根入口
-- `run()` 或 `get_asgi_app()`：通过整理后的顶层 API 启动应用
-- `@module`：当你需要模块归属、reload 与热插拔运行时能力时，用来声明结构边界
+- `@application`：声明默认入口方法
+- `@configure(...)`：把启动配置附着到这个方法上
+- 直接调用入口方法：通过整理后的顶层 API 启动应用
+- `@module`：当你需要模块归属、reload 与热插拔运行时能力时，用来声明高级结构边界
 - 顶层 `run()` / `get_asgi_app()` 才是最短公开启动路径
 
 这里的启动契约同时依赖[框架语义规则](../framework_semantics.md)：组件发现基于导入执行、自动扫描只保证模块顶层装饰器组件、`refresh()` 之后结构性注册会被冻结。
 
-在实际开发里，开发者主要写的是业务装饰器和业务方法。`@module`
-不是手工注册 app 的中心，而是把归属、reload、draining 与运行时切换明确化并稳定化的结构边界。
+在实际开发里，开发者主要写的是业务装饰器、业务方法和入口方法。`@module`
+不是手工注册 app 的中心，而是把归属、reload、draining 与运行时切换明确化并稳定化的高级结构边界。
 
 ## 推荐启动方式
 
 ```python
-from cullinan import Inject, configure, controller, get_api, module, run, service
+from cullinan import Inject, application, configure, controller, get_api, service
 
 
 @service
@@ -52,16 +53,24 @@ class GreetingController:
         return {"message": self.greeting_service.greet()}
 
 
-@module
-class RootModule:
-    pass
-
-
-configure(root_module=RootModule)
+@configure(user_packages=["myapp"])
+@application
+def main(): ...
 
 if __name__ == "__main__":
-    run()
+    main()
 ```
+
+## 什么时候使用 `@module`
+
+普通单包应用不要一开始就写 `@module`。默认路径应先用入口方法。
+
+当你需要以下能力时，再进入 `@module`：
+
+- 显式包归属边界
+- 多业务域之间更清晰的运行时分隔
+- 可插拔模块 / 插件式装配
+- 比默认启动路径更严格的 reload / draining / ownership 语义
 
 ## 模块归属与边界
 
@@ -82,7 +91,7 @@ class RootModule:
 
 ## 维护者 / 高级说明
 
-`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` 也仍可通过 `cullinan.application` 用于高级、运行时感知的应用装配。新的应用代码应先从业务装饰器与顶层 `configure(...)/run()` 路径出发。
+`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` 也仍可通过 `cullinan.application` 用于高级、运行时感知的应用装配。新的应用代码应先从业务装饰器与顶层入口方法路径出发。
 
 ## 相关文档
 

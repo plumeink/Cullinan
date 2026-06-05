@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC/DI 统一根容器实现。"""
+"""Unified root container implementation for Cullinan IoC/DI."""
 
 from __future__ import annotations
 
@@ -38,6 +38,22 @@ from .semantic_rules import (
     warn_semantic_once,
 )
 from .scope_manager import ScopeManager
+from cullinan.support.diagnostics import (
+    collection_requires_one_element_type,
+    collection_single_dependency_only,
+    container_requires_one_element_type,
+    duplicate_definition,
+    invalid_annotation_expression,
+    missing_inner_type,
+    optional_single_dependency_only,
+    provider_requires_single_type_argument,
+    provider_single_dependency_only,
+    tuple_injection_form,
+    union_single_candidates_only,
+    unsupported_annotation_container,
+    unsupported_annotation_expression,
+    unsupported_annotation_type,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +85,7 @@ class _ResolvedInjectionBinding:
 
 
 class ContainerState(Enum):
-    """根容器状态。"""
+    """State of the root container."""
 
     CREATED = "created"
     REGISTERING = "registering"
@@ -81,9 +97,10 @@ class ContainerState(Enum):
 
 
 class ApplicationContext:
-    """统一根容器。
+    """Unified root container.
 
-    保留历史 ``ApplicationContext`` API，同时内部实现切换为单根容器模型。
+    Preserves the historical ``ApplicationContext`` API while using a single-root-container
+    implementation internally.
     """
 
     __slots__ = (
@@ -114,7 +131,7 @@ class ApplicationContext:
         self._health_checks: List[Any] = []
 
     # ========================================================================
-    # 注册 API
+    # Registration API
     # ========================================================================
 
     def register(self, definition: Definition) -> None:
@@ -123,8 +140,8 @@ class ApplicationContext:
                 raise RegistryFrozenError(
                     format_semantic_message(
                         "refresh-freeze",
-                        f"组件 '{definition.name}' 试图在 refresh() 之后继续注册。",
-                        "把所有结构性注册放到应用启动与 refresh() 之前完成。",
+                        f"Component '{definition.name}' attempted to register after refresh().",
+                        "Complete all structural registrations before application startup reaches refresh().",
                     )
                 )
             if self._state == ContainerState.CREATED:
@@ -139,27 +156,27 @@ class ApplicationContext:
         self._health_checks.append(callback)
 
     # ========================================================================
-    # 生命周期 API
+    # Lifecycle API
     # ========================================================================
 
     def refresh(self) -> None:
         with self._lock:
             if self._state == ContainerState.ACTIVE:
-                logger.warning("ApplicationContext.refresh() 已被调用过，跳过")
+                logger.warning("ApplicationContext.refresh() was already called; skipping.")
                 return
             if self._state == ContainerState.CLOSED:
                 raise LifecycleError(
                     format_semantic_message(
                         "refresh-freeze",
-                        "已关闭的 ApplicationContext 不能再次 refresh().",
-                        "如需重建应用，请创建新的 ApplicationContext 实例。",
+                        "A closed ApplicationContext cannot be refreshed again.",
+                        "Create a new ApplicationContext instance when you need to rebuild the application.",
                     )
                 )
 
             if self._state == ContainerState.CREATED:
                 self._state = ContainerState.REGISTERING
 
-            logger.info("ApplicationContext.refresh() 开始")
+            logger.info("ApplicationContext.refresh() started.")
             self._process_pending_registrations()
             self._state = ContainerState.VALIDATING
             self._validate_definitions()
@@ -169,7 +186,7 @@ class ApplicationContext:
             self._run_health_checks()
             self._state = ContainerState.ACTIVE
             logger.info(
-                "ApplicationContext.refresh() 完成，共注册 %s 个 Definition",
+                "ApplicationContext.refresh() completed with %s registered definitions.",
                 self.definition_count,
             )
 
@@ -195,20 +212,20 @@ class ApplicationContext:
                 if inspect.iscoroutine(result):
                     self._run_coroutine(result)
             except Exception as exc:
-                logger.error("Shutdown handler 执行失败: %s", exc)
+                logger.error("Shutdown handler failed: %s", exc)
 
         self._scope_manager.clear_all()
         self._lifecycle_instances.clear()
         self._lifecycle_phases.clear()
         self._startup_order.clear()
         self._state = ContainerState.CLOSED
-        logger.info("ApplicationContext.shutdown() 完成")
+        logger.info("ApplicationContext.shutdown() completed.")
 
     def add_shutdown_handler(self, handler) -> None:
         self._shutdown_handlers.append(handler)
 
     # ========================================================================
-    # 解析 API
+    # Resolution API
     # ========================================================================
 
     def get(self, name: str) -> Any:
@@ -232,7 +249,7 @@ class ApplicationContext:
         if definition is None:
             return None
         if not definition.check_conditions(self):
-            logger.debug("try_get('%s'): 条件不满足，返回 None", name)
+            logger.debug("try_get('%s'): conditions were not met; returning None.", name)
             return None
         return self._resolve(definition)
 
@@ -246,13 +263,13 @@ class ApplicationContext:
         return self._definition_registry.list_names()
 
     # ========================================================================
-    # Request Context 代理
+    # Request context proxy
     # ========================================================================
 
     def enter_request_context(self):
         if self._state != ContainerState.ACTIVE:
             raise LifecycleError(
-                f"容器状态为 {self._state.value}，当前不接受新的请求作用域"
+                f"Container state is {self._state.value}; new request scopes are not accepted right now."
             )
         return self._scope_manager.enter_request_context()
 
@@ -263,7 +280,7 @@ class ApplicationContext:
         return self._scope_manager.is_request_active()
 
     # ========================================================================
-    # 状态查询
+    # State inspection
     # ========================================================================
 
     @property
@@ -296,7 +313,7 @@ class ApplicationContext:
         return self._scope_manager.active_request_count
 
     # ========================================================================
-    # 内部方法
+    # Internal helpers
     # ========================================================================
 
     def _resolve(self, definition: Definition) -> Any:
@@ -312,7 +329,7 @@ class ApplicationContext:
 
         if not definition.check_conditions(self):
             raise ConditionNotMetError(
-                message=f"依赖 '{name}' 的条件不满足",
+                message=f"Conditions were not met for dependency '{name}'.",
                 dependency_name=name,
                 failed_conditions=[f"condition_{index}" for index, _ in enumerate(definition.conditions)],
             )
@@ -328,8 +345,8 @@ class ApplicationContext:
             raise CreationError(
                 message=format_semantic_message(
                     "lifecycle-request-scope",
-                    f"singleton 组件解析到了 request 作用域组件 '{name}'。",
-                    "改为延迟在 request 上下文内获取，或调整两者的作用域关系。",
+                    f"A singleton component attempted to resolve request-scoped component '{name}'.",
+                    "Resolve the dependency lazily inside a request context, or adjust the two scopes.",
                 ),
                 dependency_name=name,
             )
@@ -349,7 +366,7 @@ class ApplicationContext:
             instance = definition.factory(self)
             if instance is None:
                 raise CreationError(
-                    message=f"依赖 '{definition.name}' 的 factory 返回了 None",
+                    message=f"The factory for dependency '{definition.name}' returned None.",
                     dependency_name=definition.name,
                 )
             return instance
@@ -357,7 +374,7 @@ class ApplicationContext:
             raise
         except Exception as exc:
             raise CreationError(
-                message=f"创建依赖 '{definition.name}' 失败: {exc}",
+                message=f"Failed to create dependency '{definition.name}': {exc}",
                 dependency_name=definition.name,
                 cause=exc,
             ) from exc
@@ -417,8 +434,8 @@ class ApplicationContext:
                     raise DependencyNotFoundError(
                         message=format_semantic_message(
                             "inject-unique-binding",
-                            f"组件 '{definition.name}' 声明依赖了未注册的组件 '{dep_name}'。",
-                            "检查装饰器是否已执行、模块是否在 refresh() 前导入，以及依赖名称是否正确。",
+                            f"Component '{definition.name}' declares an unregistered dependency '{dep_name}'.",
+                            "Check whether the decorator ran, whether the module was imported before refresh(), and whether the dependency name is correct.",
                         ),
                         dependency_name=dep_name,
                         candidate_sources=[],
@@ -440,8 +457,8 @@ class ApplicationContext:
                     raise LifecycleError(
                         format_semantic_message(
                             "lifecycle-request-scope",
-                            f"singleton 组件 '{definition.name}' 直接依赖了 request 组件 '{dep_name}'。",
-                            "改为在 request 上下文内解析该依赖，或调整组件作用域。",
+                            f"Singleton component '{definition.name}' depends directly on request-scoped component '{dep_name}'.",
+                            "Resolve that dependency inside a request context, or adjust the component scopes.",
                         )
                     )
 
@@ -505,7 +522,7 @@ class ApplicationContext:
             try:
                 scope = ScopeType[registration.scope.upper()]
             except KeyError:
-                logger.warning("未知 scope '%s'，使用 SINGLETON", registration.scope)
+                logger.warning("Unknown scope '%s'; falling back to SINGLETON.", registration.scope)
                 scope = ScopeType.SINGLETON
 
             if not registration.is_top_level:
@@ -515,12 +532,13 @@ class ApplicationContext:
                     ),
                     rule_key="component-top-level",
                     problem=(
-                        f"组件 '{registration.name}' 定义在局部作用域 ({registration.source_qualname})。"
-                        "这类组件只有在运行到对应代码块时才会注册。"
+                        f"Component '{registration.name}' is defined in a local scope "
+                        f"({registration.source_qualname}). It is only registered when that block executes."
                     ),
                     guidance=(
-                        "将组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描与自动装配的稳定保证。"
-                        "需要更强归属与热插拔语义时，请用 @module 明确边界。"
+                        "Move the component to module top level. If it must be created dynamically, "
+                        "do not rely on the stability guarantees of automatic scanning and assembly. "
+                        "When you need stronger ownership and hot-pluggable semantics, declare the boundary with @module."
                     ),
                     category=ComponentDiscoveryWarning,
                     stacklevel=3,
@@ -539,7 +557,7 @@ class ApplicationContext:
             )
 
             if self._definition_registry.has(registration.name):
-                raise ValueError(f"Definition '{registration.name}' 已存在，禁止重复注册")
+                raise ValueError(duplicate_definition(registration.name))
 
             self._definition_registry.register(definition)
 
@@ -621,7 +639,7 @@ class ApplicationContext:
                 )
                 handler_registry.register(full_url, original_func)
         except Exception as exc:
-            logger.warning("注册 Controller %s 路由失败: %s", cls.__name__, exc)
+            logger.warning("Failed to register controller routes for %s: %s", cls.__name__, exc)
 
     def _create_class_instance(self, cls: type) -> object:
         from .decorators import Lazy, get_injection_markers
@@ -755,11 +773,11 @@ class ApplicationContext:
         args = typing.get_args(annotation)
         if origin is typing.Annotated:
             if not args:
-                raise ValueError("Annotated 缺少内部类型")
+                raise ValueError(missing_inner_type("Annotated"))
             return ApplicationContext._parse_runtime_annotation(args[0])
         if origin is typing.Final:
             if not args:
-                raise ValueError("Final 缺少内部类型")
+                raise ValueError(missing_inner_type("Final"))
             return ApplicationContext._parse_runtime_annotation(args[0])
         if origin in (typing.Union, types.UnionType):
             non_none_args = [arg for arg in args if arg is not type(None)]
@@ -767,7 +785,7 @@ class ApplicationContext:
             if has_none and len(non_none_args) == 1:
                 normalized = ApplicationContext._parse_runtime_annotation(non_none_args[0])
                 if normalized.kind != "single":
-                    raise ValueError("Optional 仅支持包装单实例依赖")
+                    raise ValueError(optional_single_dependency_only())
                 return _NormalizedInjectionAnnotation(
                     kind="single",
                     annotation_repr=annotation_repr,
@@ -778,7 +796,7 @@ class ApplicationContext:
             for arg in args:
                 normalized = ApplicationContext._parse_runtime_annotation(arg)
                 if normalized.kind != "single" or normalized.optional:
-                    raise ValueError("Union 仅支持多个单实例候选")
+                    raise ValueError(union_single_candidates_only())
                 targets.extend(normalized.targets)
             return _NormalizedInjectionAnnotation(
                 kind="union",
@@ -787,10 +805,10 @@ class ApplicationContext:
             )
         if origin is Provider:
             if len(args) != 1:
-                raise ValueError("Provider[T] 必须且只能包含一个类型参数")
+                raise ValueError(provider_requires_single_type_argument())
             normalized = ApplicationContext._parse_runtime_annotation(args[0])
             if normalized.kind != "single" or normalized.optional:
-                raise ValueError("Provider[T] 仅支持单实例依赖")
+                raise ValueError(provider_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="provider",
                 annotation_repr=annotation_repr,
@@ -799,17 +817,17 @@ class ApplicationContext:
         if origin in (list, set, tuple):
             if origin is tuple:
                 if len(args) != 2 or args[1] is not Ellipsis:
-                    raise ValueError("tuple 注入仅支持 tuple[T, ...] 形式")
+                    raise ValueError(tuple_injection_form())
                 element_annotation = args[0]
                 collection_kind = "tuple"
             else:
                 if len(args) != 1:
-                    raise ValueError("集合注入必须且只能包含一个元素类型")
+                    raise ValueError(collection_requires_one_element_type())
                 element_annotation = args[0]
                 collection_kind = origin.__name__
             normalized = ApplicationContext._parse_runtime_annotation(element_annotation)
             if normalized.kind != "single" or normalized.optional:
-                raise ValueError("集合注入仅支持单实例元素类型")
+                raise ValueError(collection_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="collection",
                 annotation_repr=annotation_repr,
@@ -817,14 +835,14 @@ class ApplicationContext:
                 collection_kind=collection_kind,
             )
 
-        raise ValueError(f"不支持的注解类型: {annotation_repr}")
+        raise ValueError(unsupported_annotation_type(annotation_repr))
 
     @staticmethod
     def _parse_string_annotation(annotation_text: str) -> _NormalizedInjectionAnnotation:
         try:
             expr = ast.parse(annotation_text, mode="eval").body
         except SyntaxError as exc:
-            raise ValueError(f"无法解析注解表达式 '{annotation_text}'") from exc
+            raise ValueError(invalid_annotation_expression(annotation_text)) from exc
         return ApplicationContext._parse_annotation_ast(expr, annotation_text)
 
     @staticmethod
@@ -847,7 +865,7 @@ class ApplicationContext:
                     continue
                 normalized = ApplicationContext._parse_annotation_ast(part, ApplicationContext._annotation_expr(part))
                 if normalized.kind != "single" or normalized.optional:
-                    raise ValueError("Union 仅支持多个单实例候选")
+                    raise ValueError(union_single_candidates_only())
                 normalized_targets.extend(normalized.targets)
             if optional and len(normalized_targets) == 1:
                 return _NormalizedInjectionAnnotation(
@@ -863,17 +881,17 @@ class ApplicationContext:
             )
 
         if not isinstance(node, ast.Subscript):
-            raise ValueError(f"不支持的注解表达式: {annotation_repr}")
+            raise ValueError(unsupported_annotation_expression(annotation_repr))
 
         container_name = ApplicationContext._extract_ast_name(node.value)
         if container_name is None:
-            raise ValueError(f"不支持的注解容器: {annotation_repr}")
+            raise ValueError(unsupported_annotation_container(annotation_repr))
         container_name = container_name.rsplit(".", 1)[-1]
 
         if container_name in {"Annotated", "Final"}:
             elements = ApplicationContext._subscript_elements(node.slice)
             if not elements:
-                raise ValueError(f"{container_name} 缺少内部类型")
+                raise ValueError(missing_inner_type(container_name))
             normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
             return _NormalizedInjectionAnnotation(
                 kind=normalized.kind,
@@ -885,10 +903,10 @@ class ApplicationContext:
         if container_name == "Optional":
             elements = ApplicationContext._subscript_elements(node.slice)
             if len(elements) != 1:
-                raise ValueError("Optional[T] 必须且只能包含一个类型参数")
+                raise ValueError("Optional[T] requires exactly one type argument.")
             normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
             if normalized.kind != "single":
-                raise ValueError("Optional 仅支持包装单实例依赖")
+                raise ValueError(optional_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="single",
                 annotation_repr=annotation_repr,
@@ -898,10 +916,10 @@ class ApplicationContext:
         if container_name == "Provider":
             elements = ApplicationContext._subscript_elements(node.slice)
             if len(elements) != 1:
-                raise ValueError("Provider[T] 必须且只能包含一个类型参数")
+                raise ValueError(provider_requires_single_type_argument())
             normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
             if normalized.kind != "single" or normalized.optional:
-                raise ValueError("Provider[T] 仅支持单实例依赖")
+                raise ValueError(provider_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="provider",
                 annotation_repr=annotation_repr,
@@ -910,10 +928,10 @@ class ApplicationContext:
         if container_name in {"list", "set"}:
             elements = ApplicationContext._subscript_elements(node.slice)
             if len(elements) != 1:
-                raise ValueError(f"{container_name}[T] 必须且只能包含一个元素类型")
+                raise ValueError(container_requires_one_element_type(container_name))
             normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
             if normalized.kind != "single" or normalized.optional:
-                raise ValueError("集合注入仅支持单实例元素类型")
+                raise ValueError(collection_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="collection",
                 annotation_repr=annotation_repr,
@@ -923,10 +941,10 @@ class ApplicationContext:
         if container_name == "tuple":
             elements = ApplicationContext._subscript_elements(node.slice)
             if len(elements) != 2 or not isinstance(elements[1], ast.Constant) or elements[1].value is not Ellipsis:
-                raise ValueError("tuple 注入仅支持 tuple[T, ...] 形式")
+                raise ValueError(tuple_injection_form())
             normalized = ApplicationContext._parse_annotation_ast(elements[0], ApplicationContext._annotation_expr(elements[0]))
             if normalized.kind != "single" or normalized.optional:
-                raise ValueError("集合注入仅支持单实例元素类型")
+                raise ValueError(collection_single_dependency_only())
             return _NormalizedInjectionAnnotation(
                 kind="collection",
                 annotation_repr=annotation_repr,
@@ -944,7 +962,7 @@ class ApplicationContext:
                     continue
                 normalized = ApplicationContext._parse_annotation_ast(element, ApplicationContext._annotation_expr(element))
                 if normalized.kind != "single" or normalized.optional:
-                    raise ValueError("Union 仅支持多个单实例候选")
+                    raise ValueError(union_single_candidates_only())
                 normalized_targets.extend(normalized.targets)
             if optional and len(normalized_targets) == 1:
                 return _NormalizedInjectionAnnotation(
@@ -959,7 +977,7 @@ class ApplicationContext:
                 targets=tuple(normalized_targets),
             )
 
-        raise ValueError(f"不支持的注解容器: {annotation_repr}")
+        raise ValueError(unsupported_annotation_container(annotation_repr))
 
     @staticmethod
     def _subscript_elements(node: ast.AST) -> List[ast.AST]:
@@ -991,15 +1009,14 @@ class ApplicationContext:
         message = format_semantic_message(
             "inject-unique-binding",
             (
-                f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 类型解析失败；"
-                f"原始注解: '{self._format_annotation_repr(raw_annotation)}'。"
+                f"Failed to resolve the type for dependency field '{attr_name}' on component "
+                f"'{owner_cls.__name__}'. Original annotation: "
+                f"'{self._format_annotation_repr(raw_annotation)}'."
             ),
-            "为 Inject() 提供可稳定解析的类型注解；复杂场景改用 InjectByName('ExplicitName')。",
+            "Provide a type annotation that Inject() can resolve stably. For complex cases, use InjectByName('ExplicitName').",
         )
         if cause is not None:
-            message = (
-                f"{message} 原始异常: {type(cause).__name__}: {cause}"
-            )
+            message = f"{message} Original error: {type(cause).__name__}: {cause}"
 
         raise DependencyTypeResolutionError(
             message=message,
@@ -1040,10 +1057,10 @@ class ApplicationContext:
                     message=format_semantic_message(
                         "inject-by-name",
                         (
-                            f"组件 '{owner_cls.__name__}' 的依赖字段 '{attr_name}' 需要显式组件 "
-                            f"'{dependency_name}'，但该组件未注册。"
+                            f"Dependency field '{attr_name}' on component '{owner_cls.__name__}' requires "
+                            f"explicit component '{dependency_name}', but that component is not registered."
                         ),
-                        "确认 InjectByName() 的名称与注册名一致；必要时改为 Inject() + 明确类型。",
+                        "Make sure the InjectByName() name matches the registration name. If needed, switch to Inject() with an explicit type.",
                     ),
                     dependency_name=dependency_name,
                     injection_point=injection_point,
@@ -1088,9 +1105,9 @@ class ApplicationContext:
                 key=f"inject-by-name-implicit:{point}",
                 rule_key="inject-by-name",
                 problem=(
-                    f"注入点 '{point}' 使用了未显式传名的 InjectByName()，当前会回退到属性名 '{attr_name}'。"
+                    f"Injection point '{point}' uses InjectByName() without an explicit name, so it currently falls back to attribute name '{attr_name}'."
                 ),
-                guidance="推荐改为 InjectByName('ExactComponentName')，避免属性名与注册名漂移。",
+                guidance="Prefer InjectByName('ExactComponentName') to avoid drift between attribute names and registration names.",
                 category=InjectionSemanticWarning,
                 stacklevel=4,
             )
@@ -1100,9 +1117,9 @@ class ApplicationContext:
                 key=f"inject-by-name-annotation:{point}",
                 rule_key="inject-by-name",
                 problem=(
-                    f"注入点 '{point}' 使用 InjectByName() 时缺少明确类型注解。"
+                    f"Injection point '{point}' uses InjectByName() without an explicit type annotation."
                 ),
-                guidance="即使按名称解析，也建议补上准确类型注解以表达语义并帮助静态检查。",
+                guidance="Even for name-based resolution, add an accurate type annotation to express intent and help static analysis.",
                 category=InjectionSemanticWarning,
                 stacklevel=4,
             )
@@ -1184,7 +1201,7 @@ class ApplicationContext:
                     injection_point=injection_point,
                     normalized=normalized,
                     candidates=matches,
-                    extra_reason=f"联合候选 '{target.display_name}' 匹配到多个组件",
+                    extra_reason=f"Union candidate '{target.display_name}' matched multiple components.",
                 )
             unique_names = {definition.name for _, definition in viable_candidates}
             if len(unique_names) == 1 and viable_candidates:
@@ -1202,7 +1219,7 @@ class ApplicationContext:
                     injection_point=injection_point,
                     normalized=normalized,
                     candidates=[definition for _, definition in viable_candidates],
-                    extra_reason="Union 中有多个候选同时可绑定",
+                    extra_reason="Multiple Union candidates can be bound at the same time.",
                 )
             if allow_missing:
                 return _ResolvedInjectionBinding(
@@ -1221,8 +1238,8 @@ class ApplicationContext:
         raise DependencyTypeResolutionError(
             message=format_semantic_message(
                 "inject-unique-binding",
-                f"注入点 '{injection_point}' 使用了当前不支持的注入语义 '{normalized.kind}'。",
-                "改用 InjectByName('ExplicitName')，或将注解收敛为单一、可唯一绑定的类型契约。",
+                f"Injection point '{injection_point}' uses unsupported injection semantics '{normalized.kind}'.",
+                "Use InjectByName('ExplicitName'), or narrow the annotation to a single type contract that can bind uniquely.",
             ),
             dependency_name=dependency_name,
             injection_point=injection_point,
@@ -1297,11 +1314,11 @@ class ApplicationContext:
             message=format_semantic_message(
                 "inject-unique-binding",
                 (
-                    f"注入点 '{injection_point}' 无法找到可绑定组件；"
-                    f"原始注解: '{normalized.annotation_repr}'，"
-                    f"归一化语义: '{self._describe_normalized_kind(normalized)}'。"
+                    f"Injection point '{injection_point}' could not find a bindable component. "
+                    f"Original annotation: '{normalized.annotation_repr}', "
+                    f"normalized semantics: '{self._describe_normalized_kind(normalized)}'."
                 ),
-                "确认目标组件已注册并在 refresh() 前完成导入；无法唯一表达时改用 InjectByName('ExplicitName')。",
+                "Make sure the target component is registered and imported before refresh(). Use InjectByName('ExplicitName') when the dependency cannot be expressed uniquely.",
             ),
             dependency_name=dependency_name,
             injection_point=injection_point,
@@ -1320,17 +1337,17 @@ class ApplicationContext:
         candidates: List[Definition],
         extra_reason: Optional[str] = None,
     ) -> None:
-        reason = extra_reason or "多个候选同时满足注入条件"
+        reason = extra_reason or "Multiple candidates satisfy the injection contract."
         raise DependencyTypeResolutionError(
             message=format_semantic_message(
                 "inject-unique-binding",
                 (
-                    f"注入点 '{injection_point}' 解析到多个候选；"
-                    f"原始注解: '{normalized.annotation_repr}'，"
-                    f"归一化语义: '{self._describe_normalized_kind(normalized)}'。"
-                    f"{reason}。"
+                    f"Injection point '{injection_point}' resolved to multiple candidates. "
+                    f"Original annotation: '{normalized.annotation_repr}', "
+                    f"normalized semantics: '{self._describe_normalized_kind(normalized)}'. "
+                    f"{reason}"
                 ),
-                "改用 InjectByName('ExplicitName')，或缩小类型范围直到只能绑定一个组件。",
+                "Use InjectByName('ExplicitName'), or narrow the type until only one component can be bound.",
             ),
             dependency_name=dependency_name,
             injection_point=injection_point,
@@ -1371,8 +1388,8 @@ class ApplicationContext:
         raise DependencyTypeResolutionError(
             message=format_semantic_message(
                 "inject-unique-binding",
-                f"内部绑定结果包含未知类型 '{binding.kind}'。",
-                "这是框架内部一致性错误，请检查注入绑定归一化流程。",
+                f"Internal binding resolution produced unknown kind '{binding.kind}'.",
+                "This is an internal consistency error in the framework. Check the binding normalization flow.",
             ),
             dependency_name=",".join(binding.target_labels),
             candidate_sources=[],
@@ -1466,7 +1483,7 @@ class ApplicationContext:
             try:
                 self._run_coroutine(async_func())
             except Exception as exc:
-                logger.error("生命周期方法 %s.%s 执行失败: %s", name, async_method, exc)
+                logger.error("Lifecycle method %s.%s failed: %s", name, async_method, exc)
 
         sync_func = getattr(instance, sync_method, None)
         if sync_func and callable(sync_func) and self._is_user_defined_method(instance, sync_method):
@@ -1475,7 +1492,7 @@ class ApplicationContext:
                 if inspect.iscoroutine(result):
                     self._run_coroutine(result)
             except Exception as exc:
-                logger.error("生命周期方法 %s.%s 执行失败: %s", name, sync_method, exc)
+                logger.error("Lifecycle method %s.%s failed: %s", name, sync_method, exc)
 
     def _is_user_defined_method(self, instance: Any, method_name: str) -> bool:
         return self._is_class_method_overridden(type(instance), method_name)
@@ -1515,7 +1532,7 @@ class ApplicationContext:
         while self.active_request_count > 0:
             if time.monotonic() >= deadline:
                 logger.warning(
-                    "等待请求作用域清退超时，root=%s remaining=%s",
+                    "Timed out while waiting for request scopes to drain. root=%s remaining=%s",
                     self.id,
                     self.active_request_count,
                 )
@@ -1532,14 +1549,14 @@ class ApplicationContext:
             if inspect.iscoroutine(result):
                 result = asyncio.run(result)
             if result is False:
-                raise LifecycleError(f"组件 '{definition.name}' 健康检查失败")
+                raise LifecycleError(f"Health check failed for component '{definition.name}'.")
 
         for callback in self._health_checks:
             result = callback(self)
             if inspect.iscoroutine(result):
                 result = asyncio.run(result)
             if result is False:
-                raise LifecycleError("容器健康检查失败")
+                raise LifecycleError("Container health check failed.")
 
     def get_lifecycle_phase(self, name: str) -> Optional[LifecyclePhase]:
         return self._lifecycle_phases.get(name)

@@ -19,8 +19,8 @@ This page is the canonical guide to the runnable examples maintained in the repo
 The source of truth is now the root `examples/` directory, not `docs/examples/` and not
 legacy one-file demos.
 
-> **Recommended mental model:** start from decorator-based business code, declare a `RootModule`,
-> call `configure(root_module=...)`, then let `run()` or `get_asgi_app()` assemble the runtime.<br>
+> **Recommended mental model:** start from decorator-based business code, declare an entry method with `@application`,
+> attach startup settings with `@configure(...)`, then call `main()` directly.<br>
 > **See also:** [Getting Started](getting_started.md), [Build & Run](build_run.md),
 > [Parameter System Guide](parameter_system_guide.md), [Testing & Verification](testing.md)
 
@@ -28,15 +28,15 @@ legacy one-file demos.
 
 1. `examples/minimal_app/` — the shortest public entrypoint
 2. `examples/controller_service_inject/` — business layering with `@service`, `@controller`, and `Inject()`
-3. `examples/middleware_and_module/` — how `@module` and `@middleware` complement each other
+3. `examples/middleware_and_module/` — when an explicit `@module` boundary is worth adding on top of the entry method
 4. `examples/parameter_handling/` — controller-method parameter binding with `Path`, `Query`, and `Body`
-5. `examples/testing_flow/` — testing through `configure(...)` and `get_asgi_app()` without a real server process
+5. `examples/testing_flow/` — testing through `main.get_asgi_app()` without a real server process
 
 ## Example map
 
 | Example | Teaches | Run command | Source |
 | --- | --- | --- | --- |
-| `examples/minimal_app/` | Minimal app structure with `configure(root_module=...) + run()` | `python -m examples.minimal_app` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app) |
+| `examples/minimal_app/` | Minimal app structure with `@application + @configure(...) + main()` | `python -m examples.minimal_app` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app) |
 | `examples/controller_service_inject/` | Service/controller split and type-led `Inject()` wiring | `python -m examples.controller_service_inject` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/controller_service_inject) |
 | `examples/middleware_and_module/` | Module boundary ownership and middleware pipeline extension | `python -m examples.middleware_and_module` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
 | `examples/parameter_handling/` | `Path`, `Query`, and `Body` on controller methods | `python -m examples.parameter_handling` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
@@ -48,7 +48,8 @@ Older examples could accidentally push developers toward a manual app-registrati
 The current example set intentionally keeps Cullinan's own concept front and center:
 
 - business-first decorators instead of explicit app wiring
-- `RootModule` as the runtime boundary when structure matters
+- an entry method as the default entrypoint
+- `@module` only when structure needs an explicit runtime boundary
 - `Inject()` as the default injection path when the type contract is clear
 - parameter binding on controller methods instead of raw request plumbing
 - testing via public APIs instead of internal bootstrap shortcuts

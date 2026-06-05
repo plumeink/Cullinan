@@ -118,18 +118,17 @@ run()  # 在端口 4080 启动 Tornado
 ```python
 from cullinan import run
 
-# 方式 A：让 Cullinan 自动解析后端
-run()
+# 推荐默认路径
+from cullinan import application, configure
 
-# 方式 B：Tornado（显式指定）
-run(engine='tornado')
+@configure(user_packages=["myapp"])
+@application
+def main(): ...
 
-# 方式 C：ASGI
-run(engine='asgi')
+main()
 
-# 方式 D：ASGI app 用于外部服务器
-from cullinan import get_asgi_app
-app = get_asgi_app()
+# 若要交给外部 ASGI 服务器，优先使用入口方法上的 helper
+app = main.get_asgi_app()
 # 然后：uvicorn myapp:app
 ```
 

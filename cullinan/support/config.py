@@ -1,35 +1,34 @@
 # -*- coding: utf-8 -*-
-"""
-Cullinan Framework Configuration
+"""Cullinan framework configuration."""
 
-配置框架的模块扫描行为，特别是对于打包环境
-"""
-
+from contextlib import contextmanager
 import os
 import sys
-from typing import Any, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
+
+
+_CLASS_CONFIG_ATTR = "__cullinan_config__"
 
 class CullinanConfig:
-    """Cullinan 框架配置类"""
+    """Global configuration container for Cullinan."""
 
     def __init__(self):
-        # 用户包目录列表（相对于项目根目录或绝对路径）
-        # 例如: ['myapp', 'myapp.controllers', 'myapp.services']
+        # User package directories, relative to the project root or absolute.
         self.user_packages: List[str] = []
 
-        # 项目根目录（自动检测或手动设置）
+        # Project root, either detected automatically or set explicitly.
         self.project_root: Optional[str] = None
 
-        # 推荐高层启动入口使用的根模块
+        # Legacy root module field retained only for advanced compatibility internals.
         self.root_module: Optional[Any] = None
 
-        # 是否启用详细日志
+        # Whether verbose logging is enabled.
         self.verbose: bool = False
 
-        # 是否自动扫描（如果为 False，只导入 user_packages）
+        # Whether automatic scanning is enabled.
         self.auto_scan: bool = True
 
-        # 模块扫描黑名单（不扫描这些包）
+        # Packages excluded from scanning.
         self.exclude_packages: List[str] = [
             # Testing
             'test', 'tests', '__pycache__', '.pytest_cache', '.tox',
@@ -49,34 +48,33 @@ class CullinanConfig:
             '__pypackages__', '.mypy_cache', '.ruff_cache',
         ]
 
-        # 启动错误处理策略
-        # 'strict': Service 初始化失败时立即退出（默认，最安全）
-        # 'warn': Service 初始化失败时记录警告并继续（降级模式）
-        # 'ignore': 忽略 Service 初始化失败（不推荐，仅用于调试）
+        # Startup error policy:
+        # 'strict': fail fast when a service cannot initialize
+        # 'warn': log a warning and continue in degraded mode
+        # 'ignore': ignore startup failures (debugging only)
         self.startup_error_policy: str = 'strict'
 
-        # RequestContext 特性开关（v0.81+）
-        # 允许用户根据需要启用或禁用 RequestContext 的特定功能
+        # RequestContext feature flags (v0.81+).
         self.context_features = {
-            # 是否启用请求 ID 自动生成
+            # Whether request IDs are generated automatically.
             'auto_request_id': True,
 
-            # 是否启用请求计时
+            # Whether request timing is enabled.
             'timing': True,
 
-            # 是否启用元数据存储
+            # Whether metadata storage is enabled.
             'metadata': True,
 
-            # 是否启用清理回调
+            # Whether cleanup callbacks are enabled.
             'cleanup_callbacks': True,
 
-            # 是否启用调试日志
+            # Whether RequestContext debug logging is enabled.
             'debug_logging': False,
 
-            # 请求 ID 格式：'uuid'（默认）/ 'sequential' / 'custom'
+            # Request ID format: 'uuid' (default), 'sequential', or 'custom'.
             'request_id_format': 'uuid',
 
-            # 自定义请求 ID 生成器（当 request_id_format='custom' 时使用）
+            # Custom request ID generator used when request_id_format='custom'.
             'custom_request_id_generator': None,
         }
 
@@ -120,20 +118,31 @@ class CullinanConfig:
         # ====================================================================
 
     def add_user_package(self, package: str):
-        """添加用户包"""
+        """Add a user package to the scan list."""
         if package not in self.user_packages:
             self.user_packages.append(package)
 
     def set_project_root(self, root: str):
-        """设置项目根目录"""
+        """Set the project root."""
         self.project_root = os.path.abspath(root)
 
     def set_verbose(self, verbose: bool):
-        """设置详细日志"""
+        """Enable or disable verbose logging."""
         self.verbose = verbose
 
+    def _to_decorator_dict(self) -> Dict[str, Any]:
+        """Return the config fields that may be attached to an entry method."""
+        data = self.to_dict()
+        data.pop('root_module', None)
+        return data
+
+    def __call__(self, target):
+        """Allow configure(...) to act as a decorator."""
+        set_class_config(target, self._to_decorator_dict())
+        return target
+
     def from_dict(self, config: dict):
-        """从字典加载配置"""
+        """Load configuration from a dictionary."""
         if 'user_packages' in config:
             self.user_packages = config['user_packages']
         if 'project_root' in config:
@@ -159,7 +168,7 @@ class CullinanConfig:
         return self
 
     def to_dict(self) -> dict:
-        """导出为字典"""
+        """Export the configuration as a dictionary."""
         return {
             'user_packages': self.user_packages,
             'project_root': self.project_root,
@@ -175,13 +184,50 @@ class CullinanConfig:
         }
 
 
-# 全局配置实例
+# Global configuration instance.
 _config = CullinanConfig()
 
 
 def get_config() -> CullinanConfig:
-    """获取全局配置实例"""
+    """Return the global configuration instance."""
     return _config
+
+
+def set_class_config(target: Any, config_values: Dict[str, Any]) -> None:
+    setattr(target, _CLASS_CONFIG_ATTR, dict(config_values))
+    try:
+        from cullinan.application.model import refresh_application_entry
+
+        refresh_application_entry(target)
+    except Exception:
+        pass
+
+
+def get_class_config(target: Any) -> Optional[Dict[str, Any]]:
+    config_values = getattr(target, _CLASS_CONFIG_ATTR, None)
+    if config_values is None:
+        return None
+    return dict(config_values)
+
+
+@contextmanager
+def push_config_overrides(overrides: Optional[Dict[str, Any]]) -> Iterator[CullinanConfig]:
+    """Temporarily apply entry-method config overrides to the global config."""
+    if not overrides:
+        yield _config
+        return
+
+    original = _config.to_dict()
+    merged = dict(original)
+    for key, value in overrides.items():
+        if value is not None:
+            merged[key] = value
+
+    _config.from_dict(merged)
+    try:
+        yield _config
+    finally:
+        _config.from_dict(original)
 
 
 def configure(
@@ -197,42 +243,43 @@ def configure(
     server_host: Optional[str] = None,
     server_port: Optional[int] = None,
 ):
-    """配置 Cullinan 框架
+    """Configure the Cullinan framework.
 
     Args:
-        root_module: 推荐高层启动入口使用的根模块（通常为 `@module` 声明的 RootModule）
-        user_packages: 用户包列表，例如 ['myapp', 'myapp.controllers']
-        project_root: 项目根目录（如果不指定，会自动推断）
-        verbose: 是否启用详细日志
-        auto_scan: 是否自动扫描（False 时只导入指定的包）
-        exclude_packages: 排除的包名列表
-        startup_error_policy: 启动错误处理策略
-            - 'strict': Service 失败时立即退出（默认，最安全）
-            - 'warn': Service 失败时记录警告并继续（降级模式）
-            - 'ignore': 忽略失败（不推荐，仅调试用）
-        server_engine: 高层 `run()` 的后端类型（`'auto'`、`'tornado'` 或 `'asgi'`）
-        asgi_server: ASGI 模式下的底层服务器（如 `uvicorn` / `hypercorn`）
-        server_host: 高层 `run()` 默认绑定地址
-        server_port: 高层 `run()` 默认绑定端口
+        root_module: Legacy root-module entrypoint. This default startup path has been removed.
+        user_packages: User package list, for example ``['myapp', 'myapp.controllers']``.
+        project_root: Project root directory. If omitted, it is inferred automatically.
+        verbose: Whether to enable verbose logging.
+        auto_scan: Whether to auto-scan packages. When ``False``, only the given
+            user packages are imported.
+        exclude_packages: Package names excluded from scanning.
+        startup_error_policy: Startup error policy.
+            - ``'strict'``: stop immediately when a service fails (default)
+            - ``'warn'``: log a warning and continue in degraded mode
+            - ``'ignore'``: ignore failures (not recommended outside debugging)
+        server_engine: Backend used by the top-level ``run()`` helper:
+            ``'auto'``, ``'tornado'``, or ``'asgi'``.
+        asgi_server: Underlying ASGI server such as ``uvicorn`` or ``hypercorn``.
+        server_host: Default bind host for the top-level ``run()`` helper.
+        server_port: Default bind port for the top-level ``run()`` helper.
 
     Example:
         >>> from cullinan import configure
-        >>> configure(
-        ...     root_module=RootModule,
-        ...     user_packages=['your_app'],
-        ...     verbose=True,
-        ...     startup_error_policy='warn'  # 允许部分 Service 失败
-        ... )
+        >>> @configure(user_packages=['your_app'], verbose=True)
+        ... @application
+        ... def main(): ...
     """
     global _config
 
     if root_module is not None:
-        _config.root_module = root_module
+        from cullinan.support.diagnostics import legacy_root_module_entry_removed
+
+        raise ValueError(legacy_root_module_entry_removed())
 
     if user_packages is not None:
         _config.user_packages = user_packages
 
-        # 自动推断并添加项目根目录到 sys.path
+        # Infer the project root and add it to sys.path when needed.
         if project_root is None:
             project_root = _auto_detect_project_root(user_packages)
 
@@ -250,7 +297,7 @@ def configure(
     if exclude_packages is not None:
         _config.exclude_packages = exclude_packages
 
-    # 验证启动错误策略
+    # Validate the startup error policy.
     valid_policies = ['strict', 'warn', 'ignore']
     if startup_error_policy not in valid_policies:
         raise ValueError(
@@ -271,11 +318,11 @@ def configure(
 
 
 def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
-    """自动检测项目根目录
+    """Auto-detect the project root directory.
 
-    根据配置的用户包名，向上查找项目根目录
-    例如：user_packages=['club.fnep'] -> 查找包含 club/fnep 的目录
-    支持所有打包环境 (development/Nuitka/PyInstaller)
+    Uses configured user package names to walk upward and find the project root.
+    Example: ``user_packages=['club.fnep']`` looks for a directory containing
+    ``club/fnep``. Works across development, Nuitka, and PyInstaller environments.
     """
     import inspect
 
@@ -291,13 +338,13 @@ def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
     except Exception:
         pass  # Handle any other errors gracefully
 
-    # 获取调用 configure 的文件路径
+    # Get the file path of the configure() caller.
     frame = inspect.currentframe()
     if frame is None:
         return None
 
     try:
-        # 向上查找两层：configure -> caller
+        # Walk up two stack frames: configure() -> caller.
         caller_frame = frame.f_back
         if caller_frame and caller_frame.f_back:
             caller_frame = caller_frame.f_back
@@ -311,29 +358,29 @@ def _auto_detect_project_root(user_packages: List[str]) -> Optional[str]:
 
         current_dir = os.path.dirname(os.path.abspath(caller_file))
 
-        # 如果 user_packages 包含点号分隔的包名，尝试推断根目录
+        # If user_packages contain dotted package names, try to infer the root.
         for package in user_packages:
             if '.' in package:
-                # 例如 'club.fnep' -> 查找包含 'club' 的父目录
+                # Example: 'club.fnep' -> look for a parent directory containing 'club'.
                 parts = package.split('.')
                 top_package = parts[0]
 
-                # 从当前目录向上查找
+                # Search upward from the current directory.
                 search_dir = current_dir
-                for _ in range(5):  # 最多向上查找 5 级
-                    # 检查是否存在 top_package 目录
+                for _ in range(5):  # Search up to five directory levels.
+                    # Check whether the top-level package directory exists here.
                     package_path = os.path.join(search_dir, top_package)
                     if os.path.isdir(package_path):
-                        # 找到了，返回这个目录
+                        # Found it.
                         return search_dir
 
                     parent = os.path.dirname(search_dir)
-                    if parent == search_dir:  # 已经到根目录
+                    if parent == search_dir:  # Reached the filesystem root.
                         break
                     search_dir = parent
 
-        # 如果没有找到，返回调用者文件的父目录的父目录
-        # 这适用于 project/app/main.py 的结构
+        # If nothing was inferred, fall back to the caller file's grandparent.
+        # This works for layouts such as project/app/main.py.
         return os.path.dirname(os.path.dirname(current_dir))
 
     finally:

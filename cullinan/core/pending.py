@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""构建期待注册队列。"""
+"""Pending registration queue for two-phase component assembly."""
 
 from __future__ import annotations
 
@@ -71,20 +71,23 @@ class PendingRegistry:
         with self._lock:
             if self._frozen:
                 problem = (
-                    f"组件 '{registration.name}' 在 ApplicationContext.refresh() 之后才尝试注册。"
+                    f"Component '{registration.name}' attempted to register after ApplicationContext.refresh()."
                 )
                 guidance = (
-                    "将所有带装饰器的组件放在模块顶层，并确保其所在模块在 refresh() 之前已完成导入。"
-                    "需要更强运行时归属时，请在 refresh() 前通过 @module 明确边界。"
+                    "Keep decorator-based components at module top level and ensure their modules are imported "
+                    "before refresh(). If you need stronger runtime ownership semantics, declare the boundary "
+                    "with @module before refresh()."
                 )
                 if not registration.is_top_level:
                     problem = (
-                        f"组件 '{registration.name}' 定义在局部作用域 ({registration.source_qualname})，"
-                        "直到运行到该代码块时装饰器才会执行。"
+                        f"Component '{registration.name}' is defined in a local scope "
+                        f"({registration.source_qualname}), so its decorator does not run until that block executes."
                     )
                     guidance = (
-                        "把该组件移动到模块顶层；如果必须动态创建，请不要依赖自动扫描，并在 refresh() 前显式完成创建与注册。"
-                        "Cullinan 的推荐路径是声明业务组件和边界，而不是在运行中回退到手工 app 注册。"
+                        "Move the component to module top level. If you must create it dynamically, do not rely "
+                        "on automatic scanning, and complete creation and registration explicitly before refresh(). "
+                        "Cullinan's recommended path is to declare business components and boundaries instead of "
+                        "falling back to manual app-style registration at runtime."
                     )
                 raise RuntimeError(
                     f"{format_semantic_message('refresh-freeze', problem, guidance)} "

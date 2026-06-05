@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-"""统一的组件定义注册表。"""
+"""Unified registry for component definitions."""
 
 from __future__ import annotations
 
 import threading
 from typing import Dict, Iterable, List, Optional
+
+from cullinan.support.diagnostics import duplicate_definition
 
 from .definitions import Definition
 from .exceptions import RegistryFrozenError
@@ -22,7 +24,7 @@ class DefinitionRegistry:
         with self._lock:
             self._ensure_mutable()
             if definition.name in self._definitions:
-                raise ValueError(f"Definition '{definition.name}' 已存在，禁止重复注册")
+                raise ValueError(duplicate_definition(definition.name))
             self._definitions[definition.name] = definition
 
     def register_all(self, definitions: Iterable[Definition]) -> None:
@@ -67,7 +69,7 @@ class DefinitionRegistry:
 
     def _ensure_mutable(self) -> None:
         if self._frozen:
-            raise RegistryFrozenError("Registry 已冻结，禁止修改")
+            raise RegistryFrozenError()
 
 
 __all__ = ["DefinitionRegistry"]

@@ -12,13 +12,13 @@ from pathlib import Path
 import pytest
 
 import cullinan
-from cullinan import configure, get_config, get_asgi_app, run
+from cullinan import application, configure, get_config
 from cullinan.application import Application
 from cullinan.application import public as public_api
 from cullinan.web.controller import reset_controller_registry
 from cullinan.web.params import FileInfo
 from cullinan.core import PendingRegistry, set_application_context
-from cullinan.core.semantic_rules import reset_semantic_warnings
+from cullinan.core.semantic_rules import PublicAPISemanticWarning, reset_semantic_warnings
 from cullinan.web.gateway import WebRuntime, reset_gateway
 
 
@@ -60,8 +60,9 @@ def _reset_semantic_once_and_config():
 def test_top_level_public_api_hides_advanced_runtime_symbols():
     public_exports = set(cullinan.__all__)
 
-    assert "run" in public_exports
-    assert "get_asgi_app" in public_exports
+    assert "application" in public_exports
+    assert "run" not in public_exports
+    assert "get_asgi_app" not in public_exports
     assert "create_app" not in public_exports
     assert "current_app" not in public_exports
     assert "Application" not in public_exports
@@ -72,6 +73,10 @@ def test_top_level_public_api_hides_advanced_runtime_symbols():
 
 def test_top_level_does_not_expose_advanced_runtime_symbols():
     module = importlib.reload(cullinan)
+    with pytest.raises(AttributeError):
+        getattr(module, "run")
+    with pytest.raises(AttributeError):
+        getattr(module, "get_asgi_app")
     with pytest.raises(AttributeError):
         getattr(module, "Application")
     with pytest.raises(AttributeError):
@@ -144,15 +149,43 @@ def test_direct_application_run_stays_explicit_runtime_api(tmp_path, monkeypatch
         _clear_modules(package_name)
 
 
-def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_path, monkeypatch):
-    package_name = "boundary_public_run"
+def test_public_run_requires_application_entry_method():
+    get_config().root_module = None
+
+    with pytest.raises(RuntimeError, match=r"cullinan\.run\(\) requires an @application entry method"):
+        public_api.run()
+
+    with pytest.raises(RuntimeError) as exc_info:
+        public_api.run()
+
+    message = str(exc_info.value)
+    assert "@application" in message
+    assert "entry method" in message
+
+
+def test_public_get_asgi_app_requires_application_entry_method():
+    get_config().root_module = None
+
+    with pytest.raises(RuntimeError, match=r"cullinan\.get_asgi_app\(\) requires an @application entry method"):
+        public_api.get_asgi_app()
+
+    with pytest.raises(RuntimeError) as exc_info:
+        public_api.get_asgi_app()
+
+    message = str(exc_info.value)
+    assert "@application" in message
+    assert "entry method" in message
+
+
+def test_application_entry_method_runs_without_boundary_warning(tmp_path, monkeypatch):
+    package_name = "boundary_public_application_method"
     _write_package(
         tmp_path,
         package_name,
         {
             "__init__.py": "",
             "root.py": """
-                from cullinan import get_api, module, service, controller, Inject
+                from cullinan import Inject, application, configure, controller, get_api, service
 
                 @service
                 class GreetingService:
@@ -167,15 +200,20 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
                     def ping(self):
                         return {"message": self.greeting_service.greet()}
 
-                @module
-                class RootModule:
-                    pass
+                @configure(
+                    user_packages=["boundary_public_application_method"],
+                    server_engine="tornado",
+                    server_host="127.0.0.1",
+                    server_port=5091,
+                )
+                @application
+                def main(): ...
             """,
         },
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     _clear_modules(package_name)
-    root_module = importlib.import_module(f"{package_name}.root").RootModule
+    entry_method = importlib.import_module(f"{package_name}.root").main
 
     captured: dict[str, object] = {}
 
@@ -193,19 +231,13 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
 
     monkeypatch.setattr(public_api, "_load_tornado_adapter", lambda: DummyTornadoAdapter)
 
-    configure(
-        root_module=root_module,
-        server_engine="tornado",
-        server_host="127.0.0.1",
-        server_port=5091,
-    )
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
-        app = run()
+        app = entry_method()
 
     try:
         assert app is not None
-        assert app.root_module is root_module
+        assert app.root_module is entry_method
         assert captured["host"] == "127.0.0.1"
         assert captured["port"] == 5091
         assert captured["settings"]["template_path"].endswith("templates")
@@ -218,15 +250,56 @@ def test_public_run_uses_configured_root_module_without_boundary_warning(tmp_pat
         _clear_modules(package_name)
 
 
-def test_public_run_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch):
-    package_name = "boundary_public_run_auto"
+def test_configure_rejects_legacy_root_module_path():
+    class RootModule:
+        pass
+
+    with pytest.raises(ValueError) as exc_info:
+        configure(root_module=RootModule)
+
+    message = str(exc_info.value)
+    assert "configure(root_module=...)" in message
+    assert "@application" in message
+
+
+def test_public_run_rejects_legacy_startup_class(tmp_path, monkeypatch):
+    package_name = "boundary_public_legacy_class"
     _write_package(
         tmp_path,
         package_name,
         {
             "__init__.py": "",
             "root.py": """
-                from cullinan import controller, get_api, module
+                from cullinan import application
+
+                @application
+                def main(): ...
+
+                class LegacyApp:
+                    pass
+            """,
+        },
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    _clear_modules(package_name)
+    legacy_app = importlib.import_module(f"{package_name}.root").LegacyApp
+
+    with pytest.raises(RuntimeError) as exc_info:
+        public_api.run(legacy_app)
+
+    message = str(exc_info.value)
+    assert "no longer accepts startup classes" in message
+
+
+def test_entry_method_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch):
+    package_name = "boundary_public_method_auto"
+    _write_package(
+        tmp_path,
+        package_name,
+        {
+            "__init__.py": "",
+            "root.py": """
+                from cullinan import application, configure, controller, get_api
 
                 @controller(url="/api")
                 class GreetingController:
@@ -234,15 +307,20 @@ def test_public_run_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch
                     def ping(self):
                         return {"message": "hello"}
 
-                @module
-                class RootModule:
-                    pass
+                @configure(
+                    user_packages=["boundary_public_method_auto"],
+                    server_host="127.0.0.1",
+                    server_port=5092,
+                    asgi_server="uvicorn",
+                )
+                @application
+                def main(): ...
             """,
         },
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     _clear_modules(package_name)
-    root_module = importlib.import_module(f"{package_name}.root").RootModule
+    entry_method = importlib.import_module(f"{package_name}.root").main
 
     captured: dict[str, object] = {}
 
@@ -260,17 +338,11 @@ def test_public_run_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch
     monkeypatch.setattr(public_api, "ASGIAdapter", DummyASGIAdapter)
     monkeypatch.setattr(public_api, "resolve_runtime_engine", lambda engine, asgi_server="uvicorn": "asgi")
 
-    configure(
-        root_module=root_module,
-        server_host="127.0.0.1",
-        server_port=5092,
-        asgi_server="uvicorn",
-    )
-    app = run()
+    app = entry_method.run()
 
     try:
         assert app is not None
-        assert app.root_module is root_module
+        assert app.root_module is entry_method
         assert captured["host"] == "127.0.0.1"
         assert captured["port"] == 5092
         assert captured["kwargs"]["server"] == "uvicorn"
@@ -281,15 +353,15 @@ def test_public_run_prefers_neutral_auto_engine_resolution(tmp_path, monkeypatch
         _clear_modules(package_name)
 
 
-def test_top_level_get_asgi_app_uses_configured_root_module(tmp_path, monkeypatch):
-    package_name = "boundary_public_asgi"
+def test_entry_method_exposes_get_asgi_app(tmp_path, monkeypatch):
+    package_name = "boundary_public_asgi_method"
     _write_package(
         tmp_path,
         package_name,
         {
             "__init__.py": "",
             "root.py": """
-                from cullinan import get_api, module, controller
+                from cullinan import application, configure, get_api, controller
 
                 @controller(url="/api")
                 class GreetingController:
@@ -297,18 +369,17 @@ def test_top_level_get_asgi_app_uses_configured_root_module(tmp_path, monkeypatc
                     def ping(self):
                         return {"message": "hello"}
 
-                @module
-                class RootModule:
-                    pass
+                @configure(user_packages=["boundary_public_asgi_method"])
+                @application
+                def main(): ...
             """,
         },
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     _clear_modules(package_name)
-    root_module = importlib.import_module(f"{package_name}.root").RootModule
-    configure(root_module=root_module)
+    entry_method = importlib.import_module(f"{package_name}.root").main
 
-    app = get_asgi_app()
+    app = entry_method.get_asgi_app()
 
     async def receive():
         return {"type": "http.request", "body": b"", "more_body": False}
@@ -347,7 +418,7 @@ def test_top_level_get_asgi_app_uses_configured_root_module(tmp_path, monkeypatc
         _clear_modules(package_name)
 
 
-def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monkeypatch):
+def test_entry_method_finalizes_middleware_and_openapi(tmp_path, monkeypatch):
     package_name = "boundary_public_asgi_finalize"
     _write_package(
         tmp_path,
@@ -355,7 +426,7 @@ def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monke
         {
             "__init__.py": "",
             "root.py": """
-                from cullinan import Middleware, controller, get_api, middleware, module
+                from cullinan import Middleware, application, configure, controller, get_api, middleware
 
                 @middleware(priority=50)
                 class AddExampleHeader(Middleware):
@@ -369,16 +440,15 @@ def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monke
                     def ping(self):
                         return {"message": "hello"}
 
-                @module
-                class RootModule:
-                    pass
+                @configure(user_packages=["boundary_public_asgi_finalize"])
+                @application
+                def main(): ...
             """,
         },
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     _clear_modules(package_name)
-    root_module = importlib.import_module(f"{package_name}.root").RootModule
-    configure(root_module=root_module)
+    entry_method = importlib.import_module(f"{package_name}.root").main
 
     async def receive():
         return {"type": "http.request", "body": b"", "more_body": False}
@@ -405,7 +475,7 @@ def test_top_level_get_asgi_app_finalizes_middleware_and_openapi(tmp_path, monke
         )
         return sent
 
-    app = get_asgi_app()
+    app = entry_method.get_asgi_app()
 
     import asyncio
 

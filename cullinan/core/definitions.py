@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""统一组件定义模型。"""
+"""Unified component definition model."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ class ScopeType(Enum):
 
 @dataclass(frozen=True)
 class Definition:
-    """统一的组件定义。"""
+    """Unified component definition."""
 
     name: str
     factory: Callable[["ApplicationContext"], Any]
@@ -36,13 +36,13 @@ class Definition:
 
     def __post_init__(self):
         if not self.name:
-            raise ValueError("Definition.name 不能为空")
+            raise ValueError("Definition.name cannot be empty.")
         if not callable(self.factory):
-            raise ValueError("Definition.factory 必须是可调用对象")
+            raise ValueError("Definition.factory must be callable.")
         if not isinstance(self.scope, ScopeType):
-            raise ValueError("Definition.scope 必须是 ScopeType 枚举")
+            raise ValueError("Definition.scope must be a ScopeType value.")
         if not self.source:
-            raise ValueError("Definition.source 不能为空")
+            raise ValueError("Definition.source cannot be empty.")
 
         object.__setattr__(self, "conditions", tuple(self.conditions or ()))
         object.__setattr__(self, "dependencies", tuple(self.dependencies or ()))

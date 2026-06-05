@@ -1,4 +1,4 @@
-from cullinan import configure, module, run
+from cullinan import application, configure
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -17,19 +17,13 @@ class HelloController:
     def hello(self):
         return {
             "message": self.greeting_service.build_message(),
-            "entrypoint": "configure(root_module=...) + run()",
+            "entrypoint": "@application + @configure(...) + main()",
         }
 
 
-@module(packages=["examples.minimal_app"])
-class RootModule:
-    """Recommended root boundary for the minimal example."""
+@configure(user_packages=["examples.minimal_app"])
+@application
+def main(): ...
 
 
-def configure_example():
-    return configure(root_module=RootModule)
-
-
-def main():
-    configure_example()
-    run()
+__all__ = ["main"]

@@ -255,8 +255,8 @@ def test_component_outside_module_packages_gets_boundary_guidance(tmp_path, monk
 
     message = str(error.value)
     assert "@module" in message
-    assert "运行时归属" in message
-    assert "不是显式 app 注册" in message
+    assert "runtime ownership" in message
+    assert "not explicit app registration" in message
     _clear_modules(package_name)
 
 

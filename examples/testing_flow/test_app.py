@@ -1,15 +1,13 @@
 import asyncio
 import json
 
-from cullinan import get_asgi_app
 from cullinan.application import Application
 
-from .app import configure_example
+from .app import main
 
 
 def _run_request(path: str):
-    configure_example()
-    app = get_asgi_app()
+    app = main.get_asgi_app()
     messages = []
 
     async def receive():

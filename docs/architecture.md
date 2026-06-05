@@ -25,7 +25,7 @@ Application code
 └── Business services and middleware
 
 Framework facade
-├── cullinan             -> configure/run/get_asgi_app
+├── cullinan             -> @application, configure/run/get_asgi_app
 ├── cullinan.application -> Application, @module
 ├── cullinan.web         -> controller decorators, WebRequest/WebResponse, params, middleware
 ├── cullinan.core        -> ApplicationContext, scopes, lifecycle, request context

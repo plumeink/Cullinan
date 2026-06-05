@@ -97,22 +97,23 @@ Startup still fails fast when:
 
 ## Packaging Configuration
 
-### Using Root Module Discovery (Recommended)
+### Using an Entry Method (Recommended)
 
 ```python
-from cullinan import configure, module, run
+from cullinan import application, configure
 
 from my_app.controller.user_controller import UserController
 from my_app.service.auth_service import AuthService
 from my_app.service.user_service import UserService
 
-@module
-class RootModule:
-    pass
+@configure(user_packages=["my_app"])
+@application
+def main(): ...
 
-configure(root_module=RootModule)
-run()
+main()
 ```
+
+Use `@module` only when the application needs an explicit advanced runtime boundary such as package ownership or hot-pluggable module structure.
 
 ### PyInstaller Configuration
 

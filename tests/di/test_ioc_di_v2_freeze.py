@@ -59,7 +59,7 @@ class TestFreezeAfterRefresh(unittest.TestCase):
                 source='test:NewService'
             ))
         
-        self.assertIn('冻结', str(cm.exception))
+        self.assertIn('frozen', str(cm.exception))
         self.assertIn('NewService', str(cm.exception))
     
     def test_duplicate_registration_raises_error(self):
@@ -81,7 +81,7 @@ class TestFreezeAfterRefresh(unittest.TestCase):
                 source='test:Service'
             ))
         
-        self.assertIn('已存在', str(cm.exception))
+        self.assertIn('already registered', str(cm.exception))
     
     def test_is_frozen_property(self):
         """is_frozen 属性正确反映状态"""
@@ -136,4 +136,3 @@ class TestRegistryFrozenErrorDetails(unittest.TestCase):
         from cullinan.core.diagnostics import RegistryError
 
         self.assertTrue(issubclass(RegistryFrozenError, RegistryError))
-

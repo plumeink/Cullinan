@@ -19,8 +19,8 @@ This directory is the single source of runnable examples for the current Cullina
 - `python -m pytest examples/testing_flow/test_app.py -q`
 
 Each example keeps one teaching goal and follows the recommended Cullinan path:
-top-level `configure(root_module=...)` / `run()`, decorator-first business code,
-and `Inject()` for type-led injection.
+entry-method startup with `@application`, optional `@configure(...)`,
+decorator-first business code, and `Inject()` for type-led injection.
 
 The examples are intentionally engine-neutral at the application layer: business
 code targets Cullinan semantics first, while the framework decides whether to

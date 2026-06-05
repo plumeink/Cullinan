@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from cullinan import configure, get_asgi_app, get_config
+from cullinan import get_config
 from cullinan.application import Application
 from cullinan.core import PendingRegistry, set_application_context
 from cullinan.core.semantic_rules import reset_semantic_warnings
@@ -115,7 +115,7 @@ def test_sync_and_async_controller_methods_share_same_public_dispatch_path(tmp_p
             "root.py": """
                 import json
 
-                from cullinan import controller, get_api, module, post_api
+                from cullinan import application, configure, controller, get_api, post_api
 
 
                 @controller(url="/api")
@@ -139,9 +139,9 @@ def test_sync_and_async_controller_methods_share_same_public_dispatch_path(tmp_p
                         return {"status": "ok"}
 
 
-                @module
-                class RootModule:
-                    pass
+                @configure(user_packages=["mixed_runtime_app"])
+                @application
+                def main(): ...
             """,
         },
     )
@@ -149,9 +149,8 @@ def test_sync_and_async_controller_methods_share_same_public_dispatch_path(tmp_p
     _clear_modules(package_name)
 
     try:
-        root_module = importlib.import_module(f"{package_name}.root").RootModule
-        configure(root_module=root_module)
-        app = get_asgi_app()
+        main = importlib.import_module(f"{package_name}.root").main
+        app = main.get_asgi_app()
 
         sync_status, sync_payload = asyncio.run(
             _invoke_asgi_app(

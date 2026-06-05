@@ -10,9 +10,11 @@ from unittest.mock import patch, MagicMock
 
 from cullinan.support.config import (
     CullinanConfig,
+    get_class_config,
     get_config,
     configure,
 )
+from cullinan import application
 
 
 class TestCullinanConfig(unittest.TestCase):
@@ -107,6 +109,12 @@ class TestCullinanConfig(unittest.TestCase):
 
 class TestConfigureFunction(unittest.TestCase):
     """Test the configure function."""
+
+    def setUp(self):
+        self._original_config = get_config().to_dict()
+
+    def tearDown(self):
+        get_config().from_dict(self._original_config)
     
     def test_configure_with_user_packages(self):
         """Test configure with user packages."""
@@ -132,22 +140,63 @@ class TestConfigureFunction(unittest.TestCase):
 
     def test_configure_recommended_public_entrypoint_fields(self):
         """Test configure with top-level public run() settings."""
-        class RootModule:
-            pass
-
         result = configure(
-            root_module=RootModule,
             server_engine='asgi',
             asgi_server='hypercorn',
             server_host='127.0.0.1',
             server_port=9000,
         )
 
-        self.assertIs(result.root_module, RootModule)
         self.assertEqual(result.server_engine, 'asgi')
         self.assertEqual(result.asgi_server, 'hypercorn')
         self.assertEqual(result.server_host, '127.0.0.1')
         self.assertEqual(result.server_port, 9000)
+
+    def test_configure_rejects_legacy_root_module_entry(self):
+        """Test configure(root_module=...) now raises a migration error."""
+
+        class RootModule:
+            pass
+
+        with self.assertRaises(ValueError) as cm:
+            configure(root_module=RootModule)
+
+        self.assertIn('configure(root_module=...)', str(cm.exception))
+        self.assertIn('@application', str(cm.exception))
+
+    def test_configure_can_decorate_application_class(self):
+        """Test configure(...) as an entry-method decorator."""
+
+        @configure(user_packages=['decorator_app'], server_engine='asgi')
+        @application
+        def main(): ...
+
+        class_config = get_class_config(main)
+        assert class_config is not None
+        self.assertEqual(class_config['user_packages'], ['decorator_app'])
+        self.assertEqual(class_config['server_engine'], 'asgi')
+        self.assertEqual(main.entry_kind, 'method')
+
+    def test_application_and_configure_are_order_independent(self):
+        """Test @application and @configure in either order."""
+
+        @application
+        @configure(user_packages=['ordered_app'], server_host='127.0.0.1')
+        def ordered_main(): ...
+
+        @configure(user_packages=['reordered_app'], server_host='127.0.0.2')
+        @application
+        def reordered_main(): ...
+
+        ordered_config = get_class_config(ordered_main)
+        reordered_config = get_class_config(reordered_main)
+
+        assert ordered_config is not None
+        assert reordered_config is not None
+        self.assertEqual(ordered_config['user_packages'], ['ordered_app'])
+        self.assertEqual(ordered_config['server_host'], '127.0.0.1')
+        self.assertEqual(reordered_config['user_packages'], ['reordered_app'])
+        self.assertEqual(reordered_config['server_host'], '127.0.0.2')
     
     def test_get_config_returns_same_instance(self):
         """Test that get_config returns the global config instance."""

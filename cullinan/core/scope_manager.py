@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-"""统一作用域管理。"""
+"""Unified scope management for Cullinan."""
 
 from __future__ import annotations
 
 import threading
 from contextvars import ContextVar
 from typing import Any, Callable, Dict, Optional
+
+from cullinan.support.diagnostics import unknown_scope_type
 
 from .definitions import ScopeType
 from .exceptions import LifecycleError, ScopeNotActiveError
@@ -66,7 +68,7 @@ class RequestScope:
             raise ScopeNotActiveError(
                 scope_type="REQUEST",
                 dependency_name=name,
-                message=f"请求作用域已关闭，无法解析 '{name}'",
+                message=f"Request scope is closed, so '{name}' cannot be resolved.",
             )
         if name not in self._instances:
             self._instances[name] = factory()
@@ -117,10 +119,13 @@ class ScopeManager:
                 raise ScopeNotActiveError(
                     scope_type="REQUEST",
                     dependency_name=name,
-                    message=f"无法解析 request-scoped 依赖 '{name}'：当前没有属于该根容器的活动请求上下文。",
+                    message=(
+                        f"Cannot resolve request-scoped dependency '{name}': "
+                        "there is no active request context for this root container."
+                    ),
                 )
             return scope.get(name, factory)
-        raise ValueError(f"未知的作用域类型: {scope_type}")
+        raise ValueError(unknown_scope_type(scope_type))
 
     def has(self, scope_type: ScopeType, name: str) -> bool:
         if scope_type == ScopeType.SINGLETON:
@@ -142,7 +147,9 @@ class ScopeManager:
     def enter_request_context(self):
         with self._lock:
             if not self._accepting_requests:
-                raise LifecycleError("当前根容器正在下线，禁止创建新的请求作用域")
+                raise LifecycleError(
+                    "The current root container is draining and cannot accept new request scopes."
+                )
             self._active_request_count += 1
         scope = RequestScope(self._root_id)
         _current_request_scope.set(scope)

@@ -116,8 +116,8 @@ def injectable(cls):
     warn_semantic_once(
         key="compatibility:injectable",
         rule_key="compatibility-api",
-        problem="@injectable 只是兼容入口，不再承担新的注册或注入语义。",
-        guidance="改用 @service、@component 或 @controller 作为主入口。",
+        problem="@injectable is a compatibility-only entrypoint and no longer adds registration or injection semantics.",
+        guidance="Use @service, @component, or @controller as the primary entrypoint.",
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )
@@ -128,8 +128,8 @@ def inject_constructor(cls):
     warn_semantic_once(
         key="compatibility:inject_constructor",
         rule_key="compatibility-api",
-        problem="@inject_constructor 只是兼容入口，不再改变构造器注入行为。",
-        guidance="依赖注入由 ApplicationContext.refresh() 统一处理，不需要额外装饰器。",
+        problem="@inject_constructor is a compatibility-only entrypoint and no longer changes constructor injection behavior.",
+        guidance="ApplicationContext.refresh() now handles injection uniformly, so no extra decorator is required.",
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )
@@ -140,12 +140,12 @@ def inject_constructor(cls):
 # ============================================================================
 
 def get_application_context():
-    """获取当前活动根容器。"""
+    """Return the current active root container."""
     return get_container_manager().get_active_root()
 
 
 def set_application_context(ctx) -> None:
-    """设置或清除当前全局根容器引用。"""
+    """Set or clear the global root container reference."""
     manager = get_container_manager()
     if ctx is None:
         manager.clear()
@@ -164,8 +164,8 @@ def get_injection_registry():
     warn_semantic_once(
         key="compatibility:get_injection_registry",
         rule_key="compatibility-api",
-        problem="get_injection_registry() 仅保留兼容外形，当前不会返回可用注册中心。",
-        guidance="改用 ApplicationContext / get_application_context()。",
+        problem="get_injection_registry() keeps its compatibility shape only and does not return a usable registry.",
+        guidance="Use ApplicationContext or get_application_context() instead.",
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )
@@ -176,8 +176,8 @@ def reset_injection_registry():
     warn_semantic_once(
         key="compatibility:reset_injection_registry",
         rule_key="compatibility-api",
-        problem="reset_injection_registry() 在 0.93 中不再重置真实容器。",
-        guidance="如需重建容器，请显式创建新的 ApplicationContext。",
+        problem="reset_injection_registry() no longer resets a real container in 0.93.",
+        guidance="Create a new ApplicationContext explicitly when you need a fresh container.",
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )

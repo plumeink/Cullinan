@@ -61,7 +61,7 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan import configure, module, run
+from cullinan import application, configure
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -83,15 +83,12 @@ class HelloController:
         return {"message": self.greeting_service.greet()}
 
 
-@module
-class RootModule:
-    """Boundary declaration for runtime ownership and stability."""
-
-
-configure(root_module=RootModule)
+@configure(user_packages=["my_cullinan_project"])
+@application
+def main(): ...
 
 if __name__ == '__main__':
-    run()
+    main()
 ```
 
 4. Run your app:
@@ -113,10 +110,11 @@ Then open `http://localhost:4080/hello` in your browser to verify the server is 
 ## What this example demonstrates
 
 - You mainly write business components with `@service`, `@controller`, and handler decorators
-- `configure(root_module=RootModule)` declares the recommended root entry for the runtime
-- `@module` marks a runtime boundary for ownership, reload, draining, and higher stability
+- `@application` marks the default entry method
+- `@configure(...)` attaches startup settings to that method
+- `@module` is optional and only needed when you want an explicit advanced runtime boundary
 - `Inject()` resolves the controller dependency from the active application context
-- `run()` assembles and serves the application through the framework's recommended top-level startup API
+- calling the entry method assembles and serves the application through the framework's default startup API
 
 ## Minimal application example
 
@@ -124,7 +122,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan import configure, module, run
+from cullinan import application, configure
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -144,15 +142,12 @@ class HelloController:
         return {"message": self.greeting_service.greet()}
 
 
-@module
-class RootModule:
-    pass
-
-
-configure(root_module=RootModule)
+@configure(user_packages=["my_cullinan_project"])
+@application
+def main(): ...
 
 if __name__ == "__main__":
-    run()
+    main()
 ```
 
 To run this example:
@@ -167,8 +162,8 @@ Then visit `http://localhost:4080/hello` in your browser.
 ## Understanding the basics
 
 ### Application lifecycle
-1. **Entry declaration**: `configure(root_module=RootModule)` tells Cullinan which root module defines the runtime boundary
-2. **Discovery and assembly**: `run()` imports owned packages, finalizes pending decorator registrations, and assembles business components under that module boundary
+1. **Entry declaration**: `@application` marks the entry method, and `@configure(...)` attaches startup settings to it
+2. **Discovery and assembly**: calling `main()` imports owned packages, finalizes pending decorator registrations, and assembles business components under the framework-managed runtime boundary
 3. **Activation**: the validated runtime becomes active and is served through the framework-selected backend path
 4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
 
@@ -181,7 +176,8 @@ Cullinan provides built-in IoC/DI support through decorator-driven component dis
 - Use `@controller` for HTTP controllers
 - Use `Inject()` for type-based injection
 - Use `InjectByName()` when name-based lookup is more convenient
-- Start from business decorators first, then use `@module` when you need explicit runtime boundaries
+- Start from business decorators and an entry method first
+- Add `@module` only when you need explicit runtime boundaries such as package ownership, hot-pluggable modules, or stricter reload/draining control
 - If you intentionally need low-level container or runtime internals, continue in [Internals & Extensions](internals/index.md) instead of treating that path as the quick-start model
 
 ```python

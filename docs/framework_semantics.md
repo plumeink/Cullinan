@@ -23,7 +23,7 @@ This page defines the runtime semantics Cullinan **guarantees**, the behaviors i
 
 Cullinan's default semantic path is now:
 
-- `cullinan` for application startup (`configure`, `run`, `get_asgi_app`)
+- `cullinan` for application startup (`@application`, `configure`)
 - `cullinan.application` for advanced application semantics such as `Application` and `module`
 - `cullinan.web` for controllers, route decorators, request/response, parameters, and middleware
 - `cullinan.core` for IoC/DI, lifecycle, and semantic diagnostics

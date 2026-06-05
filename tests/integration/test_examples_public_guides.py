@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from cullinan import configure, get_asgi_app, get_config
+from cullinan import get_config
 from cullinan.application import Application
 from cullinan.web.controller import reset_controller_registry
 from cullinan.core import PendingRegistry, set_application_context
@@ -21,11 +21,11 @@ def _clear_example_modules(prefix: str):
             sys.modules.pop(name, None)
 
 
-def _load_root_module(module_path: str, root_name: str = "RootModule"):
+def _load_entry_method(module_path: str, name: str = "main"):
     prefix = module_path.rsplit(".", 1)[0]
     _clear_example_modules(prefix)
     module = importlib.import_module(module_path)
-    return getattr(module, root_name)
+    return getattr(module, name)
 
 
 def _read_example_file(*parts: str) -> str:
@@ -112,20 +112,18 @@ def _reset_runtime_state():
 
 
 def test_minimal_app_example_serves_public_entrypoint():
-    root_module = _load_root_module("examples.minimal_app.root")
-    configure(root_module=root_module)
-    app = get_asgi_app()
+    main = _load_entry_method("examples.minimal_app.root")
+    app = main.get_asgi_app()
 
     status, _, payload = asyncio.run(_invoke_asgi_app(app, "/hello"))
 
     assert status == 200
-    assert payload["entrypoint"] == "configure(root_module=...) + run()"
+    assert payload["entrypoint"] == "@application + @configure(...) + main()"
 
 
 def test_controller_service_inject_example_uses_business_layers():
-    root_module = _load_root_module("examples.controller_service_inject.root")
-    configure(root_module=root_module)
-    app = get_asgi_app()
+    main = _load_entry_method("examples.controller_service_inject.root")
+    app = main.get_asgi_app()
 
     status, _, payload = asyncio.run(_invoke_asgi_app(app, "/users/2"))
 
@@ -135,9 +133,8 @@ def test_controller_service_inject_example_uses_business_layers():
 
 
 def test_middleware_and_module_example_marks_module_boundary():
-    root_module = _load_root_module("examples.middleware_and_module.root")
-    configure(root_module=root_module)
-    app = get_asgi_app()
+    main = _load_entry_method("examples.middleware_and_module.root")
+    app = main.get_asgi_app()
 
     status, headers, payload = asyncio.run(_invoke_asgi_app(app, "/inventory/summary"))
 
@@ -148,9 +145,8 @@ def test_middleware_and_module_example_marks_module_boundary():
 
 
 def test_parameter_handling_example_maps_path_query_and_body():
-    root_module = _load_root_module("examples.parameter_handling.root")
-    configure(root_module=root_module)
-    app = get_asgi_app()
+    main = _load_entry_method("examples.parameter_handling.root")
+    app = main.get_asgi_app()
 
     get_status, _, get_payload = asyncio.run(
         _invoke_asgi_app(
@@ -197,8 +193,13 @@ def test_example_entrypoints_use_top_level_public_api():
 
     for parts in targets:
         source = _read_example_file(*parts)
-        assert "from cullinan import configure, module, run" in source
+        assert "from cullinan import application" in source
+        assert "configure" in source
+        assert "run(" not in source
+        assert "from cullinan import get_asgi_app" not in source
+        assert "configure_example(" not in source
         assert "from cullinan.application import configure, module, run" not in source
+        assert "configure(root_module=" not in source
 
 
 def test_examples_directory_keeps_legacy_demos_outside_default_path():
@@ -263,8 +264,8 @@ def test_di_guides_prefer_public_core_and_top_level_startup():
     assert "from cullinan.core.services import service" not in zh_di_guide
     assert "from cullinan.application import run" not in di_quick
     assert "from cullinan.application import run" not in zh_di_quick
-    assert "from cullinan import configure, module, run" in di_quick
-    assert "from cullinan import configure, module, run" in zh_di_quick
+    assert "from cullinan import application, configure" in di_quick
+    assert "from cullinan import application, configure" in zh_di_quick
 
 
 def test_api_reference_removes_compatibility_layer_from_current_surface():
@@ -293,13 +294,13 @@ def test_tornado_decoupling_docs_keep_top_level_startup_and_backend_neutral_term
 
     assert "cullinan.application -> Application, configure/run/get_asgi_app, @module" not in architecture
     assert "cullinan.application -> Application、configure/run/get_asgi_app、@module" not in zh_architecture
-    assert "cullinan             -> configure/run/get_asgi_app" in architecture
-    assert "cullinan             -> configure/run/get_asgi_app" in zh_architecture
+    assert "cullinan             -> @application, configure" in architecture
+    assert "cullinan             -> @application、configure" in zh_architecture
 
     assert "- `cullinan.application` for application configuration and startup" not in framework_semantics
     assert "- `cullinan.application` —— 应用配置与启动" not in zh_framework_semantics
-    assert "- `cullinan` for application startup (`configure`, `run`, `get_asgi_app`)" in framework_semantics
-    assert "- `cullinan` —— 应用启动入口（`configure`、`run`、`get_asgi_app`）" in zh_framework_semantics
+    assert "- `cullinan` for application startup (`@application`, `configure`)" in framework_semantics
+    assert "- `cullinan` —— 应用启动入口（`@application`、`configure`）" in zh_framework_semantics
 
     assert "`current_app`" not in components
     assert "`current_app`" not in zh_components
@@ -308,5 +309,5 @@ def test_tornado_decoupling_docs_keep_top_level_startup_and_backend_neutral_term
 
     assert "from cullinan.application import run" not in migration_v2
     assert "from cullinan.application import run" not in zh_migration_v2
-    assert "from cullinan import run" in migration_v2
-    assert "from cullinan import run" in zh_migration_v2
+    assert "@application" in migration_v2
+    assert "@application" in zh_migration_v2

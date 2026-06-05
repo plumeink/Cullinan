@@ -118,18 +118,17 @@ run()  # starts Tornado on port 4080
 ```python
 from cullinan import run
 
-# Option A: let Cullinan resolve the backend automatically
-run()
+# Recommended default path
+from cullinan import application, configure
 
-# Option B: Tornado (explicit)
-run(engine='tornado')
+@configure(user_packages=["myapp"])
+@application
+def main(): ...
 
-# Option C: ASGI
-run(engine='asgi')
+main()
 
-# Option D: ASGI app for external server
-from cullinan import get_asgi_app
-app = get_asgi_app()
+# For an external ASGI server, prefer the entry-method helper
+app = main.get_asgi_app()
 # Then: uvicorn myapp:app
 ```
 

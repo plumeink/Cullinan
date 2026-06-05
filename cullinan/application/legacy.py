@@ -87,13 +87,13 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
     def _record_error(stage: str, exc: Exception) -> None:
         errors.append(f"{stage}: {type(exc).__name__}: {exc}")
 
-    # 策略0: 优先检查 sys.modules（Nuitka 环境下模块通常已加载）
+    # Strategy 0: prefer sys.modules first (modules are often already loaded under Nuitka).
     if module_name in sys.modules:
         mod = sys.modules[module_name]
         strategy = "sys.modules"
         logger.info("[OK] Found in sys.modules: %s", module_name)
 
-        # 对于 controller 和 service，模块已加载意味着装饰器已执行
+        # For controller and service modules, already being loaded means decorators already ran.
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module already loaded (decorators executed): %s", module_name)
             return ModuleReflectionResult(
@@ -103,7 +103,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
                 strategy=strategy,
             )
 
-        # 继续调用函数（如果需要）
+        # Continue with the callable if requested.
         if func not in ('nobody', 'controller'):
             try:
                 fn = getattr(mod, func, None)
@@ -121,13 +121,13 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
             error="; ".join(errors) if errors else None,
         )
 
-    # 策略1: 标准导入（适用于所有环境）
+    # Strategy 1: regular import (works across all environments).
     try:
         mod = importlib.import_module(module_name)
         strategy = "importlib"
         logger.info("[OK] Successfully imported: %s", module_name)
 
-        # 对于 controller 和 service，导入即可（装饰器会执行）
+        # For controller and service modules, importing is enough because decorators run on import.
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module imported (decorators executed): %s", module_name)
             return ModuleReflectionResult(
@@ -142,9 +142,9 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
         _record_error("import", e)
         logger.warning("[FAIL] Import failed for %s: %s", module_name, error_msg)
 
-        # 策略2: 尝试相对导入（Nuitka 编译后可能需要）
+        # Strategy 2: try relative imports (sometimes needed after Nuitka compilation).
         if is_nuitka_compiled() and '.' in module_name:
-            # 尝试从父包导入
+            # Try importing from the parent package.
             parts = module_name.rsplit('.', 1)
             if len(parts) == 2:
                 parent_pkg, mod_part = parts
@@ -164,7 +164,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
                                 error="; ".join(errors) if errors else None,
                             )
                     else:
-                        # 尝试使用 __import__ 的 fromlist 参数
+                        # Try using __import__ with fromlist.
                         try:
                             mod = __import__(module_name, fromlist=[mod_part])
                             strategy = "__import__"
@@ -185,7 +185,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
                     _record_error("relative-import", e3)
                     logger.debug("[FAIL] Relative import failed: %s", str(e3))
 
-        # 策略3: 从 sys.modules 获取（可能已被打包工具预加载）
+        # Strategy 3: reuse sys.modules (packaging tools may have preloaded the module).
         if module_name in sys.modules:
             mod = sys.modules[module_name]
             strategy = "sys.modules"
@@ -200,9 +200,9 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
                     error="; ".join(errors) if errors else None,
                 )
 
-        # 策略4: 尝试通过文件路径导入（最后手段）
+        # Strategy 4: import from a file path as the last resort.
         elif is_pyinstaller_frozen() or is_nuitka_compiled():
-            # 尝试构建可能的文件路径
+            # Build likely file paths.
             base_dirs = []
 
             if is_pyinstaller_frozen():
@@ -221,7 +221,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
                         spec = importlib.util.spec_from_file_location(module_name, module_path)
                         if spec and spec.loader:
                             mod = importlib.util.module_from_spec(spec)
-                            sys.modules[module_name] = mod  # 注册到 sys.modules
+                            sys.modules[module_name] = mod  # Register the module in sys.modules.
                             spec.loader.exec_module(mod)
                             strategy = "file"
                             logger.info("[OK] Imported from file: %s", module_path)
@@ -250,7 +250,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
             error="; ".join(errors) if errors else "Could not import module",
         )
 
-    # 对于 controller 和 service，只需导入即可（装饰器会在导入时执行）
+    # For controller and service modules, importing is enough because decorators run on import.
     if func in ('nobody', 'controller'):
         logger.debug("[OK] Module imported (decorators executed): %s", module_name)
         return ModuleReflectionResult(
@@ -261,7 +261,7 @@ def reflect_module(module_name: str, func: str) -> ModuleReflectionResult:
             error="; ".join(errors) if errors else None,
         )
 
-    # 调用指定的函数（如果存在）
+    # Call the requested function if it exists.
     try:
         fn = getattr(mod, func, None)
         if callable(fn):
@@ -360,8 +360,8 @@ def _validate_component_scan_results(
             failure_lines.append(
                 format_semantic_message(
                     "component-import-execution",
-                    "以下模块在组件扫描阶段导入失败，装饰器注册因此没有发生。",
-                    "先修复模块导入错误，再重新 refresh()；Cullinan 的自动装配依赖导入时执行装饰器，而不是显式 app 注册。",
+                    "The following modules failed to import during component scanning, so decorator registration never ran.",
+                    "Fix the import errors first, then run refresh() again. Cullinan auto-assembly depends on decorators running during import instead of explicit app registration.",
                 )
             )
             for module_name, error in sorted(import_failures.items()):
@@ -370,19 +370,19 @@ def _validate_component_scan_results(
             failure_lines.append(
                 format_semantic_message(
                     "component-top-level",
-                    "以下装饰器组件存在注册元数据，但未进入 PendingRegistry。",
-                    "确认组件定义位于模块顶层，且 PendingRegistry 未被提前冻结或替换；若需要更强边界，请用 @module 表达运行时归属。",
+                    "The following decorated components expose registration metadata but never entered PendingRegistry.",
+                    "Make sure the components are defined at module top level and that PendingRegistry was not frozen or replaced too early. If you need a stronger boundary, express runtime ownership with @module.",
                 )
             )
             for item in missing_registrations:
                 failure_lines.append(
-                    f"- {item['module']}::{item['class']} ({item['component_type']}, 注册名={item['component']})"
+                    f"- {item['module']}::{item['class']} ({item['component_type']}, registration={item['component']})"
                 )
         raise PackageDiscoveryError(
             message=format_semantic_message(
                 "component-top-level",
-                "组件扫描校验失败，存在导入未执行或装饰器注册未落入 PendingRegistry 的组件。",
-                "Cullinan 只保证模块导入阶段执行过装饰器的顶层组件能被自动发现与自动装配。",
+                "Component scan validation failed because some imports never executed or decorated registrations never reached PendingRegistry.",
+                "Cullinan only guarantees automatic discovery and assembly for module-top-level components whose decorators ran during import.",
             ),
             details={
                 "candidate_module_count": len(modules),
@@ -505,7 +505,7 @@ def _init_framework():
     env_path = Path(os.getcwd()) / '.env'
     load_dotenv(dotenv_path=env_path)
 
-    # ========== IoC/DI 2.0: 使用 ApplicationContext 作为唯一入口 ==========
+    # ========== IoC/DI 2.0: use ApplicationContext as the single entrypoint ==========
     logger.info("└---initializing IoC/DI 2.0 ApplicationContext...")
     from cullinan.core import ApplicationContext, set_application_context
     from cullinan.core.pending import PendingRegistry
@@ -666,8 +666,11 @@ def run(handlers=None, engine=None):
     warn_semantic_once(
         key="public-api:legacy-application-run",
         rule_key="compatibility-api",
-        problem="cullinan.application.run() 属于兼容扫描启动入口。",
-        guidance="常规业务应用请优先使用 from cullinan import configure, run；只有在维护旧扫描式项目时再使用 cullinan.application.run()。",
+        problem="cullinan.application.run() is a compatibility scanning entrypoint.",
+        guidance=(
+            "Regular applications should prefer `from cullinan import configure, run`. "
+            "Use cullinan.application.run() only when maintaining older scan-based projects."
+        ),
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )
@@ -784,8 +787,11 @@ def get_asgi_app():
     warn_semantic_once(
         key="public-api:legacy-application-get-asgi-app",
         rule_key="compatibility-api",
-        problem="cullinan.application.get_asgi_app() 属于兼容扫描入口。",
-        guidance="常规业务应用请优先使用 from cullinan import configure, get_asgi_app；只有在维护旧扫描式部署方式时再使用 cullinan.application.get_asgi_app()。",
+        problem="cullinan.application.get_asgi_app() is a compatibility scanning entrypoint.",
+        guidance=(
+            "Regular applications should prefer `from cullinan import configure, get_asgi_app`. "
+            "Use cullinan.application.get_asgi_app() only when maintaining older scan-based deployments."
+        ),
         category=CompatibilitySemanticWarning,
         stacklevel=2,
     )

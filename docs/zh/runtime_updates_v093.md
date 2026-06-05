@@ -43,14 +43,14 @@ Cullinan 现在把显式运行时编排放在 `cullinan.application` 中，
 
 ### 变更内容
 
-- `Application.run(RootModule)` 会构建、校验、预热并激活根模块
+- `Application.run(...)` 会构建、校验、预热并激活声明的根模块
 - `@module` 用于声明模块导入、包归属、warmup hooks 与 health checks
 - 组件发现会从装饰器元数据重建待注册项，而不再依赖一次性的导入时机
 - 当旧 runtime 进入 draining 时，`Application.current()` 会优先返回请求绑定的应用快照
 
 ### 迁移含义
 
-新的启动代码应优先使用 `from cullinan import configure, module, run`。
+新的启动代码应优先使用 `from cullinan import application, configure, run`。
 底层容器编排仍可直接使用 `ApplicationContext`；当你明确需要显式运行时编排时，
 再进入 `cullinan.application`，而不是把它当成默认开发者路径。
 

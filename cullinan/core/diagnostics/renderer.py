@@ -1,28 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC/DI 2.0 - 诊断渲染器
-
-作者：Plumeink
-
-本模块负责将结构化异常渲染为稳定、可复现、可对比的诊断信息。
-
-输出格式规范（按 2.6.6 Contract）：
-1. 稳定依赖链路：A -> B -> C -> A
-2. 注入点定位：OwnerClass.attr 或 OwnerClass.__init__(param)
-3. 候选来源与过滤原因：source + reason
-4. 原始异常链：保留 cause
-"""
+"""Render structured DI diagnostics in a stable, human-readable format."""
 
 from typing import List, Dict, Any, Optional
 
 
 def render_resolution_path(path: List[str]) -> str:
-    """渲染解析链路为稳定格式
+    """Render a resolution path in a stable format.
 
     Args:
-        path: 解析路径列表（有序）
+        path: Ordered resolution path.
 
     Returns:
-        格式化的链路字符串，例如 "A -> B -> C -> A"
+        A formatted path string such as ``"A -> B -> C -> A"``.
     """
     if not path:
         return "(empty)"
@@ -30,15 +19,16 @@ def render_resolution_path(path: List[str]) -> str:
 
 
 def render_injection_point(owner: str, location: str, is_constructor: bool = False) -> str:
-    """渲染注入点定位
+    """Render an injection point.
 
     Args:
-        owner: 拥有者类名
-        location: 属性名或参数名
-        is_constructor: 是否是构造参数注入
+        owner: Owner class name.
+        location: Attribute or parameter name.
+        is_constructor: Whether this is constructor injection.
 
     Returns:
-        格式化的注入点，例如 "UserController.user_service" 或 "UserService.__init__(repo)"
+        A formatted injection point such as
+        ``"UserController.user_service"`` or ``"UserService.__init__(repo)"``.
     """
     if is_constructor:
         return f"{owner}.__init__({location})"
@@ -46,16 +36,16 @@ def render_injection_point(owner: str, location: str, is_constructor: bool = Fal
 
 
 def render_candidate_sources(candidates: List[Dict[str, Any]]) -> str:
-    """渲染候选来源与过滤原因
+    """Render candidate sources and filtering reasons.
 
     Args:
-        candidates: 候选列表，每项包含 source 和 reason
+        candidates: Candidate list. Each item may include ``source`` and ``reason``.
 
     Returns:
-        格式化的候选来源信息
+        Formatted candidate source information.
     """
     if not candidates:
-        return "  (无候选来源)"
+        return "  (no candidate sources)"
 
     lines = []
     for i, candidate in enumerate(candidates, 1):
@@ -75,19 +65,19 @@ def render_dependency_error(
     candidate_sources: Optional[List[Dict[str, Any]]] = None,
     cause: Optional[Exception] = None
 ) -> str:
-    """渲染完整的依赖解析错误信息
+    """Render a complete dependency resolution error message.
 
     Args:
-        error_type: 错误类型名称
-        message: 错误消息
-        dependency_name: 依赖名称
-        injection_point: 注入点
-        resolution_path: 解析链路
-        candidate_sources: 候选来源
-        cause: 原始异常
+        error_type: Error type name.
+        message: Error message.
+        dependency_name: Dependency name.
+        injection_point: Injection point.
+        resolution_path: Resolution path.
+        candidate_sources: Candidate sources.
+        cause: Original exception.
 
     Returns:
-        完整的格式化错误信息
+        Fully formatted error text.
     """
     lines = [
         f"[{error_type}] {message}",
@@ -95,36 +85,36 @@ def render_dependency_error(
     ]
 
     if dependency_name:
-        lines.append(f"依赖名称: {dependency_name}")
+        lines.append(f"Dependency: {dependency_name}")
 
     if injection_point:
-        lines.append(f"注入点: {injection_point}")
+        lines.append(f"Injection point: {injection_point}")
 
     if resolution_path:
-        lines.append(f"解析链路: {render_resolution_path(resolution_path)}")
+        lines.append(f"Resolution path: {render_resolution_path(resolution_path)}")
 
     if candidate_sources:
-        lines.append("候选来源:")
+        lines.append("Candidate sources:")
         lines.append(render_candidate_sources(candidate_sources))
 
     if cause:
         lines.append("")
-        lines.append(f"原始异常: {type(cause).__name__}: {cause}")
+        lines.append(f"Original error: {type(cause).__name__}: {cause}")
 
     return "\n".join(lines)
 
 
 def format_circular_dependency_error(chain: List[str]) -> str:
-    """格式化循环依赖错误信息
+    """Format a circular dependency error message.
 
     Args:
-        chain: 循环依赖链路（有序，最后一个元素应与第一个相同表示闭环）
+        chain: Ordered dependency cycle.
 
     Returns:
-        格式化的循环依赖错误信息
+        A formatted circular dependency error message.
     """
     path_str = render_resolution_path(chain)
-    return f"检测到循环依赖: {path_str}"
+    return f"Circular dependency detected: {path_str}"
 
 
 def format_missing_dependency_error(
@@ -133,29 +123,29 @@ def format_missing_dependency_error(
     resolution_path: Optional[List[str]] = None,
     available_sources: Optional[List[str]] = None
 ) -> str:
-    """格式化缺失依赖错误信息
+    """Format a missing dependency error message.
 
     Args:
-        dependency_name: 缺失的依赖名称
-        injection_point: 注入点
-        resolution_path: 解析链路
-        available_sources: 可用的来源列表
+        dependency_name: Missing dependency name.
+        injection_point: Injection point.
+        resolution_path: Resolution path.
+        available_sources: Available sources.
 
     Returns:
-        格式化的缺失依赖错误信息
+        A formatted missing dependency error message.
     """
-    lines = [f"依赖 '{dependency_name}' 未找到"]
+    lines = [f"Dependency '{dependency_name}' was not found."]
 
     if injection_point:
-        lines.append(f"注入点: {injection_point}")
+        lines.append(f"Injection point: {injection_point}")
 
     if resolution_path:
-        # 链路结尾添加缺失项
+        # Append the missing item to the rendered path.
         full_path = resolution_path + [f"{dependency_name} (missing)"]
-        lines.append(f"解析链路: {render_resolution_path(full_path)}")
+        lines.append(f"Resolution path: {render_resolution_path(full_path)}")
 
     if available_sources:
-        lines.append("可用来源:")
+        lines.append("Available sources:")
         for source in available_sources:
             lines.append(f"  - {source}")
 
@@ -170,4 +160,3 @@ __all__ = [
     'format_circular_dependency_error',
     'format_missing_dependency_error',
 ]
-

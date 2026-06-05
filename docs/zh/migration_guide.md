@@ -149,15 +149,16 @@ ctx.register(Definition(
 from cullinan.app import run
 
 # 新风格
-from cullinan import configure, module, run
+from cullinan import application, configure
 
-@module
-class RootModule:
-    pass
+@configure(user_packages=["your_app"])
+@application
+def main(): ...
 
-configure(root_module=RootModule)
-run()
+main()
 ```
+
+入口方法现在是推荐的默认入口。`configure(root_module=...)` 已不再属于默认公开启动模型。
 
 ### 第 4 步：处理请求作用域
 

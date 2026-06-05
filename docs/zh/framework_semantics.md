@@ -23,7 +23,7 @@ pr_links: []
 
 Cullinan 当前推荐的主路径是：
 
-- `cullinan` —— 应用启动入口（`configure`、`run`、`get_asgi_app`）
+- `cullinan` —— 应用启动入口（`@application`、`configure`）
 - `cullinan.application` —— `Application`、`module` 等高级应用语义
 - `cullinan.web` —— 控制器、路由装饰器、请求/响应、参数与中间件
 - `cullinan.core` —— IoC/DI、生命周期与语义诊断

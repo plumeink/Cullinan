@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""诊断子包统一复用 cullinan.core.exceptions。"""
+"""Re-export diagnostics exceptions from ``cullinan.core.exceptions``."""
 
 from ..exceptions import (
     CircularDependencyError,

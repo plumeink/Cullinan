@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import functools
 import importlib
 import inspect
 import threading
@@ -17,6 +18,7 @@ from cullinan.core.decorators import get_component_registration_metadata
 from cullinan.core.pending import PendingRegistration, PendingRegistry
 from cullinan._api_boundary import in_public_api_context
 from cullinan.core.semantic_rules import PublicAPISemanticWarning, warn_semantic_once
+from cullinan.support.diagnostics import application_not_installed
 from cullinan.web.gateway import (
     get_dispatcher,
     get_exception_handler,
@@ -29,6 +31,9 @@ from cullinan.runtime.module_scanner import list_submodules
 
 
 _MODULE_ATTR = "__cullinan_module__"
+_APPLICATION_ATTR = "__cullinan_application__"
+_APPLICATION_PACKAGES_ATTR = "__cullinan_application_packages__"
+_APPLICATION_MODULES_ATTR = "__cullinan_application_modules__"
 _APP_CONTEXT_KEY = "cullinan.application"
 _RUNTIME_CONTEXT_KEY = "cullinan.runtime"
 
@@ -40,6 +45,11 @@ class ModuleMetadata:
     ownership_overrides: Dict[str, Type[Any]] = field(default_factory=dict)
     warmup_hooks: Tuple[Callable[["Application"], None], ...] = ()
     health_checks: Tuple[Callable[["Application"], None], ...] = ()
+
+
+@dataclass(frozen=True)
+class ApplicationMetadata:
+    packages: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -143,14 +153,108 @@ def module(
 Module = module
 
 
-def get_module_metadata(module_cls: Type[Any]) -> ModuleMetadata:
-    metadata = getattr(module_cls, _MODULE_ATTR, None)
+def has_module_metadata(target: Any) -> bool:
+    return getattr(target, _MODULE_ATTR, None) is not None
+
+
+def application(
+    fn: Optional[Callable[..., Any]] = None,
+    *,
+    packages: Optional[Sequence[str]] = None,
+    modules: Optional[Sequence[Any]] = None,
+):
+    """Declare a Cullinan entry method for the default public startup path."""
+
+    def decorator(target_fn: Callable[..., Any]) -> Callable[..., Any]:
+        if inspect.isclass(target_fn):
+            from cullinan.support.diagnostics import application_decorator_requires_function
+
+            raise TypeError(application_decorator_requires_function(target_fn))
+        if not inspect.isfunction(target_fn):
+            from cullinan.support.diagnostics import application_decorator_requires_function
+
+            raise TypeError(application_decorator_requires_function(target_fn))
+
+        @functools.wraps(target_fn)
+        def entry_method(*args: Any, **kwargs: Any):
+            if args or kwargs:
+                from cullinan.support.diagnostics import application_entry_method_takes_no_arguments
+
+                raise TypeError(application_entry_method_takes_no_arguments(entry_method))
+            return entry_method.run()
+
+        setattr(entry_method, _APPLICATION_PACKAGES_ATTR, tuple(packages or ()))
+        setattr(entry_method, _APPLICATION_MODULES_ATTR, tuple(modules or ()))
+        setattr(entry_method, _APPLICATION_ATTR, ApplicationMetadata())
+
+        from cullinan.application import public as public_api
+        from cullinan.support.config import get_class_config, set_class_config
+
+        existing_config = get_class_config(target_fn)
+        if existing_config is not None:
+            set_class_config(entry_method, existing_config)
+        else:
+            refresh_application_entry(entry_method)
+
+        entry_method.run = lambda **kwargs: public_api.run(entry_method, **kwargs)
+        entry_method.get_asgi_app = lambda **kwargs: public_api.get_asgi_app(entry_method, **kwargs)
+        entry_method.entry_kind = "method"
+        return entry_method
+
+    if fn is not None:
+        return decorator(fn)
+    return decorator
+
+
+def refresh_application_entry(target: Any) -> None:
+    if not has_application_metadata(target):
+        return
+    from cullinan.support.config import get_class_config
+
+    config_values = get_class_config(target) or {}
+    explicit_packages = tuple(getattr(target, _APPLICATION_PACKAGES_ATTR, ()) or ())
+    configured_packages = tuple(config_values.get("user_packages") or ())
+    explicit_modules = tuple(getattr(target, _APPLICATION_MODULES_ATTR, ()) or ())
+    if explicit_modules and not explicit_packages:
+        resolved_packages = ()
+    else:
+        resolved_packages = explicit_packages or configured_packages or _infer_default_packages(target)
+    setattr(target, _APPLICATION_ATTR, ApplicationMetadata(packages=tuple(resolved_packages)))
+    setattr(
+        target,
+        _MODULE_ATTR,
+        ModuleMetadata(
+            imports=explicit_modules,
+            packages=tuple(resolved_packages),
+        ),
+    )
+    target.packages = tuple(resolved_packages)
+
+
+def has_application_metadata(target: Any) -> bool:
+    return getattr(target, _APPLICATION_ATTR, None) is not None
+
+
+def get_application_metadata(application_target: Any) -> ApplicationMetadata:
+    metadata = getattr(application_target, _APPLICATION_ATTR, None)
     if metadata is None:
         raise TypeError(
-            f"{module_cls.__module__}.{module_cls.__name__} 不是 Cullinan 模块。"
-            "请使用 @module 装饰。"
+            f"{application_target.__module__}.{application_target.__name__} is not a Cullinan application. "
+            "Decorate it with @application."
         )
     return metadata
+
+
+def get_module_metadata(module_target: Any) -> ModuleMetadata:
+    metadata = getattr(module_target, _MODULE_ATTR, None)
+    if metadata is None:
+        raise TypeError(
+            f"{module_target.__module__}.{module_target.__name__} is not a Cullinan module. "
+            "Decorate it with @module."
+        )
+    return metadata
+
+
 def bind_runtime_request_context(runtime: Optional[WebRuntime]) -> Dict[str, Any]:
     request_context = get_current_context()
     created_context = False
@@ -219,13 +323,13 @@ class Application:
     @property
     def context(self) -> ApplicationContext:
         if self.runtime is None:
-            raise RuntimeError("Application 尚未装配。")
+            raise RuntimeError(application_not_installed())
         return self.runtime.context
 
     @property
     def web_runtime(self) -> WebRuntime:
         if self.runtime is None:
-            raise RuntimeError("Application 尚未装配。")
+            raise RuntimeError(application_not_installed())
         return self.runtime.web_runtime
 
     @property
@@ -253,8 +357,11 @@ class Application:
             warn_semantic_once(
                 key="public-api:application-model-run",
                 rule_key="public-api-boundary",
-                problem="直接调用 Application.run() 属于高级运行时装配入口。",
-                guidance="常规业务应用请优先使用 from cullinan import configure, run；只有在需要显式运行时编排时再直接使用 Application.run()。",
+                problem="Calling Application.run() directly uses an advanced runtime assembly entrypoint.",
+                guidance=(
+                    "Regular applications should prefer `from cullinan import configure, run`. "
+                    "Call Application.run() directly only when you need explicit runtime orchestration."
+                ),
                 category=PublicAPISemanticWarning,
                 stacklevel=2,
             )
@@ -426,7 +533,9 @@ def _collect_module_specs(root_module: Type[Any]) -> List[ModuleSpec]:
         spec = ModuleSpec(
             cls=module_cls,
             metadata=metadata,
-            packages=tuple(metadata.packages or _infer_default_packages(module_cls)),
+            packages=tuple(metadata.packages)
+            if metadata.packages != ()
+            else (),
         )
         discovered[module_cls] = spec
         visiting.extend(reversed(metadata.imports))
@@ -505,9 +614,9 @@ def _resolve_component_owners(
         if override_owner is not None:
             if override_owner not in spec_lookup:
                 raise RuntimeError(
-                    f"组件 {component_path} 的 ownership_overrides 指向了未导入模块 "
-                    f"{override_owner.__module__}.{override_owner.__name__}。"
-                    "请先把该模块纳入 imports，确保边界声明与运行时归属一致。"
+                    f"ownership_overrides for component {component_path} points to module "
+                    f"{override_owner.__module__}.{override_owner.__name__}, but that module was not imported. "
+                    "Add the module to imports first so the boundary declaration matches runtime ownership."
                 )
             owners[component_path] = override_owner
             continue
@@ -515,9 +624,10 @@ def _resolve_component_owners(
         candidates = _matching_specs(specs, source_module)
         if not candidates:
             raise RuntimeError(
-                f"组件 {component_path} 不属于任何已声明模块包。"
-                "请把它放入某个 @module 声明拥有的包中，或在 @module(packages=[...]) 中明确声明边界。"
-                "@module 表达的是运行时归属与热插拔边界，而不是显式 app 注册。"
+                f"Component {component_path} does not belong to any declared module package. "
+                "Place it inside a package owned by some @module declaration, or declare the boundary explicitly "
+                "with @module(packages=[...]). @module expresses runtime ownership and hot-pluggable boundaries, "
+                "not explicit app registration."
             )
 
         top_prefix = max(prefix_length for _, prefix_length in candidates)
@@ -527,8 +637,9 @@ def _resolve_component_owners(
                 sorted(f"{owner.__module__}.{owner.__name__}" for owner in top_specs)
             )
             raise RuntimeError(
-                f"组件 {component_path} 同时匹配多个模块：{owner_names}。"
-                "请通过 ownership_overrides 显式指定归属，以保持模块边界、reload 与热插拔运行时的稳定性。"
+                f"Component {component_path} matches multiple modules at the same time: {owner_names}. "
+                "Use ownership_overrides to declare ownership explicitly and keep module boundaries, reload behavior, "
+                "and hot-pluggable runtime semantics stable."
             )
 
         owners[component_path] = next(iter(top_specs))
@@ -543,8 +654,8 @@ def _collect_ownership_overrides(specs: Sequence[ModuleSpec]) -> Dict[str, Type[
             existing = overrides.get(key)
             if existing is not None and existing is not owner:
                 raise RuntimeError(
-                    f"ownership_overrides 键 {key} 被多个模块重复声明。"
-                    "同一条边界只能有一个明确归属。"
+                    f"ownership_overrides key {key} is declared by multiple modules. "
+                    "A single boundary can have only one explicit owner."
                 )
             overrides[key] = owner
     return overrides

@@ -150,15 +150,16 @@ ctx.register(Definition(
 from cullinan.app import run
 
 # New style
-from cullinan import configure, module, run
+from cullinan import application, configure
 
-@module
-class RootModule:
-    pass
+@configure(user_packages=["your_app"])
+@application
+def main(): ...
 
-configure(root_module=RootModule)
-run()
+main()
 ```
+
+The entry method is now the recommended default entrypoint. `configure(root_module=...)` is no longer part of the default public startup model.
 
 ### Step 4: Handle Request Scope
 

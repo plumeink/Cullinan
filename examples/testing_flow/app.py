@@ -1,4 +1,4 @@
-from cullinan import configure, module, run
+from cullinan import application, configure
 from cullinan.core import Inject, service
 from cullinan.web import controller, get_api
 
@@ -18,15 +18,9 @@ class NotesController:
         return {"message": self.quote_service.sample(), "tested_via": "get_asgi_app()"}
 
 
-@module(packages=["examples.testing_flow"])
-class RootModule:
-    """Testing example rooted on the public configuration surface."""
+@configure(user_packages=["examples.testing_flow"])
+@application
+def main(): ...
 
 
-def configure_example():
-    return configure(root_module=RootModule)
-
-
-def main():
-    configure_example()
-    run()
+__all__ = ["main"]

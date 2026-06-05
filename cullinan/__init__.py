@@ -2,13 +2,14 @@ import logging
 
 logging.getLogger("cullinan").addHandler(logging.NullHandler())
 
+import cullinan.application as _application_module
+
 from cullinan.application import (
     CullinanConfig,
+    application as _application_decorator,
     configure,
-    get_asgi_app,
     get_config,
     module,
-    run,
 )
 from cullinan.core.decorators import Inject, InjectByName, Lazy, component, service
 from cullinan.core.injection_types import Provider
@@ -47,7 +48,20 @@ from cullinan.web import (
     websocket_handler,
 )
 
-__version__ = "0.93a9"
+
+class _ApplicationFacade:
+    """Top-level facade that stays callable while exposing application submodule members."""
+
+    def __call__(self, *args, **kwargs):
+        return _application_decorator(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(_application_module, name)
+
+
+application = _ApplicationFacade()
+
+__version__ = "0.93a10"
 
 __all__ = [
     "Auto",
@@ -74,12 +88,12 @@ __all__ = [
     "ValidationError",
     "WebRequest",
     "WebResponse",
+    "application",
     "component",
     "configure",
     "controller",
     "delete_api",
     "get_api",
-    "get_asgi_app",
     "get_config",
     "get_decoded_body",
     "get_missing_header_handler",
@@ -89,7 +103,6 @@ __all__ = [
     "post_api",
     "put_api",
     "response",
-    "run",
     "service",
     "set_decoded_body",
     "set_missing_header_handler",

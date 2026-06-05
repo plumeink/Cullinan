@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Cullinan IoC/DI 2.0 - 诊断与异常测试
+"""Cullinan IoC/DI 2.0 diagnostic and exception tests.
 
-作者：Plumeink
+Author: Plumeink
 
-测试 PR-R3 的最小验收集合：
-1. 缺失依赖：断言异常字段包含 injection_point/dependency_name/resolution_path/candidate_sources
-2. 循环依赖：链路严格等于 A->B->C->A
+Minimal acceptance coverage for PR-R3:
+1. Missing dependency errors expose injection_point, dependency_name,
+   resolution_path, and candidate_sources.
+2. Circular dependency chains stay stable, ordered, and exact.
 """
 
 import unittest
@@ -28,10 +29,10 @@ from cullinan.core.diagnostics import (
 
 
 class TestDependencyNotFoundError(unittest.TestCase):
-    """缺失依赖异常测试"""
+    """Missing dependency error tests."""
     
     def test_get_missing_dependency_raises_error(self):
-        """get() 缺失依赖抛出 DependencyNotFoundError"""
+        """get() raises DependencyNotFoundError for a missing dependency."""
         ctx = ApplicationContext()
         ctx.refresh()
         
@@ -42,7 +43,7 @@ class TestDependencyNotFoundError(unittest.TestCase):
         self.assertEqual(exc.dependency_name, 'NonExistingService')
     
     def test_error_contains_candidate_sources(self):
-        """错误包含候选来源信息"""
+        """Errors include candidate source information."""
         ctx = ApplicationContext()
         
         ctx.register(Definition(
@@ -63,10 +64,10 @@ class TestDependencyNotFoundError(unittest.TestCase):
 
 
 class TestCircularDependencyError(unittest.TestCase):
-    """循环依赖异常测试"""
+    """Circular dependency error tests."""
     
     def test_circular_dependency_detected(self):
-        """检测到循环依赖"""
+        """Circular dependencies are detected."""
         ctx = ApplicationContext()
         
         # A -> B -> C -> A
@@ -100,10 +101,10 @@ class TestCircularDependencyError(unittest.TestCase):
         self.assertIsNotNone(exc.dependency_chain)
     
     def test_circular_dependency_chain_is_ordered(self):
-        """循环依赖链路有序且稳定"""
+        """Circular dependency chains remain ordered and stable."""
         ctx = ApplicationContext()
         
-        # A -> B -> A (简单环)
+        # A -> B -> A (simple cycle)
         ctx.register(Definition(
             name='ServiceA',
             factory=lambda c: c.get('ServiceB'),
@@ -126,13 +127,13 @@ class TestCircularDependencyError(unittest.TestCase):
         exc = cm.exception
         chain = exc.dependency_chain
         
-        # 链路应该是有序的：从 A 开始到 A 结束
+        # The chain should stay ordered: it starts with A and ends with A.
         self.assertEqual(chain[0], 'ServiceA')
         self.assertEqual(chain[-1], 'ServiceA')
         self.assertIn('ServiceB', chain)
     
     def test_dependency_cycle_in_definitions_detected_on_refresh(self):
-        """dependencies 中的环在 refresh 时被检测"""
+        """Cycles declared in dependencies are detected during refresh()."""
         ctx = ApplicationContext()
         
         ctx.register(Definition(
@@ -167,10 +168,10 @@ class TestCircularDependencyError(unittest.TestCase):
 
 
 class TestConditionNotMetError(unittest.TestCase):
-    """条件不满足异常测试"""
+    """Condition failure error tests."""
     
     def test_get_with_unmet_condition_raises_error(self):
-        """get() 条件不满足抛出 ConditionNotMetError"""
+        """get() raises ConditionNotMetError when conditions fail."""
         ctx = ApplicationContext()
         
         ctx.register(Definition(
@@ -191,14 +192,14 @@ class TestConditionNotMetError(unittest.TestCase):
 
 
 class TestCreationError(unittest.TestCase):
-    """创建失败异常测试"""
+    """Creation error tests."""
     
     def test_factory_exception_wrapped_in_creation_error(self):
-        """factory 异常被包装为 CreationError"""
+        """Factory exceptions are wrapped in CreationError."""
         ctx = ApplicationContext()
         
         def failing_factory(c):
-            raise ValueError("Factory 内部错误")
+            raise ValueError("Factory internal error")
         
         ctx.register(Definition(
             name='FailingService',
@@ -218,7 +219,7 @@ class TestCreationError(unittest.TestCase):
         self.assertIsInstance(exc.cause, ValueError)
     
     def test_factory_returning_none_raises_creation_error(self):
-        """factory 返回 None 抛出 CreationError"""
+        """A factory returning None raises CreationError."""
         ctx = ApplicationContext()
         
         ctx.register(Definition(
@@ -238,30 +239,30 @@ class TestCreationError(unittest.TestCase):
 
 
 class TestDiagnosticsRendering(unittest.TestCase):
-    """诊断渲染功能测试"""
+    """Diagnostic rendering tests."""
     
     def test_render_resolution_path(self):
-        """render_resolution_path 输出稳定格式"""
+        """render_resolution_path keeps a stable output format."""
         path = ['ServiceA', 'ServiceB', 'ServiceC', 'ServiceA']
         result = render_resolution_path(path)
         
         self.assertEqual(result, 'ServiceA -> ServiceB -> ServiceC -> ServiceA')
     
     def test_render_empty_path(self):
-        """空路径渲染"""
+        """Empty paths render consistently."""
         result = render_resolution_path([])
         self.assertEqual(result, '(empty)')
     
     def test_format_circular_dependency_error(self):
-        """format_circular_dependency_error 输出包含链路"""
+        """format_circular_dependency_error includes the dependency chain."""
         chain = ['A', 'B', 'C', 'A']
         result = format_circular_dependency_error(chain)
         
         self.assertIn('A -> B -> C -> A', result)
-        self.assertIn('循环依赖', result)
+        self.assertIn('Circular dependency', result)
     
     def test_format_missing_dependency_error(self):
-        """format_missing_dependency_error 输出包含依赖名"""
+        """format_missing_dependency_error includes the missing dependency name."""
         result = format_missing_dependency_error(
             dependency_name='MissingService',
             available_sources=['ServiceA', 'ServiceB']
@@ -269,4 +270,3 @@ class TestDiagnosticsRendering(unittest.TestCase):
         
         self.assertIn('MissingService', result)
         self.assertIn('ServiceA', result)
-

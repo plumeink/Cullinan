@@ -55,7 +55,7 @@ def test_scan_validation_surfaces_module_import_failures(tmp_path, monkeypatch):
         _validate_component_scan_results(modules, scan_results)
 
     error_message = str(exc_info.value)
-    assert "语义规则" in error_message
+    assert "Semantic rule" in error_message
     assert "scanpkg.broken" in error_message
     assert "boom during import" in error_message
 
@@ -83,7 +83,7 @@ def test_scan_validation_detects_missing_pending_registration(tmp_path, monkeypa
     error_message = str(exc_info.value)
     assert "HealthyService" in error_message
     assert "PendingRegistry" in error_message
-    assert "模块顶层" in error_message
+    assert "module-top-level" in error_message
 
 
 def test_refresh_resolves_type_checking_forward_reference(tmp_path, monkeypatch):
@@ -326,7 +326,7 @@ def test_refresh_rejects_union_when_multiple_candidates_are_available(tmp_path, 
     error_message = str(exc_info.value)
     assert "PrimarySessionProvider" in error_message
     assert "SecondarySessionProvider" in error_message
-    assert "语义规则" in error_message
+    assert "Semantic rule" in error_message
 
 
 def test_local_component_definition_emits_semantic_warning():
@@ -352,7 +352,7 @@ def test_local_component_definition_emits_semantic_warning():
         ctx.refresh()
 
     assert any(item.category is ComponentDiscoveryWarning for item in caught)
-    assert any("模块顶层" in str(item.message) for item in caught)
+    assert any("module top level" in str(item.message) for item in caught)
 
 
 def test_local_component_definition_after_refresh_fails_with_semantic_message():
@@ -372,9 +372,9 @@ def test_local_component_definition_after_refresh_fails_with_semantic_message():
         build_component()
 
     message = str(exc_info.value)
-    assert "语义规则" in message
+    assert "Semantic rule" in message
     assert "refresh()" in message
-    assert "模块顶层" in message
+    assert "module top level" in message
 
 
 def test_refresh_warns_for_name_based_injection_without_explicit_name_or_type(tmp_path, monkeypatch):
@@ -427,4 +427,4 @@ def test_compatibility_api_emits_semantic_warning():
     assert LegacyService.__name__ == "LegacyService"
     assert registry is None
     assert any(item.category is CompatibilitySemanticWarning for item in caught)
-    assert any("兼容" in str(item.message) for item in caught)
+    assert any("Compatibility APIs" in str(item.message) for item in caught)

@@ -44,7 +44,7 @@ re-exporting the shortest public startup path from top-level `cullinan`.
 
 ### What changed
 
-- `Application.run(RootModule)` builds, validates, warms, and activates a root module
+- `Application.run(...)` builds, validates, warms, and activates the declared root module
 - `@module` defines module imports, owned packages, warmup hooks, and health checks
 - component discovery rebuilds pending registrations from decorator metadata instead of
   relying on one-shot import timing

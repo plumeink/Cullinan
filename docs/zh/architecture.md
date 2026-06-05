@@ -25,7 +25,7 @@ Cullinan 是一个引擎中立的应用框架，当前运行时围绕三条已�
 └── 业务服务与中间件
 
 框架门面
-├── cullinan             -> configure/run/get_asgi_app
+├── cullinan             -> @application、configure/run/get_asgi_app
 ├── cullinan.application -> Application、@module
 ├── cullinan.web         -> 控制器装饰器、WebRequest/WebResponse、参数系统、中间件
 ├── cullinan.core        -> ApplicationContext、作用域、生命周期、请求上下文
