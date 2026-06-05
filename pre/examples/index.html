@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a9"
+      data-current-version="0.93a10"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a9"
+      data-pre-version="0.93a10"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -2098,8 +2098,8 @@
 The source of truth is now the root <code>examples/</code> directory, not <code>docs/examples/</code> and not
 legacy one-file demos.</p>
 <blockquote>
-<p><strong>Recommended mental model:</strong> start from decorator-based business code, declare a <code>RootModule</code>,
-call <code>configure(root_module=...)</code>, then let <code>run()</code> or <code>get_asgi_app()</code> assemble the runtime.<br>
+<p><strong>Recommended mental model:</strong> start from decorator-based business code, declare an entry method with <code>@application</code>,
+attach startup settings with <code>@configure(...)</code>, then call <code>main()</code> directly.<br>
 <strong>See also:</strong> <a href="../getting_started/">Getting Started</a>, <a href="../build_run/">Build &amp; Run</a>,
 <a href="../parameter_system_guide/">Parameter System Guide</a>, <a href="../testing/">Testing &amp; Verification</a></p>
 </blockquote>
@@ -2107,9 +2107,9 @@ call <code>configure(root_module=...)</code>, then let <code>run()</code> or <co
 <ol>
 <li><code>examples/minimal_app/</code> — the shortest public entrypoint</li>
 <li><code>examples/controller_service_inject/</code> — business layering with <code>@service</code>, <code>@controller</code>, and <code>Inject()</code></li>
-<li><code>examples/middleware_and_module/</code> — how <code>@module</code> and <code>@middleware</code> complement each other</li>
+<li><code>examples/middleware_and_module/</code> — when an explicit <code>@module</code> boundary is worth adding on top of the entry method</li>
 <li><code>examples/parameter_handling/</code> — controller-method parameter binding with <code>Path</code>, <code>Query</code>, and <code>Body</code></li>
-<li><code>examples/testing_flow/</code> — testing through <code>configure(...)</code> and <code>get_asgi_app()</code> without a real server process</li>
+<li><code>examples/testing_flow/</code> — testing through <code>main.get_asgi_app()</code> without a real server process</li>
 </ol>
 <h2 id="example-map">Example map<a class="headerlink" href="#example-map" title="Permanent link">&para;</a></h2>
 <table>
@@ -2124,7 +2124,7 @@ call <code>configure(root_module=...)</code>, then let <code>run()</code> or <co
 <tbody>
 <tr>
 <td><code>examples/minimal_app/</code></td>
-<td>Minimal app structure with <code>configure(root_module=...) + run()</code></td>
+<td>Minimal app structure with <code>@application + @configure(...) + main()</code></td>
 <td><code>python -m examples.minimal_app</code></td>
 <td><a href="https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app">View on GitHub</a></td>
 </tr>
@@ -2159,7 +2159,8 @@ call <code>configure(root_module=...)</code>, then let <code>run()</code> or <co
 The current example set intentionally keeps Cullinan's own concept front and center:</p>
 <ul>
 <li>business-first decorators instead of explicit app wiring</li>
-<li><code>RootModule</code> as the runtime boundary when structure matters</li>
+<li>an entry method as the default entrypoint</li>
+<li><code>@module</code> only when structure needs an explicit runtime boundary</li>
 <li><code>Inject()</code> as the default injection path when the type contract is clear</li>
 <li>parameter binding on controller methods instead of raw request plumbing</li>
 <li>testing via public APIs instead of internal bootstrap shortcuts</li>
@@ -2240,7 +2241,7 @@ The current example set intentionally keeps Cullinan's own concept front and cen
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a9", "pre_is_available": true, "pre_label": "0.93a9", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a10", "pre_is_available": true, "pre_label": "0.93a10", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
