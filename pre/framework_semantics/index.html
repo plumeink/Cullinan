@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a10"
+      data-current-version="0.93a11"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a10"
+      data-pre-version="0.93a11"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -735,6 +735,17 @@
     <span class="md-ellipsis">
       
         7. How to read warnings and errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-module-discovery-in-compiled-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Module discovery in compiled environments
       
     </span>
   </a>
@@ -2164,6 +2175,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#8-module-discovery-in-compiled-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Module discovery in compiled environments
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2255,8 +2277,10 @@
 <li>registries are frozen</li>
 </ul>
 <p>After that point, adding new decorated classes is no longer a supported runtime mutation path. Cullinan now surfaces a semantic error that explains the rule and the fix.</p>
+<p><strong><code>PendingRegistry.clear()</code> consistency</strong>: As of v0.93a10, <code>clear()</code> on a frozen registry also raises <code>RuntimeError</code> — matching the behavior of <code>add()</code>. Use <code>PendingRegistry.reset()</code> in test teardown to fully reset the registry including the frozen state.</p>
 <h2 id="5-scope-rules-are-enforced-not-best-effort">5. Scope rules are enforced, not best-effort<a class="headerlink" href="#5-scope-rules-are-enforced-not-best-effort" title="Permanent link">&para;</a></h2>
 <p>Cullinan treats scope compatibility as a hard rule. In particular, a <code>singleton</code> component cannot directly depend on a <code>request</code> scoped component. This now produces structured lifecycle diagnostics instead of failing later in an unpredictable way.</p>
+<p><strong>Transitive enforcement</strong>: The scope check now recurses through the full dependency chain — both explicit <code>dependencies=[...]</code> declarations and field injection markers (<code>Inject()</code>, <code>InjectByName()</code>). A singleton depending on another singleton that transitively requires a request-scoped object is detected and rejected at <code>refresh()</code>, with the full chain reported in the error message.</p>
 <h2 id="6-compatibility-apis-are-compatibility-only">6. Compatibility APIs are compatibility only<a class="headerlink" href="#6-compatibility-apis-are-compatibility-only" title="Permanent link">&para;</a></h2>
 <p>Legacy surfaces such as <code>@injectable</code>, <code>@inject_constructor</code>, and <code>get_injection_registry()</code> remain available so older code can still import them, but they are <strong>not</strong> the recommended programming model anymore. Cullinan now warns when these APIs are used.</p>
 <h2 id="7-how-to-read-warnings-and-errors">7. How to read warnings and errors<a class="headerlink" href="#7-how-to-read-warnings-and-errors" title="Permanent link">&para;</a></h2>
@@ -2267,6 +2291,19 @@
 <li><strong>Suggestion</strong>: the safest supported fix</li>
 </ul>
 <p>When the framework can prove a core semantic violation, startup fails. When code is still technically runnable but likely misleading, Cullinan emits a warning instead.</p>
+<h2 id="8-module-discovery-in-compiled-environments">8. Module discovery in compiled environments<a class="headerlink" href="#8-module-discovery-in-compiled-environments" title="Permanent link">&para;</a></h2>
+<p>When Cullinan runs under Nuitka or PyInstaller, standard <code>pkgutil.walk_packages</code> may not find all user modules — especially in <code>--onefile</code> mode where the filesystem layout differs from development.</p>
+<p><strong><code>nuitka_modules</code> configuration</strong>: You can provide an explicit module list to <code>configure()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+
+<span class="n">configure</span><span class="p">(</span><span class="n">nuitka_modules</span><span class="o">=</span><span class="p">[</span>
+    <span class="s2">&quot;myapp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myapp.services&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;myapp.web&quot;</span><span class="p">,</span>
+<span class="p">])</span>
+</code></pre></div>
+<p>This list is used as the highest-priority strategy in <code>scan_modules_nuitka()</code> and <code>scan_modules_standard()</code>, before falling back to <code>user_packages</code> and other heuristics. Each entry is recursively walked for subpackages.</p>
+<p><strong>Deep subpackage discovery</strong>: <code>list_submodules()</code> now supplements <code>pkgutil.walk_packages</code> with filesystem-based recursive scanning. If a deeply nested package (e.g., <code>club.fnep.infrastructure.discord</code>) is missed by <code>walk_packages</code>, the filesystem fallback discovers it by walking <code>__init__.py</code> directories and <code>.py</code> files directly.</p>
 
 
 
@@ -2335,7 +2372,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a10", "pre_is_available": true, "pre_label": "0.93a10", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

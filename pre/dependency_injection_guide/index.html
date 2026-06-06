@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a10"
+      data-current-version="0.93a11"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a10"
+      data-pre-version="0.93a11"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -886,6 +886,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#constructor-injection-zero-boilerplate-immutable-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor injection — zero boilerplate, immutable by default
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -971,6 +982,62 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-error-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle error propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transitive-scope-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transitive scope enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injection-marker-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injection marker filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2292,6 +2359,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#constructor-injection-zero-boilerplate-immutable-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor injection — zero boilerplate, immutable by default
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2377,6 +2455,62 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Lifecycle integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-error-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle error propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transitive-scope-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transitive scope enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injection-marker-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Injection marker filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2508,6 +2642,59 @@
 <li>prefer an explicit name when you want late lookup without importing the target type</li>
 <li>if you rely on type-driven resolution, the type still needs to be resolvable at runtime</li>
 </ul>
+<h3 id="constructor-injection-zero-boilerplate-immutable-by-default">Constructor injection — zero boilerplate, immutable by default<a class="headerlink" href="#constructor-injection-zero-boilerplate-immutable-by-default" title="Permanent link">&para;</a></h3>
+<p>The cleanest injection style: a bare class-level type annotation is a DI declaration.
+No <code>Inject()</code> marker, no <code>self.x = x</code> assignment.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span>       <span class="c1"># required — error at refresh() if missing</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span>             <span class="c1"># same</span>
+    <span class="n">notifier</span><span class="p">:</span> <span class="n">NotifierService</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># optional — stays None if not registered</span>
+</code></pre></div>
+<p><strong>Rules</strong>:</p>
+<ul>
+<li>No default <code>db: DatabaseService</code> → <strong>required</strong> DI, <code>DependencyNotFoundError</code> at <code>refresh()</code></li>
+<li><code>None</code> default <code>notifier: NotifierService = None</code> → <strong>optional</strong> DI, injected if available</li>
+<li>Actual value <code>timeout: int = 5</code> → ignored by the framework</li>
+<li><code>Inject()</code> / <code>Lazy()</code> marker → field injection, unaffected by constructor injection</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Contrast</th>
+<th>field injection (<code>Inject()</code>)</th>
+<th>constructor injection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Boilerplate</td>
+<td><code>x: T = Inject()</code></td>
+<td><code>x: T</code></td>
+</tr>
+<tr>
+<td>Startup check</td>
+<td><code>required=False</code> defers to runtime</td>
+<td>required deps fail at <code>refresh()</code></td>
+</tr>
+<tr>
+<td>Immutability</td>
+<td>field injection may overwrite</td>
+<td>never overwritten</td>
+</tr>
+<tr>
+<td>Test mock</td>
+<td><code>Inject()</code> blocks direct <code>cls()</code></td>
+<td><code>svc = cls(); svc.db = mock</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Backward-compatible</strong>: existing <code>Inject()</code> / <code>Lazy()</code> / <code>InjectByName()</code> work unchanged.
+Constructor and field injection can coexist on the same class.</p>
+</blockquote>
 <h2 id="how-to-choose">How to choose<a class="headerlink" href="#how-to-choose" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2517,6 +2704,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><strong>New projects: cleanest, immutable by default</strong></td>
+<td>constructor injection <code>db: DatabaseService</code></td>
+</tr>
 <tr>
 <td>Runtime type is available and you want refactor-friendly injection</td>
 <td><code>Inject()</code></td>
@@ -2535,7 +2726,7 @@
 </tr>
 <tr>
 <td>Optional dependency</td>
-<td><code>Inject(required=False)</code> or <code>InjectByName("Name", required=False)</code></td>
+<td><code>notifier: NotifierService = None</code> or <code>Inject(required=False)</code></td>
 </tr>
 <tr>
 <td>Deferred provider object</td>
@@ -2616,6 +2807,28 @@
 <li><code>on_pre_destroy()</code></li>
 </ul>
 <p>Async variants with <code>_async</code> are also supported. Use <code>get_phase()</code> if startup/shutdown ordering matters.</p>
+<h3 id="lifecycle-error-propagation">Lifecycle error propagation<a class="headerlink" href="#lifecycle-error-propagation" title="Permanent link">&para;</a></h3>
+<p>Critical lifecycle phases propagate failures to prevent components from running in an inconsistent state:</p>
+<ul>
+<li><strong><code>on_post_construct</code></strong> and <strong><code>on_pre_destroy</code></strong>: exceptions are re-raised as <code>LifecycleError</code>. A failed <code>on_post_construct</code> means the component is not ready and should not be served.</li>
+<li><strong><code>on_startup</code></strong> and <strong><code>on_shutdown</code></strong>: exceptions are logged as errors but do <strong>not</strong> halt the container. This avoids a single component's startup failure from cascading to unrelated components.</li>
+</ul>
+<p>Controller route registration failures are also re-raised as <code>LifecycleError</code> — a controller whose routes cannot be registered is a hard startup error.</p>
+<h2 id="scope-validation">Scope validation<a class="headerlink" href="#scope-validation" title="Permanent link">&para;</a></h2>
+<h3 id="transitive-scope-enforcement">Transitive scope enforcement<a class="headerlink" href="#transitive-scope-enforcement" title="Permanent link">&para;</a></h3>
+<p>Cullinan validates that a longer-lived component never depends on a shorter-lived component — even transitively through a chain of dependencies. This prevents runtime bugs where a singleton holds a stale reference to a request-scoped object.</p>
+<p>The validation recurses through:
+1. <strong>Explicit dependencies</strong> declared via <code>@service(dependencies=[...])</code>.
+2. <strong>Field injection markers</strong> (<code>Inject()</code>, <code>InjectByName()</code>, <code>Lazy()</code>) on the class.</p>
+<p>Example of a violation:
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;singleton&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SingletonA</span><span class="p">:</span>
+    <span class="n">dep</span><span class="p">:</span> <span class="s2">&quot;SingletonB&quot;</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>        <span class="c1"># → SingletonB (singleton) ✓</span>
+                                         <span class="c1">#   → RequestC (request)   ✗ transitive violation</span>
+</code></pre></div></p>
+<p>The error message identifies the full chain: <code>SingletonA → SingletonB → RequestC</code>.</p>
+<h3 id="injection-marker-filtering">Injection marker filtering<a class="headerlink" href="#injection-marker-filtering" title="Permanent link">&para;</a></h3>
+<p>Only Python dunder attributes (<code>__init__</code>, <code>__repr__</code>, etc.) are automatically excluded from injection scanning. Single-underscore-prefixed attributes like <code>_cache</code> or <code>_connection</code> are <strong>now</strong> visible to the injection system if they carry an <code>Inject()</code> marker. This change (v0.93a10+) ensures that "private by convention" fields are not silently ignored.</p>
 <h2 id="compatibility-notes">Compatibility notes<a class="headerlink" href="#compatibility-notes" title="Permanent link">&para;</a></h2>
 <p>Cullinan still exports some legacy names, but they should not be used as the primary programming model:</p>
 <ul>
@@ -2653,6 +2866,10 @@
 <tr>
 <td>Advanced registration behaves differently than expected</td>
 <td>Verify the <code>Definition</code> scope and factory source</td>
+</tr>
+<tr>
+<td><code>_</code> prefixed injection fields are not resolved</td>
+<td>As of v0.93a10, only <code>__dunder__</code> attributes are excluded. Ensure the field has a type annotation and the dependency is registered</td>
 </tr>
 </tbody>
 </table>
@@ -2728,7 +2945,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a10", "pre_is_available": true, "pre_label": "0.93a10", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
