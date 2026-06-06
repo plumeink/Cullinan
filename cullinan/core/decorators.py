@@ -65,11 +65,13 @@ def get_component_registration_metadata(target_cls: Type) -> Optional[Dict[str, 
     }
 
 
-_source_context_cache: Dict[int, Dict[str, Any]] = {}
+_source_context_cache: Dict[tuple, Dict[str, Any]] = {}
 
 
 def _build_source_context(target_cls: Type) -> Dict[str, Any]:
-    cache_key = id(target_cls)
+    # Use (module, qualname) as stable cache key — id() values are reused
+    # after GC, causing cross-test contamination.
+    cache_key = (target_cls.__module__, target_cls.__qualname__)
     cached = _source_context_cache.get(cache_key)
     if cached is not None:
         return cached
