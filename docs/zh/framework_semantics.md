@@ -108,9 +108,13 @@ class ReportController:
 
 从这一刻开始，再去新增装饰器组件就不再是受支持的运行时变更路径。Cullinan 现在会给出明确的语义错误，并附上修复建议。
 
-## 5. 作用域规则是强约束，不是“尽量工作”
+**`PendingRegistry.clear()` 一致性**：自 v0.93a10 起，对已冻结的注册表调用 `clear()` 同样会抛出 `RuntimeError`——与 `add()` 行为保持一致。在测试清理中使用 `PendingRegistry.reset()` 可完整重置注册表（包括冻结状态）。
+
+## 5. 作用域规则是强约束，不是"尽量工作"
 
 Cullinan 把作用域兼容性视为硬规则。尤其是 `singleton` 组件不能直接依赖 `request` 作用域组件。现在这类情况会给出结构化生命周期诊断，而不是等到更晚阶段以不稳定方式出错。
+
+**传递强制检查**：作用域检查现在会递归遍历完整依赖链——包括显式 `dependencies=[...]` 声明和字段注入标记（`Inject()`、`InjectByName()`）。如果单例依赖另一个单例，而后者又传递依赖了请求作用域对象，`refresh()` 时会检测并拒绝，错误信息中会标明完整链路。
 
 ## 6. 兼容 API 只是兼容，不是推荐入口
 
@@ -125,3 +129,23 @@ Cullinan 现在把关键诊断统一表达为：
 - **建议**：最安全、最受支持的修复方式
 
 当框架能够确定你违反了核心语义时，会直接失败；当代码虽然还能运行，但明显容易误导开发者时，则会发 warning。
+
+## 8. 编译环境下的模块发现
+
+当 Cullinan 运行在 Nuitka 或 PyInstaller 环境中时，标准的 `pkgutil.walk_packages` 可能无法发现全部用户模块——尤其是在 `--onefile` 模式下，文件系统布局与开发环境不同。
+
+**`nuitka_modules` 配置**：可通过 `configure()` 提供显式模块列表：
+
+```python
+from cullinan.support import configure
+
+configure(nuitka_modules=[
+    "myapp",
+    "myapp.services",
+    "myapp.web",
+])
+```
+
+该列表作为 `scan_modules_nuitka()` 和 `scan_modules_standard()` 的最高优先级策略，在回退到 `user_packages` 等启发式方法之前使用。每个条目会被递归遍历以发现子包。
+
+**深层子包发现**：`list_submodules()` 现在会在 `pkgutil.walk_packages` 基础上增加基于文件系统的递归扫描回退。如果深层嵌套包（如 `club.fnep.infrastructure.discord`）被 `walk_packages` 遗漏，文件系统回退会通过直接遍历 `__init__.py` 目录和 `.py` 文件来发现它们。

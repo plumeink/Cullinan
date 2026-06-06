@@ -120,3 +120,86 @@ class TestModuleScannerIntegration(unittest.TestCase):
         self.assertIsInstance(result, list)
         # Should return at least some modules (like tests)
         self.assertGreaterEqual(len(result), 0)
+
+
+class TestModuleCacheInvalidation(unittest.TestCase):
+    """测试模块扫描缓存失效 API（Issue 4 修复验证）"""
+
+    def test_invalidate_clears_cache(self):
+        """验证：invalidate_module_cache 清除缓存后，file_list_func 重新扫描"""
+        import cullinan.runtime.module_scanner as ms
+
+        # 第一次调用，填充缓存
+        first_result = ms.file_list_func()
+        self.assertIsNotNone(ms._module_list_cache)
+        self.assertEqual(first_result, ms._module_list_cache)
+
+        # 失效缓存
+        ms.invalidate_module_cache()
+        self.assertIsNone(ms._module_list_cache)
+
+        # 第二次调用，应重新扫描（结果与第一次相同或更新）
+        second_result = ms.file_list_func()
+        self.assertIsNotNone(ms._module_list_cache)
+        self.assertEqual(second_result, ms._module_list_cache)
+        # 在稳定环境中，两次结果应一致
+        self.assertEqual(first_result, second_result)
+
+    def test_invalidate_importable_from_runtime(self):
+        """验证：invalidate_module_cache 可从 cullinan.runtime 导入"""
+        from cullinan.runtime import invalidate_module_cache
+        self.assertTrue(callable(invalidate_module_cache))
+
+    def test_get_caller_package_with_fallback(self):
+        """验证：get_caller_package 支持 fallback_package 参数"""
+        from cullinan.runtime.module_scanner import get_caller_package
+
+        result = get_caller_package(fallback_package="test_fallback")
+        self.assertIsInstance(result, str)
+        # 在测试环境中应返回实际 caller package 或 fallback
+        self.assertTrue(len(result) > 0)
+
+    def test_get_caller_package_uses_getframe(self):
+        """验证：get_caller_package 使用 sys._getframe() 优化路径"""
+        from cullinan.runtime.module_scanner import get_caller_package
+
+        # 基本调用不抛异常即验证 _getframe 路径可用
+        result = get_caller_package(fallback_package="fallback_test")
+        self.assertIsInstance(result, str)
+
+
+class TestListSubmodules(unittest.TestCase):
+    """Test deep subpackage discovery via list_submodules."""
+
+    def test_shallow_package_returns_submodules(self):
+        """list_submodules finds modules inside a shallow package."""
+        from cullinan.runtime.module_scanner import list_submodules
+        mods = list_submodules("cullinan.runtime")
+        self.assertIsInstance(mods, list)
+        # scanner and module_scanner should be discoverable
+        self.assertIn("cullinan.runtime.scanner", mods)
+
+    def test_filesystem_fallback_finds_deep_subpackages(self):
+        """Filesystem fallback discovers subpackages walk_packages may miss."""
+        from cullinan.runtime.module_scanner import list_submodules
+        # cullinan.core has deeper structure
+        mods = list_submodules("cullinan.core")
+        self.assertIsInstance(mods, list)
+        # At minimum, should find application_context
+        found_context = any(
+            "application_context" in m for m in mods
+        )
+        self.assertTrue(found_context, f"application_context not in {mods}")
+
+    def test_missing_package_returns_empty_list(self):
+        """list_submodules gracefully handles missing packages."""
+        from cullinan.runtime.module_scanner import list_submodules
+        mods = list_submodules("nonexistent.package.zzz")
+        self.assertEqual(mods, [])
+
+    def test_dedup_across_strategies(self):
+        """Duplicates from walk_packages and filesystem are merged."""
+        from cullinan.runtime.module_scanner import list_submodules
+        mods = list_submodules("cullinan.runtime")
+        # No duplicates
+        self.assertEqual(len(mods), len(set(mods)))

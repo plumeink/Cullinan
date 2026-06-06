@@ -63,11 +63,12 @@ class UserController:
 
 | 场景 | 用法 |
 | --- | --- |
+| **最简洁写法（推荐）** | `db: DatabaseService` 构造注入 |
 | 类型可在运行时导入 | `Inject()` |
 | `TYPE_CHECKING` / 前向引用最终仍能唯一命中一个目标 | `Inject()` |
 | 类型不希望在运行时直接导入 | `InjectByName("Name")` |
 | 希望第一次使用时再解析 | `Lazy("Name")` |
-| 可选依赖 | `required=False` |
+| 可选依赖 | `notifier: NotifierService = None` 或 `required=False` |
 | 希望注入延迟 provider 对象 | `Provider[T] = Inject()` |
 | 希望注入某个契约下的全部实现 | `list[T] = Inject()` / `set[T] = Inject()` / `tuple[T, ...] = Inject()` |
 

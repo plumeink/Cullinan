@@ -101,15 +101,48 @@ class AuditService:
 - 如果希望延迟解析且不导入目标类型，优先显式传名称
 - 如果希望按类型解析，类型同样必须能在运行时被解析
 
+### 构造注入 —— 无样板、天然不可变
+
+最简洁的注入方式：一行类级类型注解即为 DI 声明，无需 `Inject()` 标记，无需 `self.x = x`。
+
+```python
+from cullinan.core import service
+
+@service
+class UserService:
+    database: DatabaseService       # 必需依赖，refresh() 时报错
+    cache: CacheService             # 同上
+    notifier: NotifierService = None  # Optional 依赖，没有则留 None
+```
+
+**规则**：
+
+- 无默认值 `db: DatabaseService` → **必需** DI 依赖，缺失在 `refresh()` 抛出 `DependencyNotFoundError`
+- `None` 默认值 `notifier: NotifierService = None` → **可选** DI，容器有则注入，无则静默跳过
+- 有实际值 `timeout: int = 5` → 框架不碰，当作普通类属性
+- 有 `Inject()`/`Lazy()` 标记 → 走 field injection 路径，不受构造注入影响
+
+**优势**：
+
+| 对比 | field injection (`Inject()`) | 构造注入（类型注解） |
+|------|------------------------------|----------------------|
+| 样板代码 | `x: T = Inject()` | `x: T` |
+| 启动时校验 | `required=False` 运行时抛 | 必需依赖在 `refresh()` 即报 |
+| 不可变性 | field injection 可覆盖 | 注入后不被覆盖 |
+| 测试 mock | `Inject()` 妨碍实例化 | `svc = cls(); svc.db = mock` |
+
+> **向后兼容**：现有 `Inject()` / `Lazy()` / `InjectByName()` 行为完全不变，构造注入与 field injection 可混用。
+
 ## 如何选择
 
 | 需求 | 推荐注入原语 |
 | --- | --- |
+| **新项目首选：最简洁、天然不可变** | 构造注入 `db: DatabaseService` |
 | 运行时类型可用，且希望获得更好的重构友好性 | `Inject()` |
 | `TYPE_CHECKING` / 前向引用场景下仍希望按类型解析，且目标唯一 | `Inject()` |
 | 运行时类型刻意不可用，或不适合直接导入 | `InjectByName("Name")` |
 | 希望第一次使用时再查找依赖 | `Lazy("Name")` 或带运行时可解析类型的 `Lazy()` |
-| 可选依赖 | `Inject(required=False)` 或 `InjectByName("Name", required=False)` |
+| 可选依赖 | `notifier: NotifierService = None` 或 `Inject(required=False)` |
 | 希望注入延迟获取的提供者对象 | `Inject()` + `Provider[T]` |
 | 希望注入某个契约下的全部实现 | `Inject()` + `list[T]` / `set[T]` / `tuple[T, ...]` |
 
@@ -199,6 +232,39 @@ DI 与生命周期属于同一运行时模型。受管组件可实现：
 
 同样支持 `_async` 异步版本；如需控制顺序，可实现 `get_phase()`。
 
+### 生命周期异常传播
+
+关键生命周期阶段的异常会被传播，防止组件在不一致状态下运行：
+
+- **`on_post_construct`** 和 **`on_pre_destroy`**：异常会重新抛出为 `LifecycleError`。`on_post_construct` 失败意味着组件未就绪，不应对外提供服务。
+- **`on_startup`** 和 **`on_shutdown`**：异常会记录为错误但**不会**中断容器。这避免了单个组件的启动失败级联影响其他组件。
+
+控制器路由注册失败同样会抛出 `LifecycleError`——路由无法注册的控制器属于硬启动错误。
+
+## 作用域校验
+
+### 传递作用域强制检查
+
+Cullinan 会校验长生命周期组件是否间接依赖了短生命周期组件——即使是通过依赖链传递。这能防止运行时出现单例持有请求作用域对象过期引用的问题。
+
+校验会递归遍历：
+1. 通过 `@service(dependencies=[...])` 声明的**显式依赖**。
+2. 类上的**字段注入标记**（`Inject()`、`InjectByName()`、`Lazy()`）。
+
+违规示例：
+```python
+@service(scope="singleton")
+class SingletonA:
+    dep: "SingletonB" = Inject()        # → SingletonB（singleton）✓
+                                         #   → RequestC（request）  ✗ 传递违规
+```
+
+错误信息会标明完整链路：`SingletonA → SingletonB → RequestC`。
+
+### 注入标记过滤规则
+
+仅 Python dunder 属性（`__init__`、`__repr__` 等）会被自动排除在注入扫描之外。单下划线前缀的属性（如 `_cache`、`_connection`）**现在**对注入系统可见——如果它们携带了 `Inject()` 标记。此变更（v0.93a10+）确保"约定私有"字段不再被静默忽略。
+
 ## 兼容性说明
 
 Cullinan 仍导出部分旧名称，但不应再作为主要编程模型：
@@ -219,6 +285,7 @@ Cullinan 仍导出部分旧名称，但不应再作为主要编程模型：
 | 可选依赖缺失 | 使用 `required=False` 并显式处理 `None` |
 | 生命周期钩子未执行 | 确认组件受框架管理且已执行 `ApplicationContext.refresh()` |
 | 高级注册行为不符合预期 | 检查 `Definition` 的 scope 与 factory/source 设置 |
+| `_` 前缀注入字段未被解析 | 自 v0.93a10 起仅排除 `__dunder__` 属性。确认字段带有类型注解且依赖已注册 |
 
 ## 相关文档
 

@@ -120,7 +120,19 @@ class PendingRegistry:
         return self.get_by_name(name) is not None
 
     def clear(self) -> None:
+        """Clear all pending registrations.
+        
+        Raises:
+            RuntimeError: If the registry is frozen (after refresh()).
+            Use reset() to completely reset the registry including frozen state.
+        """
         with self._lock:
+            if self._frozen:
+                raise RuntimeError(
+                    "Cannot clear() a frozen PendingRegistry. "
+                    "After refresh() the registry is frozen to prevent accidental modifications. "
+                    "Use PendingRegistry.reset() for full cleanup in test teardown."
+                )
             self._registrations.clear()
 
     def freeze(self) -> None:

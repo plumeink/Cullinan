@@ -165,7 +165,7 @@ class AuthMiddleware(Middleware):
 
 ### Complete Example
 
-Reference: `examples/legacy/custom_auth_middleware.py`
+Reference: `examples/middleware_and_module/` — see the current middleware example that uses the modern `@middleware` decorator API.
 
 ---
 
@@ -289,7 +289,7 @@ For new extensions, prefer registering `Definition` objects or explicit factorie
 
 ### Complete Example
 
-Reference: `examples/legacy/custom_provider_demo.py`
+Reference: `examples/extension_registration_demo.py` — demonstrates extension discovery and registration with the current public API.
 
 ---
 
@@ -656,9 +656,9 @@ class TestMyMiddleware(ServiceTestCase):
 - [Quick Start Extensions](quick_start_extensions.md) - Quick start guide for extensions
 
 > **Note**: Example files can be found in the `examples/` directory of the repository:
-> - `examples/legacy/custom_auth_middleware.py` - Legacy middleware example
-> - `examples/legacy/custom_provider_demo.py` - Legacy provider example
 > - `examples/extension_registration_demo.py` - Extension registration demo
+> - `examples/middleware_and_module/` - Middleware example
+> - `examples/controller_service_inject/` - DI example
 
 ---
 

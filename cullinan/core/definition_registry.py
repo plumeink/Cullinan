@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import threading
+import typing
 from typing import Dict, Iterable, List, Optional
 
 from cullinan.support.diagnostics import duplicate_definition
@@ -70,6 +71,39 @@ class DefinitionRegistry:
     def _ensure_mutable(self) -> None:
         if self._frozen:
             raise RegistryFrozenError()
+
+    # ------------------------------------------------------------------
+    #  Construct-injection type lookup
+    # ------------------------------------------------------------------
+
+    def find_by_type(self, type_hint) -> List[Definition]:
+        """Return all definitions whose ``type_`` is a subtype of *type_hint*.
+
+        Handles ``Optional[X]`` (and ``X | None`` on Python 3.10+) by
+        unwrapping the inner type before matching.
+        """
+        target = _unwrap_optional(type_hint)
+        if target is None or isinstance(target, str):
+            return []
+        result: List[Definition] = []
+        for definition in self._definitions.values():
+            dfn_type = definition.type_
+            if dfn_type is not None and issubclass(dfn_type, target):
+                result.append(definition)
+        return result
+
+
+def _unwrap_optional(tp):
+    """If *tp* is ``Optional[X]``, return ``X``; otherwise return *tp* unchanged."""
+    if tp is None:
+        return None
+    origin = typing.get_origin(tp)
+    if origin is typing.Union:
+        args = typing.get_args(tp)
+        non_none = [a for a in args if a is not type(None)]
+        if len(non_none) == 1:
+            return non_none[0]
+    return tp
 
 
 __all__ = ["DefinitionRegistry"]

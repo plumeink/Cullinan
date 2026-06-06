@@ -231,3 +231,48 @@ def test_concurrent_update():
     assert final_value is not None
     assert final_value.startswith("value_")
 
+
+def test_lazyproxy_concurrent_resolve_single_call():
+    """测试：_LazyProxy 并发 resolve 仅调用一次 resolver（Issue 1 修复验证）"""
+    from cullinan.core.application_context import _LazyProxy
+
+    call_count = [0]  # 用 list 实现跨线程可变计数器
+    call_lock = threading.Lock()
+
+    def resolver_with_side_effect():
+        with call_lock:
+            call_count[0] += 1
+        return {"data": "resolved"}
+
+    proxy = _LazyProxy(resolver_with_side_effect)
+    errors = []
+    barrier = threading.Barrier(20)  # 所有线程同时启动
+
+    def access_proxy():
+        try:
+            barrier.wait()  # 最大化竞态窗口
+            result = proxy._resolve()
+            assert result == {"data": "resolved"}
+        except Exception as e:
+            errors.append(e)
+
+    threads = [threading.Thread(target=access_proxy) for _ in range(20)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(errors) == 0, f"Errors: {errors}"
+    assert call_count[0] == 1, f"Resolver called {call_count[0]} times, expected 1"
+
+
+def test_lazyproxy_resolve_returns_same_value():
+    """测试：_LazyProxy 多次 resolve 返回同一实例"""
+    from cullinan.core.application_context import _LazyProxy
+    import random
+
+    obj = object()
+    proxy = _LazyProxy(lambda: obj)
+    assert proxy._resolve() is obj
+    assert proxy._resolve() is obj  # 第二次应返回缓存值
+

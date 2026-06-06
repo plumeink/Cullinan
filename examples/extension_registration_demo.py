@@ -120,7 +120,7 @@ def discover_extension_points():
     for category, points in sorted(categories.items()):
         print(f"\n{category.upper()} ({len(points)} points):")
         for point in points:
-            print(f"  • {point['name']}")
+            print(f"  - {point['name']}")
             print(f"    {point['description']}")
             if point['example_url']:
                 print(f"    Docs: {point['example_url']}")
@@ -159,15 +159,15 @@ def demo_middleware_execution():
     handler = MockHandler()
     
     # Process request through chain
-    print("\n→ Request Phase (in priority order):")
+    print("\n-> Request Phase (in priority order):")
     result = chain.process_request(handler)
     
     # Process response through chain
-    print("\n← Response Phase (in reverse order):")
+    print("\n<- Response Phase (in reverse order):")
     response = {"status": 200, "body": "OK"}
     chain.process_response(handler, response)
     
-    print("\n✓ Request/response cycle complete")
+    print("\n[OK] Request/response cycle complete")
 
 
 # ============================================================================
@@ -201,7 +201,7 @@ def demo_manual_registration():
     # Find our manually registered middleware
     custom = [mw for mw in registered if mw['name'] == 'CustomMiddleware']
     if custom:
-        print(f"✓ Manual registration successful: {custom[0]['name']} (priority: {custom[0]['priority']})")
+        print(f"[OK] Manual registration successful: {custom[0]['name']} (priority: {custom[0]['priority']})")
 
 
 # ============================================================================
@@ -224,7 +224,7 @@ def query_middleware_extensions():
     print(f"\nFound {len(middleware_points)} middleware extension points:\n")
     
     for point in middleware_points:
-        print(f"📍 {point.name}")
+        print(f"  [ExtensionPoint] {point.name}")
         print(f"   Description: {point.description}")
         print(f"   Interface: {point.interface.__name__ if point.interface else 'N/A'}")
         print(f"   Documentation: {point.example_url or 'N/A'}")
@@ -238,12 +238,12 @@ def query_middleware_extensions():
 def main():
     """Run all examples."""
     print("\n")
-    print("╔" + "=" * 68 + "╗")
-    print("║" + " " * 68 + "║")
-    print("║" + "  Cullinan Framework - Unified Extension Pattern Demo".center(68) + "║")
-    print("║" + "  Task-7.2: Extension Registration & Discovery".center(68) + "║")
-    print("║" + " " * 68 + "║")
-    print("╚" + "=" * 68 + "╝")
+    print("+" + "=" * 68 + "+")
+    print("|" + " " * 68 + "|")
+    print("|" + "  Cullinan Framework - Unified Extension Pattern Demo".center(68) + "|")
+    print("|" + "  Task-7.2: Extension Registration & Discovery".center(68) + "|")
+    print("|" + " " * 68 + "|")
+    print("+" + "=" * 68 + "+")
     
     # Run examples
     discover_extension_points()

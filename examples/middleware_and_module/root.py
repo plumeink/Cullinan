@@ -6,7 +6,7 @@ class MiddlewareBoundary:
     """Advanced runtime boundary for the middleware example."""
 
 
-@configure(user_packages=["examples.middleware_and_module"])
+@configure(user_packages=["examples.middleware_and_module"], server_port=4083)
 @application(modules=[MiddlewareBoundary])
 def main(): ...
 

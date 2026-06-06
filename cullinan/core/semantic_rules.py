@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import threading
 import warnings
 from typing import Dict
 
@@ -58,6 +59,7 @@ SEMANTIC_RULES: Dict[str, str] = {
 }
 
 _warned_keys = set()
+_warned_lock = threading.Lock()
 
 
 def describe_semantic_rule(rule_key: str) -> str:
@@ -83,18 +85,20 @@ def warn_semantic_once(
     category: type[Warning] = CullinanSemanticWarning,
     stacklevel: int = 2,
 ) -> None:
-    if key in _warned_keys:
-        return
-    warnings.warn(
-        format_semantic_message(rule_key, problem, guidance),
-        category=category,
-        stacklevel=stacklevel,
-    )
-    _warned_keys.add(key)
+    with _warned_lock:
+        if key in _warned_keys:
+            return
+        warnings.warn(
+            format_semantic_message(rule_key, problem, guidance),
+            category=category,
+            stacklevel=stacklevel,
+        )
+        _warned_keys.add(key)
 
 
 def reset_semantic_warnings() -> None:
-    _warned_keys.clear()
+    with _warned_lock:
+        _warned_keys.clear()
 
 
 __all__ = [

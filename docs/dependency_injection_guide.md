@@ -101,15 +101,48 @@ class AuditService:
 - prefer an explicit name when you want late lookup without importing the target type
 - if you rely on type-driven resolution, the type still needs to be resolvable at runtime
 
+### Constructor injection — zero boilerplate, immutable by default
+
+The cleanest injection style: a bare class-level type annotation is a DI declaration.
+No `Inject()` marker, no `self.x = x` assignment.
+
+```python
+from cullinan.core import service
+
+@service
+class UserService:
+    database: DatabaseService       # required — error at refresh() if missing
+    cache: CacheService             # same
+    notifier: NotifierService = None  # optional — stays None if not registered
+```
+
+**Rules**:
+
+- No default `db: DatabaseService` → **required** DI, `DependencyNotFoundError` at `refresh()`
+- `None` default `notifier: NotifierService = None` → **optional** DI, injected if available
+- Actual value `timeout: int = 5` → ignored by the framework
+- `Inject()` / `Lazy()` marker → field injection, unaffected by constructor injection
+
+| Contrast | field injection (`Inject()`) | constructor injection |
+|----------|------------------------------|-----------------------|
+| Boilerplate | `x: T = Inject()` | `x: T` |
+| Startup check | `required=False` defers to runtime | required deps fail at `refresh()` |
+| Immutability | field injection may overwrite | never overwritten |
+| Test mock | `Inject()` blocks direct `cls()` | `svc = cls(); svc.db = mock` |
+
+> **Backward-compatible**: existing `Inject()` / `Lazy()` / `InjectByName()` work unchanged.
+> Constructor and field injection can coexist on the same class.
+
 ## How to choose
 
 | Need | Recommended primitive |
 | --- | --- |
+| **New projects: cleanest, immutable by default** | constructor injection `db: DatabaseService` |
 | Runtime type is available and you want refactor-friendly injection | `Inject()` |
 | `TYPE_CHECKING` / forward-reference type is unique and still should be type-driven | `Inject()` |
 | Runtime type is intentionally unavailable or awkward to import | `InjectByName("Name")` |
 | Lookup should be deferred until first use | `Lazy("Name")` or `Lazy()` with a runtime-resolvable type |
-| Optional dependency | `Inject(required=False)` or `InjectByName("Name", required=False)` |
+| Optional dependency | `notifier: NotifierService = None` or `Inject(required=False)` |
 | Deferred provider object | `Inject()` with `Provider[T]` |
 | Multiple implementations of one contract | `Inject()` with `list[T]`, `set[T]`, or `tuple[T, ...]` |
 
@@ -199,6 +232,39 @@ DI and lifecycle are part of the same runtime model. Managed components can impl
 
 Async variants with `_async` are also supported. Use `get_phase()` if startup/shutdown ordering matters.
 
+### Lifecycle error propagation
+
+Critical lifecycle phases propagate failures to prevent components from running in an inconsistent state:
+
+- **`on_post_construct`** and **`on_pre_destroy`**: exceptions are re-raised as `LifecycleError`. A failed `on_post_construct` means the component is not ready and should not be served.
+- **`on_startup`** and **`on_shutdown`**: exceptions are logged as errors but do **not** halt the container. This avoids a single component's startup failure from cascading to unrelated components.
+
+Controller route registration failures are also re-raised as `LifecycleError` — a controller whose routes cannot be registered is a hard startup error.
+
+## Scope validation
+
+### Transitive scope enforcement
+
+Cullinan validates that a longer-lived component never depends on a shorter-lived component — even transitively through a chain of dependencies. This prevents runtime bugs where a singleton holds a stale reference to a request-scoped object.
+
+The validation recurses through:
+1. **Explicit dependencies** declared via `@service(dependencies=[...])`.
+2. **Field injection markers** (`Inject()`, `InjectByName()`, `Lazy()`) on the class.
+
+Example of a violation:
+```python
+@service(scope="singleton")
+class SingletonA:
+    dep: "SingletonB" = Inject()        # → SingletonB (singleton) ✓
+                                         #   → RequestC (request)   ✗ transitive violation
+```
+
+The error message identifies the full chain: `SingletonA → SingletonB → RequestC`.
+
+### Injection marker filtering
+
+Only Python dunder attributes (`__init__`, `__repr__`, etc.) are automatically excluded from injection scanning. Single-underscore-prefixed attributes like `_cache` or `_connection` are **now** visible to the injection system if they carry an `Inject()` marker. This change (v0.93a10+) ensures that "private by convention" fields are not silently ignored.
+
 ## Compatibility notes
 
 Cullinan still exports some legacy names, but they should not be used as the primary programming model:
@@ -219,6 +285,7 @@ Those names are kept so older code paths fail less abruptly, but new code should
 | Optional dependency is missing | Use `required=False` and handle `None` explicitly |
 | Lifecycle hooks do not run | Ensure the component is managed and `ApplicationContext.refresh()` has executed |
 | Advanced registration behaves differently than expected | Verify the `Definition` scope and factory source |
+| `_` prefixed injection fields are not resolved | As of v0.93a10, only `__dunder__` attributes are excluded. Ensure the field has a type annotation and the dependency is registered |
 
 ## Related documents
 

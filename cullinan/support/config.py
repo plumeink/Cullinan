@@ -103,6 +103,12 @@ class CullinanConfig:
         # Debug mode (enables stack traces in error responses)
         self.debug: bool = False
 
+        # Nuitka onefile explicit module list.
+        # When compiling with Nuitka --standalone or --onefile, automatic module
+        # discovery is limited. Populate this list with fully-qualified module
+        # names that should be scanned, e.g.: ['myapp.services', 'myapp.controllers']
+        self.nuitka_modules: Optional[List[str]] = None
+
         # OpenAPI auto-generation
         # Set to True to auto-register /openapi.json and /openapi.yaml endpoints
         # Can also be set via env var CULLINAN_OPENAPI_ENABLED=1
@@ -165,6 +171,8 @@ class CullinanConfig:
             self.server_host = config['server_host']
         if 'server_port' in config:
             self.server_port = config['server_port']
+        if 'nuitka_modules' in config:
+            self.nuitka_modules = config['nuitka_modules']
         return self
 
     def to_dict(self) -> dict:
@@ -181,6 +189,7 @@ class CullinanConfig:
             'asgi_server': self.asgi_server,
             'server_host': self.server_host,
             'server_port': self.server_port,
+            'nuitka_modules': self.nuitka_modules,
         }
 
 
@@ -242,6 +251,7 @@ def configure(
     asgi_server: Optional[str] = None,
     server_host: Optional[str] = None,
     server_port: Optional[int] = None,
+    nuitka_modules: Optional[List[str]] = None,
 ):
     """Configure the Cullinan framework.
 
@@ -313,6 +323,9 @@ def configure(
         _config.server_host = server_host
     if server_port is not None:
         _config.server_port = int(server_port)
+
+    if nuitka_modules is not None:
+        _config.nuitka_modules = nuitka_modules
 
     return _config
 

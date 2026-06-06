@@ -37,3 +37,53 @@ def test_runtime_transport_support_and_core_facades():
 def test_application_facade_exports_runtime_context_helpers():
     assert bind_runtime_request_context is not None
     assert release_runtime_request_context is not None
+
+
+def test_warn_semantic_once_concurrent_dedup():
+    """测试：20 线程对同一 key 调用 warn_semantic_once 仅触发 1 次 warning（Issue 13 修复验证）"""
+    import threading
+    import warnings
+    from cullinan.core.semantic_rules import warn_semantic_once, reset_semantic_warnings, CullinanSemanticWarning
+
+    reset_semantic_warnings()
+    warning_count = [0]
+    count_lock = threading.Lock()
+
+    # 捕获 warning 计数
+    def warning_handler(message, category, filename, lineno, file=None, line=None):
+        with count_lock:
+            warning_count[0] += 1
+
+    errors = []
+    barrier = threading.Barrier(20)
+
+    def trigger_warning():
+        try:
+            barrier.wait()
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                warn_semantic_once(
+                    key="concurrent_test_key",
+                    rule_key="component-top-level",
+                    problem="test problem",
+                    guidance="test guidance",
+                    category=CullinanSemanticWarning,
+                )
+                with count_lock:
+                    warning_count[0] += len(w)
+        except Exception as e:
+            errors.append(e)
+
+    threads = [threading.Thread(target=trigger_warning) for _ in range(20)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(errors) == 0, f"Errors: {errors}"
+    # 所有线程中最多仅 1 个应实际触发 warning
+    assert warning_count[0] <= 1, (
+        f"Expected at most 1 warning, got {warning_count[0]}"
+    )
+
+    reset_semantic_warnings()

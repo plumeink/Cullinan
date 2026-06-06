@@ -27,7 +27,9 @@ code targets Cullinan semantics first, while the framework decides whether to
 bridge into ASGI or Tornado at runtime.
 
 Historical compatibility demos live under `examples/legacy/` and are not part of
-the maintained default learning path.
+the maintained default learning path. Only `decorator_demo_090.py` remains —
+other legacy demos were cleaned up when their referenced APIs (`cullinan.run`,
+`cullinan.core.provider`) were removed.
 
 ## Advanced extension demos
 

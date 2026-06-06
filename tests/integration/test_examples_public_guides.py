@@ -208,10 +208,12 @@ def test_examples_directory_keeps_legacy_demos_outside_default_path():
     assert "examples/legacy/" in examples_readme
     assert "examples/extension_registration_demo.py" in examples_readme
     assert Path("examples", "legacy", "decorator_demo_090.py").exists()
-    assert Path("examples", "legacy", "custom_provider_demo.py").exists()
-    assert Path("examples", "legacy", "custom_auth_middleware.py").exists()
-    assert Path("examples", "legacy", "ioc_facade_demo.py").exists()
     assert not Path("examples", "decorator_demo_090.py").exists()
+    # Expired legacy demos that referenced removed APIs (cullinan.run,
+    # cullinan.core.provider) have been cleaned up.
+    assert not Path("examples", "legacy", "custom_provider_demo.py").exists()
+    assert not Path("examples", "legacy", "custom_auth_middleware.py").exists()
+    assert not Path("examples", "legacy", "ioc_facade_demo.py").exists()
     assert not Path("examples", "custom_provider_demo.py").exists()
     assert not Path("examples", "custom_auth_middleware.py").exists()
     assert not Path("examples", "ioc_facade_demo.py").exists()

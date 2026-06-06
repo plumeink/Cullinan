@@ -6,6 +6,7 @@ import importlib.util
 import logging
 import signal
 import sys
+import threading
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -196,10 +197,22 @@ def scan_service(modules: list) -> None:
 def is_started_directly() -> bool:
     """Return True if the process was started directly (a __main__ frame exists).
 
-    We inspect the stack and check whether any frame's module name is '__main__'.
-    This is a conservative heuristic: if the framework is imported by another
-    application (e.g. tests, embedding, REPL), we won't auto-install console handlers.
+    Uses sys._getframe() for efficiency in compiled environments (Nuitka/PyInstaller).
+    Falls back to inspect.stack() if _getframe is unavailable.
     """
+    try:
+        frame = sys._getframe()
+        while frame is not None:
+            module = inspect.getmodule(frame)
+            if module is not None:
+                if getattr(module, '__name__', '') == '__main__':
+                    return True
+            frame = frame.f_back
+        return False
+    except Exception:
+        pass
+
+    # Fallback for environments without sys._getframe()
     try:
         for frame_info in inspect.stack():
             module = inspect.getmodule(frame_info[0])
@@ -212,6 +225,11 @@ def is_started_directly() -> bool:
     return False
 
 
+# Thread-safety guard for _ensure_console_logging
+_logging_initialized = False
+_logging_lock = threading.Lock()
+
+
 def _ensure_console_logging():
     """Ensure framework logs appear on console when the application hasn't configured logging.
 
@@ -220,49 +238,63 @@ def _ensure_console_logging():
     - If the 'cullinan' package logger already has handlers, do nothing.
     - Otherwise add a StreamHandler to stdout on the 'cullinan' logger at INFO level.
     - Honor env var CULLINAN_DISABLE_AUTO_CONSOLE=1 to disable this behavior.
+
+    Thread-safe: uses a module-level lock and flag to prevent duplicate handlers.
     """
-    try:
-        if os.getenv('CULLINAN_DISABLE_AUTO_CONSOLE', '0') == '1':
+    global _logging_initialized
+    if _logging_initialized:
+        return None
+    with _logging_lock:
+        if _logging_initialized:
             return None
-        # Allow forcing console handler via env var (useful in tests/IDE runs)
-        force = os.getenv('CULLINAN_FORCE_CONSOLE', '0').lower() in ('1', 'true', 'yes')
-        # only auto-enable console logging when the process was started directly
-        # unless forced via CULLINAN_FORCE_CONSOLE
-        if not force and not is_started_directly():
-            return None
-        root = logging.getLogger()
-        # consider only "real" handlers (not NullHandler)
-        root_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(root, 'handlers', []) if h is not None)
-        if root_has_real:
-            return None
-        pkg_logger = logging.getLogger('cullinan')
-        pkg_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(pkg_logger, 'handlers', []) if h is not None)
-        if pkg_has_real:
-            return None
-        # add a console handler to the package logger
-        console_handler = logging.StreamHandler(sys.stdout)
-        fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-        console_handler.setFormatter(fmt)
-        # allow customizing console level via env var (e.g. DEBUG/INFO)
-        lvl_name = os.getenv('CULLINAN_AUTO_CONSOLE_LEVEL', '').strip()
-        if lvl_name:
-            try:
-                level = int(lvl_name)
-            except Exception:
-                level = getattr(logging, lvl_name.upper(), None)
-            if isinstance(level, int):
-                console_handler.setLevel(level)
+        try:
+            if os.getenv('CULLINAN_DISABLE_AUTO_CONSOLE', '0') == '1':
+                _logging_initialized = True
+                return None
+            # Allow forcing console handler via env var (useful in tests/IDE runs)
+            force = os.getenv('CULLINAN_FORCE_CONSOLE', '0').lower() in ('1', 'true', 'yes')
+            # only auto-enable console logging when the process was started directly
+            # unless forced via CULLINAN_FORCE_CONSOLE
+            if not force and not is_started_directly():
+                _logging_initialized = True
+                return None
+            root = logging.getLogger()
+            # consider only "real" handlers (not NullHandler)
+            root_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(root, 'handlers', []) if h is not None)
+            if root_has_real:
+                _logging_initialized = True
+                return None
+            pkg_logger = logging.getLogger('cullinan')
+            pkg_has_real = any(not isinstance(h, logging.NullHandler) for h in getattr(pkg_logger, 'handlers', []) if h is not None)
+            if pkg_has_real:
+                _logging_initialized = True
+                return None
+            # add a console handler to the package logger
+            console_handler = logging.StreamHandler(sys.stdout)
+            fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+            console_handler.setFormatter(fmt)
+            # allow customizing console level via env var (e.g. DEBUG/INFO)
+            lvl_name = os.getenv('CULLINAN_AUTO_CONSOLE_LEVEL', '').strip()
+            if lvl_name:
+                try:
+                    level = int(lvl_name)
+                except Exception:
+                    level = getattr(logging, lvl_name.upper(), None)
+                if isinstance(level, int):
+                    console_handler.setLevel(level)
+                else:
+                    console_handler.setLevel(logging.INFO)
             else:
                 console_handler.setLevel(logging.INFO)
-        else:
-            console_handler.setLevel(logging.INFO)
-        pkg_logger.addHandler(console_handler)
-        pkg_logger.setLevel(logging.INFO)
-        pkg_logger.propagate = False
-        return console_handler
-    except Exception:
-        # never raise from logging setup
-        return None
+            pkg_logger.addHandler(console_handler)
+            pkg_logger.setLevel(logging.INFO)
+            pkg_logger.propagate = False
+            _logging_initialized = True
+            return console_handler
+        except Exception:
+            # never raise from logging setup
+            _logging_initialized = True
+            return None
 
 
 # ASCII banner used when the framework starts; backslashes are escaped so this

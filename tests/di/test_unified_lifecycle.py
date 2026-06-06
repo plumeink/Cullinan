@@ -18,10 +18,7 @@ def test_unified_lifecycle_basic():
     from cullinan.core.lifecycle_enhanced import LifecycleAware, SmartLifecycle
 
     # Reset state
-    PendingRegistry.get_instance().clear()
-    PendingRegistry.get_instance()._frozen = False
-
-    # Track lifecycle calls
+    PendingRegistry.reset()
     lifecycle_calls: List[str] = []
 
     # Define a test service with lifecycle hooks
@@ -80,8 +77,7 @@ def test_lifecycle_phase_ordering():
     from cullinan.core.definitions import Definition, ScopeType
 
     # Reset state
-    PendingRegistry.get_instance().clear()
-    PendingRegistry.get_instance()._frozen = False
+    PendingRegistry.reset()
 
     startup_order: List[str] = []
     shutdown_order: List[str] = []

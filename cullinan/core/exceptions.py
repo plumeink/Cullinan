@@ -160,6 +160,39 @@ class CreationError(DependencyResolutionError):
         super().__init__(message, dependency_name=dependency_name, cause=cause, **kwargs)
 
 
+class AmbiguousDependencyError(DependencyResolutionError):
+    """Exception raised when constructor injection matches multiple definitions.
+
+    Raised during refresh() when a constructor-injected type has more than
+    one matching Definition in the registry.
+    """
+
+    def __init__(
+        self,
+        attr_name: str,
+        target_cls: type,
+        candidates: List[str],
+        **kwargs,
+    ):
+        type_name = getattr(target_cls, "__name__", str(target_cls))
+        candidate_names = ", ".join(candidates)
+        message = (
+            f"Constructor dependency '{attr_name}' on '{type_name}' "
+            f"matches {len(candidates)} definitions by type: [{candidate_names}]. "
+            f"Use InjectByName() as a field injection to disambiguate."
+        )
+        super().__init__(
+            message,
+            dependency_name=attr_name,
+            injection_point=f"{type_name}.__annotations__['{attr_name}']",
+            candidate_sources=[{"name": c} for c in candidates],
+            **kwargs,
+        )
+        self.attr_name = attr_name
+        self.target_cls = target_cls
+        self.candidates = candidates
+
+
 class LifecycleError(CullinanCoreError):
     """Exception raised for lifecycle management errors."""
     pass

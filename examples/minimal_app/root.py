@@ -21,7 +21,7 @@ class HelloController:
         }
 
 
-@configure(user_packages=["examples.minimal_app"])
+@configure(user_packages=["examples.minimal_app"], server_port=4081)
 @application
 def main(): ...
 

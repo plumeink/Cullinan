@@ -108,9 +108,13 @@ The compatibility form still falls back to the attribute name, but Cullinan now 
 
 After that point, adding new decorated classes is no longer a supported runtime mutation path. Cullinan now surfaces a semantic error that explains the rule and the fix.
 
+**`PendingRegistry.clear()` consistency**: As of v0.93a10, `clear()` on a frozen registry also raises `RuntimeError` — matching the behavior of `add()`. Use `PendingRegistry.reset()` in test teardown to fully reset the registry including the frozen state.
+
 ## 5. Scope rules are enforced, not best-effort
 
 Cullinan treats scope compatibility as a hard rule. In particular, a `singleton` component cannot directly depend on a `request` scoped component. This now produces structured lifecycle diagnostics instead of failing later in an unpredictable way.
+
+**Transitive enforcement**: The scope check now recurses through the full dependency chain — both explicit `dependencies=[...]` declarations and field injection markers (`Inject()`, `InjectByName()`). A singleton depending on another singleton that transitively requires a request-scoped object is detected and rejected at `refresh()`, with the full chain reported in the error message.
 
 ## 6. Compatibility APIs are compatibility only
 
@@ -125,3 +129,23 @@ Cullinan now formats key diagnostics as:
 - **Suggestion**: the safest supported fix
 
 When the framework can prove a core semantic violation, startup fails. When code is still technically runnable but likely misleading, Cullinan emits a warning instead.
+
+## 8. Module discovery in compiled environments
+
+When Cullinan runs under Nuitka or PyInstaller, standard `pkgutil.walk_packages` may not find all user modules — especially in `--onefile` mode where the filesystem layout differs from development.
+
+**`nuitka_modules` configuration**: You can provide an explicit module list to `configure()`:
+
+```python
+from cullinan.support import configure
+
+configure(nuitka_modules=[
+    "myapp",
+    "myapp.services",
+    "myapp.web",
+])
+```
+
+This list is used as the highest-priority strategy in `scan_modules_nuitka()` and `scan_modules_standard()`, before falling back to `user_packages` and other heuristics. Each entry is recursively walked for subpackages.
+
+**Deep subpackage discovery**: `list_submodules()` now supplements `pkgutil.walk_packages` with filesystem-based recursive scanning. If a deeply nested package (e.g., `club.fnep.infrastructure.discord`) is missed by `walk_packages`, the filesystem fallback discovers it by walking `__init__.py` directories and `.py` files directly.

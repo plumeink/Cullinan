@@ -48,6 +48,21 @@ def _get_cache_lock():
     return _cache_lock
 
 
+def invalidate_module_cache() -> None:
+    """清除模块扫描缓存，强制下次 file_list_func() 重新发现模块。
+
+    线程安全：使用与缓存填充相同的锁保证一致性。
+    适用于：
+    - 测试中动态导入新模块后需要重新扫描
+    - 插件热加载后需要框架发现新组件
+    """
+    global _module_list_cache
+    lock = _get_cache_lock()
+    with lock:
+        _module_list_cache = None
+        logger.debug("Module cache invalidated, next scan will re-discover")
+
+
 def get_nuitka_standalone_mode() -> Optional[str]:
     """Detect Nuitka packaging mode.
     
@@ -90,21 +105,51 @@ def get_pyinstaller_mode() -> Optional[str]:
     return None
 
 
-def get_caller_package() -> str:
+def get_caller_package(fallback_package: Optional[str] = None) -> str:
     """Get the caller package name for the importing application.
     
     Walk the stack and find the first frame whose module is not part of
     the `cullinan` package. Prefer module.__package__ if available, otherwise
     derive a dotted package name from the filename relative to CWD.
     
+    Args:
+        fallback_package: Optional package name to return if stack inspection fails.
+    
     Returns:
         str: The top-level package name of the caller
         
     Raises:
-        CallerPackageException: If caller package cannot be determined
+        CallerPackageException: If caller package cannot be determined and no fallback
     """
-    stack = inspect.stack()
     cwd = os.getcwd()
+    
+    # Primary: use sys._getframe() for efficiency (works in Nuitka/PyInstaller)
+    try:
+        frame = sys._getframe(1)  # caller's frame
+        while frame is not None:
+            module = inspect.getmodule(frame)
+            if module is not None:
+                mod_name = getattr(module, '__name__', '')
+                if mod_name and not mod_name.startswith('cullinan'):
+                    pkg = getattr(module, '__package__', None)
+                    if pkg:
+                        return pkg.split('.')[0]
+                    try:
+                        frame_file = getattr(frame, 'f_code', None)
+                        if frame_file is not None:
+                            filename = getattr(frame_file, 'co_filename', '')
+                            rel = os.path.relpath(filename, cwd)
+                            pkg_from_path = os.path.dirname(rel).replace(os.sep, '.')
+                            if pkg_from_path and pkg_from_path != '.':
+                                return pkg_from_path
+                    except Exception:
+                        pass
+            frame = frame.f_back
+    except Exception:
+        pass
+    
+    # Fallback: use inspect.stack() for backward compatibility
+    stack = inspect.stack()
     
     for frame_info in stack:
         module = inspect.getmodule(frame_info[0])
@@ -130,6 +175,8 @@ def get_caller_package() -> str:
         except Exception:
             continue
     
+    if fallback_package is not None:
+        return fallback_package
     raise CallerPackageException()
 
 
@@ -210,6 +257,34 @@ def scan_modules_nuitka() -> List[str]:
     # Get configuration
     from cullinan.support.config import get_config
     config = get_config()
+    
+    # Strategy 0: Use explicit Nuitka module list (for --onefile mode)
+    if config.nuitka_modules:
+        logger.info("Using explicit Nuitka module list: %s", config.nuitka_modules)
+        for mod_name in config.nuitka_modules:
+            if mod_name not in modules:
+                modules.append(mod_name)
+            # Also add submodules already in sys.modules
+            for sys_mod_name in sys.modules.keys():
+                if sys_mod_name.startswith(mod_name + '.') and sys_mod_name not in modules:
+                    modules.append(sys_mod_name)
+        
+        # Try to import each package to discover subpackages
+        for mod_name in list(modules):
+            try:
+                pkg = importlib.import_module(mod_name)
+                if hasattr(pkg, '__path__'):
+                    for finder, name, is_pkg in pkgutil.walk_packages(
+                        pkg.__path__, mod_name + '.', onerror=lambda x: None
+                    ):
+                        if name not in modules:
+                            modules.append(name)
+            except Exception as e:
+                logger.debug("Could not walk subpackages of %s: %s", mod_name, e)
+        
+        logger.info("Found %d modules from explicit Nuitka list", len(modules))
+        if modules:
+            return modules
     
     # Strategy 1: Use configured user packages (recommended)
     if config.user_packages:
@@ -549,6 +624,10 @@ def scan_modules_pyinstaller() -> List[str]:
 def list_submodules(package_name: str) -> List[str]:
     """List all submodules within a package.
     
+    Uses both pkgutil.walk_packages (primary) and filesystem scanning
+    (fallback) to ensure deep subpackages are discovered across different
+    Python versions and packaging modes.
+    
     Args:
         package_name: Dotted package name to scan
         
@@ -558,17 +637,74 @@ def list_submodules(package_name: str) -> List[str]:
     modules = []
     try:
         pkg = importlib.import_module(package_name)
-        if hasattr(pkg, '__path__'):
-            for importer, modname, ispkg in pkgutil.walk_packages(
-                path=pkg.__path__,
-                prefix=pkg.__name__ + '.',
-                onerror=lambda x: None
-            ):
-                modules.append(modname)
     except ImportError as e:
         logger.warning("Could not import package %s: %s", package_name, str(e))
+        return modules
+    
+    # Strategy 1: pkgutil.walk_packages (primary)
+    if hasattr(pkg, '__path__'):
+        for importer, modname, ispkg in pkgutil.walk_packages(
+            path=pkg.__path__,
+            prefix=pkg.__name__ + '.',
+            onerror=lambda x: None
+        ):
+            if modname not in modules:
+                modules.append(modname)
+    
+    # Strategy 2: Filesystem fallback for deep subpackages
+    # pkgutil.walk_packages may skip deeply nested subpackages on some
+    # Python versions or packaging modes. Walk the filesystem directly.
+    try:
+        pkg_paths = pkg.__path__ if hasattr(pkg, '__path__') else []
+        for pkg_path in pkg_paths:
+            _fs_walk_submodules(package_name, pkg_path, modules)
+    except Exception as e:
+        logger.debug("Filesystem fallback for %s failed: %s", package_name, e)
     
     return modules
+
+
+def _fs_walk_submodules(package_prefix: str, directory: str, modules: List[str], _depth: int = 0) -> None:
+    """Recursively walk filesystem to discover submodules not found by pkgutil.
+    
+    Args:
+        package_prefix: Dotted package name prefix
+        directory: Filesystem directory to scan
+        modules: List to append discovered module names to (mutated in-place)
+        _depth: Current recursion depth (internal use, max 10)
+    """
+    import os as _os
+    
+    if _depth > 10:
+        return
+    
+    try:
+        entries = _os.listdir(directory)
+    except OSError:
+        return
+    
+    for entry in sorted(entries):
+        full_path = _os.path.join(directory, entry)
+        
+        if entry.startswith('.') or entry.startswith('__pycache__'):
+            continue
+        
+        if _os.path.isdir(full_path):
+            init_file = _os.path.join(full_path, '__init__.py')
+            child_pkg = package_prefix + '.' + entry
+            if _os.path.isfile(init_file):
+                # Regular package
+                if child_pkg not in modules:
+                    modules.append(child_pkg)
+                _fs_walk_submodules(child_pkg, full_path, modules, _depth + 1)
+            else:
+                # Namespace package or plain directory — still worth scanning
+                _fs_walk_submodules(child_pkg, full_path, modules, _depth + 1)
+        
+        elif entry.endswith('.py') and not entry.startswith('__'):
+            mod_name = package_prefix + '.' + entry[:-3]  # strip .py
+            if mod_name not in modules:
+                modules.append(mod_name)
 
 
 def file_list_func() -> List[str]:

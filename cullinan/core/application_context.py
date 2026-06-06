@@ -17,6 +17,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from .definition_registry import DefinitionRegistry
 from .definitions import Definition, ScopeType
 from .exceptions import (
+    AmbiguousDependencyError,
     CircularDependencyError,
     ConditionNotMetError,
     CreationError,
@@ -115,6 +116,7 @@ class ApplicationContext:
         "_state",
         "_id",
         "_health_checks",
+        "_type_hints_cache",
     )
 
     def __init__(self, container_id: Optional[str] = None):
@@ -129,6 +131,7 @@ class ApplicationContext:
         self._state = ContainerState.CREATED
         self._id = self._scope_manager.root_id
         self._health_checks: List[Any] = []
+        self._type_hints_cache: Dict[int, Tuple[Dict, Dict, Optional[Exception]]] = {}
 
     # ========================================================================
     # Registration API
@@ -393,8 +396,6 @@ class ApplicationContext:
                 continue
 
             markers = get_injection_markers(target_cls)
-            if not markers:
-                continue
 
             type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(target_cls)
 
@@ -406,6 +407,58 @@ class ApplicationContext:
                     type_hints=type_hints,
                     raw_annotations=raw_annotations,
                     type_hint_error=type_hint_error,
+                )
+
+            # ── Validate constructor-injection dependencies ──────────
+            self._validate_constructor_dependencies(
+                target_cls, type_hints, markers
+            )
+
+    def _validate_constructor_dependencies(
+        self,
+        cls: type,
+        type_hints: Dict[str, Any],
+        markers: Dict[str, Any],
+    ) -> None:
+        """Pre-validate constructor-injected types at refresh time.
+
+        Raises ``DependencyNotFoundError`` or ``AmbiguousDependencyError``
+        before the container goes active.
+        """
+        annotations = dict(getattr(cls, "__annotations__", {}) or {})
+        if not annotations:
+            return
+
+        class_dict = cls.__dict__
+
+        for attr_name, annotation in annotations.items():
+            if attr_name in markers:
+                continue
+            if attr_name in class_dict and class_dict[attr_name] is not None:
+                continue
+
+            required = attr_name not in class_dict
+            runtime_type = type_hints.get(attr_name, annotation)
+            candidates = self._definition_registry.find_by_type(runtime_type)
+
+            if len(candidates) > 1:
+                raise AmbiguousDependencyError(
+                    attr_name=attr_name,
+                    target_cls=cls,
+                    candidates=[d.name for d in candidates],
+                )
+            if len(candidates) == 0 and required:
+                type_name = getattr(runtime_type, "__name__", str(runtime_type))
+                raise DependencyNotFoundError(
+                    message=format_semantic_message(
+                        "inject-unique-binding",
+                        f"Constructor dependency '{attr_name}' ({type_name}) on "
+                        f"'{cls.__name__}' has no registered definition.",
+                        "Register a component of this type before refresh().",
+                    ),
+                    dependency_name=attr_name,
+                    injection_point=f"{cls.__name__}.__annotations__['{attr_name}']",
+                    candidate_sources=[],
                 )
 
     def _validate_dependencies(self) -> None:
@@ -448,19 +501,166 @@ class ApplicationContext:
             visit(name)
 
     def _validate_scope_constraints(self) -> None:
+        """验证 scope 约束：singleton/prototype 不得直接或传递依赖 request scoped。
+
+        递归遍历每个 singleton/prototype 组件的显式依赖 (dependencies) 和
+        隐式依赖（field injection markers），检测完整依赖传递闭包中的
+        request-scoped bean。
+        """
+        from .decorators import get_injection_markers
+
         for definition in self._definition_registry.values():
-            if definition.scope != ScopeType.SINGLETON:
+            if definition.scope not in (ScopeType.SINGLETON, ScopeType.PROTOTYPE):
                 continue
-            for dep_name in definition.dependencies:
-                dependency = self._definition_registry.get(dep_name)
-                if dependency and dependency.scope == ScopeType.REQUEST:
+            self._check_transitive_scope(
+                definition.name, set(), definition.name, definition.scope,
+                get_injection_markers,
+            )
+
+    def _check_transitive_scope(self, name, visited, origin_name, origin_scope,
+                                get_injection_markers):
+        """递归检查传递 scope 约束。"""
+        if name in visited:
+            return
+        visited.add(name)
+
+        definition = self._definition_registry.get(name)
+        if definition is None:
+            return
+
+        # 检查显式依赖
+        for dep_name in definition.dependencies:
+            dep_def = self._definition_registry.get(dep_name)
+            if dep_def is None:
+                self._check_transitive_scope(
+                    dep_name, visited, origin_name, origin_scope,
+                    get_injection_markers,
+                )
+                continue
+            if dep_def.scope == ScopeType.REQUEST:
+                raise LifecycleError(
+                    format_semantic_message(
+                        "lifecycle-request-scope",
+                        f"{origin_scope.name.title()} component '{origin_name}' "
+                        f"depends transitively on request-scoped component '{dep_name}' "
+                        f"(dependency path includes '{name}').",
+                        "Resolve that dependency inside a request context, "
+                        "or adjust the component scopes.",
+                    )
+                )
+            self._check_transitive_scope(
+                dep_name, visited, origin_name, origin_scope,
+                get_injection_markers,
+            )
+
+        # 检查 field injection 隐式依赖
+        target_cls = definition.type_
+        if target_cls is not None and inspect.isclass(target_cls):
+            markers = get_injection_markers(target_cls)
+            if markers:
+                type_hints, raw_annotations, _ = self._get_class_type_hints(target_cls)
+                for attr_name, marker in markers.items():
+                    dep_names = self._resolve_marker_to_dependency_names(
+                        marker, attr_name, type_hints, raw_annotations,
+                    )
+                    for dep_name in dep_names:
+                        dep_def = self._definition_registry.get(dep_name)
+                        if dep_def is None:
+                            self._check_transitive_scope(
+                                dep_name, visited, origin_name, origin_scope,
+                                get_injection_markers,
+                            )
+                            continue
+                        if dep_def.scope == ScopeType.REQUEST:
+                            raise LifecycleError(
+                                format_semantic_message(
+                                    "lifecycle-request-scope",
+                                    f"{origin_scope.name.title()} component '{origin_name}' "
+                                    f"depends transitively on request-scoped component "
+                                    f"'{dep_name}' via field '{attr_name}' on '{name}'.",
+                                    "Resolve that dependency inside a request context, "
+                                    "or adjust the component scopes.",
+                                )
+                            )
+                        self._check_transitive_scope(
+                            dep_name, visited, origin_name, origin_scope,
+                            get_injection_markers,
+                        )
+
+            # 检查构造注入隐式依赖
+            type_hints_ci, _, _ = self._get_class_type_hints(target_cls)
+            constructor_deps = self._resolve_constructor_dependency_names(
+                target_cls, markers, type_hints_ci,
+            )
+            for dep_name in constructor_deps:
+                dep_def = self._definition_registry.get(dep_name)
+                if dep_def is None:
+                    self._check_transitive_scope(
+                        dep_name, visited, origin_name, origin_scope,
+                        get_injection_markers,
+                    )
+                    continue
+                if dep_def.scope == ScopeType.REQUEST:
+                    cls_name = getattr(target_cls, "__name__", str(target_cls))
                     raise LifecycleError(
                         format_semantic_message(
                             "lifecycle-request-scope",
-                            f"Singleton component '{definition.name}' depends directly on request-scoped component '{dep_name}'.",
-                            "Resolve that dependency inside a request context, or adjust the component scopes.",
+                            f"{origin_scope.name.title()} component '{origin_name}' "
+                            f"depends transitively on request-scoped component "
+                            f"'{dep_name}' via constructor injection on '{cls_name}'.",
+                            "Resolve that dependency inside a request context, "
+                            "or adjust the component scopes.",
                         )
                     )
+                self._check_transitive_scope(
+                    dep_name, visited, origin_name, origin_scope,
+                    get_injection_markers,
+                )
+
+    def _resolve_constructor_dependency_names(
+        self, cls, markers, type_hints,
+    ) -> List[str]:
+        """Return *definition names* of constructor-injected dependencies on *cls*."""
+        annotations = dict(getattr(cls, "__annotations__", {}) or {})
+        if not annotations:
+            return []
+        class_dict = cls.__dict__
+        result: List[str] = []
+        for attr_name in annotations:
+            if attr_name in markers:
+                continue
+            if attr_name in class_dict and class_dict[attr_name] is not None:
+                continue
+            runtime_type = type_hints.get(attr_name)
+            if runtime_type is None:
+                continue
+            candidates = self._definition_registry.find_by_type(runtime_type)
+            if len(candidates) == 1:
+                result.append(candidates[0].name)
+            elif len(candidates) > 1:
+                # Will be caught by _validate_constructor_dependencies
+                result.extend(d.name for d in candidates)
+        return result
+    @staticmethod
+    def _resolve_marker_to_dependency_names(marker, attr_name, type_hints, raw_annotations):
+        """从 injection marker 提取候选依赖名称列表。"""
+        from .decorators import InjectByName
+
+        names = []
+        explicit_name = getattr(marker, 'name', None)
+        if isinstance(marker, InjectByName) or (isinstance(explicit_name, str) and explicit_name):
+            names.append(explicit_name or getattr(marker, 'name', None) or attr_name)
+        else:
+            # Type-hint based resolution: try the type hint name
+            hint = type_hints.get(attr_name)
+            if hint is not None and not isinstance(hint, str):
+                if inspect.isclass(hint):
+                    names.append(hint.__name__)
+            # Also try raw annotation string
+            raw = raw_annotations.get(attr_name)
+            if isinstance(raw, str):
+                names.append(raw)
+        return [n for n in names if n is not None]
 
     def _warm_up(self) -> None:
         for definition_name in self._ordered_definition_names(self._warmup_candidates()):
@@ -596,7 +796,7 @@ class ApplicationContext:
 
             if not func_list:
                 for attr_name in dir(cls):
-                    if attr_name.startswith("_"):
+                    if attr_name.startswith("__") and attr_name.endswith("__"):
                         continue
                     attr = getattr(cls, attr_name, None)
                     if not callable(attr):
@@ -640,15 +840,26 @@ class ApplicationContext:
                 handler_registry.register(full_url, original_func)
         except Exception as exc:
             logger.warning("Failed to register controller routes for %s: %s", cls.__name__, exc)
+            raise LifecycleError(
+                f"Controller '{cls.__name__}' route registration failed: {exc}"
+            ) from exc
 
     def _create_class_instance(self, cls: type) -> object:
         from .decorators import Lazy, get_injection_markers
 
+        # ── Constructor injection (resolve deps first, set via setattr) ──
+        init_kwargs = self._resolve_constructor_dependencies(cls)
         instance = cls()
+        for attr_name, value in init_kwargs.items():
+            setattr(instance, attr_name, value)
+
+        # ── Field injection (skips properties already set by constructor) ──
         markers = get_injection_markers(cls)
         type_hints, raw_annotations, type_hint_error = self._get_class_type_hints(cls)
 
         for attr_name, marker in markers.items():
+            if attr_name in instance.__dict__:
+                continue
             binding = self._resolve_marker_binding(
                 owner_cls=cls,
                 attr_name=attr_name,
@@ -664,18 +875,84 @@ class ApplicationContext:
 
         return instance
 
-    @staticmethod
-    def _get_class_type_hints(cls: type):
-        import typing
+    # ── Constructor-injection resolution ────────────────────────────
 
+    def _resolve_constructor_dependencies(self, cls: type) -> Dict[str, Any]:
+        """Scan class-level annotations for DI dependencies and resolve them.
+
+        Rules (see spec §4.2):
+        * ``name: SomeType`` (no default) → required DI, resolve by type.
+        * ``name: SomeType = None`` → optional DI; skip if not found.
+        * ``name: SomeType = Inject()`` or ``= Lazy()`` → handled by field injection.
+        * ``name: SomeType = literal`` → framework ignores.
+        """
+        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+
+        annotations = dict(getattr(cls, "__annotations__", {}) or {})
+        if not annotations:
+            return {}
+
+        markers = get_injection_markers(cls)
+        class_dict = cls.__dict__
+        type_hints, _raw, _err = self._get_class_type_hints(cls)
+
+        result: Dict[str, Any] = {}
+        for attr_name, annotation in annotations.items():
+            # Skip field-injection markers — those are handled separately.
+            if attr_name in markers:
+                continue
+            # Skip literal defaults, e.g. ``timeout: int = 5``.
+            if attr_name in class_dict and class_dict[attr_name] is not None:
+                continue
+
+            required = attr_name not in class_dict  # no default at all
+            runtime_type = type_hints.get(attr_name, annotation)
+            candidates = self._definition_registry.find_by_type(runtime_type)
+
+            if len(candidates) == 1:
+                result[attr_name] = self._resolve(candidates[0])
+            elif len(candidates) > 1:
+                raise AmbiguousDependencyError(
+                    attr_name=attr_name,
+                    target_cls=cls,
+                    candidates=[d.name for d in candidates],
+                )
+            elif required:
+                type_name = getattr(runtime_type, "__name__", str(runtime_type))
+                raise DependencyNotFoundError(
+                    message=format_semantic_message(
+                        "inject-unique-binding",
+                        f"Constructor dependency '{attr_name}' ({type_name}) on "
+                        f"'{cls.__name__}' has no registered definition.",
+                        "Register a component of this type before refresh().",
+                    ),
+                    dependency_name=attr_name,
+                    injection_point=f"{cls.__name__}.__annotations__['{attr_name}']",
+                    candidate_sources=[],
+                )
+            # else: optional, no candidate → skip
+
+        return result
+
+    def _get_class_type_hints(self, cls: type):
+        import typing
+        
+        cache_key = id(cls)
+        cached = self._type_hints_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        
         try:
             raw_annotations = dict(inspect.get_annotations(cls, eval_str=False))
         except Exception:
             raw_annotations = dict(getattr(cls, "__annotations__", {}) or {})
         try:
-            return typing.get_type_hints(cls, include_extras=True), raw_annotations, None
+            result = (typing.get_type_hints(cls, include_extras=True), raw_annotations, None)
         except Exception as exc:
-            return {}, raw_annotations, exc
+            result = ({}, raw_annotations, exc)
+        
+        self._type_hints_cache[cache_key] = result
+        return result
 
     @staticmethod
     def _format_annotation_repr(annotation: Any) -> str:
@@ -1484,6 +1761,10 @@ class ApplicationContext:
                 self._run_coroutine(async_func())
             except Exception as exc:
                 logger.error("Lifecycle method %s.%s failed: %s", name, async_method, exc)
+                if self._is_critical_lifecycle(sync_method, async_method):
+                    raise LifecycleError(
+                        f"Critical lifecycle method '{name}.{async_method}' failed: {exc}"
+                    ) from exc
 
         sync_func = getattr(instance, sync_method, None)
         if sync_func and callable(sync_func) and self._is_user_defined_method(instance, sync_method):
@@ -1493,6 +1774,24 @@ class ApplicationContext:
                     self._run_coroutine(result)
             except Exception as exc:
                 logger.error("Lifecycle method %s.%s failed: %s", name, sync_method, exc)
+                if self._is_critical_lifecycle(sync_method, async_method):
+                    raise LifecycleError(
+                        f"Critical lifecycle method '{name}.{sync_method}' failed: {exc}"
+                    ) from exc
+
+    @staticmethod
+    def _is_critical_lifecycle(sync_method: str, async_method: str) -> bool:
+        """Determine if a lifecycle method is critical (failure should propagate).
+        
+        on_post_construct and on_pre_destroy are critical — failure means the
+        component is in an inconsistent state. on_startup/on_shutdown failures
+        are logged but do not halt the container to avoid cascading failures.
+        """
+        critical = {
+            "on_post_construct", "on_post_construct_async",
+            "on_pre_destroy", "on_pre_destroy_async",
+        }
+        return sync_method in critical or async_method in critical
 
     def _is_user_defined_method(self, instance: Any, method_name: str) -> bool:
         return self._is_class_method_overridden(type(instance), method_name)
@@ -1547,16 +1846,44 @@ class ApplicationContext:
             instance = self.get(definition.name)
             result = callback(self, instance)
             if inspect.iscoroutine(result):
-                result = asyncio.run(result)
+                result = self._run_coroutine_safely(result)
             if result is False:
                 raise LifecycleError(f"Health check failed for component '{definition.name}'.")
 
         for callback in self._health_checks:
             result = callback(self)
             if inspect.iscoroutine(result):
-                result = asyncio.run(result)
+                result = self._run_coroutine_safely(result)
             if result is False:
                 raise LifecycleError("Container health check failed.")
+
+    @staticmethod
+    def _run_coroutine_safely(coro) -> Any:
+        """Run a coroutine, handling both running and non-running event loops.
+        
+        Uses asyncio.run() for fresh loops (normal case). Falls back to
+        creating a new event loop in a separate thread when a loop is already
+        running (e.g., inside a Jupyter notebook or async web server startup).
+        """
+        import concurrent.futures
+        
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No running loop — safe to use asyncio.run()
+            return asyncio.run(coro)
+        
+        # A loop is already running — run in a new loop on a new thread
+        def _run_in_new_loop():
+            new_loop = asyncio.new_event_loop()
+            try:
+                return new_loop.run_until_complete(coro)
+            finally:
+                new_loop.close()
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_run_in_new_loop)
+            return future.result(timeout=30)
 
     def get_lifecycle_phase(self, name: str) -> Optional[LifecyclePhase]:
         return self._lifecycle_phases.get(name)
@@ -1566,17 +1893,21 @@ class ApplicationContext:
 
 
 class _LazyProxy:
-    __slots__ = ("_resolver", "_resolved", "_value")
+    __slots__ = ("_resolver", "_resolved", "_value", "_lock")
 
     def __init__(self, resolver: Callable[[], Any]):
         self._resolver = resolver
         self._resolved = False
         self._value = None
+        self._lock = threading.Lock()
 
     def _resolve(self):
-        if not self._resolved:
-            self._value = self._resolver()
-            self._resolved = True
+        if self._resolved:
+            return self._value
+        with self._lock:
+            if not self._resolved:
+                self._value = self._resolver()
+                self._resolved = True
         return self._value
 
     def __getattr__(self, item):

@@ -244,6 +244,28 @@ class TestPendingRegistry:
         assert registry.count == 0
         assert len(registry.get_all()) == 0
 
+    def test_clear_frozen_raises(self):
+        """clear() on frozen registry raises RuntimeError."""
+        registry = PendingRegistry.get_instance()
+
+        class MyService:
+            pass
+
+        registry.add(PendingRegistration(
+            cls=MyService,
+            name="MyService",
+            component_type=ComponentType.SERVICE
+        ))
+        registry.freeze()
+
+        with pytest.raises(RuntimeError, match=r"frozen|cannot clear"):
+            registry.clear()
+
+        # reset() should still work from class level
+        PendingRegistry.reset()
+        new_registry = PendingRegistry.get_instance()
+        assert new_registry.count == 0
+
     def test_count_and_len(self):
         """Test count property and len()."""
         registry = PendingRegistry.get_instance()

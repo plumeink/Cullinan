@@ -74,6 +74,52 @@ ctx.shutdown()
 
 在当前运行时中，新代码应优先使用 `ApplicationContext` 与基于装饰器的注册方式。
 
+## 运行时模块扫描
+
+`cullinan.runtime` 模块提供模块发现与缓存管理工具：
+
+### `invalidate_module_cache()`
+
+清除缓存的模块扫描结果。在动态安装新包或运行时导入模块后调用，使下一次 `file_list_func()` 调用重新扫描：
+
+```python
+from cullinan.runtime import invalidate_module_cache
+
+# 动态导入新插件包后：
+invalidate_module_cache()
+```
+
+### `get_caller_package(fallback_package=None)`
+
+确定调用模块的包名。优先使用 `sys._getframe()` 以提升性能（保留 `inspect.stack()` 回退以保证跨解释器兼容）。`fallback_package` 参数在调用方检测失败时提供默认值——在 Nuitka/PyInstaller 环境中尤为有用：
+
+```python
+from cullinan.runtime import get_caller_package
+
+pkg = get_caller_package(fallback_package="myapp")
+```
+
+### `list_submodules(package_name)`
+
+递归列出包内所有子模块。同时使用 `pkgutil.walk_packages`（主策略）和文件系统扫描（回退策略），确保深层子包在不同 Python 版本与打包模式下均能被发现：
+
+```python
+from cullinan.runtime import list_submodules
+
+# 发现所有子模块，包括深层嵌套的：
+modules = list_submodules("myapp")
+```
+
+### 配置 Nuitka 模块列表
+
+在 Nuitka `--onefile` 模式下部署时，可通过 `configure()` 提供显式模块列表：
+
+```python
+from cullinan.support import configure
+
+configure(nuitka_modules=["myapp", "myapp.services", "myapp.web"])
+```
+
 ## 另见
 
 - [依赖注入指南](../dependency_injection_guide.md)

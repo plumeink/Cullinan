@@ -65,7 +65,15 @@ def get_component_registration_metadata(target_cls: Type) -> Optional[Dict[str, 
     }
 
 
+_source_context_cache: Dict[int, Dict[str, Any]] = {}
+
+
 def _build_source_context(target_cls: Type) -> Dict[str, Any]:
+    cache_key = id(target_cls)
+    cached = _source_context_cache.get(cache_key)
+    if cached is not None:
+        return cached
+    
     source_file = None
     source_line = None
     try:
@@ -76,12 +84,14 @@ def _build_source_context(target_cls: Type) -> Dict[str, Any]:
         pass
 
     source_qualname = getattr(target_cls, "__qualname__", target_cls.__name__)
-    return {
+    result = {
         "source_file": source_file,
         "source_line": source_line,
         "source_qualname": source_qualname,
         "is_top_level": "<locals>" not in source_qualname,
     }
+    _source_context_cache[cache_key] = result
+    return result
 
 
 def service(cls: Optional[Type] = None, *,
@@ -469,7 +479,7 @@ def get_injection_markers(cls: Type) -> dict:
     
     # Check class attributes for marker instances
     for attr_name in dir(cls):
-        if attr_name.startswith('_'):
+        if attr_name.startswith('__') and attr_name.endswith('__'):
             continue
         try:
             attr_value = getattr(cls, attr_name, None)
