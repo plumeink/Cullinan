@@ -63,6 +63,7 @@ desktop.ini
 *.log
 *.swp
 *_LOCAL.md
+*-local.md
 NOTES.md
 TODO.md
 .scratch/
