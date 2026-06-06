@@ -40,12 +40,11 @@ pr_links: []
 
 ```python
 from cullinan.web.controller import controller, get_api
-from cullinan.core import Inject
 from cullinan.web.params import Path
 
 @controller(url="/users")
 class UserController:
-    service: UserService = Inject()
+    service: UserService  # ← 构造注入
 
     @get_api(url="/{user_id}")
     async def get_user(self, user_id: int = Path()):

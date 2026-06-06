@@ -34,7 +34,7 @@ pr_links: []
 ## 典型运行时装配
 
 ```python
-from cullinan import Inject, controller, get_api, module, service
+from cullinan import controller, get_api, module, service
 from cullinan.application import Application
 
 
@@ -46,7 +46,7 @@ class GreetingService:
 
 @controller(url="/api")
 class GreetingController:
-    greeting_service: GreetingService = Inject()
+    greeting_service: GreetingService  # ← 构造注入
 
     @get_api(url="/whoami")
     def whoami(self):

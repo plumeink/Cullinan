@@ -13,7 +13,7 @@ Cullinan 0.90 introduces a powerful decorator system that provides a clean, decl
 
 - **Simple Syntax**: Use `@service`, `@controller`, `@component` without parentheses
 - **Two-Phase Registration**: Decorators collect metadata → `refresh()` registers all
-- **Dependency Injection**: Use `Inject`, `InjectByName`, `Lazy` markers
+- **Dependency Injection**: Constructor injection (bare annotation, recommended), `Inject`, `InjectByName`, `Lazy` markers
 - **Conditional Registration**: Register components based on conditions
 
 ## Component Decorators
@@ -134,9 +134,32 @@ class CustomProvider:
 
 ## Injection Markers
 
+### Constructor Injection (recommended)
+
+The preferred and simplest way to inject dependencies — just annotate the type. No imports needed beyond the type itself.
+
+```python
+@service
+class UserService:
+    # Constructor injection (recommended):
+    # Bare annotation — no Inject() needed
+    email_service: EmailService
+    cache: CacheService
+
+    # Optional dependencies can use default=None
+    logger: LoggerService = None
+```
+
+**Benefits:**
+- No import from `cullinan.core.decorators` needed
+- Cleaner, more Pythonic code
+- Works by default for all `@service`, `@controller`, and `@component` classes
+
+> **Note:** Constructor injection resolves dependencies by type annotation. If you need name‑based or lazy injection, use the markers below.
+
 ### Inject
 
-Inject a dependency by type annotation.
+Inject a dependency by type annotation (explicit marker).
 
 ```python
 from cullinan.core.decorators import Inject
@@ -371,7 +394,7 @@ assert pending.is_frozen  # True
 
 1. **Use decorators without parentheses when possible**: `@service` is cleaner than `@service()`
 
-2. **Use `Inject` for type-based injection**: Provides better IDE support
+2. **Prefer bare annotations (constructor injection)**: Cleaner than `Inject()`, no import needed. Use `Inject()` only when you need `required=False` or explicit markers
 
 3. **Use `Lazy` for circular dependencies**: Breaks the cycle explicitly
 

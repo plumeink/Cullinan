@@ -62,7 +62,7 @@ python -m pip install cullinan
 ```python
 # minimal_app.py
 from cullinan import application, configure
-from cullinan.core import Inject, service
+from cullinan.core import service
 from cullinan.web import controller, get_api
 
 
@@ -76,7 +76,7 @@ class GreetingService:
 class HelloController:
     """Simple HTTP controller."""
 
-    greeting_service: GreetingService = Inject()
+    greeting_service: GreetingService  # ← 构造注入 (constructor injection)
 
     @get_api(url="")
     def hello(self):
@@ -113,7 +113,7 @@ Then open `http://localhost:4080/hello` in your browser to verify the server is 
 - `@application` marks the default entry method
 - `@configure(...)` attaches startup settings to that method
 - `@module` is optional and only needed when you want an explicit advanced runtime boundary
-- `Inject()` resolves the controller dependency from the active application context
+- Bare type annotations enable constructor injection, resolving controller dependency from the active application context
 - calling the entry method assembles and serves the application through the framework's default startup API
 
 ## Minimal application example
@@ -123,7 +123,7 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 ```python
 # minimal_app.py
 from cullinan import application, configure
-from cullinan.core import Inject, service
+from cullinan.core import service
 from cullinan.web import controller, get_api
 
 
@@ -135,7 +135,7 @@ class GreetingService:
 
 @controller(url="/hello")
 class HelloController:
-    greeting_service: GreetingService = Inject()
+    greeting_service: GreetingService  # ← 构造注入 (constructor injection)
 
     @get_api(url="")
     def hello(self):
@@ -174,7 +174,8 @@ Cullinan provides built-in IoC/DI support through decorator-driven component dis
 
 - Use `@service` for business services
 - Use `@controller` for HTTP controllers
-- Use `Inject()` for type-based injection
+- Use bare type annotations for constructor injection (recommended)
+- Use `Inject()` for explicit type-based injection when needed
 - Use `InjectByName()` when name-based lookup is more convenient
 - Start from business decorators and an entry method first
 - Add `@module` only when you need explicit runtime boundaries such as package ownership, hot-pluggable modules, or stricter reload/draining control
@@ -182,7 +183,7 @@ Cullinan provides built-in IoC/DI support through decorator-driven component dis
 
 ```python
 from cullinan.web import controller, get_api, Path
-from cullinan.core import Inject, service
+from cullinan.core import service
 
 @service
 class UserService:
@@ -191,7 +192,7 @@ class UserService:
 
 @controller(url='/api/users')
 class UserController:
-    user_service: UserService = Inject()
+    user_service: UserService  # ← 构造注入 (constructor injection)
 
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
@@ -303,9 +304,29 @@ For a deeper dive into URL patterns and all decorator options, see `wiki/restful
 
 #### Recommended Dependency Injection Approaches
 
-**Approach 1: Inject (Recommended)**
+**Approach 1: Constructor Injection (Recommended)**
 
-Prefer typed `Inject()` when the dependency type is easy to import:
+Prefer bare type annotations for constructor injection — the simplest and most idiomatic pattern:
+
+```python
+from cullinan.core import service
+
+@service
+class DatabaseService:
+    def query(self, sql):
+        return f"Results for: {sql}"
+
+@service
+class UserRepository:
+    db: DatabaseService  # ← 构造注入 (constructor injection)
+
+    def get_users(self):
+        return self.db.query("SELECT * FROM users")
+```
+
+**Approach 2: Inject**
+
+Use typed `Inject()` when you need explicit injection semantics or are working with legacy code:
 
 ```python
 from cullinan.core import Inject, service
@@ -323,7 +344,7 @@ class UserRepository:
         return self.db.query("SELECT * FROM users")
 ```
 
-**Approach 2: InjectByName**
+**Approach 3: InjectByName**
 
 Inject by name without importing dependencies, avoiding circular import issues:
 
@@ -343,7 +364,7 @@ class UserRepository:
         return self.db.query("SELECT * FROM users")
 ```
 
-**Approach 3: Inject + TYPE_CHECKING (IDE autocomplete support)**
+**Approach 4: Inject + TYPE_CHECKING (IDE autocomplete support)**
 
 If you need IDE autocomplete and type checking, use `Inject` with TYPE_CHECKING:
 
@@ -369,7 +390,8 @@ class UserRepository:
 ```
 
 **Summary:**
-- **Inject**: Best default when importing the type is straightforward
+- **Constructor Injection (bare type annotation)**: Recommended default — simplest, cleanest, idiomatic
+- **Inject**: Explicit syntax for legacy compatibility or when explicit injection semantics are preferred
 - **InjectByName**: Useful for decoupling or avoiding circular imports
 - **Inject + TYPE_CHECKING**: Best for strong editor support without runtime import coupling
 

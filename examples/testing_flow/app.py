@@ -1,5 +1,5 @@
 from cullinan import application, configure
-from cullinan.core import Inject, service
+from cullinan.core import service
 from cullinan.web import controller, get_api
 
 
@@ -11,7 +11,7 @@ class QuoteService:
 
 @controller(url="/notes")
 class NotesController:
-    quote_service: "QuoteService" = Inject()
+    quote_service: "QuoteService"  # ← 构造注入
 
     @get_api(url="/sample")
     def sample(self):

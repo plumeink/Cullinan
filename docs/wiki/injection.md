@@ -22,16 +22,24 @@ For the hard contract behind discovery, typed binding, `refresh()`, and compatib
 ## Preferred programming model
 
 - register business types with `@service` and `@controller`
-- inject dependencies with `Inject()`
+- **inject dependencies with bare type annotations** — the recommended default:
+  ```python
+  class MyClass:
+      dependency: SomeType       # ← bare annotation, no = Inject()
+      optional: "OptService" = None  # ← None means optional
+  ```
+  No `__init__` is needed. The framework calls `cls()` then `setattr` for each field.
+- `Inject()` is still available as a fallback / backward-compatibility option
 - use `InjectByName()` when runtime type imports are undesirable
 - use `Lazy("Name")` when lookup should be deferred until first access
 - use `ApplicationContext` directly for explicit integration or custom definitions
 
 ## Example
 
+### Constructor injection (recommended)
+
 ```python
 from cullinan.web.controller import controller, get_api
-from cullinan.core import Inject
 from cullinan.core.services import service
 
 @service
@@ -41,11 +49,23 @@ class UserService:
 
 @controller(url="/users")
 class UserController:
-    user_service: UserService = Inject()
+    user_service: UserService  # ← bare annotation — framework injects
 
     @get_api(url="/{user_id}")
     async def get_user(self, user_id: int):
         return self.user_service.get_user(user_id)
+```
+
+### Using `Inject()` (backward-compatible)
+
+```python
+from cullinan.core import Inject
+
+@controller(url="/users")
+class UserController:
+    user_service: UserService = Inject()
+
+    # ...
 ```
 
 ## Runtime model
@@ -71,6 +91,8 @@ Cullinan still rejects attribute-name guesses and ambiguous combinations. If the
 Use `InjectByName("Name")` or `Lazy("Name")` when you want explicit, name-based control instead.
 
 ## Compatibility layer
+
+`Inject()` remains available for backward compatibility and special cases, but bare type annotations are the recommended default for new code.
 
 Older constructor-injection helpers still exist, but only as compatibility shims:
 

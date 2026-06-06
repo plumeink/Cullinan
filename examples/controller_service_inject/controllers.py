@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from cullinan.core import Inject
 from cullinan.web import Path, WebResponse, controller, get_api
 
 if TYPE_CHECKING:
@@ -9,7 +8,7 @@ if TYPE_CHECKING:
 
 @controller(url="/users")
 class UserController:
-    user_directory: "UserDirectoryService" = Inject()
+    user_directory: "UserDirectoryService"  # ← 构造注入：一行就够了
 
     @get_api(url="")
     def list_users(self):

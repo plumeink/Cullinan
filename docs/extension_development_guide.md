@@ -451,11 +451,11 @@ class LoggingMiddleware(Middleware):
 
 ### 3. Dependency Injection Principles
 
-✅ **Prefer type injection**
+✅ **Prefer constructor injection** (bare type annotation is now the primary style)
 ```python
 @service
 class UserService(Service):
-    email_service: EmailService = Inject()  # Recommended
+    email_service: "EmailService"  # Constructor injection (recommended)
 ```
 
 ✅ **Use name-based injection for special cases**

@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from cullinan.core import Inject
 from cullinan.web import controller, get_api
 
 if TYPE_CHECKING:
@@ -9,7 +8,7 @@ if TYPE_CHECKING:
 
 @controller(url="/inventory")
 class InventoryController:
-    inventory_service: "InventoryService" = Inject()
+    inventory_service: "InventoryService"  # ← 构造注入
 
     @get_api(url="/summary")
     def summary(self):

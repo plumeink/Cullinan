@@ -38,7 +38,7 @@ that keeps ownership, reload, draining, and runtime switching explicit and stabl
 ## Recommended bootstrap
 
 ```python
-from cullinan import Inject, application, configure, controller, get_api, service
+from cullinan import application, configure, controller, get_api, service
 
 
 @service
@@ -49,7 +49,7 @@ class GreetingService:
 
 @controller(url="/api")
 class GreetingController:
-    greeting_service: GreetingService = Inject()
+    greeting_service: GreetingService  # ← 构造注入
 
     @get_api(url="/whoami")
     def whoami(self):

@@ -1,5 +1,5 @@
 from cullinan import application, configure
-from cullinan.core import Inject, service
+from cullinan.core import service
 from cullinan.web import controller, get_api
 
 
@@ -11,7 +11,7 @@ class GreetingService:
 
 @controller(url="/hello")
 class HelloController:
-    greeting_service: "GreetingService" = Inject()
+    greeting_service: "GreetingService"  # ← 构造注入
 
     @get_api(url="")
     def hello(self):

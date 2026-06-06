@@ -13,7 +13,7 @@ Cullinan 0.90 引入了强大的装饰器系统，提供了一种简洁、声明
 
 - **简洁语法**：使用 `@service`、`@controller`、`@component`，无需括号
 - **两阶段注册**：装饰器收集元数据 → `refresh()` 统一注册
-- **依赖注入**：使用 `Inject`、`InjectByName`、`Lazy` 标记
+- **依赖注入**：构造函数注入（裸注解，推荐）、`Inject`、`InjectByName`、`Lazy` 标记
 - **条件注册**：根据条件注册组件
 
 ## 组件装饰器
@@ -134,9 +134,32 @@ class CustomProvider:
 
 ## 注入标记
 
+### 构造函数注入（推荐）
+
+首选且最简单的依赖注入方式 — 只需类型注解即可，无需额外导入。
+
+```python
+@service
+class UserService:
+    # 构造函数注入（推荐）：
+    # 裸注解 — 无需 Inject()
+    email_service: EmailService
+    cache: CacheService
+
+    # 可选依赖可使用 default=None
+    logger: LoggerService = None
+```
+
+**优势：**
+- 无需从 `cullinan.core.decorators` 导入任何标记
+- 更简洁、更符合 Python 风格的代码
+- 所有 `@service`、`@controller`、`@component` 类均默认支持
+
+> **注意：** 构造函数注入按类型注解解析依赖。如需基于名称注入或延迟注入，请使用下方标记。
+
 ### Inject
 
-按类型注解注入依赖。
+按类型注解注入依赖（显式标记）。
 
 ```python
 from cullinan.core.decorators import Inject
@@ -371,7 +394,7 @@ assert pending.is_frozen  # True
 
 1. **尽可能不使用括号**：`@service` 比 `@service()` 更简洁
 
-2. **使用 `Inject` 进行类型注入**：提供更好的 IDE 支持
+2. **优先使用裸注解（构造函数注入）**：比 `Inject()` 更简洁，无需额外导入。仅在需要 `required=False` 或显式标记时使用 `Inject()`
 
 3. **使用 `Lazy` 处理循环依赖**：显式打断循环
 

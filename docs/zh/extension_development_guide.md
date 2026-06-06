@@ -450,11 +450,11 @@ class LoggingMiddleware(Middleware):
 
 ### 3. 依赖注入原则
 
-✅ **优先使用类型注入**
+✅ **优先使用构造器注入**（裸类型注解现在是主要风格）
 ```python
 @service
 class UserService(Service):
-    email_service: EmailService = Inject()  # 推荐
+    email_service: "EmailService"  # 构造器注入（推荐）
 ```
 
 ✅ **特殊情况使用按名称注入**

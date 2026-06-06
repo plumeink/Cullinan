@@ -35,11 +35,10 @@ Compatibility registry exports:
 
 ```python
 from cullinan.core.services import Service, service
-from cullinan.core import Inject
 
 @service
 class UserService(Service):
-    repo: UserRepository = Inject()
+    repo: UserRepository  # ← 构造注入
 
     def get_user(self, user_id: int):
         return self.repo.find_by_id(user_id)
