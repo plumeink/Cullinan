@@ -35,6 +35,7 @@ Include/
 pyvenv.cfg
 docs/work
 docs/zh/work
+docs/superpowers/
 # IDE
 .idea/
 .vscode/
