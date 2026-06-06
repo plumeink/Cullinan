@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11"
+      data-current-version="0.93a11.post1"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11"
+      data-pre-version="0.93a11.post1"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1527,10 +1527,38 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构造器注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用 Inject()（向后兼容）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         运行时模型
@@ -1541,7 +1569,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         运行时类型解析规则
@@ -1552,7 +1580,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         兼容层
@@ -1563,7 +1591,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         另见
@@ -2074,10 +2102,38 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构造器注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用 Inject()（向后兼容）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         运行时模型
@@ -2088,7 +2144,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         运行时类型解析规则
@@ -2099,7 +2155,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         兼容层
@@ -2110,7 +2166,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         另见
@@ -2143,14 +2199,20 @@
 <h2 id="_1">推荐编程模型<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
 <li>用 <code>@service</code> 和 <code>@controller</code> 注册业务类型</li>
-<li>用 <code>Inject()</code> 注入依赖</li>
+<li><strong>用裸类型注解注入依赖</strong> —— 推荐的默认方式：
+  <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">:</span>
+    <span class="n">dependency</span><span class="p">:</span> <span class="n">SomeType</span>       <span class="c1"># ← 仅裸注解，无需 = Inject()</span>
+    <span class="n">optional</span><span class="p">:</span> <span class="s2">&quot;OptService&quot;</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># ← None 表示可选</span>
+</code></pre></div>
+  无需 <code>__init__</code>。框架会调用 <code>cls()</code>，然后为每个字段执行 <code>setattr</code>。</li>
+<li><code>Inject()</code> 仍可用作回退/向后兼容选项</li>
 <li>当运行时 import 类型不合适时，使用 <code>InjectByName()</code></li>
 <li>当希望第一次访问时再解析时，使用 <code>Lazy("Name")</code></li>
 <li>需要显式集成或自定义 Definition 时直接使用 <code>ApplicationContext</code></li>
 </ul>
 <h2 id="_2">示例<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">构造器注入（推荐）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
@@ -2160,20 +2222,29 @@
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span>  <span class="c1"># ← 裸注解 —— 框架自动注入</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="_3">运行时模型<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="inject">使用 <code>Inject()</code>（向后兼容）<a class="headerlink" href="#inject" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
+
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+
+    <span class="c1"># ...</span>
+</code></pre></div>
+<h2 id="_4">运行时模型<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <ul>
 <li>装饰器最终生成容器定义</li>
 <li><code>ApplicationContext.refresh()</code> 会实例化 eager 部分依赖图</li>
 <li>生命周期钩子在受管组件上统一执行</li>
 <li>request scope 解析依赖当前活动请求上下文</li>
 </ul>
-<h2 id="_4">运行时类型解析规则<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_5">运行时类型解析规则<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>当前版本里的 <code>Inject()</code> 依然是严格模式，但已经支持更完整的类型契约：</p>
 <ul>
 <li>直接运行时类型</li>
@@ -2185,7 +2256,8 @@
 </ul>
 <p>Cullinan 仍然拒绝属性名猜测和存在歧义的组合。只要类型契约无法被安全归一化，启动就会抛出 <code>DependencyTypeResolutionError</code>。</p>
 <p>如果你本来就希望显式按名称控制依赖，请使用 <code>InjectByName("Name")</code> 或 <code>Lazy("Name")</code>。</p>
-<h2 id="_5">兼容层<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h2 id="_6">兼容层<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p><code>Inject()</code> 仍然可用，用于向后兼容和特殊场景，但裸类型注解是新代码的推荐默认方式。</p>
 <p>旧构造器注入辅助 API 仍存在，但仅作为兼容 shim：</p>
 <ul>
 <li><code>injectable</code> —— 空操作兼容装饰器</li>
@@ -2194,7 +2266,7 @@
 <li><code>reset_injection_registry()</code> —— 安全空操作</li>
 </ul>
 <p>新代码不应继续建立在这些 API 之上。</p>
-<h2 id="_6">另见<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="_7">另见<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../dependency_injection_guide/">依赖注入指南</a></li>
 <li><a href="../lifecycle/">应用生命周期</a></li>
@@ -2267,7 +2339,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a11.post1", "pre_is_available": true, "pre_label": "0.93a11.post1", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>

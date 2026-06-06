@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11"
+      data-current-version="0.93a11.post1"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11"
+      data-pre-version="0.93a11.post1"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -3460,10 +3460,10 @@ application learning path.</p>
     <span class="k">pass</span>
 </code></pre></div>
 <h3 id="3-dependency-injection-principles">3. Dependency Injection Principles<a class="headerlink" href="#3-dependency-injection-principles" title="Permanent link">&para;</a></h3>
-<p>✅ <strong>Prefer type injection</strong>
+<p>✅ <strong>Prefer constructor injection</strong> (bare type annotation is now the primary style)
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># Recommended</span>
+    <span class="n">email_service</span><span class="p">:</span> <span class="s2">&quot;EmailService&quot;</span>  <span class="c1"># Constructor injection (recommended)</span>
 </code></pre></div></p>
 <p>✅ <strong>Use name-based injection for special cases</strong>
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
@@ -3713,7 +3713,7 @@ Client Response
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post1", "pre_is_available": true, "pre_label": "0.93a11.post1", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

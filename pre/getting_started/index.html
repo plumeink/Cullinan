@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11"
+      data-current-version="0.93a11.post1"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11"
+      data-pre-version="0.93a11.post1"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -2478,7 +2478,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </ol>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
 
@@ -2492,7 +2492,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple HTTP controller.&quot;&quot;&quot;</span>
 
-    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span>  <span class="c1"># ← 构造注入 (constructor injection)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2522,14 +2522,14 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <li><code>@application</code> marks the default entry method</li>
 <li><code>@configure(...)</code> attaches startup settings to that method</li>
 <li><code>@module</code> is optional and only needed when you want an explicit advanced runtime boundary</li>
-<li><code>Inject()</code> resolves the controller dependency from the active application context</li>
+<li>Bare type annotations enable constructor injection, resolving controller dependency from the active application context</li>
 <li>calling the entry method assembles and serves the application through the framework's default startup API</li>
 </ul>
 <h2 id="minimal-application-example">Minimal application example<a class="headerlink" href="#minimal-application-example" title="Permanent link">&para;</a></h2>
 <p>Here's a minimal Cullinan application that demonstrates the core framework features:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># minimal_app.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 
 
@@ -2541,7 +2541,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">HelloController</span><span class="p">:</span>
-    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">greeting_service</span><span class="p">:</span> <span class="n">GreetingService</span>  <span class="c1"># ← 构造注入 (constructor injection)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2574,14 +2574,15 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <ul>
 <li>Use <code>@service</code> for business services</li>
 <li>Use <code>@controller</code> for HTTP controllers</li>
-<li>Use <code>Inject()</code> for type-based injection</li>
+<li>Use bare type annotations for constructor injection (recommended)</li>
+<li>Use <code>Inject()</code> for explicit type-based injection when needed</li>
 <li>Use <code>InjectByName()</code> when name-based lookup is more convenient</li>
 <li>Start from business decorators and an entry method first</li>
 <li>Add <code>@module</code> only when you need explicit runtime boundaries such as package ownership, hot-pluggable modules, or stricter reload/draining control</li>
 <li>If you intentionally need low-level container or runtime internals, continue in <a href="../internals/">Internals &amp; Extensions</a> instead of treating that path as the quick-start model</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
@@ -2590,7 +2591,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span>  <span class="c1"># ← 构造注入 (constructor injection)</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
@@ -2690,8 +2691,24 @@ Common options:
 <p>For a deeper dive into URL patterns and all decorator options, see <code>wiki/restful_api.md</code>.</p>
 <hr />
 <h4 id="recommended-dependency-injection-approaches">Recommended Dependency Injection Approaches<a class="headerlink" href="#recommended-dependency-injection-approaches" title="Permanent link">&para;</a></h4>
-<p><strong>Approach 1: Inject (Recommended)</strong></p>
-<p>Prefer typed <code>Inject()</code> when the dependency type is easy to import:</p>
+<p><strong>Approach 1: Constructor Injection (Recommended)</strong></p>
+<p>Prefer bare type annotations for constructor injection — the simplest and most idiomatic pattern:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Results for: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">DatabaseService</span>  <span class="c1"># ← 构造注入 (constructor injection)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Approach 2: Inject</strong></p>
+<p>Use typed <code>Inject()</code> when you need explicit injection semantics or are working with legacy code:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
@@ -2706,7 +2723,7 @@ Common options:
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Approach 2: InjectByName</strong></p>
+<p><strong>Approach 3: InjectByName</strong></p>
 <p>Inject by name without importing dependencies, avoiding circular import issues:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">service</span>
 
@@ -2722,7 +2739,7 @@ Common options:
     <span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Approach 3: Inject + TYPE_CHECKING (IDE autocomplete support)</strong></p>
+<p><strong>Approach 4: Inject + TYPE_CHECKING (IDE autocomplete support)</strong></p>
 <p>If you need IDE autocomplete and type checking, use <code>Inject</code> with TYPE_CHECKING:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
@@ -2744,7 +2761,8 @@ Common options:
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Summary:</strong>
-- <strong>Inject</strong>: Best default when importing the type is straightforward
+- <strong>Constructor Injection (bare type annotation)</strong>: Recommended default — simplest, cleanest, idiomatic
+- <strong>Inject</strong>: Explicit syntax for legacy compatibility or when explicit injection semantics are preferred
 - <strong>InjectByName</strong>: Useful for decoupling or avoiding circular imports
 - <strong>Inject + TYPE_CHECKING</strong>: Best for strong editor support without runtime import coupling</p>
 <p>For detailed information on injection patterns, see <code>wiki/injection.md</code>.</p>
@@ -2859,7 +2877,7 @@ Common options:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post1", "pre_is_available": true, "pre_label": "0.93a11.post1", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>

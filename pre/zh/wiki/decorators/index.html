@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11"
+      data-current-version="0.93a11.post1"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11"
+      data-pre-version="0.93a11.post1"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -1567,6 +1567,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构造函数注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inject" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1605,7 +1616,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         条件装饰器
@@ -1677,7 +1688,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         完整示例
@@ -1688,7 +1699,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#_9" class="md-nav__link">
     <span class="md-ellipsis">
       
         两阶段注册
@@ -1716,7 +1727,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
+  <a href="#_10" class="md-nav__link">
     <span class="md-ellipsis">
       
         最佳实践
@@ -1738,7 +1749,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
+  <a href="#_11" class="md-nav__link">
     <span class="md-ellipsis">
       
         相关文档
@@ -2366,6 +2377,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        构造函数注入（推荐）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inject" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2404,7 +2426,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         条件装饰器
@@ -2476,7 +2498,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         完整示例
@@ -2487,7 +2509,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#_9" class="md-nav__link">
     <span class="md-ellipsis">
       
         两阶段注册
@@ -2515,7 +2537,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
+  <a href="#_10" class="md-nav__link">
     <span class="md-ellipsis">
       
         最佳实践
@@ -2537,7 +2559,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
+  <a href="#_11" class="md-nav__link">
     <span class="md-ellipsis">
       
         相关文档
@@ -2576,7 +2598,7 @@
 <ul>
 <li><strong>简洁语法</strong>：使用 <code>@service</code>、<code>@controller</code>、<code>@component</code>，无需括号</li>
 <li><strong>两阶段注册</strong>：装饰器收集元数据 → <code>refresh()</code> 统一注册</li>
-<li><strong>依赖注入</strong>：使用 <code>Inject</code>、<code>InjectByName</code>、<code>Lazy</code> 标记</li>
+<li><strong>依赖注入</strong>：构造函数注入（裸注解，推荐）、<code>Inject</code>、<code>InjectByName</code>、<code>Lazy</code> 标记</li>
 <li><strong>条件注册</strong>：根据条件注册组件</li>
 </ul>
 <h2 id="_4">组件装饰器<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
@@ -2733,8 +2755,27 @@
     <span class="k">pass</span>
 </code></pre></div>
 <h2 id="_5">注入标记<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="_6">构造函数注入（推荐）<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>首选且最简单的依赖注入方式 — 只需类型注解即可，无需额外导入。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@service</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="c1"># 构造函数注入（推荐）：</span>
+    <span class="c1"># 裸注解 — 无需 Inject()</span>
+    <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span>
+
+    <span class="c1"># 可选依赖可使用 default=None</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">LoggerService</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p><strong>优势：</strong>
+- 无需从 <code>cullinan.core.decorators</code> 导入任何标记
+- 更简洁、更符合 Python 风格的代码
+- 所有 <code>@service</code>、<code>@controller</code>、<code>@component</code> 类均默认支持</p>
+<blockquote>
+<p><strong>注意：</strong> 构造函数注入按类型注解解析依赖。如需基于名称注入或延迟注入，请使用下方标记。</p>
+</blockquote>
 <h3 id="inject">Inject<a class="headerlink" href="#inject" title="Permanent link">&para;</a></h3>
-<p>按类型注解注入依赖。</p>
+<p>按类型注解注入依赖（显式标记）。</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 
 <span class="nd">@service</span>
@@ -2833,7 +2874,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_6">条件装饰器<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="_7">条件装饰器<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <h3 id="conditionalonproperty">@ConditionalOnProperty<a class="headerlink" href="#conditionalonproperty" title="Permanent link">&para;</a></h3>
 <p>根据配置属性注册组件。</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
@@ -2888,7 +2929,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ProductionOnlyService</span><span class="p">:</span>
     <span class="k">pass</span>
 </code></pre></div>
-<h2 id="_7">完整示例<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h2 id="_8">完整示例<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">PendingRegistry</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span>
@@ -2944,7 +2985,7 @@
 <span class="c1"># 清理</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </code></pre></div>
-<h2 id="_8">两阶段注册<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<h2 id="_9">两阶段注册<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
 <p>装饰器使用两阶段注册机制：</p>
 <div class="highlight"><pre><span></span><code>┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
 │     模块加载        │     │  ApplicationContext │     │      运行时使用     │
@@ -2966,13 +3007,13 @@
 <span class="n">ctx</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 <span class="k">assert</span> <span class="n">pending</span><span class="o">.</span><span class="n">is_frozen</span>  <span class="c1"># True</span>
 </code></pre></div>
-<h2 id="_9">最佳实践<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h2 id="_10">最佳实践<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
 <p><strong>尽可能不使用括号</strong>：<code>@service</code> 比 <code>@service()</code> 更简洁</p>
 </li>
 <li>
-<p><strong>使用 <code>Inject</code> 进行类型注入</strong>：提供更好的 IDE 支持</p>
+<p><strong>优先使用裸注解（构造函数注入）</strong>：比 <code>Inject()</code> 更简洁，无需额外导入。仅在需要 <code>required=False</code> 或显式标记时使用 <code>Inject()</code></p>
 </li>
 <li>
 <p><strong>使用 <code>Lazy</code> 处理循环依赖</strong>：显式打断循环</p>
@@ -3022,7 +3063,7 @@
 <span class="c1"># 之后 (v0.90)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">controller</span>
 </code></pre></div>
-<h2 id="_10">相关文档<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h2 id="_11">相关文档<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../dependency_injection_guide/">依赖注入指南</a></li>
 <li><a href="../../import_migration_090/">导入迁移指南</a></li>
@@ -3093,7 +3134,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a11", "pre_is_available": true, "pre_label": "0.93a11", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a11.post1", "pre_is_available": true, "pre_label": "0.93a11.post1", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
