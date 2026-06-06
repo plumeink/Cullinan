@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Cullinan Codec Module
 
-提供请求体和响应体的编解码功能。
+Provides request body and response body encoding/decoding functionality.
 
-支持的格式:
+Supported formats:
 - JSON (application/json)
 - Form (application/x-www-form-urlencoded)
-- 可扩展自定义格式
+- Extensible custom formats
 
 Author: Plumeink
 """
@@ -22,21 +22,21 @@ from .registry import (
 )
 
 __all__ = [
-    # 抽象基类
+    # Abstract base classes
     'BodyCodec',
     'ResponseCodec',
 
-    # 错误类型
+    # Error types
     'CodecError',
     'DecodeError',
     'EncodeError',
 
-    # 内置 Codec
+    # Built-in Codecs
     'JsonBodyCodec',
     'JsonResponseCodec',
     'FormBodyCodec',
 
-    # 注册表
+    # Registry
     'CodecRegistry',
     'get_codec_registry',
     'reset_codec_registry',

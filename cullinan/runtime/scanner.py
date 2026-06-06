@@ -49,17 +49,17 @@ def reflect_module(module_name: str, func: str) -> None:
 
     mod = None
 
-    # 策略0: 优先检查 sys.modules（Nuitka 环境下模块通常已加载）
+    # Strategy 0: Check sys.modules first (Nuitka environments typically have modules pre-loaded)
     if module_name in sys.modules:
         mod = sys.modules[module_name]
         logger.info("[OK] Found in sys.modules: %s", module_name)
 
-        # 对于 controller 和 service，模块已加载意味着装饰器已执行
+        # For controller and service, module already loaded means decorators have executed
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module already loaded (decorators executed): %s", module_name)
             return
 
-        # 继续调用函数（如果需要）
+        # Continue to call the function (if needed)
         if func not in ('nobody', 'controller'):
             try:
                 fn = getattr(mod, func, None)
@@ -70,12 +70,12 @@ def reflect_module(module_name: str, func: str) -> None:
                 logger.debug("[FAIL] Error calling %s.%s: %s", module_name, func, str(e))
         return
 
-    # 策略1: 标准导入（适用于所有环境）
+    # Strategy 1: Standard import (works in all environments)
     try:
         mod = importlib.import_module(module_name)
         logger.info("[OK] Successfully imported: %s", module_name)
 
-        # 对于 controller 和 service，导入即可（装饰器会执行）
+        # For controller and service, importing is enough (decorators will execute)
         if func in ('nobody', 'controller'):
             logger.debug("[OK] Module imported (decorators executed): %s", module_name)
             return
@@ -84,9 +84,9 @@ def reflect_module(module_name: str, func: str) -> None:
         error_msg = str(e)
         logger.warning("[FAIL] Import failed for %s: %s", module_name, error_msg)
 
-        # 策略2: 尝试相对导入（Nuitka 编译后可能需要）
+        # Strategy 2: Try relative import (may be needed after Nuitka compilation)
         if is_nuitka_compiled() and '.' in module_name:
-            # 尝试从父包导入
+            # Try importing from parent package
             parts = module_name.rsplit('.', 1)
             if len(parts) == 2:
                 parent_pkg, mod_part = parts
@@ -99,7 +99,7 @@ def reflect_module(module_name: str, func: str) -> None:
                         if func in ('nobody', 'controller'):
                             return
                     else:
-                        # 尝试使用 __import__ 的 fromlist 参数
+                        # Try using __import__ with the fromlist parameter
                         try:
                             mod = __import__(module_name, fromlist=[mod_part])
                             logger.info("[OK] Imported using __import__: %s", module_name)
@@ -111,7 +111,7 @@ def reflect_module(module_name: str, func: str) -> None:
                 except Exception as e3:
                     logger.debug("[FAIL] Relative import failed: %s", str(e3))
 
-        # 策略3: 从 sys.modules 获取（可能已被打包工具预加载）
+        # Strategy 3: Fetch from sys.modules (may have been pre-loaded by packaging tool)
         if module_name in sys.modules:
             mod = sys.modules[module_name]
             logger.info("[OK] Found in sys.modules: %s", module_name)
@@ -119,9 +119,9 @@ def reflect_module(module_name: str, func: str) -> None:
             if func in ('nobody', 'controller'):
                 return
 
-        # 策略4: 尝试通过文件路径导入（最后手段）
+        # Strategy 4: Try importing via file path (last resort)
         elif is_pyinstaller_frozen() or is_nuitka_compiled():
-            # 尝试构建可能的文件路径
+            # Try constructing possible file paths
             base_dirs = []
 
             if is_pyinstaller_frozen():
@@ -140,7 +140,7 @@ def reflect_module(module_name: str, func: str) -> None:
                         spec = importlib.util.spec_from_file_location(module_name, module_path)
                         if spec and spec.loader:
                             mod = importlib.util.module_from_spec(spec)
-                            sys.modules[module_name] = mod  # 注册到 sys.modules
+                            sys.modules[module_name] = mod  # Register with sys.modules
                             spec.loader.exec_module(mod)
                             logger.info("[OK] Imported from file: %s", module_path)
                             break
@@ -154,12 +154,12 @@ def reflect_module(module_name: str, func: str) -> None:
         logger.warning("[FAIL] Could not import module: %s", module_name)
         return
 
-    # 对于 controller 和 service，只需导入即可（装饰器会在导入时执行）
+    # For controller and service, importing is enough (decorators execute at import time)
     if func in ('nobody', 'controller'):
         logger.debug("[OK] Module imported (decorators executed): %s", module_name)
         return
 
-    # 调用指定的函数（如果存在）
+    # Call the specified function (if it exists)
     try:
         fn = getattr(mod, func, None)
         if callable(fn):

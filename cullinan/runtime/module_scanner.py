@@ -49,12 +49,12 @@ def _get_cache_lock():
 
 
 def invalidate_module_cache() -> None:
-    """清除模块扫描缓存，强制下次 file_list_func() 重新发现模块。
+    """Clear the module scan cache to force re-discovery on the next file_list_func() call.
 
-    线程安全：使用与缓存填充相同的锁保证一致性。
-    适用于：
-    - 测试中动态导入新模块后需要重新扫描
-    - 插件热加载后需要框架发现新组件
+    Thread-safe: uses the same lock as cache population for consistency.
+    Useful when:
+    - Dynamically imported new modules in tests need re-scanning
+    - Plugins are hot-loaded and the framework needs to discover new components
     """
     global _module_list_cache
     lock = _get_cache_lock()

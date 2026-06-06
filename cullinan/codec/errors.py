@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan Codec Errors
 
-定义编解码相关的异常类。
+Defines exception classes for encoding/decoding operations.
 
 Author: Plumeink
 """
@@ -10,7 +10,7 @@ from typing import Any, Optional
 
 
 class CodecError(Exception):
-    """编解码错误基类"""
+    """Base codec error class"""
 
     def __init__(self, message: str, details: Optional[dict] = None):
         super().__init__(message)
@@ -19,14 +19,14 @@ class CodecError(Exception):
 
 
 class DecodeError(CodecError):
-    """解码错误
+    """Decoding error
 
-    当请求体解码失败时抛出。
+    Raised when request body decoding fails.
 
     Attributes:
-        message: 错误消息
-        content_type: 请求的 Content-Type
-        body_preview: 请求体预览（前100字节）
+        message: Error message
+        content_type: Content-Type of the request
+        body_preview: Preview of the request body (first 100 bytes)
     """
 
     def __init__(
@@ -45,13 +45,13 @@ class DecodeError(CodecError):
 
 
 class EncodeError(CodecError):
-    """编码错误
+    """Encoding error
 
-    当响应体编码失败时抛出。
+    Raised when response body encoding fails.
 
     Attributes:
-        message: 错误消息
-        data_type: 尝试编码的数据类型
+        message: Error message
+        data_type: Data type that was being encoded
     """
 
     def __init__(

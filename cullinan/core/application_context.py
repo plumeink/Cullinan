@@ -441,6 +441,10 @@ class ApplicationContext:
             runtime_type = type_hints.get(attr_name, annotation)
             candidates = self._definition_registry.find_by_type(runtime_type)
 
+            # Fallback: string forward reference → name-based lookup
+            if not candidates and isinstance(runtime_type, str):
+                candidates = self._definition_registry.find_by_type_name(runtime_type)
+
             if len(candidates) > 1:
                 raise AmbiguousDependencyError(
                     attr_name=attr_name,
@@ -501,11 +505,12 @@ class ApplicationContext:
             visit(name)
 
     def _validate_scope_constraints(self) -> None:
-        """验证 scope 约束：singleton/prototype 不得直接或传递依赖 request scoped。
+        """Validate scope constraints: singleton/prototype must not depend
+        on request-scoped components, either directly or transitively.
 
-        递归遍历每个 singleton/prototype 组件的显式依赖 (dependencies) 和
-        隐式依赖（field injection markers），检测完整依赖传递闭包中的
-        request-scoped bean。
+        Recursively traverses each singleton/prototype component's explicit
+        dependencies and implicit dependencies (field injection markers),
+        detecting request-scoped beans in the full transitive closure.
         """
         from .decorators import get_injection_markers
 
@@ -519,7 +524,7 @@ class ApplicationContext:
 
     def _check_transitive_scope(self, name, visited, origin_name, origin_scope,
                                 get_injection_markers):
-        """递归检查传递 scope 约束。"""
+        """Recursively check transitive scope constraints."""
         if name in visited:
             return
         visited.add(name)
@@ -528,7 +533,7 @@ class ApplicationContext:
         if definition is None:
             return
 
-        # 检查显式依赖
+        # Check explicit dependencies
         for dep_name in definition.dependencies:
             dep_def = self._definition_registry.get(dep_name)
             if dep_def is None:
@@ -553,7 +558,7 @@ class ApplicationContext:
                 get_injection_markers,
             )
 
-        # 检查 field injection 隐式依赖
+        # Check field injection implicit dependencies
         target_cls = definition.type_
         if target_cls is not None and inspect.isclass(target_cls):
             markers = get_injection_markers(target_cls)
@@ -587,7 +592,7 @@ class ApplicationContext:
                             get_injection_markers,
                         )
 
-            # 检查构造注入隐式依赖
+            # Check constructor injection implicit dependencies
             type_hints_ci, _, _ = self._get_class_type_hints(target_cls)
             constructor_deps = self._resolve_constructor_dependency_names(
                 target_cls, markers, type_hints_ci,
@@ -643,7 +648,7 @@ class ApplicationContext:
         return result
     @staticmethod
     def _resolve_marker_to_dependency_names(marker, attr_name, type_hints, raw_annotations):
-        """从 injection marker 提取候选依赖名称列表。"""
+        """Extract candidate dependency name list from an injection marker."""
         from .decorators import InjectByName
 
         names = []
@@ -908,6 +913,10 @@ class ApplicationContext:
             required = attr_name not in class_dict  # no default at all
             runtime_type = type_hints.get(attr_name, annotation)
             candidates = self._definition_registry.find_by_type(runtime_type)
+
+            # Fallback: string forward reference → name-based lookup
+            if not candidates and isinstance(runtime_type, str):
+                candidates = self._definition_registry.find_by_type_name(runtime_type)
 
             if len(candidates) == 1:
                 result[attr_name] = self._resolve(candidates[0])

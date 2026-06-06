@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Provider Source 抽象接口 - IoC/DI 系统的依赖提供源
+"""Provider Source abstract interface — dependency provider for the IoC/DI system.
 
-定义统一的依赖提供接口，让所有提供依赖的 Registry 实现该接口。
-这样 InjectionRegistry 只需要依赖抽象接口，而不是具体实现。
+Defines a unified dependency-provider interface that all dependency-providing
+registries should implement. This allows InjectionRegistry to depend only on
+the abstract interface rather than concrete implementations.
 
-设计原则：
-- 依赖倒置：上层依赖抽象而非具体
-- 接口隔离：只暴露必要的方法
-- 单一职责：只负责依赖提供，不管理生命周期
+Design principles:
+- Dependency inversion: upper layers depend on abstractions, not concretions
+- Interface segregation: only expose necessary methods
+- Single responsibility: only responsible for providing dependencies, not lifecycle management
 
-作者：Plumeink
+Author: Plumeink
 """
 
 from abc import ABC, abstractmethod
@@ -17,23 +18,24 @@ from typing import Optional, Any, List
 
 
 class ProviderSource(ABC):
-    """依赖提供源抽象接口
+    """Abstract interface for dependency provider sources.
 
-    所有提供依赖实例的 Registry 都应该实现此接口。
-    这样 InjectionRegistry 只需要依赖抽象接口，而不是具体实现。
+    All registries that provide dependency instances should implement this interface.
+    This allows InjectionRegistry to depend only on the abstract interface rather
+    than concrete implementations.
 
-    实现此接口的类包括：
-    - ProviderRegistry: 提供 ClassProvider、InstanceProvider、FactoryProvider 实例
-    - ServiceRegistry: 提供 Service 实例（带生命周期管理）
-    - 其他自定义 Registry（扩展）
+    Classes implementing this interface include:
+    - ProviderRegistry: provides ClassProvider, InstanceProvider, FactoryProvider instances
+    - ServiceRegistry: provides Service instances (with lifecycle management)
+    - Other custom registries (extensions)
 
-    设计要点：
-    1. 只定义"提供依赖"的能力，不涉及注册、生命周期等
-    2. 支持优先级，让 InjectionRegistry 按优先级查询
-    3. 接口方法应该高效（O(1) 或 O(log n)）
+    Design points:
+    1. Defines only the ability to "provide dependencies", not registration or lifecycle
+    2. Supports priority so InjectionRegistry can query in priority order
+    3. Interface methods should be efficient (O(1) or O(log n))
 
     Example:
-        # 实现自定义 ProviderSource
+        # Implement a custom ProviderSource
         class ConfigRegistry(ProviderSource):
             def can_provide(self, name: str) -> bool:
                 return name in self._configs
@@ -47,21 +49,21 @@ class ProviderSource(ABC):
             def get_priority(self) -> int:
                 return 50  # Higher priority than default
 
-        # 注册到 InjectionRegistry
+        # Register with InjectionRegistry
         injection_registry.add_provider_source(ConfigRegistry())
     """
 
     @abstractmethod
     def can_provide(self, name: str) -> bool:
-        """检查是否能提供指定名称的依赖
+        """Check whether a dependency with the given name can be provided.
 
-        此方法应该高效（O(1)），因为会被频繁调用。
+        This method should be efficient (O(1)) as it will be called frequently.
 
         Args:
-            name: 依赖名称（通常是类名或服务名）
+            name: dependency name (typically class name or service name)
 
         Returns:
-            True 表示可以提供，False 表示不能提供
+            True if the dependency can be provided, False otherwise
 
         Example:
             >>> source.can_provide('UserService')
@@ -73,20 +75,21 @@ class ProviderSource(ABC):
 
     @abstractmethod
     def provide(self, name: str) -> Optional[Any]:
-        """提供指定名称的依赖实例
+        """Provide a dependency instance for the given name.
 
-        仅在 can_provide() 返回 True 后调用。
-        如果依赖存在但创建失败，应该抛出异常而非返回 None。
+        Only called after can_provide() returns True.
+        If the dependency exists but creation fails, raise an exception rather than
+        returning None.
 
         Args:
-            name: 依赖名称
+            name: dependency name
 
         Returns:
-            依赖实例，如果无法提供则返回 None
+            The dependency instance, or None if it cannot be provided
 
         Raises:
-            DependencyResolutionError: 如果依赖解析失败
-            CircularDependencyError: 如果存在循环依赖
+            DependencyResolutionError: if dependency resolution fails
+            CircularDependencyError: if a circular dependency is detected
 
         Example:
             >>> instance = source.provide('UserService')
@@ -97,12 +100,12 @@ class ProviderSource(ABC):
 
     @abstractmethod
     def list_available(self) -> List[str]:
-        """列出所有可用的依赖名称
+        """List all available dependency names.
 
-        用于调试和诊断，不需要高性能。
+        Intended for debugging and diagnostics; does not need high performance.
 
         Returns:
-            依赖名称列表
+            List of dependency names
 
         Example:
             >>> names = source.list_available()
@@ -113,17 +116,17 @@ class ProviderSource(ABC):
 
     @abstractmethod
     def get_priority(self) -> int:
-        """获取此 ProviderSource 的优先级
+        """Get the priority of this ProviderSource.
 
-        InjectionRegistry 按优先级从高到低依次查询。
-        优先级范围建议：
-        - 100+: 高优先级（如配置、环境变量）
-        - 10-99: 正常优先级（如 ServiceRegistry）
-        - 1-9: 低优先级（如默认值、fallback）
-        - 0: 最低优先级
+        InjectionRegistry queries sources in descending priority order.
+        Recommended priority ranges:
+        - 100+: high priority (e.g., config, environment variables)
+        - 10-99: normal priority (e.g., ServiceRegistry)
+        - 1-9: low priority (e.g., defaults, fallback)
+        - 0: lowest priority
 
         Returns:
-            优先级数值，越大越优先
+            Priority value; higher values take precedence
 
         Example:
             >>> source.get_priority()
@@ -132,7 +135,7 @@ class ProviderSource(ABC):
         pass
 
     def __repr__(self) -> str:
-        """返回可读的字符串表示"""
+        """Return a human-readable string representation."""
         available_count = len(self.list_available()) if hasattr(self, 'list_available') else '?'
         return (
             f"{self.__class__.__name__}("
@@ -142,12 +145,12 @@ class ProviderSource(ABC):
 
 
 class SimpleProviderSource(ProviderSource):
-    """简单的 ProviderSource 实现（用于测试和示例）
+    """A simple ProviderSource implementation (for testing and examples).
 
-    基于字典的简单实现，适合：
-    - 单元测试中的 Mock
-    - 简单的配置提供
-    - 示例代码
+    Dictionary-based simple implementation, suitable for:
+    - Mocks in unit tests
+    - Simple config provisioning
+    - Example code
 
     Example:
         >>> source = SimpleProviderSource(priority=20)
@@ -162,37 +165,37 @@ class SimpleProviderSource(ProviderSource):
     __slots__ = ('_providers', '_priority')
 
     def __init__(self, priority: int = 5):
-        """初始化简单提供源
+        """Initialize the simple provider source.
 
         Args:
-            priority: 优先级（默认 5）
+            priority: priority level (default 5)
         """
         self._providers: dict[str, Any] = {}
         self._priority = priority
 
     def register(self, name: str, instance: Any) -> None:
-        """注册一个依赖实例
+        """Register a dependency instance.
 
         Args:
-            name: 依赖名称
-            instance: 依赖实例
+            name: dependency name
+            instance: dependency instance
         """
         self._providers[name] = instance
 
     def can_provide(self, name: str) -> bool:
-        """检查是否能提供依赖 (O(1))"""
+        """Check whether a dependency can be provided (O(1))."""
         return name in self._providers
 
     def provide(self, name: str) -> Optional[Any]:
-        """提供依赖实例 (O(1))"""
+        """Provide a dependency instance (O(1))."""
         return self._providers.get(name)
 
     def list_available(self) -> List[str]:
-        """列出所有可用依赖"""
+        """List all available dependencies."""
         return list(self._providers.keys())
 
     def get_priority(self) -> int:
-        """返回优先级"""
+        """Return the priority."""
         return self._priority
 
 

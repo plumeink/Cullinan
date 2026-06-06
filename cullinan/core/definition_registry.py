@@ -92,6 +92,19 @@ class DefinitionRegistry:
                 result.append(definition)
         return result
 
+    def find_by_type_name(self, type_name: str) -> List[Definition]:
+        """Match definitions whose ``type_.__name__`` equals *type_name*.
+
+        Used as a fallback when a string forward reference cannot be
+        resolved to a concrete type via ``typing.get_type_hints``.
+        """
+        result: List[Definition] = []
+        for definition in self._definitions.values():
+            dfn_type = definition.type_
+            if dfn_type is not None and dfn_type.__name__ == type_name:
+                result.append(definition)
+        return result
+
 
 def _unwrap_optional(tp):
     """If *tp* is ``Optional[X]``, return ``X``; otherwise return *tp* unchanged."""

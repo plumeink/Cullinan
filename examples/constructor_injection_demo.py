@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-"""构造注入演示（Issue 6）.
+"""Constructor injection demo (Issue 6).
 
-运行方式::
+Usage::
 
     cd G:/pj/Cullinan_aiasset && python examples/constructor_injection_demo.py
 
-核心演示：裸类型注解 = 构造函数注入，零样板代码。
+Core demo: bare type annotations = constructor injection, zero boilerplate.
 """
 
 from cullinan.core.application_context import ApplicationContext
 from cullinan.core.definitions import Definition, ScopeType
 
 
-# ── 服务定义 ──────────────────────────────────────────────────────────
+# ── Service definitions ─────────────────────────────────────────────────────
 
 class DatabaseService:
     def query(self, sql: str) -> str:
@@ -25,31 +25,31 @@ class CacheService:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 构造注入 — 无需 Inject()
+# Constructor injection — no Inject() needed
 # ═══════════════════════════════════════════════════════════════════════
 
 class ReportService:
-    database: DatabaseService   # ← 一行声明，框架自动注入
-    cache: CacheService         # ← 无需 __init__，无需 self.x = x
+    database: DatabaseService   # ← One-line declaration, framework auto-injects
+    cache: CacheService         # ← No __init__, no self.x = x required
 
 
 class OptionalService:
-    database: DatabaseService          # 必需
-    notifier: "SomeNotifier" = None    # Optional — 未注册也 OK（= None）
+    database: DatabaseService          # Required
+    notifier: "SomeNotifier" = None    # Optional — works even when not registered (= None)
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 混合构造注入 + field injection
+# Mixed: constructor injection + field injection
 # ═══════════════════════════════════════════════════════════════════════
 
 from cullinan.core.decorators import Inject
 
 class MixedService:
-    database: DatabaseService          # ← 构造注入
-    cache: CacheService = Inject()     # ← 传统 field injection (共存)
+    database: DatabaseService          # ← Constructor injection
+    cache: CacheService = Inject()     # ← Traditional field injection (coexists)
 
 
-# ── 主程序 ────────────────────────────────────────────────────────────
+# ── Main program ────────────────────────────────────────────────────────────
 
 def _reg(ctx, cls, name):
     """Helper: register a service in context."""
@@ -62,7 +62,7 @@ def _reg(ctx, cls, name):
 def main():
     ctx = ApplicationContext()
 
-    # 注册依赖（生产环境中由 @service + 扫描自动完成）
+    # Register dependencies (in production, @service + scanning does this automatically)
     _reg(ctx, DatabaseService, "db")
     _reg(ctx, CacheService, "cache")
     _reg(ctx, ReportService, "report")
@@ -70,24 +70,24 @@ def main():
     _reg(ctx, MixedService, "mixed")
     ctx.refresh()
 
-    # ── 构造注入 ──
+    # ── Constructor injection ──
     report = ctx.get("report")
-    print(f"[构造注入] ReportService.database = {report.database}")
-    print(f"[构造注入] query → {report.database.query('SELECT 2')}")
-    print(f"[构造注入] ReportService.cache   = {report.cache}")
+    print(f"[constructor injection] ReportService.database = {report.database}")
+    print(f"[constructor injection] query → {report.database.query('SELECT 2')}")
+    print(f"[constructor injection] ReportService.cache   = {report.cache}")
 
     # ── Optional DI ──
     opt = ctx.get("optsvc")
     print(f"[Optional]  database = {opt.database}")
     print(f"[Optional]  notifier = {opt.notifier}")  # None
 
-    # ── 混合 ──
+    # ── Mixed mode ──
     mixed = ctx.get("mixed")
-    print(f"[混合模式] database ({type(mixed.database).__name__}) 来自构造注入")
-    print(f"[混合模式] cache   ({type(mixed.cache).__name__}) 来自 field injection")
+    print(f"[hybrid] database ({type(mixed.database).__name__}) from constructor injection")
+    print(f"[hybrid] cache   ({type(mixed.cache).__name__}) from field injection")
 
     ctx.shutdown()
-    print("\n[OK] 构造注入演示完成。")
+    print("\n[OK] Constructor injection demo completed.")
 
 
 if __name__ == "__main__":

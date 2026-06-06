@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""全局活动根容器管理器。"""
+"""Global active root container manager."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from .application_context import ApplicationContext
 
 
 class ContainerManager:
-    """管理单进程唯一活动根容器。"""
+    """Manages the single active root container per process."""
 
     __slots__ = ("_lock", "_active_root", "_building_root", "_draining_roots")
 

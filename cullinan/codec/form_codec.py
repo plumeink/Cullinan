@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan Form Codec
 
-Form 表单请求体解码器实现。
+Form-encoded request body decoder implementation.
 
 Author: Plumeink
 """
@@ -14,9 +14,9 @@ from .errors import DecodeError, EncodeError
 
 
 class FormBodyCodec(BodyCodec):
-    """Form 表单解码器
+    """Form body decoder
 
-    支持的 Content-Type:
+    Supported Content-Types:
     - application/x-www-form-urlencoded
     """
 
@@ -24,17 +24,17 @@ class FormBodyCodec(BodyCodec):
     priority = 20
 
     def decode(self, body: bytes, charset: str = 'utf-8') -> Dict[str, Any]:
-        """解码 Form 请求体
+        """Decode a Form request body
 
         Args:
-            body: 原始请求体字节
-            charset: 字符编码
+            body: Raw request body bytes
+            charset: Character encoding
 
         Returns:
-            解码后的字典 (单值字段展开为标量)
+            Decoded dictionary (flatten single-value fields to scalar)
 
         Raises:
-            DecodeError: 解析失败
+            DecodeError: Parsing failed
         """
         if not body:
             return {}
@@ -43,7 +43,7 @@ class FormBodyCodec(BodyCodec):
             decoded = body.decode(charset)
             parsed = parse_qs(decoded, keep_blank_values=True)
 
-            # 单值字段展开为标量，多值保持列表
+            # Flatten single-value fields to scalar, keep multi-value as list
             result = {}
             for key, values in parsed.items():
                 if len(values) == 1:
@@ -67,20 +67,20 @@ class FormBodyCodec(BodyCodec):
             )
 
     def encode(self, data: Dict[str, Any], charset: str = 'utf-8') -> bytes:
-        """编码为 Form 格式
+        """Encode to Form format
 
         Args:
-            data: 要编码的字典
-            charset: 字符编码
+            data: Dictionary to encode
+            charset: Character encoding
 
         Returns:
-            URL 编码的字节串
+            URL-encoded bytes
 
         Raises:
-            EncodeError: 编码失败
+            EncodeError: Encoding failed
         """
         try:
-            # 处理列表值
+            # Handle list values
             encoded_data = {}
             for key, value in data.items():
                 if isinstance(value, list):
