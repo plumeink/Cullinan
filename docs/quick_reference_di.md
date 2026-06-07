@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Quick Reference
 
-> **Version**: 0.93a11.post3
+> **Version**: 0.93a11.post4
 > **Author**: Plumeink
 
 > **Quick lookup page:** use this page as a compact DI recipe sheet; use
@@ -12,7 +12,7 @@
 ### 1. Define a Service
 
 ```python
-from cullinan.core import service
+from cullinan import service
 
 @service
 class UserService:
@@ -26,19 +26,19 @@ class UserService:
 ### 2. Inject Service into Controller
 
 ```python
-from cullinan.core import Inject, InjectByName, Lazy, Provider
-from cullinan.web import controller, get_api
+from cullinan import Inject, InjectByName, Lazy, Provider
+from cullinan import controller
 
 @controller(url='/api')
 class UserController:
-    # Method 1: Type annotation (Recommended)
-    user_service: UserService = Inject()
-    
+    # Method 1: Constructor injection — bare type annotation, zero boilerplate (Recommended)
+    user_service: UserService
+
     # Method 2: Explicit name
     auth_service = InjectByName('AuthService')
     
-    # Method 3: Optional dependency
-    cache_service = InjectByName('CacheService', required=False)
+    # Method 3: Optional dependency — just set to None
+    notifier: NotifierService = None
 
     # Method 4: Lazy lookup
     report_service = Lazy('ReportService')
@@ -47,13 +47,12 @@ class UserController:
 ### 3. Use Injected Service
 
 ```python
-from cullinan.core import Inject
-from cullinan.web import controller, get_api, Path
+from cullinan import controller, get_api, Path
 
 @controller(url='/api')
 class UserController:
-    user_service: UserService = Inject()
-    
+    user_service: UserService  # constructor injection
+
     @get_api(url='/users/{user_id}')
     async def get_user(self, user_id: int = Path()):
         user = self.user_service.get_user(user_id)
@@ -64,11 +63,12 @@ class UserController:
 
 | Case | Use |
 | --- | --- |
+| **Simplest, zero boilerplate (Recommended)** | `db: DatabaseService` — constructor injection |
 | Type is importable at runtime | `Inject()` |
 | `TYPE_CHECKING` / forward reference still maps to one unique target | `Inject()` |
 | Type should not be imported at runtime | `InjectByName("Name")` |
 | Lookup should happen on first access | `Lazy("Name")` |
-| Optional dependency | `required=False` |
+| Optional dependency | `notifier: NotifierService = None` or `required=False` |
 | Deferred provider object | `Provider[T] = Inject()` |
 | Multiple implementations of one contract | `list[T] = Inject()` / `set[T] = Inject()` / `tuple[T, ...] = Inject()` |
 
@@ -78,7 +78,7 @@ class UserController:
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import Inject, Provider
+from cullinan import Inject, Provider
 
 if TYPE_CHECKING:
     from .contracts import Hook

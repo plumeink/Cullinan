@@ -15,7 +15,7 @@ pr_links: []
 
 # Cullinan 文档
 
-> **当前版本：0.93a11.post3**。最短公开启动路径是
+> **当前版本：0.93a11.post4**。最短公开启动路径是
 > `from cullinan import configure, run`；语义学习路径先从顶层 `cullinan`
 > 以及业务向的 `cullinan.web` / `cullinan.core` 语汇开始：先理解业务装饰器与业务方法，
 > 只有在应用确实需要时，再进入高级 application/runtime 细节。

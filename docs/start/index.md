@@ -38,7 +38,7 @@ and the top-level `from cullinan import configure, run` API.
 
 After you finish the minimal bootstrap path, continue with:
 
-- [Framework Semantics](../framework_semantics.md) to understand Cullinan's rules
+- [Framework Semantics](../concepts/index.md) to understand Cullinan's rules
 - [Engineering Practices](../how-to/index.md) for common development tasks
 - [API Reference](../reference/index.md) when you already know what symbol you need
 

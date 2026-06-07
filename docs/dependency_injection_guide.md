@@ -1,16 +1,16 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: 0.93a11.post3
+> **Version**: 0.93a11.post4
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
 ## Overview
 
-Cullinan's current DI model is centered on `ApplicationContext` and exposed publicly through `cullinan.core`. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.
+Cullinan's current DI model is centered on `ApplicationContext` and exposed publicly through `cullinan`. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.
 
 Before choosing an injection primitive, read [Framework Semantics](framework_semantics.md). That page defines the hard rules behind `Inject()`, `InjectByName()`, `refresh()`, and compatibility APIs.
 
-> **Recommended default:** prefer decorator-based business code plus `Inject()` where the type contract is stable.  
+> **Recommended default:** constructor injection — declare a bare type annotation on a class-level attribute and the framework resolves it automatically. Zero boilerplate: no `Inject()`, no `__init__`, no `self.x = x`.  
 > **Need symbol lookup instead of guidance?** See [API Reference](reference/index.md).
 
 ## Recommended usage
@@ -18,7 +18,7 @@ Before choosing an injection primitive, read [Framework Semantics](framework_sem
 ### 1. Register services with decorators
 
 ```python
-from cullinan.core import Inject, service
+from cullinan import service
 
 @service
 class DatabaseService:
@@ -27,7 +27,7 @@ class DatabaseService:
 
 @service
 class UserService:
-    database: DatabaseService = Inject()
+    database: DatabaseService  # constructor injection — bare annotation
 
     def get_user(self, user_id: int):
         return self.database.query(f"select * from users where id = {user_id}")
@@ -36,12 +36,11 @@ class UserService:
 ### 2. Use the same injection model in controllers
 
 ```python
-from cullinan.core import Inject
-from cullinan.web import controller, get_api, Path
+from cullinan import controller, get_api, Path
 
 @controller(url="/users")
 class UserController:
-    user_service: UserService = Inject()
+    user_service: UserService  # constructor injection
 
     @get_api(url="/{user_id}")
     async def get_user(self, user_id: int = Path()):
@@ -50,9 +49,11 @@ class UserController:
 
 ## Injection primitives
 
-### `Inject()` — preferred
+### Constructor injection — preferred
 
-Use `Inject()` when you want type-driven resolution and better refactoring support.
+Use bare type annotations (`db: DatabaseService`) for zero-boilerplate dependency injection.
+The framework resolves the type, finds the matching definition, and injects it via `setattr`
+after calling the no-arg constructor. This is the recommended default for new projects.
 
 ```python
 class AuditService:

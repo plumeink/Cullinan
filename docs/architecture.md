@@ -1,6 +1,6 @@
 # Cullinan Framework Architecture
 
-> **Version**: 0.93a11.post3
+> **Version**: 0.93a11.post4
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 

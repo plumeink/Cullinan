@@ -1,16 +1,16 @@
 # Cullinan 依赖注入指南
 
-> **版本**：0.93a11.post3
+> **版本**：0.93a11.post4
 > **最后更新**：2026-06-01  
 > **状态**：已更新
 
 ## 概述
 
-Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cullinan.core` 作为公开入口。装饰器仍然是推荐的编写方式；旧式 registry API 仅保留兼容意义。
+Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cullinan` 作为公开入口。装饰器仍然是推荐的编写方式；旧式 registry API 仅保留兼容意义。
 
 在选择注入原语之前，建议先阅读[框架语义规则](framework_semantics.md)。其中定义了 `Inject()`、`InjectByName()`、`refresh()` 以及兼容 API 的硬约束。
 
-> **推荐默认方式：** 优先使用装饰器式业务代码，并在类型契约稳定时优先使用 `Inject()`。  
+> **推荐默认方式：** 构造注入——在类级属性上声明裸类型注解，框架自动解析注入。零样板代码：无需 `Inject()`、无需 `__init__`、无需 `self.x = x`。  
 > **如果你需要查符号而不是看指导：** 请转到 [API 参考](reference/index.md)。
 
 ## 推荐用法
@@ -18,7 +18,7 @@ Cullinan 当前的 DI 模型以 `ApplicationContext` 为中心，并通过 `cull
 ### 1. 用装饰器注册服务
 
 ```python
-from cullinan.core import Inject, service
+from cullinan import service
 
 @service
 class DatabaseService:
@@ -27,7 +27,7 @@ class DatabaseService:
 
 @service
 class UserService:
-    database: DatabaseService = Inject()
+    database: DatabaseService  # 构造注入 — 裸类型注解即可
 
     def get_user(self, user_id: int):
         return self.database.query(f"select * from users where id = {user_id}")
@@ -36,12 +36,11 @@ class UserService:
 ### 2. 在控制器中复用同一套注入模型
 
 ```python
-from cullinan.core import Inject
-from cullinan.web import controller, get_api, Path
+from cullinan import controller, get_api, Path
 
 @controller(url="/users")
 class UserController:
-    user_service: UserService = Inject()
+    user_service: UserService  # 构造注入
 
     @get_api(url="/{user_id}")
     async def get_user(self, user_id: int = Path()):
@@ -50,9 +49,10 @@ class UserController:
 
 ## 注入原语
 
-### `Inject()` —— 首选
+### 构造注入 —— 首选
 
-需要按类型解析、并获得更好的重构支持时，优先使用 `Inject()`。
+使用裸类型注解（`db: DatabaseService`）即可完成零样板代码的依赖注入。
+框架解析类型、查找匹配定义，在无参构造后通过 `setattr` 注入。这是新项目的推荐首选。
 
 ```python
 class AuditService:

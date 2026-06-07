@@ -1,6 +1,6 @@
 # Packaging Guide — Module Discovery in Frozen Environments
 
-Cullinan v0.93a12 introduces a **unified strategy pipeline** for module
+Cullinan v0.93a11.post2+ introduces a **unified strategy pipeline** for module
 discovery across all packaging tools (Nuitka, PyInstaller) and development
 environments.
 
@@ -20,7 +20,7 @@ configure(
 ```
 
 **`explicit_modules`** replaces the deprecated `nuitka_modules` (removed in
-v0.93a12). It works with **all** packaging tools — Nuitka, PyInstaller, and
+v0.93a11.post2). It works with **all** packaging tools — Nuitka, PyInstaller, and
 any future freezer.
 
 ### User Packages (Recommended for Directory Modes)
@@ -72,7 +72,7 @@ Each pipeline is selected automatically based on `get_packaging_mode()`:
 | **S4: directory_scanning** | Walk filesystem for `.py`/`.pyc`/`.pyd`/`.so` | Standalone/onedir modes |
 | **S5: onefile_dir_fallback** | Recursive `dir(pkg)` + `sys.modules` prefix scan | One-file modes (last resort) |
 
-## Performance Improvements (v0.93a12)
+## Performance Improvements (v0.93a11.post2+)
 
 1. **Global type hints cache** — `typing.get_type_hints()` results are cached
    at module level (shared across `ApplicationContext` instances). Previously

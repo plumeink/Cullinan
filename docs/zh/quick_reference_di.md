@@ -1,6 +1,6 @@
 # Cullinan 依赖注入快速参考
 
-> **版本**: 0.93a11.post3
+> **版本**: 0.93a11.post4
 > **作者**: Plumeink
 
 > **速查页：** 这页用于快速查看 DI 写法；完整指导请看
@@ -11,7 +11,7 @@
 ### 1. 定义服务
 
 ```python
-from cullinan.core import service
+from cullinan import service
 
 @service
 class UserService:
@@ -25,19 +25,19 @@ class UserService:
 ### 2. 注入服务到 Controller
 
 ```python
-from cullinan.core import Inject, InjectByName, Lazy, Provider
-from cullinan.web import controller, get_api
+from cullinan import Inject, InjectByName, Lazy, Provider
+from cullinan import controller
 
 @controller(url='/api')
 class UserController:
-    # 方式1: 类型注解（推荐）
-    user_service: UserService = Inject()
-    
+    # 方式1: 构造注入 — 裸类型注解，零样板代码（推荐）
+    user_service: UserService
+
     # 方式2: 显式指定名称
     auth_service = InjectByName('AuthService')
     
-    # 方式3: 可选依赖
-    cache_service = InjectByName('CacheService', required=False)
+    # 方式3: 可选依赖 — 设为 None 即可
+    notifier: NotifierService = None
 
     # 方式4: 延迟查找
     report_service = Lazy('ReportService')
@@ -46,13 +46,12 @@ class UserController:
 ### 3. 使用注入的服务
 
 ```python
-from cullinan.core import Inject
-from cullinan.web import controller, get_api, Path
+from cullinan import controller, get_api, Path
 
 @controller(url='/api')
 class UserController:
-    user_service: UserService = Inject()
-    
+    user_service: UserService  # 构造注入
+
     @get_api(url='/users/{user_id}')
     async def get_user(self, user_id: int = Path()):
         user = self.user_service.get_user(user_id)
@@ -78,7 +77,7 @@ class UserController:
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import Inject, Provider
+from cullinan import Inject, Provider
 
 if TYPE_CHECKING:
     from .contracts import Hook
