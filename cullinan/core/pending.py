@@ -66,6 +66,14 @@ class PendingRegistry:
                 cls._instance._registrations.clear()
                 cls._instance._frozen = False
             cls._instance = None
+        # Invalidate the global type hints cache so that any stale
+        # typing.get_type_hints() failures from previous test runs are
+        # not reused across ApplicationContext instances.
+        try:
+            from cullinan.core.application_context import invalidate_type_hints_cache
+            invalidate_type_hints_cache()
+        except ImportError:
+            pass
 
     def add(self, registration: PendingRegistration) -> None:
         with self._lock:

@@ -97,6 +97,24 @@ class ContainerState(Enum):
     CLOSED = "closed"
 
 
+# Module-level global cache for type hints resolution results.
+# Previously an instance attribute on ApplicationContext, which caused
+# typing.get_type_hints() to be called twice per class (once during
+# registration and once during injection resolution). Moving to module
+# level ensures the cache is shared across context instances and persists
+# for the lifetime of the process.
+_global_type_hints_cache: Dict[int, Tuple[Dict, Dict, Optional[Exception]]] = {}
+
+
+def invalidate_type_hints_cache() -> None:
+    """Clear the module-level type hints cache.
+
+    Use after dynamic class reloads (e.g., in test suites) to ensure
+    stale cached annotations are not reused.
+    """
+    _global_type_hints_cache.clear()
+
+
 class ApplicationContext:
     """Unified root container.
 
@@ -116,7 +134,6 @@ class ApplicationContext:
         "_state",
         "_id",
         "_health_checks",
-        "_type_hints_cache",
     )
 
     def __init__(self, container_id: Optional[str] = None):
@@ -131,7 +148,6 @@ class ApplicationContext:
         self._state = ContainerState.CREATED
         self._id = self._scope_manager.root_id
         self._health_checks: List[Any] = []
-        self._type_hints_cache: Dict[int, Tuple[Dict, Dict, Optional[Exception]]] = {}
 
     # ========================================================================
     # Registration API
@@ -945,12 +961,12 @@ class ApplicationContext:
 
     def _get_class_type_hints(self, cls: type):
         import typing
-        
+
         cache_key = id(cls)
-        cached = self._type_hints_cache.get(cache_key)
+        cached = _global_type_hints_cache.get(cache_key)
         if cached is not None:
             return cached
-        
+
         try:
             raw_annotations = dict(inspect.get_annotations(cls, eval_str=False))
         except Exception:
@@ -959,8 +975,8 @@ class ApplicationContext:
             result = (typing.get_type_hints(cls, include_extras=True), raw_annotations, None)
         except Exception as exc:
             result = ({}, raw_annotations, exc)
-        
-        self._type_hints_cache[cache_key] = result
+
+        _global_type_hints_cache[cache_key] = result
         return result
 
     @staticmethod

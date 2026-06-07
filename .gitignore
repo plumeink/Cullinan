@@ -123,6 +123,9 @@ pdm.lock
 *_CHECKLIST.md
 *_REPORT.md
 *_FIX_*.md
+*-design.md
+*-plan.md
+*-feedback.md
 COMPLETION_STATUS.md
 GIT_COMMIT_MESSAGE.md
 IMPLEMENTATION_SUMMARY.md

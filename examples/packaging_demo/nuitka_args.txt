@@ -1,0 +1,13 @@
+# Recommended Nuitka command-line arguments for Cullinan applications.
+#
+# Save this file and run:
+#   nuitka @nuitka_args.txt
+
+--standalone
+--include-package=myapp
+--include-package=cullinan
+--enable-plugin=anti-bloat
+--assume-yes-for-downloads
+
+# For --onefile mode, replace --standalone with:
+# --onefile
