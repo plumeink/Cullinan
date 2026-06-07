@@ -70,8 +70,9 @@ def _build_nuitka_onefile_pipeline() -> Pipeline:
 
     Strategies: S0 → S1 → S2 → S3 → S5
     S4 (directory scanning) is skipped because onefile extracts to a temp
-    directory that does not reliably contain source files.  S5 uses
-    ``dir(pkg)`` introspection as a best-effort fallback.
+    directory that does not reliably contain source files.  S5 uses recursive
+    ``dir(pkg)`` introspection and ``sys.modules`` prefix scanning as a
+    best-effort fallback that now catches deeply nested subpackages.
     """
     return [
         ("S0_explicit_modules", strategy_explicit_modules),

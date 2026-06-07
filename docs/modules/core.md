@@ -115,9 +115,9 @@ modules = list_submodules("myapp")
 When deploying under Nuitka `--onefile` mode, provide an explicit module list via `configure()`:
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
-configure(nuitka_modules=["myapp", "myapp.services", "myapp.web"])
+configure(explicit_modules=["myapp", "myapp.services", "myapp.web"])
 ```
 
 ## See also

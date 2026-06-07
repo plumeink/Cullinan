@@ -22,6 +22,7 @@ nav:
     - Web Runtime Guide: web_runtime_guide.md
     - DI Quick Reference: quick_reference_di.md
     - Parameter System Guide: parameter_system_guide.md
+    - Packaging Guide: packaging.md
     - Testing: testing.md
     - Contributing: contributing.md
   - API Reference:
@@ -132,6 +133,7 @@ plugins:
             Extension Development: 扩展开发
             Quick Start Extensions: 扩展快速入门
             Build & Run: 构建与运行
+            Packaging Guide: 打包指南
             Testing: 测试
             Contributing: 贡献指南
 

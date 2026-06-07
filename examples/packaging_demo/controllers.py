@@ -1,5 +1,5 @@
 # Example: Cullinan @controller components for packaging demo
-from cullinan.core.decorators import controller
+from cullinan import controller
 
 
 @controller

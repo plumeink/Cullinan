@@ -115,9 +115,9 @@ modules = list_submodules("myapp")
 在 Nuitka `--onefile` 模式下部署时，可通过 `configure()` 提供显式模块列表：
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
-configure(nuitka_modules=["myapp", "myapp.services", "myapp.web"])
+configure(explicit_modules=["myapp", "myapp.services", "myapp.web"])
 ```
 
 ## 另见

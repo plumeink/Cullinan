@@ -268,6 +268,103 @@ class TestStrategyOnefileDirFallback(unittest.TestCase):
 
         self.assertIn("myapp.services", result)
 
+    @patch("cullinan.runtime.scan_strategies._resolve_caller_package")
+    @patch("cullinan.runtime.scan_strategies.importlib.import_module")
+    def test_recursive_discovery_into_nested_packages(self, mock_import, mock_resolve):
+        """Deeply nested modules are found via recursive dir()."""
+        import types
+        mock_resolve.return_value = "club"
+
+        # nested sub-package with __path__ (triggers recursion)
+        _fnep = types.ModuleType("club.fnep")
+        _fnep.__path__ = ["/fake/club/fnep"]
+
+        # deeply nested module inside fnep
+        _deep = types.ModuleType("club.fnep.infrastructure.discord")
+
+        # intermediate package
+        _infra = types.ModuleType("club.fnep.infrastructure")
+        _infra.__path__ = ["/fake/club/fnep/infrastructure"]
+        _infra.discord = _deep
+
+        _fnep.infrastructure = _infra
+
+        class FakePkg:
+            fnep = _fnep
+            _private = "skip"
+
+        mock_import.return_value = FakePkg()
+
+        config = MockConfig()
+        result = strategy_onefile_dir_fallback(config)
+
+        self.assertIn("club.fnep", result)
+        self.assertIn("club.fnep.infrastructure", result)
+        self.assertIn("club.fnep.infrastructure.discord", result)
+
+    def test_sys_modules_prefix_scan(self):
+        """sys.modules scan catches modules not visible via dir()."""
+        import types
+        from cullinan.runtime import scan_strategies as ss
+
+        test_modules = {
+            "club.fnep": types.ModuleType("club.fnep"),
+            "club.fnep.application.services.message_dispatch_service": types.ModuleType(
+                "club.fnep.application.services.message_dispatch_service"
+            ),
+        }
+        added = set()
+        for name, mod in test_modules.items():
+            if name not in sys.modules:
+                sys.modules[name] = mod
+                added.add(name)
+
+        with patch.object(ss, "_resolve_caller_package", return_value="club"), \
+             patch.object(ss.importlib, "import_module") as mock_import:
+
+            class EmptyPkg:
+                pass
+            mock_import.return_value = EmptyPkg()
+
+            config = MockConfig()
+            result = strategy_onefile_dir_fallback(config)
+
+            self.assertIn("club.fnep", result)
+            self.assertIn("club.fnep.application.services.message_dispatch_service", result)
+            self.assertNotIn("unrelated", result)
+            self.assertNotIn("os", result)
+
+        for name in added:
+            del sys.modules[name]
+
+    @patch("cullinan.runtime.module_scanner.get_caller_package")
+    @patch("cullinan.runtime.scan_strategies.importlib.import_module")
+    def test_dedup_between_dir_and_sys_modules(self, mock_import, mock_resolve):
+        """Modules found by both dir() and sys.modules are deduplicated."""
+        import types
+        mock_resolve.return_value = "myapp"
+
+        sub = types.ModuleType("myapp.services")
+
+        class FakePkg:
+            services = sub
+
+        mock_import.return_value = FakePkg()
+        # Same module also in sys.modules
+        prev = sys.modules.get("myapp.services")
+        sys.modules["myapp.services"] = sub
+        try:
+            config = MockConfig()
+            result = strategy_onefile_dir_fallback(config)
+
+            # myapp.services appears exactly once
+            self.assertEqual(result.count("myapp.services"), 1)
+        finally:
+            if prev is None:
+                del sys.modules["myapp.services"]
+            else:
+                sys.modules["myapp.services"] = prev
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -134,12 +134,12 @@ Cullinan 现在把关键诊断统一表达为：
 
 当 Cullinan 运行在 Nuitka 或 PyInstaller 环境中时，标准的 `pkgutil.walk_packages` 可能无法发现全部用户模块——尤其是在 `--onefile` 模式下，文件系统布局与开发环境不同。
 
-**`nuitka_modules` 配置**：可通过 `configure()` 提供显式模块列表：
+**`explicit_modules` 配置**：可通过 `configure()` 提供显式模块列表：
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
-configure(nuitka_modules=[
+configure(explicit_modules=[
     "myapp",
     "myapp.services",
     "myapp.web",

@@ -14,7 +14,7 @@
 #   cd examples/packaging_demo
 #   python main.py
 
-from cullinan.support import configure
+from cullinan import configure
 
 # ---------------------------------------------------------------------------
 # Packaging Configuration
@@ -41,7 +41,7 @@ configure(
 # ---------------------------------------------------------------------------
 
 def main():
-    from cullinan import Application
+    from cullinan.application import Application
 
     app = Application()
     app.run()

@@ -375,16 +375,23 @@ def strategy_onefile_dir_fallback(
     _mode: Optional[str] = None,
     _base_dirs: Optional[List[str]] = None,
 ) -> List[str]:
-    """Fallback discovery for onefile modes using ``dir(pkg)`` introspection.
+    """Fallback discovery for onefile modes using recursive introspection.
 
     In onefile packaging (Nuitka onefile, PyInstaller onefile), the filesystem
     does not contain the original ``.py`` files, so S4 directory scanning is
-    ineffective. This strategy uses ``get_caller_package()`` to infer the
-    application package, then iterates ``dir(pkg)`` to find submodule
-    attributes.
+    ineffective. This strategy uses three complementary techniques:
+
+    1. Recursive ``dir(pkg)`` — introspects package attributes, then recurses
+       into sub-packages to discover deeply nested modules.
+    2. ``sys.modules`` prefix scan — enumerates all already-imported modules
+       under the caller package prefix, catching modules that ``dir()`` may
+       miss (e.g. lazily-loaded or C-extension submodules).
+    3. Deduplication — merges results from both sources.
 
     This is a best-effort fallback — the onefile pipeline should prefer
-    ``explicit_modules`` or ``user_packages`` for reliable results.
+    ``explicit_modules`` (S0) or ``user_packages`` (S1) for reliable results.
+    However, this strategy now catches deeply nested subpackages that the
+    previous ``dir(pkg)``-only implementation missed.
 
     Args:
         config: Cullinan configuration instance (unused; kept for uniform
@@ -396,26 +403,67 @@ def strategy_onefile_dir_fallback(
         List of dotted module names discovered via introspection.
     """
     modules: List[str] = []
+    seen: set = set()
+
+    def _collect_recursive(pkg_obj, prefix: str) -> None:
+        """Recursively collect module names via dir() introspection."""
+        for attr_name in sorted(dir(pkg_obj)):
+            if attr_name.startswith('_'):
+                continue
+            try:
+                attr = getattr(pkg_obj, attr_name, None)
+            except Exception:
+                continue
+            if not inspect.ismodule(attr):
+                continue
+            mod_name = getattr(attr, '__name__', None)
+            if not mod_name or mod_name in seen:
+                continue
+            seen.add(mod_name)
+            modules.append(mod_name)
+            # Recurse into packages (modules with __path__)
+            if hasattr(attr, '__path__'):
+                _collect_recursive(attr, mod_name)
 
     try:
         caller_pkg = _resolve_caller_package()
-        if caller_pkg:
-            logger.info("S5 onefile_dir_fallback: inferred package: %s", caller_pkg)
-            try:
-                pkg = importlib.import_module(caller_pkg)
-                for attr_name in dir(pkg):
-                    if not attr_name.startswith('_'):
-                        attr = getattr(pkg, attr_name, None)
-                        if inspect.ismodule(attr):
-                            mod_name = getattr(attr, '__name__', None)
-                            if mod_name and mod_name not in modules:
-                                modules.append(mod_name)
-            except Exception as e:
-                logger.debug("S5: failed to import package %s: %s", caller_pkg, e)
+        if not caller_pkg:
+            logger.info("S5 onefile_dir_fallback: no caller package found")
+            return modules
+
+        logger.info("S5 onefile_dir_fallback: inferred package: %s", caller_pkg)
+
+        # Phase 1: recursive dir() introspection
+        try:
+            pkg = importlib.import_module(caller_pkg)
+            _collect_recursive(pkg, caller_pkg)
+            logger.debug(
+                "S5: recursive dir() found %d modules under %s",
+                len(modules), caller_pkg,
+            )
+        except Exception as e:
+            logger.debug("S5: failed recursive dir() on %s: %s", caller_pkg, e)
+
+        # Phase 2: sys.modules prefix scan
+        prefix = caller_pkg + "."
+        sys_mods = [
+            m for m in sys.modules
+            if (m == caller_pkg or m.startswith(prefix))
+            and m not in seen
+        ]
+        for mod_name in sys_mods:
+            seen.add(mod_name)
+            modules.append(mod_name)
+        if sys_mods:
+            logger.debug(
+                "S5: sys.modules scan found %d additional modules under %s",
+                len(sys_mods), caller_pkg,
+            )
+
     except CallerPackageException:
         pass
 
-    logger.info("S5 onefile_dir_fallback: found %d modules", len(modules))
+    logger.info("S5 onefile_dir_fallback: found %d modules total", len(modules))
     return modules
 
 

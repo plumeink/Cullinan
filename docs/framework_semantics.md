@@ -134,12 +134,12 @@ When the framework can prove a core semantic violation, startup fails. When code
 
 When Cullinan runs under Nuitka or PyInstaller, standard `pkgutil.walk_packages` may not find all user modules — especially in `--onefile` mode where the filesystem layout differs from development.
 
-**`nuitka_modules` configuration**: You can provide an explicit module list to `configure()`:
+**`explicit_modules` configuration**: You can provide an explicit module list to `configure()`:
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
-configure(nuitka_modules=[
+configure(explicit_modules=[
     "myapp",
     "myapp.services",
     "myapp.web",

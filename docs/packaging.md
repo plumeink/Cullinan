@@ -11,7 +11,7 @@ environments.
 The most reliable approach for `--onefile` builds:
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
 configure(
     explicit_modules=["myapp.services", "myapp.controllers"],
@@ -28,7 +28,7 @@ any future freezer.
 For `--standalone` / `--onedir` builds where filesystem access is available:
 
 ```python
-from cullinan.support import configure
+from cullinan import configure
 
 configure(
     user_packages=["myapp"],
@@ -46,7 +46,7 @@ Each pipeline is selected automatically based on `get_packaging_mode()`:
 | Mode | Pipeline | Notes |
 |------|----------|-------|
 | `--standalone` | S0 → S1 → S2 → S3 → S4 | Full filesystem scan |
-| `--onefile` | S0 → S1 → S2 → S3 → S5 | Skip S4 (no source files), use `dir(pkg)` fallback |
+| `--onefile` | S0 → S1 → S2 → S3 → S5 | Skip S4 (no source files), use recursive `dir(pkg)` + `sys.modules` fallback |
 
 ### PyInstaller
 
@@ -70,7 +70,7 @@ Each pipeline is selected automatically based on `get_packaging_mode()`:
 | **S2: sys_modules_scan** | Auto-scan `sys.modules` with path heuristics | `auto_scan=True` |
 | **S3: main_module_inference** | Infer package from `__main__.__file__` | Always |
 | **S4: directory_scanning** | Walk filesystem for `.py`/`.pyc`/`.pyd`/`.so` | Standalone/onedir modes |
-| **S5: onefile_dir_fallback** | `dir(pkg)` introspection fallback | One-file modes (last resort) |
+| **S5: onefile_dir_fallback** | Recursive `dir(pkg)` + `sys.modules` prefix scan | One-file modes (last resort) |
 
 ## Performance Improvements (v0.93a12)
 

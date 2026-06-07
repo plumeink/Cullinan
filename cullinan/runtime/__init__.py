@@ -27,7 +27,6 @@ __all__ = [
     "ScanPhase",
     "ScanStatistics",
     "ScanStatsCollector",
-    "ModuleReflectionResult",
     "file_list_func",
     "export_scan_statistics",
     "get_caller_package",

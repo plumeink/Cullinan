@@ -1,5 +1,5 @@
 # Example: Cullinan @service components for packaging demo
-from cullinan.core.decorators import service
+from cullinan import service
 
 
 @service
