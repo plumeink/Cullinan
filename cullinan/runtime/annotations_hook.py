@@ -53,8 +53,17 @@ class _AnnotationsLoader(importlib.abc.FileLoader, importlib.abc.SourceLoader):
     def get_data(self, path: str) -> bytes:
         if not path:
             raise ImportError("no path", name=self.name)
-        with open(path, "rb") as f:
-            return f.read()
+        try:
+            with open(path, "rb") as f:
+                return f.read()
+        except FileNotFoundError:
+            # In frozen environments (Nuitka onefile, PyInstaller) the
+            # source file may not exist on disk even though the module
+            # is importable.  Let the default loader handle it.
+            raise ImportError(
+                f"source file not found for {self.name} at {path} — "
+                f"this may indicate a frozen/compiled module"
+            ) from None
 
     def source_to_code(  # type: ignore[override]
         self,
@@ -116,6 +125,13 @@ class _AnnotationsFinder(importlib.abc.MetaPathFinder):
         # Don't touch namespace packages (no __init__.py).
         origin = spec.origin
         if origin.endswith(os.sep):  # namespace
+            return None
+
+        # In Nuitka onefile mode, the entry script's source file is not
+        # extracted to the temp directory — PathFinder may still return a
+        # spec with a non-existent origin.  Skip interception so Nuitka's
+        # own loader handles the import correctly.
+        if not os.path.isfile(origin):
             return None
 
         # Build our custom loader and replace the spec's loader.
