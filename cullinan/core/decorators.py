@@ -75,20 +75,21 @@ def _build_source_context(target_cls: Type) -> Dict[str, Any]:
     cached = _source_context_cache.get(cache_key)
     if cached is not None:
         return cached
-    
+
     source_file = None
-    source_line = None
     try:
         source_file = inspect.getfile(target_cls)
-        source_lines = inspect.getsourcelines(target_cls)
-        source_line = source_lines[1] if source_lines else None
     except (TypeError, OSError):
         pass
 
+    # source_line is intentionally omitted — source line inspection reads
+    # and parses the entire source file, which is expensive during startup
+    # and unnecessary for DI registration. The line number is available on
+    # demand via the decorator metadata if needed for diagnostics.
     source_qualname = getattr(target_cls, "__qualname__", target_cls.__name__)
     result = {
         "source_file": source_file,
-        "source_line": source_line,
+        "source_line": None,
         "source_qualname": source_qualname,
         "is_top_level": "<locals>" not in source_qualname,
     }

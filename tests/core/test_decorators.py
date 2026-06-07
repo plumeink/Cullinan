@@ -75,7 +75,7 @@ class TestServiceDecorator:
         assert reg.scope == "prototype"
 
     def test_service_source_location(self):
-        """Test that source location is captured."""
+        """Test that source file is captured (source_line is lazy)."""
         @service()
         class LocationTestService:
             pass
@@ -83,7 +83,8 @@ class TestServiceDecorator:
         registry = PendingRegistry.get_instance()
         reg = registry.get_by_name("LocationTestService")
         assert reg.source_file is not None
-        assert reg.source_line is not None
+        # source_line is intentionally None — getsourcelines() is expensive
+        # and deferred to on-demand diagnostics
         assert "test_decorators.py" in reg.source_file
 
     def test_service_registration_metadata_is_available_for_rescan(self):

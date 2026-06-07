@@ -107,10 +107,9 @@ class TestModuleScannerIntegration(unittest.TestCase):
         self.assertTrue(hasattr(module_scanner, 'get_nuitka_standalone_mode'))
         self.assertTrue(hasattr(module_scanner, 'get_pyinstaller_mode'))
         self.assertTrue(hasattr(module_scanner, 'get_caller_package'))
-        self.assertTrue(hasattr(module_scanner, 'scan_modules_nuitka'))
-        self.assertTrue(hasattr(module_scanner, 'scan_modules_pyinstaller'))
         self.assertTrue(hasattr(module_scanner, 'list_submodules'))
         self.assertTrue(hasattr(module_scanner, 'file_list_func'))
+        self.assertTrue(hasattr(module_scanner, 'invalidate_module_cache'))
     
     def test_file_list_func_returns_list(self):
         """Test that file_list_func returns a list."""
