@@ -102,10 +102,9 @@ class Repo:
 ```python
 from cullinan import application, configure
 
-from my_app.controller.user_controller import UserController
-from my_app.service.auth_service import AuthService
-from my_app.service.user_service import UserService
-
+# user_packages 触发自动模块发现——无需手动导入任何组件。
+# 框架会自动扫描并注册 my_app 下所有 @service / @controller /
+# @component 类。
 @configure(user_packages=["my_app"])
 @application
 def main(): ...

@@ -146,6 +146,6 @@ configure(nuitka_modules=[
 ])
 ```
 
-该列表作为 `scan_modules_nuitka()` 和 `scan_modules_standard()` 的最高优先级策略，在回退到 `user_packages` 等启发式方法之前使用。每个条目会被递归遍历以发现子包。
+该列表作为统一扫描管道中的最高优先级策略（S0），在回退到 `user_packages`（S1）等启发式方法之前使用。每个条目会被递归遍历以发现子包。
 
 **深层子包发现**：`list_submodules()` 现在会在 `pkgutil.walk_packages` 基础上增加基于文件系统的递归扫描回退。如果深层嵌套包（如 `club.fnep.infrastructure.discord`）被 `walk_packages` 遗漏，文件系统回退会通过直接遍历 `__init__.py` 目录和 `.py` 文件来发现它们。

@@ -102,10 +102,9 @@ Startup still fails fast when:
 ```python
 from cullinan import application, configure
 
-from my_app.controller.user_controller import UserController
-from my_app.service.auth_service import AuthService
-from my_app.service.user_service import UserService
-
+# user_packages triggers automatic module discovery — no manual
+# component imports needed. The framework scans and registers all
+# @service / @controller / @component classes under my_app.
 @configure(user_packages=["my_app"])
 @application
 def main(): ...

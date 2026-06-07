@@ -146,6 +146,6 @@ configure(nuitka_modules=[
 ])
 ```
 
-This list is used as the highest-priority strategy in `scan_modules_nuitka()` and `scan_modules_standard()`, before falling back to `user_packages` and other heuristics. Each entry is recursively walked for subpackages.
+This list is used as the highest-priority strategy (S0) in the unified scan pipeline, before falling back to `user_packages` (S1) and other heuristics. Each entry is recursively walked for subpackages.
 
 **Deep subpackage discovery**: `list_submodules()` now supplements `pkgutil.walk_packages` with filesystem-based recursive scanning. If a deeply nested package (e.g., `club.fnep.infrastructure.discord`) is missed by `walk_packages`, the filesystem fallback discovers it by walking `__init__.py` directories and `.py` files directly.
