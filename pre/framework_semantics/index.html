@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11.post2"
+      data-current-version="0.93a11.post3"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11.post2"
+      data-pre-version="0.93a11.post3"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -2302,7 +2302,7 @@
     <span class="s2">&quot;myapp.web&quot;</span><span class="p">,</span>
 <span class="p">])</span>
 </code></pre></div>
-<p>This list is used as the highest-priority strategy in <code>scan_modules_nuitka()</code> and <code>scan_modules_standard()</code>, before falling back to <code>user_packages</code> and other heuristics. Each entry is recursively walked for subpackages.</p>
+<p>This list is used as the highest-priority strategy (S0) in the unified scan pipeline, before falling back to <code>user_packages</code> (S1) and other heuristics. Each entry is recursively walked for subpackages.</p>
 <p><strong>Deep subpackage discovery</strong>: <code>list_submodules()</code> now supplements <code>pkgutil.walk_packages</code> with filesystem-based recursive scanning. If a deeply nested package (e.g., <code>club.fnep.infrastructure.discord</code>) is missed by <code>walk_packages</code>, the filesystem fallback discovers it by walking <code>__init__.py</code> directories and <code>.py</code> files directly.</p>
 
 
@@ -2372,7 +2372,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post2", "pre_is_available": true, "pre_label": "0.93a11.post2", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post3", "pre_is_available": true, "pre_label": "0.93a11.post3", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
