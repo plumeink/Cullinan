@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/packaging/">
       
       
+        <link rel="prev" href="../parameter_system_guide/">
+      
+      
+        <link rel="next" href="../testing/">
       
       
         
@@ -29,7 +33,7 @@
     
     
       
-        <title>Packaging Guide — Module Discovery in Frozen Environments - Cullinan Documentation</title>
+        <title>Packaging Guide - Cullinan Documentation</title>
       
     
     
@@ -88,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a11.post3"
+      data-current-version="0.93a11.post4"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a11.post3"
+      data-pre-version="0.93a11.post4"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -142,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Packaging Guide — Module Discovery in Frozen Environments
+              Packaging Guide
             
           </span>
         </div>
@@ -641,18 +645,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -673,7 +679,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -840,6 +846,253 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit-module-list-recommended-for-one-file-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Module List (Recommended for One-File Modes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-packages-recommended-for-directory-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Packages (Recommended for Directory Modes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strategy-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategy Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuitka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuitka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyinstaller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyInstaller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-improvements-v093a12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Improvements (v0.93a12)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-from-v093a11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration from v0.93a11
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-modules-discovered-in-one-file-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No modules discovered in one-file mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-hints-resolution-error-after-class-reload-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type hints resolution error after class reload (tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-override-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy override (advanced)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2124,7 +2377,7 @@ environments.</p>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <h3 id="explicit-module-list-recommended-for-one-file-modes">Explicit Module List (Recommended for One-File Modes)<a class="headerlink" href="#explicit-module-list-recommended-for-one-file-modes" title="Permanent link">&para;</a></h3>
 <p>The most reliable approach for <code>--onefile</code> builds:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
 
 <span class="n">configure</span><span class="p">(</span>
     <span class="n">explicit_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp.services&quot;</span><span class="p">,</span> <span class="s2">&quot;myapp.controllers&quot;</span><span class="p">],</span>
@@ -2136,7 +2389,7 @@ v0.93a12). It works with <strong>all</strong> packaging tools — Nuitka, PyInst
 any future freezer.</p>
 <h3 id="user-packages-recommended-for-directory-modes">User Packages (Recommended for Directory Modes)<a class="headerlink" href="#user-packages-recommended-for-directory-modes" title="Permanent link">&para;</a></h3>
 <p>For <code>--standalone</code> / <code>--onedir</code> builds where filesystem access is available:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
 
 <span class="n">configure</span><span class="p">(</span>
     <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">],</span>
@@ -2164,7 +2417,7 @@ Each pipeline is selected automatically based on <code>get_packaging_mode()</cod
 <tr>
 <td><code>--onefile</code></td>
 <td>S0 → S1 → S2 → S3 → S5</td>
-<td>Skip S4 (no source files), use <code>dir(pkg)</code> fallback</td>
+<td>Skip S4 (no source files), use recursive <code>dir(pkg)</code> + <code>sys.modules</code> fallback</td>
 </tr>
 </tbody>
 </table>
@@ -2244,7 +2497,7 @@ Each pipeline is selected automatically based on <code>get_packaging_mode()</cod
 </tr>
 <tr>
 <td><strong>S5: onefile_dir_fallback</strong></td>
-<td><code>dir(pkg)</code> introspection fallback</td>
+<td>Recursive <code>dir(pkg)</code> + <code>sys.modules</code> prefix scan</td>
 <td>One-file modes (last resort)</td>
 </tr>
 </tbody>
@@ -2373,7 +2626,7 @@ the framework.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post3", "pre_is_available": true, "pre_label": "0.93a11.post3", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post4", "pre_is_available": true, "pre_label": "0.93a11.post4", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
