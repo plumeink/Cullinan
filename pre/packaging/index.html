@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="zh" class="no-js">
+<html lang="en" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -9,35 +9,31 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration">
       
       
-        <meta name="author" content=""Plumeink"">
+        <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/zh/testing/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/packaging/">
       
       
-        <link rel="prev" href="../parameter_system_guide/">
-      
-      
-        <link rel="next" href="../contributing/">
       
       
         
-          <link rel="alternate" href="../../testing/" hreflang="en">
+          <link rel="alternate" href="./" hreflang="en">
         
-          <link rel="alternate" href="./" hreflang="zh">
+          <link rel="alternate" href="../zh/packaging/" hreflang="zh">
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>"测试与验证" - Cullinan Documentation</title>
+        <title>Packaging Guide — Module Discovery in Frozen Environments - Cullinan Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
       
       
 
@@ -56,9 +52,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/version-switcher.css">
+      <link rel="stylesheet" href="../assets/stylesheets/version-switcher.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,8 +72,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
-          跳转至
+        <a href="#packaging-guide-module-discovery-in-frozen-environments" class="md-skip">
+          Skip to content
         </a>
       
     </div>
@@ -125,8 +121,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="页眉">
-    <a href="../" title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cullinan Documentation" class="md-header__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -146,7 +142,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "测试与验证"
+              Packaging Guide — Module Discovery in Frozen Environments
             
           </span>
         </div>
@@ -160,20 +156,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="选择当前语言">
+    <button class="md-header__button md-icon" aria-label="Select language">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../testing/" hreflang="en" class="md-select__link">
+            <a href="./" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="./" hreflang="zh" class="md-select__link">
+            <a href="../zh/packaging/" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -194,16 +190,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="查找">
+      <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -214,7 +210,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            正在初始化搜索引擎
+            Initializing search
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -248,9 +244,9 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../" title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
+    <a href=".." title="Cullinan Documentation" class="md-nav__button md-logo" aria-label="Cullinan Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -268,14 +264,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    首页
+    Home
   
 
     
@@ -320,7 +316,7 @@
   <span class="md-ellipsis">
     
   
-    应用构建
+    Application Build
   
 
     
@@ -336,7 +332,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    应用构建
+    Application Build
   
 
           </label>
@@ -356,7 +352,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -391,7 +387,7 @@
   <span class="md-ellipsis">
     
   
-    快速开始
+    Getting Started
   
 
     
@@ -426,7 +422,7 @@
   <span class="md-ellipsis">
     
   
-    示例
+    Examples
   
 
     
@@ -461,7 +457,7 @@
   <span class="md-ellipsis">
     
   
-    构建与运行
+    Build & Run
   
 
     
@@ -514,7 +510,7 @@
   <span class="md-ellipsis">
     
   
-    框架语义
+    Framework Semantics
   
 
     
@@ -530,7 +526,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    框架语义
+    Framework Semantics
   
 
           </label>
@@ -550,7 +546,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -585,7 +581,7 @@
   <span class="md-ellipsis">
     
   
-    框架语义
+    Framework Semantics
   
 
     
@@ -620,7 +616,7 @@
   <span class="md-ellipsis">
     
   
-    架构设计
+    Architecture
   
 
     
@@ -645,20 +641,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -668,7 +662,7 @@
   <span class="md-ellipsis">
     
   
-    工程实践
+    Engineering Practices
   
 
     
@@ -679,12 +673,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    工程实践
+    Engineering Practices
   
 
           </label>
@@ -704,7 +698,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -739,7 +733,7 @@
   <span class="md-ellipsis">
     
   
-    依赖注入指南
+    Dependency Injection Guide
   
 
     
@@ -767,7 +761,7 @@
   <span class="md-ellipsis">
     
   
-    Web Runtime 指南
+    Web Runtime Guide
   
 
     
@@ -802,7 +796,7 @@
   <span class="md-ellipsis">
     
   
-    DI 快速参考
+    DI Quick Reference
   
 
     
@@ -830,7 +824,7 @@
   <span class="md-ellipsis">
     
   
-    参数系统指南
+    Parameter System Guide
   
 
     
@@ -855,51 +849,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    测试
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    测试
+    Testing
   
 
     
@@ -915,103 +875,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        仓库正式入口
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        测试发现配置
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        测试目录结构
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        运行定向测试
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        当前约定
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        测试覆盖范围
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        相关文档
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1031,7 +894,7 @@
   <span class="md-ellipsis">
     
   
-    贡献指南
+    Contributing
   
 
     
@@ -1084,7 +947,7 @@
   <span class="md-ellipsis">
     
   
-    API 参考
+    API Reference
   
 
     
@@ -1100,7 +963,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    API 参考
+    API Reference
   
 
           </label>
@@ -1120,7 +983,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1155,7 +1018,7 @@
   <span class="md-ellipsis">
     
   
-    API 参考总览
+    API Reference Overview
   
 
     
@@ -1201,7 +1064,7 @@
   <span class="md-ellipsis">
     
   
-    模块参考
+    Module Reference
   
 
     
@@ -1217,7 +1080,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    模块参考
+    Module Reference
   
 
           </label>
@@ -1237,7 +1100,7 @@
   <span class="md-ellipsis">
     
   
-    应用程序
+    application
   
 
     
@@ -1272,7 +1135,7 @@
   <span class="md-ellipsis">
     
   
-    核心
+    core
   
 
     
@@ -1307,7 +1170,7 @@
   <span class="md-ellipsis">
     
   
-    控制器
+    controller
   
 
     
@@ -1342,7 +1205,7 @@
   <span class="md-ellipsis">
     
   
-    服务
+    service
   
 
     
@@ -1403,7 +1266,7 @@
   <span class="md-ellipsis">
     
   
-    运行时与扩展
+    Internals & Extensions
   
 
     
@@ -1419,7 +1282,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    运行时与扩展
+    Internals & Extensions
   
 
           </label>
@@ -1439,7 +1302,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1474,7 +1337,7 @@
   <span class="md-ellipsis">
     
   
-    应用运行时
+    Application Runtime
   
 
     
@@ -1509,7 +1372,7 @@
   <span class="md-ellipsis">
     
   
-    组件
+    Components
   
 
     
@@ -1544,7 +1407,7 @@
   <span class="md-ellipsis">
     
   
-    装饰器
+    Decorators
   
 
     
@@ -1572,7 +1435,7 @@
   <span class="md-ellipsis">
     
   
-    注入
+    Injection
   
 
     
@@ -1607,7 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    生命周期
+    Lifecycle
   
 
     
@@ -1642,7 +1505,7 @@
   <span class="md-ellipsis">
     
   
-    中间件
+    Middleware
   
 
     
@@ -1677,7 +1540,7 @@
   <span class="md-ellipsis">
     
   
-    扩展
+    Extensions
   
 
     
@@ -1747,7 +1610,7 @@
   <span class="md-ellipsis">
     
   
-    扩展开发
+    Extension Development
   
 
     
@@ -1775,7 +1638,7 @@
   <span class="md-ellipsis">
     
   
-    扩展快速入门
+    Quick Start Extensions
   
 
     
@@ -1821,7 +1684,7 @@
   <span class="md-ellipsis">
     
   
-    版本迁移
+    Migration & Version Notes
   
 
     
@@ -1837,7 +1700,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    版本迁移
+    Migration & Version Notes
   
 
           </label>
@@ -1857,7 +1720,7 @@
   <span class="md-ellipsis">
     
   
-    总览
+    Overview
   
 
     
@@ -1892,7 +1755,7 @@
   <span class="md-ellipsis">
     
   
-    最终结构迁移
+    Final Structure Migration
   
 
     
@@ -1927,7 +1790,7 @@
   <span class="md-ellipsis">
     
   
-    运行时整合
+    Runtime Consolidation
   
 
     
@@ -1962,7 +1825,7 @@
   <span class="md-ellipsis">
     
   
-    迁移指南
+    Migration Guide
   
 
     
@@ -1990,7 +1853,7 @@
   <span class="md-ellipsis">
     
   
-    迁移指南 v2
+    Migration Guide v2
   
 
     
@@ -2018,7 +1881,7 @@
   <span class="md-ellipsis">
     
   
-    0.90 导入迁移
+    Import Migration 0.90
   
 
     
@@ -2052,7 +1915,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="目录">
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
   
@@ -2061,15 +1924,115 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      目录
+      Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        仓库正式入口
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit-module-list-recommended-for-one-file-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Module List (Recommended for One-File Modes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-packages-recommended-for-directory-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Packages (Recommended for Directory Modes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strategy-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategy Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuitka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuitka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyinstaller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyInstaller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-improvements-v093a12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Improvements (v0.93a12)
       
     </span>
   </a>
@@ -2077,10 +2040,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#migration-from-v093a11" class="md-nav__link">
     <span class="md-ellipsis">
       
-        测试发现配置
+        Migration from v0.93a11
       
     </span>
   </a>
@@ -2088,57 +2051,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
+  <a href="#troubleshooting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        测试目录结构
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-modules-discovered-in-one-file-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No modules discovered in one-file mode
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#type-hints-resolution-error-after-class-reload-tests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        运行定向测试
+        Type hints resolution error after class reload (tests)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-override-advanced" class="md-nav__link">
     <span class="md-ellipsis">
       
-        当前约定
+        Strategy override (advanced)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        测试覆盖范围
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        相关文档
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2159,90 +2117,203 @@
 
 
 
-<h1 id="_1">测试与验证<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>本文说明 application-model、公开 API 边界、adapter 与测试结构收尾后的当前仓库测试工作流。</p>
-<blockquote>
-<p><strong>仓库正式入口：</strong> <code>.venv\Scripts\python -m pytest</code><br />
-<strong>相关语义：</strong> 涉及运行时边界的测试，应与 <a href="../framework_semantics/">框架语义规则</a>
-和 <a href="../api_reference/">API 参考</a> 保持一致。</p>
-</blockquote>
-<h2 id="_2">仓库正式入口<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>请使用仓库虚拟环境执行：</p>
-<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span>
+<h1 id="packaging-guide-module-discovery-in-frozen-environments">Packaging Guide — Module Discovery in Frozen Environments<a class="headerlink" href="#packaging-guide-module-discovery-in-frozen-environments" title="Permanent link">&para;</a></h1>
+<p>Cullinan v0.93a12 introduces a <strong>unified strategy pipeline</strong> for module
+discovery across all packaging tools (Nuitka, PyInstaller) and development
+environments.</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="explicit-module-list-recommended-for-one-file-modes">Explicit Module List (Recommended for One-File Modes)<a class="headerlink" href="#explicit-module-list-recommended-for-one-file-modes" title="Permanent link">&para;</a></h3>
+<p>The most reliable approach for <code>--onefile</code> builds:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+
+<span class="n">configure</span><span class="p">(</span>
+    <span class="n">explicit_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp.services&quot;</span><span class="p">,</span> <span class="s2">&quot;myapp.controllers&quot;</span><span class="p">],</span>
+    <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">],</span>
+<span class="p">)</span>
 </code></pre></div>
-<p>这就是当前仓库执行全量验证的正式命令。</p>
-<h2 id="_3">测试发现配置<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p><code>pytest.ini</code> 定义了仓库默认规则：</p>
-<div class="highlight"><pre><span></span><code><span class="k">[pytest]</span>
-<span class="na">testpaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">tests</span>
-<span class="na">python_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">test_*.py</span>
-<span class="na">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">-ra</span>
+<p><strong><code>explicit_modules</code></strong> replaces the deprecated <code>nuitka_modules</code> (removed in
+v0.93a12). It works with <strong>all</strong> packaging tools — Nuitka, PyInstaller, and
+any future freezer.</p>
+<h3 id="user-packages-recommended-for-directory-modes">User Packages (Recommended for Directory Modes)<a class="headerlink" href="#user-packages-recommended-for-directory-modes" title="Permanent link">&para;</a></h3>
+<p>For <code>--standalone</code> / <code>--onedir</code> builds where filesystem access is available:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+
+<span class="n">configure</span><span class="p">(</span>
+    <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">],</span>
+    <span class="n">auto_scan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># default</span>
+<span class="p">)</span>
 </code></pre></div>
-<p><code>tests/conftest.py</code> 会把仓库根目录加入 <code>sys.path</code>，因此新测试不应再重复写本地 <code>sys.path.insert(...)</code> 引导代码。</p>
-<h2 id="_4">测试目录结构<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<p>测试按主题组织：</p>
-<ul>
-<li><code>tests/core</code></li>
-<li><code>tests/di</code></li>
-<li><code>tests/web</code></li>
-<li><code>tests/integration</code></li>
-<li><code>tests/regression</code></li>
-<li><code>tests/compat</code></li>
-<li><code>tests/helpers</code></li>
-</ul>
-<p>新增测试时，优先放入最接近的现有主题目录，而不是继续创建零散的顶层文件。</p>
-<h2 id="_5">运行定向测试<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>示例：</p>
-<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">\</span><span class="n">web</span><span class="p">\</span><span class="n">test_web_runtime</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span>
-<span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span> <span class="n">-m</span> <span class="n">pytest</span> <span class="n">tests</span><span class="p">\</span><span class="n">di</span><span class="p">\</span><span class="n">test_core_constructor_injection</span><span class="p">.</span><span class="n">py</span> <span class="n">-q</span>
-</code></pre></div>
-<p>通用的 <code>python -m pytest</code> 也可运行，但当前仓库文档标准统一使用 Windows 下的 <code>.venv\Scripts\python</code> 形式。</p>
-<p>如果你想先看一个面向开发者的小型测试示例，而不是直接进入整个仓库测试集，
-可以参考 <code>examples/testing_flow/test_app.py</code>。</p>
-<h2 id="_6">当前约定<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="strategy-pipeline">Strategy Pipeline<a class="headerlink" href="#strategy-pipeline" title="Permanent link">&para;</a></h2>
+<p>Cullinan now uses a <strong>composable pipeline</strong> of six independent strategies.
+Each pipeline is selected automatically based on <code>get_packaging_mode()</code>:</p>
+<h3 id="nuitka">Nuitka<a class="headerlink" href="#nuitka" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Pipeline</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--standalone</code></td>
+<td>S0 → S1 → S2 → S3 → S4</td>
+<td>Full filesystem scan</td>
+</tr>
+<tr>
+<td><code>--onefile</code></td>
+<td>S0 → S1 → S2 → S3 → S5</td>
+<td>Skip S4 (no source files), use <code>dir(pkg)</code> fallback</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pyinstaller">PyInstaller<a class="headerlink" href="#pyinstaller" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Pipeline</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--onedir</code></td>
+<td>S0 → S1 → S4</td>
+<td><code>_MEIPASS</code> + executable dir scan</td>
+</tr>
+<tr>
+<td><code>--onefile</code></td>
+<td>S0 → S1 → S4</td>
+<td><code>_MEIPASS</code> temp extraction dir</td>
+</tr>
+</tbody>
+</table>
+<h3 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Pipeline</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>development</code></td>
+<td>S0 → S1 → S2 → S3</td>
+<td><code>get_caller_package()</code> + fallback</td>
+</tr>
+</tbody>
+</table>
+<h3 id="strategy-reference">Strategy Reference<a class="headerlink" href="#strategy-reference" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Description</th>
+<th>Runs When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S0: explicit_modules</strong></td>
+<td>User-provided explicit module list</td>
+<td><code>explicit_modules</code> is set</td>
+</tr>
+<tr>
+<td><strong>S1: user_packages</strong></td>
+<td>Configured packages via <code>pkgutil.walk_packages</code></td>
+<td><code>user_packages</code> is set</td>
+</tr>
+<tr>
+<td><strong>S2: sys_modules_scan</strong></td>
+<td>Auto-scan <code>sys.modules</code> with path heuristics</td>
+<td><code>auto_scan=True</code></td>
+</tr>
+<tr>
+<td><strong>S3: main_module_inference</strong></td>
+<td>Infer package from <code>__main__.__file__</code></td>
+<td>Always</td>
+</tr>
+<tr>
+<td><strong>S4: directory_scanning</strong></td>
+<td>Walk filesystem for <code>.py</code>/<code>.pyc</code>/<code>.pyd</code>/<code>.so</code></td>
+<td>Standalone/onedir modes</td>
+</tr>
+<tr>
+<td><strong>S5: onefile_dir_fallback</strong></td>
+<td><code>dir(pkg)</code> introspection fallback</td>
+<td>One-file modes (last resort)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="performance-improvements-v093a12">Performance Improvements (v0.93a12)<a class="headerlink" href="#performance-improvements-v093a12" title="Permanent link">&para;</a></h2>
 <ol>
-<li>使用标准 pytest 测试与普通 <code>assert</code> 断言。</li>
-<li>pytest 现在是唯一正式测试入口；历史 <code>if __name__ == "__main__"</code>、<code>main()</code>、<code>run_all_tests()</code> 直跑尾巴不应再引入。</li>
-<li>需要共享初始化时，优先复用 <code>tests/conftest.py</code> 与 <code>tests/helpers/</code>。</li>
-<li>测试若修改全局 registry 或活动应用上下文，必须自行完成隔离与清理。</li>
+<li>
+<p><strong>Global type hints cache</strong> — <code>typing.get_type_hints()</code> results are cached
+   at module level (shared across <code>ApplicationContext</code> instances). Previously
+   each context instance had its own cache, causing duplicate resolution.</p>
+</li>
+<li>
+<p><strong>Lazy source line</strong> — <code>inspect.getsourcelines()</code> is no longer called
+   during decorator registration. Source file paths are still captured; line
+   numbers are deferred to on-demand diagnostics.</p>
+</li>
 </ol>
-<h2 id="_7">测试覆盖范围<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
-<p>当前测试集覆盖：</p>
-<ul>
-<li>application-first 启动、模块归属解析与运行时切换</li>
-<li>顶层公开 API 边界、兼容 warning 与整理后的启动路径</li>
-<li>容器与生命周期行为</li>
-<li>兼容层语义</li>
-<li>gateway / Web Runtime 行为</li>
-<li>控制器路由与参数处理</li>
-<li>集成与回归场景</li>
-</ul>
-<p>代表性文件：</p>
-<ul>
-<li><code>tests/core/test_application_model_refactor.py</code></li>
-<li><code>tests/core/test_public_api_boundaries.py</code></li>
-<li><code>tests/core/test_developer_experience.py</code></li>
-<li><code>tests/core/test_decorators.py</code></li>
-<li><code>tests/integration/test_adapter_integration.py</code></li>
-<li><code>tests/integration/test_gateway_integration.py</code></li>
-<li><code>tests/web/test_openapi_generator.py</code></li>
-</ul>
-<h2 id="_8">相关文档<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../runtime_updates_v093/">运行时整合概览</a></li>
-<li><a href="../wiki/application_runtime/">应用运行时模型</a></li>
-<li><a href="../architecture/">架构设计</a></li>
-<li><a href="../web_runtime_guide/">Web Runtime 指南</a></li>
-</ul>
+<h2 id="migration-from-v093a11">Migration from v0.93a11<a class="headerlink" href="#migration-from-v093a11" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Old API</th>
+<th>New API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nuitka_modules=["myapp"]</code></td>
+<td><code>explicit_modules=["myapp"]</code></td>
+</tr>
+<tr>
+<td><code>scan_modules_nuitka()</code></td>
+<td>Pipeline auto-selected</td>
+</tr>
+<tr>
+<td><code>scan_modules_pyinstaller()</code></td>
+<td>Pipeline auto-selected</td>
+</tr>
+</tbody>
+</table>
+<p>The old functions have been removed. No backward-compatibility aliases
+are provided — update your configuration at the same time you upgrade
+the framework.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="no-modules-discovered-in-one-file-mode">No modules discovered in one-file mode<a class="headerlink" href="#no-modules-discovered-in-one-file-mode" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">configure</span><span class="p">(</span><span class="n">explicit_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;your_top_level_package&quot;</span><span class="p">])</span>
+</code></pre></div>
+<h3 id="type-hints-resolution-error-after-class-reload-tests">Type hints resolution error after class reload (tests)<a class="headerlink" href="#type-hints-resolution-error-after-class-reload-tests" title="Permanent link">&para;</a></h3>
+<p><code>PendingRegistry.reset()</code> now also invalidates the global type hints cache:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.pending</span><span class="w"> </span><span class="kn">import</span> <span class="n">PendingRegistry</span>
+<span class="n">PendingRegistry</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># also clears type hints cache</span>
+</code></pre></div>
+<h3 id="strategy-override-advanced">Strategy override (advanced)<a class="headerlink" href="#strategy-override-advanced" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.runtime.scan_pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
+
+<span class="n">modules</span> <span class="o">=</span> <span class="n">execute_pipeline</span><span class="p">(</span>
+    <span class="n">get_config</span><span class="p">(),</span>
+    <span class="n">packaging_mode</span><span class="o">=</span><span class="s2">&quot;nuitka-onefile&quot;</span><span class="p">,</span>
+    <span class="n">base_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/custom/path&quot;</span><span class="p">],</span>
+    <span class="n">early_termination</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># run ALL strategies</span>
+<span class="p">)</span>
+</code></pre></div>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -2302,12 +2373,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "pre", "current": "0.93a11.post2", "pre_is_available": true, "pre_label": "0.93a11.post2", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a11.post2", "pre_is_available": true, "pre_label": "0.93a11.post2", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
-        <script src="../../assets/javascripts/version-switcher.js"></script>
+        <script src="../assets/javascripts/version-switcher.js"></script>
       
     
   </body>
