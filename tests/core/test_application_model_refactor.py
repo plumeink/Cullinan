@@ -210,7 +210,9 @@ def test_module_conflict_requires_explicit_ownership_override(tmp_path, monkeypa
         shared_service = _import(f"{package_name}.shared.components").SharedService
         alpha_module = _import(f"{package_name}.alpha.module").AlphaModule
         assert app.get_component_owner(shared_service) is alpha_module
-        assert app.context.get("SharedService").__class__ is shared_service
+        svc = app.context.get("SharedService")
+        assert isinstance(svc, shared_service)
+        assert svc.__class__.__name__ == shared_service.__name__
     finally:
         app.uninstall()
         _clear_modules(package_name)

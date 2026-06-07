@@ -74,6 +74,8 @@ class UserController:
 - `ApplicationContext.refresh()` 会实例化 eager 部分依赖图
 - 生命周期钩子在受管组件上统一执行
 - request scope 解析依赖当前活动请求上下文
+- 注入完成后，所有 DI 填充的属性**强制只读**——重新赋值会抛出 `AttributeError`。
+  测试场景请使用 `cullinan.testing.TestContext.mock()`。
 
 ## 运行时类型解析规则
 

@@ -1,6 +1,6 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: 0.93a11.post4
+> **Version**: 0.93a12.post1
 > **Last Updated**: 2026-06-01  
 > **Status**: Updated
 
@@ -49,19 +49,61 @@ class UserController:
 
 ## Injection primitives
 
-### Constructor injection — preferred
+### Constructor injection — preferred (zero boilerplate, framework-enforced immutability)
 
-Use bare type annotations (`db: DatabaseService`) for zero-boilerplate dependency injection.
-The framework resolves the type, finds the matching definition, and injects it via `setattr`
-after calling the no-arg constructor. This is the recommended default for new projects.
+The cleanest injection style: a bare class-level type annotation is a DI declaration.
+No `Inject()` marker, no `__init__`, no `self.x = x` assignment.
 
 ```python
+from cullinan.core import service
+
+@service
+class UserService:
+    database: DatabaseService       # required — error at refresh() if missing
+    cache: CacheService             # same
+    notifier: NotifierService = None  # optional — stays None if not registered
+```
+
+**Rules**:
+
+- No default `db: DatabaseService` → **required** DI, `DependencyNotFoundError` at `refresh()`
+- `None` default `notifier: NotifierService = None` → **optional** DI, injected if available
+- Actual value `timeout: int = 5` → ignored by the framework
+- `Inject()` / `Lazy()` marker → field injection path, unaffected by constructor injection
+
+**Contrast with field injection**:
+
+| Contrast | field injection (`Inject()`) | constructor injection |
+|----------|------------------------------|-----------------------|
+| Boilerplate | `x: T = Inject()` | `x: T` |
+| Startup check | `required=False` defers to runtime | required deps fail at `refresh()` |
+| Immutability after injection | enforced (all injection paths) | enforced (all injection paths) |
+| Test mock | `Inject()` blocks direct `cls()` | `svc = cls(); svc.db = mock` (no freeze) |
+
+**Advantages**:
+
+- Zero boilerplate
+- Missing required dependencies caught early at startup
+- Injected attributes are enforced as read-only after injection
+- Test-friendly: instantiate directly and inject mocks manually
+
+> **Backward-compatible**: existing `Inject()` / `Lazy()` / `InjectByName()` work unchanged.
+> Constructor and field injection can coexist on the same class.
+
+### `Inject()` — field injection (type-driven)
+
+Use `Inject()` for explicit field injection when the runtime type is available and you want
+refactoring-friendly, type-driven wiring.
+
+```python
+from cullinan.core import Inject
+
 class AuditService:
     repo: Repository = Inject()
     cache: CacheService = Inject(required=False)
 ```
 
-`Inject()` now uses a strict, typed resolution pipeline:
+`Inject()` uses a strict, typed resolution pipeline:
 
 - direct runtime types still work as before
 - `TYPE_CHECKING` + forward references are supported when Cullinan can map the annotation to a **single** registered target
@@ -102,43 +144,11 @@ class AuditService:
 - prefer an explicit name when you want late lookup without importing the target type
 - if you rely on type-driven resolution, the type still needs to be resolvable at runtime
 
-### Constructor injection — zero boilerplate, immutable by default
-
-The cleanest injection style: a bare class-level type annotation is a DI declaration.
-No `Inject()` marker, no `self.x = x` assignment.
-
-```python
-from cullinan.core import service
-
-@service
-class UserService:
-    database: DatabaseService       # required — error at refresh() if missing
-    cache: CacheService             # same
-    notifier: NotifierService = None  # optional — stays None if not registered
-```
-
-**Rules**:
-
-- No default `db: DatabaseService` → **required** DI, `DependencyNotFoundError` at `refresh()`
-- `None` default `notifier: NotifierService = None` → **optional** DI, injected if available
-- Actual value `timeout: int = 5` → ignored by the framework
-- `Inject()` / `Lazy()` marker → field injection, unaffected by constructor injection
-
-| Contrast | field injection (`Inject()`) | constructor injection |
-|----------|------------------------------|-----------------------|
-| Boilerplate | `x: T = Inject()` | `x: T` |
-| Startup check | `required=False` defers to runtime | required deps fail at `refresh()` |
-| Immutability | field injection may overwrite | never overwritten |
-| Test mock | `Inject()` blocks direct `cls()` | `svc = cls(); svc.db = mock` |
-
-> **Backward-compatible**: existing `Inject()` / `Lazy()` / `InjectByName()` work unchanged.
-> Constructor and field injection can coexist on the same class.
-
 ## How to choose
 
 | Need | Recommended primitive |
 | --- | --- |
-| **New projects: cleanest, immutable by default** | constructor injection `db: DatabaseService` |
+| **New projects: cleanest, framework-enforced immutability** | constructor injection `db: DatabaseService` |
 | Runtime type is available and you want refactor-friendly injection | `Inject()` |
 | `TYPE_CHECKING` / forward-reference type is unique and still should be type-driven | `Inject()` |
 | Runtime type is intentionally unavailable or awkward to import | `InjectByName("Name")` |

@@ -918,6 +918,14 @@ class ApplicationContext:
                 continue
             setattr(instance, attr_name, self._materialize_binding(binding))
 
+        # ── Freeze: all injected attributes immutable after DI ──
+        injected = list(init_kwargs.keys()) + [
+            n for n in markers
+            if n in instance.__dict__
+            and n not in init_kwargs  # constructor already included
+        ]
+        _freeze_dependencies(instance, injected)
+
         return instance
 
     # ── Constructor-injection resolution ────────────────────────────
@@ -1970,6 +1978,52 @@ class _LazyProxy:
 
     def __call__(self, *args, **kwargs):
         return self._resolve()(*args, **kwargs)
+
+
+class _ImmutableAttributeError(AttributeError):
+    """Raised when attempting to reassign a dependency after DI injection.
+
+    Points developers to the TestContext API for testing scenarios.
+    """
+
+    def __init__(self, attr_name: str):
+        super().__init__(
+            f"Cannot reassign '{attr_name}': dependency already injected. "
+            f"Use TestContext.mock(instance, '{attr_name}', mock_value) for testing."
+        )
+
+
+def _freeze_dependencies(instance, injected_names):
+    """Make injected attributes read-only on a single instance.
+
+    Creates a transient dynamic subclass that overrides ``__setattr__``
+    to reject reassignment of frozen attributes.  Only *instance* is
+    affected — other instances of the same class, including those
+    created manually (outside of :meth:`_create_class_instance`), are
+    completely unaffected.
+
+    Args:
+        instance: The freshly-injected instance.
+        injected_names: Iterable of attribute names that were populated
+            by DI (both constructor and field injection).
+
+    Raises:
+        _ImmutableAttributeError: When code tries to reassign a frozen
+            attribute on *instance* after freeze.
+    """
+    frozen = frozenset(injected_names)
+    cls = type(instance)
+
+    class _Frozen(cls):
+        def __setattr__(self, name, value):
+            if name in frozen:
+                raise _ImmutableAttributeError(name)
+            super().__setattr__(name, value)
+
+    _Frozen.__name__ = cls.__name__
+    _Frozen.__qualname__ = cls.__qualname__
+    _Frozen.__module__ = cls.__module__
+    instance.__class__ = _Frozen
 
 
 __all__ = ["ApplicationContext", "ContainerState"]

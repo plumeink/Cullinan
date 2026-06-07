@@ -74,6 +74,8 @@ class UserController:
 - `ApplicationContext.refresh()` materializes eager parts of the graph
 - lifecycle hooks run on managed components
 - request-scoped resolution is tied to the active request context
+- after injection, all DI-populated attributes are **enforced read-only** — reassignment raises
+  `AttributeError`. Use `TestContext.mock()` from `cullinan.testing` for testing.
 
 ## Runtime type resolution rule
 

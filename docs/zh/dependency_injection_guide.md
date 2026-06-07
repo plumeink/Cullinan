@@ -1,6 +1,6 @@
 # Cullinan 依赖注入指南
 
-> **版本**：0.93a11.post4
+> **版本**：0.93a12.post1
 > **最后更新**：2026-06-01  
 > **状态**：已更新
 
@@ -49,18 +49,58 @@ class UserController:
 
 ## 注入原语
 
-### 构造注入 —— 首选
+### 构造注入 —— 首选（零样板、框架保证不可变）
 
-使用裸类型注解（`db: DatabaseService`）即可完成零样板代码的依赖注入。
-框架解析类型、查找匹配定义，在无参构造后通过 `setattr` 注入。这是新项目的推荐首选。
+最简洁的注入方式：一行类级类型注解即为 DI 声明。无需 `Inject()` 标记、无需 `__init__`、无需 `self.x = x`。
 
 ```python
+from cullinan.core import service
+
+@service
+class UserService:
+    database: DatabaseService       # 必需依赖，refresh() 时报错
+    cache: CacheService             # 同上
+    notifier: NotifierService = None  # Optional 依赖，没有则留 None
+```
+
+**规则**：
+
+- 无默认值 `db: DatabaseService` → **必需** DI 依赖，缺失在 `refresh()` 抛出 `DependencyNotFoundError`
+- `None` 默认值 `notifier: NotifierService = None` → **可选** DI，容器有则注入，无则静默跳过
+- 有实际值 `timeout: int = 5` → 框架不碰，当作普通类属性
+- 有 `Inject()`/`Lazy()` 标记 → 走字段注入路径，不受构造注入影响
+
+**与字段注入的对比**：
+
+| 对比 | 字段注入 (`Inject()`) | 构造注入（类型注解） |
+|------|------------------------------|----------------------|
+| 样板代码 | `x: T = Inject()` | `x: T` |
+| 启动时校验 | `required=False` 运行时抛 | 必需依赖在 `refresh()` 即报 |
+| 注入后不可变性 | 框架强制（全部注入路径统一） | 框架强制（全部注入路径统一） |
+| 测试 mock | `Inject()` 妨碍直接 `cls()` 实例化 | `svc = cls(); svc.db = mock`（不走 DI，不冻结） |
+
+**优势**：
+
+- 零样板代码
+- 启动早期即可发现缺失依赖
+- 注入后属性由框架保证只读
+- 测试时可直接实例化并手动注入 mock 对象
+
+> **向后兼容**：现有 `Inject()` / `Lazy()` / `InjectByName()` 行为完全不变，构造注入与字段注入可在同一类上混用。
+
+### `Inject()` —— 字段注入（类型驱动）
+
+当运行时类型可用且希望获得更好的重构友好性时，使用 `Inject()` 进行显式字段注入。
+
+```python
+from cullinan.core import Inject
+
 class AuditService:
     repo: Repository = Inject()
     cache: CacheService = Inject(required=False)
 ```
 
-`Inject()` 现在采用严格的类型解析流水线：
+`Inject()` 采用严格的类型解析流水线：
 
 - 直接可用的运行时类型仍按原方式工作
 - `TYPE_CHECKING` + 前向引用在 **能唯一落到一个注册目标** 时可以正常工作
@@ -101,43 +141,11 @@ class AuditService:
 - 如果希望延迟解析且不导入目标类型，优先显式传名称
 - 如果希望按类型解析，类型同样必须能在运行时被解析
 
-### 构造注入 —— 无样板、天然不可变
-
-最简洁的注入方式：一行类级类型注解即为 DI 声明，无需 `Inject()` 标记，无需 `self.x = x`。
-
-```python
-from cullinan.core import service
-
-@service
-class UserService:
-    database: DatabaseService       # 必需依赖，refresh() 时报错
-    cache: CacheService             # 同上
-    notifier: NotifierService = None  # Optional 依赖，没有则留 None
-```
-
-**规则**：
-
-- 无默认值 `db: DatabaseService` → **必需** DI 依赖，缺失在 `refresh()` 抛出 `DependencyNotFoundError`
-- `None` 默认值 `notifier: NotifierService = None` → **可选** DI，容器有则注入，无则静默跳过
-- 有实际值 `timeout: int = 5` → 框架不碰，当作普通类属性
-- 有 `Inject()`/`Lazy()` 标记 → 走 field injection 路径，不受构造注入影响
-
-**优势**：
-
-| 对比 | field injection (`Inject()`) | 构造注入（类型注解） |
-|------|------------------------------|----------------------|
-| 样板代码 | `x: T = Inject()` | `x: T` |
-| 启动时校验 | `required=False` 运行时抛 | 必需依赖在 `refresh()` 即报 |
-| 不可变性 | field injection 可覆盖 | 注入后不被覆盖 |
-| 测试 mock | `Inject()` 妨碍实例化 | `svc = cls(); svc.db = mock` |
-
-> **向后兼容**：现有 `Inject()` / `Lazy()` / `InjectByName()` 行为完全不变，构造注入与 field injection 可混用。
-
 ## 如何选择
 
 | 需求 | 推荐注入原语 |
 | --- | --- |
-| **新项目首选：最简洁、天然不可变** | 构造注入 `db: DatabaseService` |
+| **新项目首选：最简洁、框架保证不可变** | 构造注入 `db: DatabaseService` |
 | 运行时类型可用，且希望获得更好的重构友好性 | `Inject()` |
 | `TYPE_CHECKING` / 前向引用场景下仍希望按类型解析，且目标唯一 | `Inject()` |
 | 运行时类型刻意不可用，或不适合直接导入 | `InjectByName("Name")` |
