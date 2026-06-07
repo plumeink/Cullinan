@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 import functools
 import importlib
 import inspect
+import logging
 import threading
 import uuid
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Type
@@ -560,18 +561,37 @@ def _collect_module_specs(root_module: Type[Any]) -> List[ModuleSpec]:
     return list(discovered.values())
 
 
+_logger = logging.getLogger(__name__)
+
+
 def _discover_python_modules(specs: Sequence[ModuleSpec]) -> List[str]:
     discovered: List[str] = []
     seen = set()
 
     for spec in specs:
         for package_name in spec.packages:
-            package = importlib.import_module(package_name)
+            try:
+                package = importlib.import_module(package_name)
+            except Exception:
+                _logger.warning(
+                    "Skipping package %s during discovery — import failed",
+                    package_name,
+                    exc_info=True,
+                )
+                continue
             candidates = [package_name, *list_submodules(package_name)]
             for candidate in candidates:
                 if candidate in seen:
                     continue
-                importlib.import_module(candidate)
+                try:
+                    importlib.import_module(candidate)
+                except Exception:
+                    _logger.warning(
+                        "Skipping module %s during discovery — import failed",
+                        candidate,
+                        exc_info=True,
+                    )
+                    continue
                 seen.add(candidate)
                 discovered.append(candidate)
 

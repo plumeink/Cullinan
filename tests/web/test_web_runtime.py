@@ -69,6 +69,9 @@ def test_dispatcher_applies_header_policy_and_return_value_handler():
 
 
 def test_runtime_switch_is_atomic_and_drains_previous_runtime():
+    # Ensure no leftover _active_runtime from other tests.
+    WebRuntime.clear_active()
+
     calls = []
 
     def warmup(runtime):
