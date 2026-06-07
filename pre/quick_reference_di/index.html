@@ -2316,7 +2316,7 @@
 
 <h1 id="cullinan-dependency-injection-quick-reference">Cullinan Dependency Injection Quick Reference<a class="headerlink" href="#cullinan-dependency-injection-quick-reference" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: 0.93a11.post3
+<p><strong>Version</strong>: 0.93a11.post4
 <strong>Author</strong>: Plumeink</p>
 <p><strong>Quick lookup page:</strong> use this page as a compact DI recipe sheet; use
 <a href="../dependency_injection_guide/">Dependency Injection Guide</a> for fuller guidance
@@ -2324,7 +2324,7 @@ and <a href="../reference/">API Reference</a> for symbol lookup.</p>
 </blockquote>
 <h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
 <h3 id="1-define-a-service">1. Define a Service<a class="headerlink" href="#1-define-a-service" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
@@ -2335,30 +2335,29 @@ and <a href="../reference/">API Reference</a> for symbol lookup.</p>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
 </code></pre></div>
 <h3 id="2-inject-service-into-controller">2. Inject Service into Controller<a class="headerlink" href="#2-inject-service-into-controller" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">Lazy</span><span class="p">,</span> <span class="n">Provider</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">InjectByName</span><span class="p">,</span> <span class="n">Lazy</span><span class="p">,</span> <span class="n">Provider</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="c1"># Method 1: Type annotation (Recommended)</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="c1"># Method 1: Constructor injection — bare type annotation, zero boilerplate (Recommended)</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span>
 
     <span class="c1"># Method 2: Explicit name</span>
     <span class="n">auth_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;AuthService&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Method 3: Optional dependency</span>
-    <span class="n">cache_service</span> <span class="o">=</span> <span class="n">InjectByName</span><span class="p">(</span><span class="s1">&#39;CacheService&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Method 3: Optional dependency — just set to None</span>
+    <span class="n">notifier</span><span class="p">:</span> <span class="n">NotifierService</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Method 4: Lazy lookup</span>
     <span class="n">report_service</span> <span class="o">=</span> <span class="n">Lazy</span><span class="p">(</span><span class="s1">&#39;ReportService&#39;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="3-use-injected-service">3. Use Injected Service<a class="headerlink" href="#3-use-injected-service" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span>  <span class="c1"># constructor injection</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/users/</span><span class="si">{user_id}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
@@ -2374,6 +2373,10 @@ and <a href="../reference/">API Reference</a> for symbol lookup.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><strong>Simplest, zero boilerplate (Recommended)</strong></td>
+<td><code>db: DatabaseService</code> — constructor injection</td>
+</tr>
 <tr>
 <td>Type is importable at runtime</td>
 <td><code>Inject()</code></td>
@@ -2392,7 +2395,7 @@ and <a href="../reference/">API Reference</a> for symbol lookup.</p>
 </tr>
 <tr>
 <td>Optional dependency</td>
-<td><code>required=False</code></td>
+<td><code>notifier: NotifierService = None</code> or <code>required=False</code></td>
 </tr>
 <tr>
 <td>Deferred provider object</td>
@@ -2407,7 +2410,7 @@ and <a href="../reference/">API Reference</a> for symbol lookup.</p>
 <h2 id="type_checking-rule"><code>TYPE_CHECKING</code> rule<a class="headerlink" href="#type_checking-rule" title="Permanent link">&para;</a></h2>
 <p><code>Inject()</code> now supports <code>TYPE_CHECKING</code> forward references when the binding result is unique:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">Provider</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">Provider</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hook</span>

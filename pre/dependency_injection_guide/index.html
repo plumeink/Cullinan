@@ -854,10 +854,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#inject-preferred" class="md-nav__link">
+  <a href="#constructor-injection-preferred" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inject() — preferred
+        Constructor injection — preferred
       
     </span>
   </a>
@@ -2355,10 +2355,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#inject-preferred" class="md-nav__link">
+  <a href="#constructor-injection-preferred" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inject() — preferred
+        Constructor injection — preferred
       
     </span>
   </a>
@@ -2594,20 +2594,20 @@
 
 <h1 id="cullinan-dependency-injection-guide">Cullinan Dependency Injection Guide<a class="headerlink" href="#cullinan-dependency-injection-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: 0.93a11.post3
+<p><strong>Version</strong>: 0.93a11.post4
 <strong>Last Updated</strong>: 2026-06-01<br />
 <strong>Status</strong>: Updated</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Cullinan's current DI model is centered on <code>ApplicationContext</code> and exposed publicly through <code>cullinan.core</code>. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.</p>
+<p>Cullinan's current DI model is centered on <code>ApplicationContext</code> and exposed publicly through <code>cullinan</code>. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.</p>
 <p>Before choosing an injection primitive, read <a href="../framework_semantics/">Framework Semantics</a>. That page defines the hard rules behind <code>Inject()</code>, <code>InjectByName()</code>, <code>refresh()</code>, and compatibility APIs.</p>
 <blockquote>
-<p><strong>Recommended default:</strong> prefer decorator-based business code plus <code>Inject()</code> where the type contract is stable.<br />
+<p><strong>Recommended default:</strong> constructor injection — declare a bare type annotation on a class-level attribute and the framework resolves it automatically. Zero boilerplate: no <code>Inject()</code>, no <code>__init__</code>, no <code>self.x = x</code>.<br />
 <strong>Need symbol lookup instead of guidance?</strong> See <a href="../reference/">API Reference</a>.</p>
 </blockquote>
 <h2 id="recommended-usage">Recommended usage<a class="headerlink" href="#recommended-usage" title="Permanent link">&para;</a></h2>
 <h3 id="1-register-services-with-decorators">1. Register services with decorators<a class="headerlink" href="#1-register-services-with-decorators" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span><span class="p">,</span> <span class="n">service</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span>
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">:</span>
@@ -2616,26 +2616,27 @@
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
-    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">database</span><span class="p">:</span> <span class="n">DatabaseService</span>  <span class="c1"># constructor injection — bare annotation</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;select * from users where id = </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="2-use-the-same-injection-model-in-controllers">2. Use the same injection model in controllers<a class="headerlink" href="#2-use-the-same-injection-model-in-controllers" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">Path</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
+    <span class="n">user_service</span><span class="p">:</span> <span class="n">UserService</span>  <span class="c1"># constructor injection</span>
 
     <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="injection-primitives">Injection primitives<a class="headerlink" href="#injection-primitives" title="Permanent link">&para;</a></h2>
-<h3 id="inject-preferred"><code>Inject()</code> — preferred<a class="headerlink" href="#inject-preferred" title="Permanent link">&para;</a></h3>
-<p>Use <code>Inject()</code> when you want type-driven resolution and better refactoring support.</p>
+<h3 id="constructor-injection-preferred">Constructor injection — preferred<a class="headerlink" href="#constructor-injection-preferred" title="Permanent link">&para;</a></h3>
+<p>Use bare type annotations (<code>db: DatabaseService</code>) for zero-boilerplate dependency injection.
+The framework resolves the type, finds the matching definition, and injects it via <code>setattr</code>
+after calling the no-arg constructor. This is the recommended default for new projects.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AuditService</span><span class="p">:</span>
     <span class="n">repo</span><span class="p">:</span> <span class="n">Repository</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>
     <span class="n">cache</span><span class="p">:</span> <span class="n">CacheService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
