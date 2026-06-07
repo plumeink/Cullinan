@@ -106,6 +106,30 @@ class ContainerState(Enum):
 _global_type_hints_cache: Dict[int, Tuple[Dict, Dict, Optional[Exception]]] = {}
 
 
+def _normalize_string_annotation(value: Any) -> Any:
+    """Strip spurious wrapping quotes from :pep:`563` string annotations.
+
+    When ``CO_FUTURE_ANNOTATIONS`` is active and the source already contains
+    a quoted forward reference like ``user_directory: "UserDirectoryService"``,
+    Python stores the annotation expression as ``"'UserDirectoryService'"``
+    (the inner quotes become part of the stored string).  This helper strips
+    the outer quotes so downstream ``find_by_type_name`` can match the bare
+    class name.
+    """
+    if not isinstance(value, str):
+        return value
+    stripped = value.strip()
+    # Repeatedly unwrap matching quote pairs, so "'UserService'" becomes
+    # "UserService" then UserService.
+    while (
+        len(stripped) >= 2
+        and stripped[0] in ('"', "'")
+        and stripped[0] == stripped[-1]
+    ):
+        stripped = stripped[1:-1]
+    return stripped
+
+
 def invalidate_type_hints_cache() -> None:
     """Clear the module-level type hints cache.
 
@@ -454,7 +478,7 @@ class ApplicationContext:
                 continue
 
             required = attr_name not in class_dict
-            runtime_type = type_hints.get(attr_name, annotation)
+            runtime_type = type_hints.get(attr_name, _normalize_string_annotation(annotation))
             candidates = self._definition_registry.find_by_type(runtime_type)
 
             # Fallback: string forward reference → name-based lookup
@@ -927,7 +951,7 @@ class ApplicationContext:
                 continue
 
             required = attr_name not in class_dict  # no default at all
-            runtime_type = type_hints.get(attr_name, annotation)
+            runtime_type = type_hints.get(attr_name, _normalize_string_annotation(annotation))
             candidates = self._definition_registry.find_by_type(runtime_type)
 
             # Fallback: string forward reference → name-based lookup
@@ -971,6 +995,12 @@ class ApplicationContext:
             raw_annotations = dict(inspect.get_annotations(cls, eval_str=False))
         except Exception:
             raw_annotations = dict(getattr(cls, "__annotations__", {}) or {})
+
+        # Normalize: when CO_FUTURE_ANNOTATIONS wraps an already-quoted
+        # annotation (e.g. `"UserDirectoryService"` → `"'UserDirectoryService'"`),
+        # strip the outer quotes so fallback lookups succeed.
+        raw_annotations = {k: _normalize_string_annotation(v) for k, v in raw_annotations.items()}
+
         try:
             result = (typing.get_type_hints(cls, include_extras=True), raw_annotations, None)
         except Exception as exc:

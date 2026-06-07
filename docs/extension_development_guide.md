@@ -351,33 +351,37 @@ class AsyncService(Service):
 
 ```python
 import tornado.web
-from cullinan import configure, run
+from cullinan import application, configure
+
 
 class CustomHandler(tornado.web.RequestHandler):
     """Custom request handler"""
-    
+
     def get(self):
         self.write({"message": "Custom handler"})
-    
+
     def post(self):
         data = self.get_json_argument()
         self.write({"received": data})
 
-# Register custom Handler
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 if __name__ == '__main__':
-    configure(
-        handlers=[
-            (r'/custom', CustomHandler),
-            (r'/custom/(?P<id>[0-9]+)', CustomHandler),
-        ]
-    )
-    run()
+    application.run(main, handlers=[
+        (r'/custom', CustomHandler),
+        (r'/custom/(?P<id>[0-9]+)', CustomHandler),
+    ])
 ```
 
 ### Mixed Use with Controller
 
 ```python
+from cullinan import application, configure
 from cullinan.web.controller import controller, get_api
+
 
 @controller(url='/api/users')
 class UserController:
@@ -385,14 +389,19 @@ class UserController:
     def list_users(self):
         return {"users": []}
 
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 # CustomHandler and UserController can coexist
 if __name__ == '__main__':
-    configure(
+    application.run(
+        main,
         handlers=[
             (r'/health', HealthCheckHandler),  # Custom
         ]
-    )
-    run()  # UserController will be automatically registered
+    )  # UserController will be automatically registered
 ```
 
 ---
@@ -455,7 +464,7 @@ class LoggingMiddleware(Middleware):
 ```python
 @service
 class UserService(Service):
-    email_service: "EmailService"  # Constructor injection (recommended)
+    email_service: EmailService  # Constructor injection (recommended)
 ```
 
 ✅ **Use name-based injection for special cases**

@@ -20,7 +20,7 @@
 
 Cullinan is a Python Web Framework for developers who want to organize applications around
 business services, controllers, and methods instead of manually wiring an app object.
-Its default path is decorator-first discovery plus `from cullinan import configure, module, run`,
+Its default path is decorator-first discovery plus `@application` + `@configure(...)`,
 with `@module` used as the application boundary when ownership, runtime structure, and stability
 matter. The framework-facing API stays engine-neutral:
 Cullinan internally bridges your business application into Tornado or ASGI runtimes instead of
@@ -89,7 +89,7 @@ Cullinan now exposes a clearer framework-shaped package surface:
 
 | Capability layer | What Cullinan provides |
 | --- | --- |
-| **Application composition** | top-level `configure(...)` / `run()`, decorator-driven discovery, structured runtime assembly |
+| **Application composition** | `@application` + `@configure(...)`, decorator-driven discovery, structured runtime assembly |
 | **Web API model** | `cullinan.web` facade for `@controller`, RESTful decorators, `WebResponse`, parameters, middleware |
 | **Parameter system** | Typed `Path`, `Query`, `Body`, validation, conversion, and controller-method binding |
 | **IoC/DI and lifecycle** | `Inject()`, `InjectByName()`, request scope, startup/shutdown hooks, component lifecycle |
@@ -117,11 +117,11 @@ or the repository guide in [`docs/examples.md`](docs/examples.md).
 
 ## Quick Start
 
-The recommended starting point is: define business components, declare the root boundary,
-configure the app, then run it.
+The recommended starting point is: define business components, decorate them,
+and declare the application entry with `@configure(...)` + `@application` + `main()`.
 
 ```python
-from cullinan import configure, module, run
+from cullinan import application, configure
 from cullinan.core import service
 from cullinan.web import controller, get_api
 
@@ -134,27 +134,22 @@ class GreetingService:
 
 @controller(url="/hello")
 class HelloController:
-    greeting_service: "GreetingService"  # ← 构造注入：一行就够了
+    greeting_service: GreetingService  # ← 构造注入：一行就够了
 
     @get_api(url="")
     def hello(self):
         return {"message": self.greeting_service.greet()}
 
 
-@module
-class RootModule:
-    """Declare the application boundary when structure matters."""
-
-
-if __name__ == "__main__":
-    configure(root_module=RootModule)
-    run()
+@configure(user_packages=["minimal_app"], server_port=4080)
+@application
+def main(): ...
 ```
 
 Run it:
 
 ```bash
-python minimal_app.py
+python -m minimal_app
 ```
 
 Then open:
@@ -167,9 +162,8 @@ This example shows the default Cullinan path:
 
 - business service first
 - controller methods as the public web surface
-- `Inject()` for framework-managed wiring
-- `@module` as the runtime boundary
-- top-level `configure(root_module=...)` plus `run()` as the startup flow
+- `@application` + `@configure(...)` + `main()` as the startup flow
+- `@module` available when explicit runtime boundaries are needed
 - runtime backend selection delegated to Cullinan instead of driving application structure
 
 ---
@@ -224,7 +218,7 @@ Then move into the documentation knowledge base:
 
 **v0.93a8** makes the public application path more explicit around:
 
-- top-level `configure(root_module=...)` and `run()`
+- `@application` + `@configure(...)` + `main()` as the startup flow
 - decorator-first discovery through Python imports
 - `@module` as the structured boundary for runtime ownership
 - built-in IoC/DI, lifecycle, and semantic diagnostics

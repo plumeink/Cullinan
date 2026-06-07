@@ -15,8 +15,8 @@ pr_links: []
 
 # Cullinan Documentation
 
-> **Current version: 0.93a11.post4**. The shortest public startup path is
-> `from cullinan import configure, run`; the semantic learning path starts from
+> **Current version: 0.93a12**. The shortest public startup path is
+> `@application` + `@configure(...)` + `main()`; the semantic learning path starts from
 > top-level `cullinan` plus the business-facing `cullinan.web` / `cullinan.core`
 > vocabulary: begin with business decorators and business methods first, then
 > enter advanced application/runtime details only when the application really

@@ -19,7 +19,7 @@ Start here to install Cullinan, run a minimal application, and confirm the
 recommended public entrypoint.
 
 Cullinan application code should start from business decorators, business methods,
-and the top-level `from cullinan import configure, run` API.
+and `@application` + `@configure(...)` + `main()` API.
 
 ## Start here
 

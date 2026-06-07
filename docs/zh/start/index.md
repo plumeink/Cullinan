@@ -18,7 +18,7 @@ pr_links: []
 从这里开始安装 Cullinan、运行最小应用，并确认推荐的公开入口。
 
 Cullinan 应用代码应从业务装饰器、业务方法，以及顶层
-`from cullinan import configure, run` 开始。
+`@application` + `@configure(...)` + `main()` 注解式入口开始。
 
 ## 从这里开始
 

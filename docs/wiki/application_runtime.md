@@ -21,10 +21,10 @@ Cullinan's intended experience is decorator-first business development: the
 runtime assembles what your modules declare, instead of asking you to wire a
 manual app object step by step.
 
-> **Advanced topic:** regular applications should prefer `from cullinan import configure, run`.  
+> **Advanced topic:** regular applications should prefer `@application` + `@configure(...)` + `main()`.  
 > **Reference companion:** see [API Reference](../api_reference.md) for the public / advanced / compatibility API split.
 
-For regular applications, prefer the top-level `from cullinan import configure, run`.
+For regular applications, prefer `@application` + `@configure(...)` + `main()`.
 Reach for `cullinan.application` only when you intentionally need explicit
 runtime orchestration.
 

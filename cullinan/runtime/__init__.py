@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """Runtime discovery and assembly facade for Cullinan."""
 
+from cullinan.runtime.annotations_hook import (
+    install_annotations_hook,
+    uninstall_annotations_hook,
+    is_annotations_hook_installed,
+    get_hook_root_path,
+)
 from cullinan.runtime.module_scanner import (
     file_list_func,
     get_caller_package,
@@ -23,6 +29,10 @@ from cullinan.runtime.scan_stats import (
 from cullinan.runtime.scanner import reflect_module, scan_controller, scan_service
 
 __all__ = [
+    "install_annotations_hook",
+    "uninstall_annotations_hook",
+    "is_annotations_hook_installed",
+    "get_hook_root_path",
     "ModuleReflectionResult",
     "ScanPhase",
     "ScanStatistics",

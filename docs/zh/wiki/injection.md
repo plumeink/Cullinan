@@ -26,7 +26,7 @@ Cullinan 当前的依赖模型已经统一到 `ApplicationContext` 与公开的 
   ```python
   class MyClass:
       dependency: SomeType       # ← 仅裸注解，无需 = Inject()
-      optional: "OptService" = None  # ← None 表示可选
+      optional: OptService = None  # ← None 表示可选
   ```
   无需 `__init__`。框架会调用 `cls()`，然后为每个字段执行 `setattr`。
 - `Inject()` 仍可用作回退/向后兼容选项

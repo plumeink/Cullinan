@@ -26,7 +26,7 @@ For the hard contract behind discovery, typed binding, `refresh()`, and compatib
   ```python
   class MyClass:
       dependency: SomeType       # ← bare annotation, no = Inject()
-      optional: "OptService" = None  # ← None means optional
+      optional: OptService = None  # ← None means optional
   ```
   No `__init__` is needed. The framework calls `cls()` then `setattr` for each field.
 - `Inject()` is still available as a fallback / backward-compatibility option

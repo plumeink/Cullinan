@@ -105,7 +105,7 @@ Example output:
 ### Scenario: Building an Authenticated API
 
 ```python
-from cullinan import configure, run
+from cullinan import application, configure
 from cullinan.web.middleware import middleware, Middleware
 from cullinan.web.controller import controller, get_api
 from cullinan.core.services import service, Service
@@ -153,8 +153,8 @@ class UserService(Service):
 
 @controller(url='/api/users')
 class UserController:
-    user_service: 'UserService'  # ← 构造注入
-    
+    user_service: UserService  # ← Construction injection
+
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
@@ -162,12 +162,9 @@ class UserController:
 
 # 4. Start application
 
-if __name__ == '__main__':
-    configure(
-        port=8080,
-        debug=True
-    )
-    run()
+@configure(user_packages=["__main__"], server_port=8080)
+@application
+def main(): ...
 ```
 
 **Execution Flow**:

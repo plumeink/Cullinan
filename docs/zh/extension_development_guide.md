@@ -350,33 +350,38 @@ class AsyncService(Service):
 
 ```python
 import tornado.web
-from cullinan import configure, run
+from cullinan import application, configure
+
 
 class CustomHandler(tornado.web.RequestHandler):
     """自定义请求处理器"""
-    
+
     def get(self):
         self.write({"message": "Custom handler"})
-    
+
     def post(self):
         data = self.get_json_argument()
         self.write({"received": data})
 
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 # 注册自定义 Handler
 if __name__ == '__main__':
-    configure(
-        handlers=[
-            (r'/custom', CustomHandler),
-            (r'/custom/(?P<id>[0-9]+)', CustomHandler),
-        ]
-    )
-    run()
+    application.run(main, handlers=[
+        (r'/custom', CustomHandler),
+        (r'/custom/(?P<id>[0-9]+)', CustomHandler),
+    ])
 ```
 
 ### 与 Controller 混合使用
 
 ```python
+from cullinan import application, configure
 from cullinan.web.controller import controller, get_api
+
 
 @controller(url='/api/users')
 class UserController:
@@ -384,14 +389,19 @@ class UserController:
     def list_users(self):
         return {"users": []}
 
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 # CustomHandler 和 UserController 可以共存
 if __name__ == '__main__':
-    configure(
+    application.run(
+        main,
         handlers=[
             (r'/health', HealthCheckHandler),  # 自定义
         ]
-    )
-    run()  # UserController 会自动注册
+    )  # UserController 会自动注册
 ```
 
 ---
@@ -454,7 +464,7 @@ class LoggingMiddleware(Middleware):
 ```python
 @service
 class UserService(Service):
-    email_service: "EmailService"  # 构造器注入（推荐）
+    email_service: EmailService  # 构造器注入（推荐）
 ```
 
 ✅ **特殊情况使用按名称注入**

@@ -368,8 +368,25 @@ class Application:
         return cls(root_module, runtime_config=runtime_config).install()
 
     def discover(self) -> "Application":
-        specs = _collect_module_specs(self.root_module)
-        python_modules = _discover_python_modules(specs)
+        # Install the PEP 563 import hook so application modules are compiled
+        # with CO_FUTURE_ANNOTATIONS.  This makes bare constructor-injection
+        # annotations safe to use with TYPE_CHECKING imports.
+        from cullinan.runtime.annotations_hook import (
+            install_annotations_hook,
+            uninstall_annotations_hook,
+            _resolve_app_root_path,
+        )
+
+        root_path = _resolve_app_root_path(self.root_module)
+        if root_path is not None:
+            install_annotations_hook(root_path)
+        try:
+            specs = _collect_module_specs(self.root_module)
+            python_modules = _discover_python_modules(specs)
+        finally:
+            if root_path is not None:
+                uninstall_annotations_hook()
+
         registrations = _rebuild_pending_registry(python_modules)
         component_owners = _resolve_component_owners(specs, registrations)
         self.graph = ModuleGraph(

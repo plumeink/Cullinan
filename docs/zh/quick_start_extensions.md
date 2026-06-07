@@ -104,7 +104,7 @@ for mw in registered:
 ### 场景：构建一个带认证的 API
 
 ```python
-from cullinan import configure, run
+from cullinan import application, configure
 from cullinan.web.middleware import middleware, Middleware
 from cullinan.web.controller import controller, get_api
 from cullinan.core.services import service, Service
@@ -152,7 +152,7 @@ class UserService(Service):
 
 @controller(url='/api/users')
 class UserController:
-    user_service: 'UserService'  # ← 构造注入
+    user_service: UserService  # ← 构造注入
     
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
@@ -161,12 +161,9 @@ class UserController:
 
 # 4. 启动应用
 
-if __name__ == '__main__':
-    configure(
-        port=8080,
-        debug=True
-    )
-    run()
+@configure(user_packages=["__main__"], server_port=8080)
+@application
+def main(): ...
 ```
 
 **执行流程**：
