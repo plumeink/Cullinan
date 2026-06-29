@@ -9,6 +9,7 @@ This directory is the single source of runnable examples for the current Cullina
 3. `examples/middleware_and_module/`
 4. `examples/parameter_handling/`
 5. `examples/testing_flow/`
+6. `examples/static_files_and_spa/`
 
 ## Run examples
 
@@ -17,6 +18,7 @@ This directory is the single source of runnable examples for the current Cullina
 - `python -m examples.middleware_and_module`
 - `python -m examples.parameter_handling`
 - `python -m pytest examples/testing_flow/test_app.py -q`
+- `python -m examples.static_files_and_spa`
 
 Each example keeps one teaching goal and follows the recommended Cullinan path:
 entry-method startup with `@application`, optional `@configure(...)`,

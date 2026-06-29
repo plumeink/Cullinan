@@ -109,6 +109,12 @@ class CullinanConfig:
         # should be scanned, e.g.: ['myapp.services', 'myapp.controllers']
         self.explicit_modules: Optional[List[str]] = None
 
+        # Declarative static-files / SPA mounts. Each entry may be a
+        # ``cullinan.web.StaticFiles`` instance, a ``dict`` of kwargs, or a
+        # ``(url, directory)`` tuple. Mounts are registered on the gateway
+        # router at startup and served identically under Tornado and ASGI.
+        self.static_files: List[Any] = []
+
         # OpenAPI auto-generation
         # Set to True to auto-register /openapi.json and /openapi.yaml endpoints
         # Can also be set via env var CULLINAN_OPENAPI_ENABLED=1
@@ -173,6 +179,9 @@ class CullinanConfig:
             self.server_port = config['server_port']
         if 'explicit_modules' in config:
             self.explicit_modules = config['explicit_modules']
+        if 'static_files' in config:
+            value = config['static_files']
+            self.static_files = list(value) if value else []
         return self
 
     def to_dict(self) -> dict:
@@ -190,6 +199,7 @@ class CullinanConfig:
             'server_host': self.server_host,
             'server_port': self.server_port,
             'explicit_modules': self.explicit_modules,
+            'static_files': list(self.static_files),
         }
 
 
@@ -252,6 +262,7 @@ def configure(
     server_host: Optional[str] = None,
     server_port: Optional[int] = None,
     explicit_modules: Optional[List[str]] = None,
+    static_files: Optional[List[Any]] = None,
 ):
     """Configure the Cullinan framework.
 
@@ -272,6 +283,8 @@ def configure(
         asgi_server: Underlying ASGI server such as ``uvicorn`` or ``hypercorn``.
         server_host: Default bind host for the top-level ``run()`` helper.
         server_port: Default bind port for the top-level ``run()`` helper.
+        static_files: Optional list of ``cullinan.web.StaticFiles`` mounts
+            (also accepts dicts or ``(url, directory)`` tuples).
 
     Example:
         >>> from cullinan import configure
@@ -326,6 +339,11 @@ def configure(
 
     if explicit_modules is not None:
         _config.explicit_modules = explicit_modules
+
+    if static_files is not None:
+        from cullinan.web.static.spec import coerce_static_files
+
+        _config.static_files = list(coerce_static_files(static_files))
 
     return _config
 

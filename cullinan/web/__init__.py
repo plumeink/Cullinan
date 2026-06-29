@@ -32,6 +32,7 @@ from cullinan.web.params import (
     UNSET,
     ValidationError,
 )
+from cullinan.web.static import StaticFiles
 from cullinan.web.websocket_registry import websocket_handler
 
 __all__ = [
@@ -50,6 +51,7 @@ __all__ = [
     "Path",
     "Query",
     "ResolveError",
+    "StaticFiles",
     "TypeConverter",
     "UNSET",
     "ValidationError",

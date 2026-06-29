@@ -643,9 +643,42 @@ def _setup_openapi():
         logger.debug("OpenAPI setup skipped: %s", exc)
 
 
+def _setup_static_files():
+    """Register declarative ``StaticFiles`` mounts on the gateway router."""
+    try:
+        from cullinan.support.config import get_config
+        cfg = get_config()
+        raw_specs = getattr(cfg, "static_files", None) or []
+        if not raw_specs:
+            return
+
+        from cullinan.web.static.spec import coerce_static_files
+        from cullinan.web.static.registry import install_static_files
+        from cullinan.web.gateway import get_router
+
+        specs = coerce_static_files(raw_specs)
+        if not specs:
+            return
+
+        project_root = getattr(cfg, "project_root", None)
+        installed = install_static_files(
+            specs,
+            router=get_router(),
+            project_root=project_root,
+        )
+        logger.info(
+            "└---static files registered: %d mount(s), %d route(s)",
+            len(specs),
+            installed,
+        )
+    except Exception as exc:
+        logger.debug("Static files setup skipped: %s", exc)
+
+
 def _finalize_runtime_setup():
     """Apply the standard post-initialization runtime setup steps."""
     _setup_middleware_pipeline()
+    _setup_static_files()
     _setup_openapi()
 
 

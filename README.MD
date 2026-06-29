@@ -198,6 +198,7 @@ Then move into the documentation knowledge base:
 - [Examples](https://plumeink.github.io/Cullinan/examples/)
 - [Dependency Injection Guide](https://plumeink.github.io/Cullinan/dependency_injection_guide/)
 - [Web Runtime Guide](https://plumeink.github.io/Cullinan/web_runtime_guide/)
+- [Static Files and SPA Guide](https://plumeink.github.io/Cullinan/static_files_guide/)
 - [Parameter System Guide](https://plumeink.github.io/Cullinan/parameter_system_guide/)
 - [Testing & Verification](https://plumeink.github.io/Cullinan/testing/)
 
@@ -209,6 +210,7 @@ Then move into the documentation knowledge base:
 - [示例导航](https://plumeink.github.io/Cullinan/zh/examples/)
 - [依赖注入指南](https://plumeink.github.io/Cullinan/zh/dependency_injection_guide/)
 - [Web Runtime 指南](https://plumeink.github.io/Cullinan/zh/web_runtime_guide/)
+- [静态文件与 SPA 指南](https://plumeink.github.io/Cullinan/zh/static_files_guide/)
 - [参数系统指南](https://plumeink.github.io/Cullinan/zh/parameter_system_guide/)
 - [测试与验证](https://plumeink.github.io/Cullinan/zh/testing/)
 

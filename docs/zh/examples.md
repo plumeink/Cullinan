@@ -40,6 +40,7 @@ pr_links: []
 | `examples/middleware_and_module/` | 模块边界归属与中间件管线扩展 | `python -m examples.middleware_and_module` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
 | `examples/parameter_handling/` | 控制器方法上的 `Path`、`Query`、`Body` | `python -m examples.parameter_handling` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
 | `examples/testing_flow/` | 基于公开 API 的 ASGI 测试流 | `python -m pytest examples/testing_flow/test_app.py -q` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/testing_flow) |
+| `examples/static_files_and_spa/` | 声明式 `StaticFiles` 挂载 + SPA 回退（引擎中立） | `python -m examples.static_files_and_spa` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/static_files_and_spa) |
 
 ## 为什么要重构示例
 

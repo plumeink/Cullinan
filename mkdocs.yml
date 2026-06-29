@@ -20,6 +20,7 @@ nav:
     - Overview: how-to/index.md
     - Dependency Injection Guide: dependency_injection_guide.md
     - Web Runtime Guide: web_runtime_guide.md
+    - Static Files and SPA Guide: static_files_guide.md
     - DI Quick Reference: quick_reference_di.md
     - Parameter System Guide: parameter_system_guide.md
     - Packaging Guide: packaging.md
@@ -128,6 +129,7 @@ plugins:
             Import Migration 0.90: 0.90 导入迁移
             Dependency Injection Guide: 依赖注入指南
             Web Runtime Guide: Web Runtime 指南
+            Static Files and SPA Guide: 静态文件与 SPA 指南
             DI Quick Reference: DI 快速参考
             Parameter System Guide: 参数系统指南
             Extension Development: 扩展开发

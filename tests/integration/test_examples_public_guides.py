@@ -83,6 +83,50 @@ async def _invoke_asgi_app(app, path: str, method: str = "GET", body: bytes = b"
     return start["status"], headers, payload
 
 
+async def _invoke_asgi_app_raw(app, path: str, method: str = "GET", body: bytes = b"", query_string: bytes = b""):
+    """Same as ``_invoke_asgi_app`` but returns the raw body as text.
+
+    Useful for non-JSON responses such as static files and SPA HTML.
+    """
+    messages = []
+    delivered = False
+
+    async def receive():
+        nonlocal delivered
+        if delivered:
+            return {"type": "http.disconnect"}
+        delivered = True
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    async def send(message):
+        messages.append(message)
+
+    scope = {
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": method,
+        "scheme": "http",
+        "path": path,
+        "raw_path": path.encode("utf-8"),
+        "query_string": query_string,
+        "headers": [(b"host", b"example.test")],
+        "client": ("127.0.0.1", 12345),
+        "server": ("example.test", 80),
+    }
+
+    await app(scope, receive, send)
+
+    start = next(m for m in messages if m["type"] == "http.response.start")
+    body_chunks = [m.get("body", b"") for m in messages if m["type"] == "http.response.body"]
+    raw_body = b"".join(body_chunks).decode("utf-8", errors="replace")
+    headers = {
+        key.decode("latin-1").lower(): value.decode("latin-1")
+        for key, value in start.get("headers", [])
+    }
+    return start["status"], headers, raw_body
+
+
 @pytest.fixture(autouse=True)
 def _reset_runtime_state():
     cfg = get_config()
@@ -182,6 +226,37 @@ def test_testing_flow_example_stays_executable():
     module.run_example_assertions()
 
 
+def test_static_files_example_serves_assets_and_spa_fallback():
+    main = _load_entry_method("examples.static_files_and_spa.root")
+    app = main.get_asgi_app()
+
+    # /api/health controller — must take priority over the root SPA mount.
+    status, _, payload = asyncio.run(_invoke_asgi_app(app, "/api/health"))
+    assert status == 200
+    assert payload == {"status": "ok"}
+
+    # SPA fallback — virtual path resolves to index.html.
+    status, headers, body_text = asyncio.run(
+        _invoke_asgi_app_raw(app, "/settings/profile")
+    )
+    assert status == 200
+    assert "text/html" in headers.get("content-type", "")
+    assert "Cullinan SPA Demo" in body_text
+
+    # Real static asset under /public.
+    status, headers, body_text = asyncio.run(
+        _invoke_asgi_app_raw(app, "/public/robots.txt")
+    )
+    assert status == 200
+    assert "User-agent" in body_text
+    cache_control = headers.get("cache-control", "")
+    assert "max-age=3600" in cache_control
+
+    # Asset-looking miss under SPA must NOT fall back to index.html.
+    status, _, _ = asyncio.run(_invoke_asgi_app_raw(app, "/assets/missing.js"))
+    assert status == 404
+
+
 def test_example_entrypoints_use_top_level_public_api():
     targets = [
         ("minimal_app", "root.py"),
@@ -189,6 +264,7 @@ def test_example_entrypoints_use_top_level_public_api():
         ("middleware_and_module", "root.py"),
         ("parameter_handling", "root.py"),
         ("testing_flow", "app.py"),
+        ("static_files_and_spa", "root.py"),
     ]
 
     for parts in targets:

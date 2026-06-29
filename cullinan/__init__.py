@@ -28,6 +28,7 @@ from cullinan.web import (
     Path,
     Query,
     ResolveError,
+    StaticFiles,
     TypeConverter,
     UNSET,
     ValidationError,
@@ -61,7 +62,7 @@ class _ApplicationFacade:
 
 application = _ApplicationFacade()
 
-__version__ = "0.93a12.post2"
+__version__ = "0.93a13"
 
 __all__ = [
     "Auto",
@@ -83,6 +84,7 @@ __all__ = [
     "Provider",
     "Query",
     "ResolveError",
+    "StaticFiles",
     "TypeConverter",
     "UNSET",
     "ValidationError",

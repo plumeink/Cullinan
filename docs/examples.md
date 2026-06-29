@@ -41,6 +41,7 @@ legacy one-file demos.
 | `examples/middleware_and_module/` | Module boundary ownership and middleware pipeline extension | `python -m examples.middleware_and_module` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
 | `examples/parameter_handling/` | `Path`, `Query`, and `Body` on controller methods | `python -m examples.parameter_handling` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
 | `examples/testing_flow/` | Public-API test flow with ASGI dispatch | `python -m pytest examples/testing_flow/test_app.py -q` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/testing_flow) |
+| `examples/static_files_and_spa/` | Declarative `StaticFiles` mounts + SPA fallback (engine-neutral) | `python -m examples.static_files_and_spa` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/static_files_and_spa) |
 
 ## Why the examples were restructured
 
