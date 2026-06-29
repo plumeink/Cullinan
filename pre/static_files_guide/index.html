@@ -9,22 +9,22 @@
         <meta name="description" content="Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration">
       
       
-        <meta name="author" content="Plumeink">
+        <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/packaging/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/pre/static_files_guide/">
       
       
-        <link rel="prev" href="../parameter_system_guide/">
+        <link rel="prev" href="../web_runtime_guide/">
       
       
-        <link rel="next" href="../testing/">
+        <link rel="next" href="../quick_reference_di/">
       
       
         
           <link rel="alternate" href="./" hreflang="en">
         
-          <link rel="alternate" href="../zh/packaging/" hreflang="zh">
+          <link rel="alternate" href="../zh/static_files_guide/" hreflang="zh">
         
       
       
@@ -33,7 +33,7 @@
     
     
       
-        <title>Packaging Guide - Cullinan Documentation</title>
+        <title>"Static Files and SPA Guide" - Cullinan Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#packaging-guide-module-discovery-in-frozen-environments" class="md-skip">
+        <a href="#static-files-and-spa-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Packaging Guide
+              "Static Files and SPA Guide"
             
           </span>
         </div>
@@ -173,7 +173,7 @@
           </li>
         
           <li class="md-select__item">
-            <a href="../zh/packaging/" hreflang="zh" class="md-select__link">
+            <a href="../zh/static_files_guide/" hreflang="zh" class="md-select__link">
               中文
             </a>
           </li>
@@ -792,10 +792,44 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../static_files_guide/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static Files and SPA Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -818,6 +852,231 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-a-first-class-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a first-class API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cullinanwebstaticfiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cullinan.web.StaticFiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#staticfilesspa_app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StaticFiles.spa_app
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Behaviour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#engine-neutrality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine neutrality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routing-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Routing precedence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spa-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPA fallback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations (v1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recipes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recipes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-classic-static-mount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A classic /static/* mount
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hashed-asset-bundles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hashed asset bundles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spa-with-api-on-the-same-origin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPA with API on the same origin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -890,37 +1149,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Packaging Guide
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../packaging/" class="md-nav__link">
         
   
   
@@ -936,198 +1168,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Start
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick Start">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#explicit-module-list-recommended-for-one-file-modes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Explicit Module List (Recommended for One-File Modes)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#user-packages-recommended-for-directory-modes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        User Packages (Recommended for Directory Modes)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#strategy-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Strategy Pipeline
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Strategy Pipeline">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#nuitka" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nuitka
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pyinstaller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PyInstaller
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Development
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#strategy-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Strategy Reference
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-improvements-v093a11post2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Performance Improvements (v0.93a11.post2+)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-from-v093a11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration from v0.93a11
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#no-modules-discovered-in-one-file-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        No modules discovered in one-file mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#type-hints-resolution-error-after-class-reload-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Type hints resolution error after class reload (tests)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#strategy-override-advanced" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Strategy override (advanced)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2217,22 +2257,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#why-a-first-class-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Why a first-class API
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Quick Start">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public API">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#explicit-module-list-recommended-for-one-file-modes" class="md-nav__link">
+  <a href="#cullinanwebstaticfiles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Explicit Module List (Recommended for One-File Modes)
+        cullinan.web.StaticFiles
       
     </span>
   </a>
@@ -2240,10 +2291,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#user-packages-recommended-for-directory-modes" class="md-nav__link">
+  <a href="#staticfilesspa_app" class="md-nav__link">
     <span class="md-ellipsis">
       
-        User Packages (Recommended for Directory Modes)
+        StaticFiles.spa_app
       
     </span>
   </a>
@@ -2256,22 +2307,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#strategy-pipeline" class="md-nav__link">
+  <a href="#behaviour" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Strategy Pipeline
+        Behaviour
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Strategy Pipeline">
+    <nav class="md-nav" aria-label="Behaviour">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#nuitka" class="md-nav__link">
+  <a href="#engine-neutrality" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Nuitka
+        Engine neutrality
       
     </span>
   </a>
@@ -2279,10 +2330,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pyinstaller" class="md-nav__link">
+  <a href="#routing-precedence" class="md-nav__link">
     <span class="md-ellipsis">
       
-        PyInstaller
+        Routing precedence
       
     </span>
   </a>
@@ -2290,10 +2341,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
+  <a href="#spa-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Development
+        SPA fallback
       
     </span>
   </a>
@@ -2301,10 +2352,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#strategy-reference" class="md-nav__link">
+  <a href="#caching-contract" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Strategy Reference
+        Caching contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security defaults
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations (v1)
       
     </span>
   </a>
@@ -2317,44 +2390,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-improvements-v093a11post2" class="md-nav__link">
+  <a href="#recipes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Improvements (v0.93a11.post2+)
+        Recipes
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-from-v093a11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration from v0.93a11
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
+    <nav class="md-nav" aria-label="Recipes">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#no-modules-discovered-in-one-file-mode" class="md-nav__link">
+  <a href="#a-classic-static-mount" class="md-nav__link">
     <span class="md-ellipsis">
       
-        No modules discovered in one-file mode
+        A classic /static/* mount
       
     </span>
   </a>
@@ -2362,10 +2413,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#type-hints-resolution-error-after-class-reload-tests" class="md-nav__link">
+  <a href="#hashed-asset-bundles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Type hints resolution error after class reload (tests)
+        Hashed asset bundles
       
     </span>
   </a>
@@ -2373,10 +2424,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#strategy-override-advanced" class="md-nav__link">
+  <a href="#spa-with-api-on-the-same-origin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Strategy override (advanced)
+        SPA with API on the same origin
       
     </span>
   </a>
@@ -2385,6 +2436,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2405,203 +2478,224 @@
 
 
 
-<h1 id="packaging-guide-module-discovery-in-frozen-environments">Packaging Guide — Module Discovery in Frozen Environments<a class="headerlink" href="#packaging-guide-module-discovery-in-frozen-environments" title="Permanent link">&para;</a></h1>
-<p>Cullinan v0.93a11.post2+ introduces a <strong>unified strategy pipeline</strong> for module
-discovery across all packaging tools (Nuitka, PyInstaller) and development
-environments.</p>
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<h3 id="explicit-module-list-recommended-for-one-file-modes">Explicit Module List (Recommended for One-File Modes)<a class="headerlink" href="#explicit-module-list-recommended-for-one-file-modes" title="Permanent link">&para;</a></h3>
-<p>The most reliable approach for <code>--onefile</code> builds:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
+<h1 id="static-files-and-spa-guide">Static Files and SPA Guide<a class="headerlink" href="#static-files-and-spa-guide" title="Permanent link">&para;</a></h1>
+<p>Cullinan ships a declarative static-files API that works identically under
+the Tornado and ASGI runtimes. Mounts are described as data on
+<code>@configure(...)</code>; the framework registers them on the gateway router at
+startup so they coexist with regular controllers and middleware without
+engine-specific glue code.</p>
+<blockquote>
+<p><strong>Recommended for:</strong> product teams shipping bundled SPAs, design teams
+shipping branded asset directories, and services that need predictable
+caching headers without standing up a separate CDN tier in development.</p>
+</blockquote>
+<h2 id="why-a-first-class-api">Why a first-class API<a class="headerlink" href="#why-a-first-class-api" title="Permanent link">&para;</a></h2>
+<p>Most Python web frameworks treat static files as either ad-hoc
+<code>send_file</code> calls or as a settings dictionary deep inside a server
+adapter. Cullinan promotes them to a first-class declaration because the
+public path of the framework is decorator-first: routing, controllers,
+middleware, and now static mounts are all expressed at the application
+boundary and assembled by the runtime.</p>
+<p>The result is a configuration that survives switching between Tornado
+and ASGI, packaging with Nuitka / PyInstaller, and integration testing
+through <code>get_asgi_app()</code> — without rewriting any handlers.</p>
+<h2 id="public-api">Public API<a class="headerlink" href="#public-api" title="Permanent link">&para;</a></h2>
+<h3 id="cullinanwebstaticfiles"><code>cullinan.web.StaticFiles</code><a class="headerlink" href="#cullinanwebstaticfiles" title="Permanent link">&para;</a></h3>
+<p>A frozen dataclass describing one mount point. Pass instances (or
+matching <code>dict</code>s / <code>(url, directory)</code> tuples) to the <code>static_files</code>
+parameter of <code>@configure(...)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web</span><span class="w"> </span><span class="kn">import</span> <span class="n">StaticFiles</span>
 
-<span class="n">configure</span><span class="p">(</span>
-    <span class="n">explicit_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp.services&quot;</span><span class="p">,</span> <span class="s2">&quot;myapp.controllers&quot;</span><span class="p">],</span>
+<span class="nd">@configure</span><span class="p">(</span>
     <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">],</span>
+    <span class="n">static_files</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFiles</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">),</span>
+        <span class="n">StaticFiles</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/assets&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist/assets&quot;</span><span class="p">,</span>
+                    <span class="n">max_age</span><span class="o">=</span><span class="mi">31536000</span><span class="p">,</span> <span class="n">immutable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">StaticFiles</span><span class="o">.</span><span class="n">spa_app</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+<span class="nd">@application</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span> <span class="o">...</span>
+</code></pre></div>
+<p>Fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>url</code></td>
+<td>required</td>
+<td>URL prefix. <code>"/"</code> mounts at the root (typical SPA case).</td>
+</tr>
+<tr>
+<td><code>directory</code></td>
+<td>required</td>
+<td>On-disk path; relative paths resolve against the project root, falling back to <code>os.getcwd()</code>.</td>
+</tr>
+<tr>
+<td><code>index</code></td>
+<td><code>"index.html"</code></td>
+<td>File served when the request maps to a directory or, in SPA mode, when no file matches.</td>
+</tr>
+<tr>
+<td><code>spa</code></td>
+<td><code>False</code></td>
+<td>Enables the SPA fallback strategy described below.</td>
+</tr>
+<tr>
+<td><code>max_age</code></td>
+<td><code>None</code></td>
+<td>Adds <code>Cache-Control: max-age=&lt;seconds&gt;, public</code>.</td>
+</tr>
+<tr>
+<td><code>immutable</code></td>
+<td><code>False</code></td>
+<td>Adds the <code>immutable</code> directive (only for content-hashed assets).</td>
+</tr>
+<tr>
+<td><code>no_cache</code></td>
+<td><code>False</code></td>
+<td>Forces <code>no-cache, no-store, must-revalidate</code> and disables ETag emission.</td>
+</tr>
+<tr>
+<td><code>etag</code></td>
+<td><code>True</code></td>
+<td>Emits a strong ETag derived from <code>(mtime_ns, size)</code> and honours <code>If-None-Match</code>.</td>
+</tr>
+<tr>
+<td><code>last_modified</code></td>
+<td><code>True</code></td>
+<td>Emits <code>Last-Modified</code> and honours <code>If-Modified-Since</code>.</td>
+</tr>
+<tr>
+<td><code>methods</code></td>
+<td><code>("GET", "HEAD")</code></td>
+<td>Allowed methods. Only <code>GET</code> and <code>HEAD</code> are accepted by design.</td>
+</tr>
+<tr>
+<td><code>follow_symlinks</code></td>
+<td><code>False</code></td>
+<td>Reject symlinks pointing outside <code>directory</code>.</td>
+</tr>
+<tr>
+<td><code>extra_headers</code></td>
+<td><code>()</code></td>
+<td>Additional response headers applied to every served file.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="staticfilesspa_app"><code>StaticFiles.spa_app</code><a class="headerlink" href="#staticfilesspa_app" title="Permanent link">&para;</a></h3>
+<p>Shortcut for the SPA-at-root use case:</p>
+<div class="highlight"><pre><span></span><code><span class="n">StaticFiles</span><span class="o">.</span><span class="n">spa_app</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist&quot;</span><span class="p">)</span>  <span class="c1"># url=&quot;/&quot;, spa=True, index=&quot;index.html&quot;</span>
+</code></pre></div>
+<h2 id="behaviour">Behaviour<a class="headerlink" href="#behaviour" title="Permanent link">&para;</a></h2>
+<h3 id="engine-neutrality">Engine neutrality<a class="headerlink" href="#engine-neutrality" title="Permanent link">&para;</a></h3>
+<p>A <code>StaticFiles</code> declaration becomes one or more <code>RouteEntry</code> rows on the
+gateway <code>Router</code>. The Tornado and ASGI adapters route everything through
+<code>Dispatcher.dispatch()</code>, so the same files, headers, and status codes
+appear under either backend.</p>
+<h3 id="routing-precedence">Routing precedence<a class="headerlink" href="#routing-precedence" title="Permanent link">&para;</a></h3>
+<p>Cullinan's router prefers static and parameterised segments over
+wildcards. That means <code>@controller(url="/api/users")</code> always wins over a
+broad <code>StaticFiles(url="/")</code> mount. Order in the list only matters when
+two mounts share a prefix.</p>
+<h3 id="spa-fallback">SPA fallback<a class="headerlink" href="#spa-fallback" title="Permanent link">&para;</a></h3>
+<p><code>spa=True</code> opts into the convention used by Vue, React Router, and
+Angular bundles:</p>
+<ul>
+<li>Existing files are served verbatim (<code>/assets/main.js</code> → real file).</li>
+<li>A path that does <strong>not</strong> look like a file (no <code>.</code> in the final segment,
+  e.g. <code>/settings/profile</code>) and does not match a real file falls back to
+  <code>index.html</code> with status <code>200</code>.</li>
+<li>A path that <strong>does</strong> look like a file (<code>/assets/missing.js</code>) returns
+  <code>404</code> so a broken asset URL is never silently hidden behind the
+  index page.</li>
+</ul>
+<h3 id="caching-contract">Caching contract<a class="headerlink" href="#caching-contract" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ETags use BLAKE2 over <code>(mtime_ns, size)</code> and are deterministic across
+  processes mounting the same file.</li>
+<li><code>If-None-Match</code> and <code>If-Modified-Since</code> both produce a fully-formed
+  <code>304 Not Modified</code> response with caching headers intact.</li>
+<li><code>no_cache=True</code> disables ETag emission so intermediaries cannot reuse
+  the previous body.</li>
+</ul>
+<h3 id="security-defaults">Security defaults<a class="headerlink" href="#security-defaults" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Path traversal is blocked at resolution time using
+  <code>Path.resolve()</code>/<code>relative_to(...)</code> so requests such as
+  <code>/static/../etc/passwd</code> return <code>404</code>.</li>
+<li>Symlinks pointing outside the mount directory are rejected unless
+  <code>follow_symlinks=True</code> is set explicitly.</li>
+<li>Mutating verbs (<code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>PATCH</code>) are never registered.</li>
+</ul>
+<h3 id="limitations-v1">Limitations (v1)<a class="headerlink" href="#limitations-v1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Responses are fully buffered. Streaming and HTTP <code>Range</code> requests are
+  on the roadmap; declare them in your CDN tier for very large assets.</li>
+<li>Compression (<code>gzip</code> / <code>br</code>) is not yet auto-negotiated. Pre-compressed
+  assets can be served by adding the appropriate <code>Content-Encoding</code> via
+  <code>extra_headers</code> on a dedicated mount.</li>
+</ul>
+<h2 id="recipes">Recipes<a class="headerlink" href="#recipes" title="Permanent link">&para;</a></h2>
+<h3 id="a-classic-static-mount">A classic <code>/static/*</code> mount<a class="headerlink" href="#a-classic-static-mount" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">StaticFiles</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>
+</code></pre></div>
+<p>Equivalent to the pattern shipped by Flask <code>send_from_directory</code> or
+FastAPI's <code>StaticFiles</code> mount.</p>
+<h3 id="hashed-asset-bundles">Hashed asset bundles<a class="headerlink" href="#hashed-asset-bundles" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">StaticFiles</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;/assets&quot;</span><span class="p">,</span>
+    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist/assets&quot;</span><span class="p">,</span>
+    <span class="n">max_age</span><span class="o">=</span><span class="mi">31536000</span><span class="p">,</span>
+    <span class="n">immutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-<p><strong><code>explicit_modules</code></strong> replaces the deprecated <code>nuitka_modules</code> (removed in
-v0.93a11.post2). It works with <strong>all</strong> packaging tools — Nuitka, PyInstaller, and
-any future freezer.</p>
-<h3 id="user-packages-recommended-for-directory-modes">User Packages (Recommended for Directory Modes)<a class="headerlink" href="#user-packages-recommended-for-directory-modes" title="Permanent link">&para;</a></h3>
-<p>For <code>--standalone</code> / <code>--onedir</code> builds where filesystem access is available:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
-
-<span class="n">configure</span><span class="p">(</span>
+<p>Use with Vite / webpack hashed filenames so cached clients never
+revalidate.</p>
+<h3 id="spa-with-api-on-the-same-origin">SPA with API on the same origin<a class="headerlink" href="#spa-with-api-on-the-same-origin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@configure</span><span class="p">(</span>
     <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">],</span>
-    <span class="n">auto_scan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># default</span>
+    <span class="n">static_files</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFiles</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/assets&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist/assets&quot;</span><span class="p">,</span>
+                    <span class="n">max_age</span><span class="o">=</span><span class="mi">31536000</span><span class="p">,</span> <span class="n">immutable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">StaticFiles</span><span class="o">.</span><span class="n">spa_app</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;dist&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
 <span class="p">)</span>
+<span class="nd">@application</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span> <span class="o">...</span>
 </code></pre></div>
-<h2 id="strategy-pipeline">Strategy Pipeline<a class="headerlink" href="#strategy-pipeline" title="Permanent link">&para;</a></h2>
-<p>Cullinan now uses a <strong>composable pipeline</strong> of six independent strategies.
-Each pipeline is selected automatically based on <code>get_packaging_mode()</code>:</p>
-<h3 id="nuitka">Nuitka<a class="headerlink" href="#nuitka" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Pipeline</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--standalone</code></td>
-<td>S0 → S1 → S2 → S3 → S4</td>
-<td>Full filesystem scan</td>
-</tr>
-<tr>
-<td><code>--onefile</code></td>
-<td>S0 → S1 → S2 → S3 → S5</td>
-<td>Skip S4 (no source files), use recursive <code>dir(pkg)</code> + <code>sys.modules</code> fallback</td>
-</tr>
-</tbody>
-</table>
-<h3 id="pyinstaller">PyInstaller<a class="headerlink" href="#pyinstaller" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Pipeline</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--onedir</code></td>
-<td>S0 → S1 → S4</td>
-<td><code>_MEIPASS</code> + executable dir scan</td>
-</tr>
-<tr>
-<td><code>--onefile</code></td>
-<td>S0 → S1 → S4</td>
-<td><code>_MEIPASS</code> temp extraction dir</td>
-</tr>
-</tbody>
-</table>
-<h3 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Pipeline</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>development</code></td>
-<td>S0 → S1 → S2 → S3</td>
-<td><code>get_caller_package()</code> + fallback</td>
-</tr>
-</tbody>
-</table>
-<h3 id="strategy-reference">Strategy Reference<a class="headerlink" href="#strategy-reference" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Strategy</th>
-<th>Description</th>
-<th>Runs When</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>S0: explicit_modules</strong></td>
-<td>User-provided explicit module list</td>
-<td><code>explicit_modules</code> is set</td>
-</tr>
-<tr>
-<td><strong>S1: user_packages</strong></td>
-<td>Configured packages via <code>pkgutil.walk_packages</code></td>
-<td><code>user_packages</code> is set</td>
-</tr>
-<tr>
-<td><strong>S2: sys_modules_scan</strong></td>
-<td>Auto-scan <code>sys.modules</code> with path heuristics</td>
-<td><code>auto_scan=True</code></td>
-</tr>
-<tr>
-<td><strong>S3: main_module_inference</strong></td>
-<td>Infer package from <code>__main__.__file__</code></td>
-<td>Always</td>
-</tr>
-<tr>
-<td><strong>S4: directory_scanning</strong></td>
-<td>Walk filesystem for <code>.py</code>/<code>.pyc</code>/<code>.pyd</code>/<code>.so</code></td>
-<td>Standalone/onedir modes</td>
-</tr>
-<tr>
-<td><strong>S5: onefile_dir_fallback</strong></td>
-<td>Recursive <code>dir(pkg)</code> + <code>sys.modules</code> prefix scan</td>
-<td>One-file modes (last resort)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="performance-improvements-v093a11post2">Performance Improvements (v0.93a11.post2+)<a class="headerlink" href="#performance-improvements-v093a11post2" title="Permanent link">&para;</a></h2>
-<ol>
-<li>
-<p><strong>Global type hints cache</strong> — <code>typing.get_type_hints()</code> results are cached
-   at module level (shared across <code>ApplicationContext</code> instances). Previously
-   each context instance had its own cache, causing duplicate resolution.</p>
-</li>
-<li>
-<p><strong>Lazy source line</strong> — <code>inspect.getsourcelines()</code> is no longer called
-   during decorator registration. Source file paths are still captured; line
-   numbers are deferred to on-demand diagnostics.</p>
-</li>
-</ol>
-<h2 id="migration-from-v093a11">Migration from v0.93a11<a class="headerlink" href="#migration-from-v093a11" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Old API</th>
-<th>New API</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>nuitka_modules=["myapp"]</code></td>
-<td><code>explicit_modules=["myapp"]</code></td>
-</tr>
-<tr>
-<td><code>scan_modules_nuitka()</code></td>
-<td>Pipeline auto-selected</td>
-</tr>
-<tr>
-<td><code>scan_modules_pyinstaller()</code></td>
-<td>Pipeline auto-selected</td>
-</tr>
-</tbody>
-</table>
-<p>The old functions have been removed. No backward-compatibility aliases
-are provided — update your configuration at the same time you upgrade
-the framework.</p>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="no-modules-discovered-in-one-file-mode">No modules discovered in one-file mode<a class="headerlink" href="#no-modules-discovered-in-one-file-mode" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="n">configure</span><span class="p">(</span><span class="n">explicit_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;your_top_level_package&quot;</span><span class="p">])</span>
+<p>Cullinan keeps <code>/api/...</code> controllers in front of the SPA fallback —
+your API responds first, the SPA fills in everything else.</p>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>The behaviour above is covered by <code>tests/web/test_static_files.py</code>,
+which exercises the dispatcher path, the Tornado adapter, and the ASGI
+adapter against a temporary site fixture. Run them with:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/web/test_static_files.py<span class="w"> </span>-v
 </code></pre></div>
-<h3 id="type-hints-resolution-error-after-class-reload-tests">Type hints resolution error after class reload (tests)<a class="headerlink" href="#type-hints-resolution-error-after-class-reload-tests" title="Permanent link">&para;</a></h3>
-<p><code>PendingRegistry.reset()</code> now also invalidates the global type hints cache:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.pending</span><span class="w"> </span><span class="kn">import</span> <span class="n">PendingRegistry</span>
-<span class="n">PendingRegistry</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># also clears type hints cache</span>
-</code></pre></div>
-<h3 id="strategy-override-advanced">Strategy override (advanced)<a class="headerlink" href="#strategy-override-advanced" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.runtime.scan_pipelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_pipeline</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
-
-<span class="n">modules</span> <span class="o">=</span> <span class="n">execute_pipeline</span><span class="p">(</span>
-    <span class="n">get_config</span><span class="p">(),</span>
-    <span class="n">packaging_mode</span><span class="o">=</span><span class="s2">&quot;nuitka-onefile&quot;</span><span class="p">,</span>
-    <span class="n">base_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/custom/path&quot;</span><span class="p">],</span>
-    <span class="n">early_termination</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># run ALL strategies</span>
-<span class="p">)</span>
-</code></pre></div>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>examples/static_files_and_spa/</code> — runnable demo</li>
+<li><a href="../web_runtime_guide/">Web Runtime Guide</a></li>
+<li><a href="../framework_semantics/">Framework Semantics</a></li>
+<li><a href="../examples/">Examples</a></li>
+</ul>
 
 
 
 
 
 
+
+  
+  
 
 
 
