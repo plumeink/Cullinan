@@ -196,7 +196,7 @@ Inject = _Inject_marker
 InjectByName = _InjectByName_marker
 Lazy = _Lazy_marker
 
-__version__ = "0.93"
+__version__ = "0.93.post1"
 
 __all__ = [
     # ========================================================================

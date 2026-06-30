@@ -7,18 +7,18 @@ with open("README.MD", "r", encoding="UTF-8") as fh:
 
 setup(
     name='cullinan',
-    version='0.93',
+    version='0.93.post1',
     packages=find_packages(exclude=['tests*', 'examples*', 'docs*', 'docs_archive*', 'scripts*']),
     description='Cullinan — A pluggable IoC/DI web framework',
-    author='plumeink',
+    author='cullinan-py',
     project_urls={
-        'Source': 'https://github.com/plumeink/Cullinan',
-        'Wiki': 'https://github.com/plumeink/Cullinan/wiki',
+        'Source': 'https://github.com/cullinan-py/cullinan',
+        'Wiki': 'https://github.com/cullinan-py/cullinan/wiki',
     },
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author_email='official@plumeink.com',
-    url='https://github.com/plumeink/Cullinan',
+    author_email='cullinan@plumeink.com',
+    url='https://github.com/cullinan-py/cullinan',
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
