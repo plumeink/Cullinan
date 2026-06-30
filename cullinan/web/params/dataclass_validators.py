@@ -3,7 +3,7 @@
 
 为 dataclass 提供字段级校验装饰器。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, Callable, Dict, List, Type

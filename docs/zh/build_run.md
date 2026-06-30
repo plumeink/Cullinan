@@ -2,7 +2,7 @@ title: "本地构建与运行"
 slug: "build-run"
 module: []
 tags: ["build", "run"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh
@@ -27,7 +27,7 @@ pr_links: []
 在所有平台上均可使用以下命令：
 
 ```bash
-git clone https://github.com/plumeink/Cullinan.git
+git clone https://github.com/cullinan-py/cullinan.git
 cd Cullinan
 ```
 

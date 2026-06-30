@@ -1,7 +1,7 @@
 # Cullinan Dependency Injection Quick Reference
 
 > **Version**: 0.93a13
-> **Author**: Plumeink
+> **Author**: Cullinan
 
 > **Quick lookup page:** use this page as a compact DI recipe sheet; use
 > [Dependency Injection Guide](dependency_injection_guide.md) for fuller guidance

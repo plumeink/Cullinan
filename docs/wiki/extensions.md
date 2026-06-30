@@ -2,7 +2,7 @@ title: "Extensions & Plugins"
 slug: "extensions"
 module: ["cullinan"]
 tags: ["extensions", "plugins"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

@@ -1,7 +1,7 @@
 site_name: Cullinan Documentation
 site_description: "Documentation for the Cullinan Tornado-based IoC/DI framework with type-safe parameters, pluggable model handlers, and Pydantic integration"
-site_author: Plumeink
-site_url: !ENV [DOCS_SITE_URL, "https://plumeink.github.io/Cullinan/"]
+site_author: Cullinan
+site_url: !ENV [DOCS_SITE_URL, "https://cullinan-py.github.io/cullinan/"]
 
 use_directory_urls: true
 
@@ -168,4 +168,4 @@ extra:
     pre_is_available: !ENV [DOCS_PRE_AVAILABLE, "false"]
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/plumeink/cullinan
+      link: https://github.com/cullinan-py/cullinan

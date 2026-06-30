@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for PendingRegistry.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import pytest

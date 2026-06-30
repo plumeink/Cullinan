@@ -22,7 +22,7 @@ Typical usage::
     @application
     def main(): ...
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from __future__ import annotations

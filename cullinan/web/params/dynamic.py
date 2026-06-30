@@ -3,7 +3,7 @@
 
 动态请求体类，支持属性访问方式。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, Dict, Iterator, KeysView, ValuesView, ItemsView, List

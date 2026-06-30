@@ -3,7 +3,7 @@
 
 响应模型装饰器，用于定义 API 响应模式。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, Type, List, Dict, Callable

@@ -1,9 +1,9 @@
 ![Python version](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue)
 ![PyPI version](https://img.shields.io/pypi/v/cullinan.svg?style=flat&logo=pypi&color=green)
 ![PyPI downloads](https://img.shields.io/pypi/dm/cullinan.svg?style=flat&logo=pypi&color=blue)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/plumeink/Cullinan)
-![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan.svg?style=flat&logo=github&color=white)
-![License](https://img.shields.io/github/license/plumeink/cullinan.svg?style=flat&color=white)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/cullinan-py/cullinan)
+![GitHub stars](https://img.shields.io/github/stars/cullinan-py/cullinan.svg?style=flat&logo=github&color=white)
+![License](https://img.shields.io/github/license/cullinan-py/cullinan.svg?style=flat&color=white)
 
 ```
    _____      _ _ _
@@ -192,27 +192,27 @@ Then move into the documentation knowledge base:
 
 ### English
 
-- [Documentation home](https://plumeink.github.io/Cullinan/)
-- [Getting Started](https://plumeink.github.io/Cullinan/getting_started/)
-- [Framework Semantics](https://plumeink.github.io/Cullinan/framework_semantics/)
-- [Examples](https://plumeink.github.io/Cullinan/examples/)
-- [Dependency Injection Guide](https://plumeink.github.io/Cullinan/dependency_injection_guide/)
-- [Web Runtime Guide](https://plumeink.github.io/Cullinan/web_runtime_guide/)
-- [Static Files and SPA Guide](https://plumeink.github.io/Cullinan/static_files_guide/)
-- [Parameter System Guide](https://plumeink.github.io/Cullinan/parameter_system_guide/)
-- [Testing & Verification](https://plumeink.github.io/Cullinan/testing/)
+- [Documentation home](https://cullinan-py.github.io/cullinan/)
+- [Getting Started](https://cullinan-py.github.io/cullinan/getting_started/)
+- [Framework Semantics](https://cullinan-py.github.io/cullinan/framework_semantics/)
+- [Examples](https://cullinan-py.github.io/cullinan/examples/)
+- [Dependency Injection Guide](https://cullinan-py.github.io/cullinan/dependency_injection_guide/)
+- [Web Runtime Guide](https://cullinan-py.github.io/cullinan/web_runtime_guide/)
+- [Static Files and SPA Guide](https://cullinan-py.github.io/cullinan/static_files_guide/)
+- [Parameter System Guide](https://cullinan-py.github.io/cullinan/parameter_system_guide/)
+- [Testing & Verification](https://cullinan-py.github.io/cullinan/testing/)
 
 ### 中文
 
-- [文档首页](https://plumeink.github.io/Cullinan/zh/)
-- [快速开始](https://plumeink.github.io/Cullinan/zh/getting_started/)
-- [框架语义](https://plumeink.github.io/Cullinan/zh/framework_semantics/)
-- [示例导航](https://plumeink.github.io/Cullinan/zh/examples/)
-- [依赖注入指南](https://plumeink.github.io/Cullinan/zh/dependency_injection_guide/)
-- [Web Runtime 指南](https://plumeink.github.io/Cullinan/zh/web_runtime_guide/)
-- [静态文件与 SPA 指南](https://plumeink.github.io/Cullinan/zh/static_files_guide/)
-- [参数系统指南](https://plumeink.github.io/Cullinan/zh/parameter_system_guide/)
-- [测试与验证](https://plumeink.github.io/Cullinan/zh/testing/)
+- [文档首页](https://cullinan-py.github.io/cullinan/zh/)
+- [快速开始](https://cullinan-py.github.io/cullinan/zh/getting_started/)
+- [框架语义](https://cullinan-py.github.io/cullinan/zh/framework_semantics/)
+- [示例导航](https://cullinan-py.github.io/cullinan/zh/examples/)
+- [依赖注入指南](https://cullinan-py.github.io/cullinan/zh/dependency_injection_guide/)
+- [Web Runtime 指南](https://cullinan-py.github.io/cullinan/zh/web_runtime_guide/)
+- [静态文件与 SPA 指南](https://cullinan-py.github.io/cullinan/zh/static_files_guide/)
+- [参数系统指南](https://cullinan-py.github.io/cullinan/zh/parameter_system_guide/)
+- [测试与验证](https://cullinan-py.github.io/cullinan/zh/testing/)
 
 ---
 
@@ -236,10 +236,10 @@ than in the homepage narrative.
 
 ## Project links
 
-- **GitHub**: https://github.com/plumeink/Cullinan
+- **GitHub**: https://github.com/cullinan-py/cullinan
 - **PyPI**: https://pypi.org/project/cullinan/
-- **Issues**: https://github.com/plumeink/Cullinan/issues
-- **Discussions**: https://github.com/plumeink/Cullinan/discussions
+- **Issues**: https://github.com/cullinan-py/cullinan/issues
+- **Discussions**: https://github.com/cullinan-py/cullinan/discussions
 
 ---
 

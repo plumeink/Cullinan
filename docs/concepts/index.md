@@ -2,7 +2,7 @@ title: "Framework Semantics"
 slug: "framework-concepts"
 module: []
 tags: ["docs", "concepts", "knowledge-base"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

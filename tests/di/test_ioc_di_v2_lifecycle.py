@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan IoC/DI 2.0 - 生命周期测试
 
-作者：Plumeink
+作者：Cullinan
 
 测试 PR-R5 的最小验收集合：
 1. refresh/start 触发 eager 初始化

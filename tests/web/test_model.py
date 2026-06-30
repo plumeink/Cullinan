@@ -3,7 +3,7 @@
 
 测试 dataclass 模型解析。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import unittest

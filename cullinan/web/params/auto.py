@@ -3,7 +3,7 @@
 
 自动类型推断，根据值内容自动确定类型。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import json

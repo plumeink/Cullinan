@@ -3,7 +3,7 @@
 
 测试类型转换和自动类型推断。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import unittest

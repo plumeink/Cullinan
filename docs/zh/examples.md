@@ -2,7 +2,7 @@ title: "示例与指引"
 slug: "examples"
 module: []
 tags: ["examples"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh
@@ -35,12 +35,12 @@ pr_links: []
 
 | 示例 | 主要讲什么 | 运行命令 | 源码 |
 | --- | --- | --- | --- |
-| `examples/minimal_app/` | 使用 `@application + @configure(...) + main()` 组织最小应用 | `python -m examples.minimal_app` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app) |
-| `examples/controller_service_inject/` | `service/controller` 分层与类型驱动的 `Inject()` 注入 | `python -m examples.controller_service_inject` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/controller_service_inject) |
-| `examples/middleware_and_module/` | 模块边界归属与中间件管线扩展 | `python -m examples.middleware_and_module` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
-| `examples/parameter_handling/` | 控制器方法上的 `Path`、`Query`、`Body` | `python -m examples.parameter_handling` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
-| `examples/testing_flow/` | 基于公开 API 的 ASGI 测试流 | `python -m pytest examples/testing_flow/test_app.py -q` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/testing_flow) |
-| `examples/static_files_and_spa/` | 声明式 `StaticFiles` 挂载 + SPA 回退（引擎中立） | `python -m examples.static_files_and_spa` | [在 GitHub 查看](https://github.com/plumeink/Cullinan/tree/main/examples/static_files_and_spa) |
+| `examples/minimal_app/` | 使用 `@application + @configure(...) + main()` 组织最小应用 | `python -m examples.minimal_app` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/minimal_app) |
+| `examples/controller_service_inject/` | `service/controller` 分层与类型驱动的 `Inject()` 注入 | `python -m examples.controller_service_inject` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/controller_service_inject) |
+| `examples/middleware_and_module/` | 模块边界归属与中间件管线扩展 | `python -m examples.middleware_and_module` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/middleware_and_module) |
+| `examples/parameter_handling/` | 控制器方法上的 `Path`、`Query`、`Body` | `python -m examples.parameter_handling` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/parameter_handling) |
+| `examples/testing_flow/` | 基于公开 API 的 ASGI 测试流 | `python -m pytest examples/testing_flow/test_app.py -q` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/testing_flow) |
+| `examples/static_files_and_spa/` | 声明式 `StaticFiles` 挂载 + SPA 回退（引擎中立） | `python -m examples.static_files_and_spa` | [在 GitHub 查看](https://github.com/cullinan-py/cullinan/tree/main/examples/static_files_and_spa) |
 
 ## 为什么要重构示例
 
@@ -57,7 +57,7 @@ Cullinan 当前想表达的概念放在最前面：
 ## 补充说明
 
 - 根目录 `examples/README.md` 会同步这条学习链路，方便直接看仓库的开发者。
-- 也可以直接从 [`examples/`](https://github.com/plumeink/Cullinan/tree/main/examples) 浏览已入库的示例源码。
+- 也可以直接从 [`examples/`](https://github.com/cullinan-py/cullinan/tree/main/examples) 浏览已入库的示例源码。
 - `tests/integration/test_examples_public_guides.py` 会对当前维护的示例做 smoke test。
 - 如果你第一次接触 Cullinan，建议先完成 `examples/minimal_app/`，再进入
   `examples/controller_service_inject/`。

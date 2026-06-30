@@ -1,7 +1,7 @@
 title: "框架语义规则"
 slug: "framework-semantics"
 tags: ["guide", "semantics", "diagnostics"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

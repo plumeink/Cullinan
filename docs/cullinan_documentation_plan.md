@@ -3,7 +3,7 @@ title: "Cullinan Documentation Plan"
 slug: "documentation-plan"
 module: ["docs"]
 tags: ["plan", "documentation"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: draft
 locale: en

@@ -14,7 +14,7 @@ Lifecycle:
     7. Response assembly → ``WebResponse``
     8. Adapter converts ``WebResponse`` → native response
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import inspect

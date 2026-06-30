@@ -5,7 +5,7 @@ This module provides request-scoped context management:
 - RequestContext: Container for request-scoped data
 - Context utilities for request lifecycle
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from .context import (

@@ -3,7 +3,7 @@
 
 类型转换器，将请求参数转换为目标类型。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import json

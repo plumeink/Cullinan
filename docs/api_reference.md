@@ -2,7 +2,7 @@ title: "API Reference"
 slug: "api-reference"
 module: []
 tags: ["api", "reference"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

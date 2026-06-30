@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """测试 ControllerRegistry 依赖注入修复
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import pytest

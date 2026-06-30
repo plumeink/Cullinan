@@ -2,7 +2,7 @@ title: "扩展与插件"
 slug: "extensions"
 module: ["cullinan"]
 tags: ["extensions", "plugins"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

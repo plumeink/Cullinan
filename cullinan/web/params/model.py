@@ -3,7 +3,7 @@
 
 dataclass 模型解析器，将请求数据映射到 dataclass 实例。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import dataclasses

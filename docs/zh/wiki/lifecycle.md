@@ -2,7 +2,7 @@ title: "应用生命周期"
 slug: "wiki-lifecycle"
 module: ["lifecycle"]
 tags: ["wiki", "lifecycle"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

@@ -3,7 +3,7 @@
 
 参数校验器，验证参数值是否满足约束条件。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import re

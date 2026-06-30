@@ -4,7 +4,7 @@
 Provides centralized middleware registration and management with
 decorator-based registration similar to @service and @controller.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import List, Optional, Dict, Type, Callable

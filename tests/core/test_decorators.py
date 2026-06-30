@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for core decorators.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import pytest

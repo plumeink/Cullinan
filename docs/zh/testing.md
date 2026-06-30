@@ -2,7 +2,7 @@ title: "测试与验证"
 slug: "testing"
 module: []
 tags: ["testing"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

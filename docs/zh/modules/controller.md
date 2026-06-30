@@ -2,7 +2,7 @@ title: "cullinan.web.controller"
 slug: "modules-controller"
 module: ["cullinan.web.controller"]
 tags: ["api", "module", "controller"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

@@ -1,7 +1,7 @@
 title: "Framework Semantics"
 slug: "framework-semantics"
 tags: ["guide", "semantics", "diagnostics"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

@@ -3,7 +3,7 @@
 
 请求体解码中间件，在请求进入 Handler 之前自动解码请求体。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import logging

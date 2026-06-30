@@ -3,7 +3,7 @@
 
 文件信息容器，用于处理上传的文件。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import os

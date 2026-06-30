@@ -3,7 +3,7 @@ title: "Parameter System Guide"
 slug: "parameter-system-guide"
 module: ["cullinan.web.params", "cullinan.codec"]
 tags: ["params", "api", "guide"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: new
 locale: en

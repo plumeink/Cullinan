@@ -5,7 +5,7 @@
 
 提供统一的模型解析接口，支持 dataclass、Pydantic 等多种模型库。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, Dict, List, Optional, Type

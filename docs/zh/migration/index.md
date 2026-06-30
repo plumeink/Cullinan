@@ -2,7 +2,7 @@ title: "版本迁移"
 slug: "migration-and-version-notes"
 module: []
 tags: ["docs", "migration", "knowledge-base"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

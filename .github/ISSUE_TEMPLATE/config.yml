@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation / 文档
-    url: https://github.com/plumeink/Cullinan/wiki
+    url: https://github.com/cullinan-py/cullinan/wiki
     about: Read the guides before filing an issue. 先看文档与指南。

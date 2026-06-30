@@ -2,7 +2,7 @@ title: "Cullinan 文档"
 slug: "docs-home"
 module: []
 tags: ["docs", "home", "knowledge-base"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh
@@ -82,4 +82,4 @@ pr_links: []
 - [迁移指南 v2](migration_guide_v2.md)
 - [0.90 导入迁移](import_migration_090.md)
 
-源码与发布历史请访问 [GitHub 仓库](https://github.com/plumeink/Cullinan)。
+源码与发布历史请访问 [GitHub 仓库](https://github.com/cullinan-py/cullinan)。

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan IoC/DI 2.0 - 冻结机制测试
 
-作者：Plumeink
+作者：Cullinan
 
 测试 PR-R2 的最小验收集合：
 1. refresh 前 register 成功

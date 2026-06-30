@@ -2,7 +2,7 @@ title: "贡献指南"
 slug: "contributing"
 module: []
 tags: ["contributing"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

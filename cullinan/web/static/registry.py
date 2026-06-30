@@ -5,7 +5,7 @@ Static mounts are translated into wildcard routes (``/<prefix>/**`` or
 ``/**`` for SPA root mounts) so they integrate with the existing dispatcher,
 middleware pipeline, and runtime adapters without any engine-specific code.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from __future__ import annotations

@@ -3,7 +3,7 @@
 
 模型处理器基类，定义可插拔的模型解析接口。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from abc import ABC, abstractmethod

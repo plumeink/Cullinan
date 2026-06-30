@@ -6,7 +6,7 @@ registration API. It will be removed in v1.0.
 
 DEPRECATED: Use @middleware decorator instead.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 # ============================================================================

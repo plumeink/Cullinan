@@ -2,7 +2,7 @@ title: "Contributing"
 slug: "contributing"
 module: []
 tags: ["contributing"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

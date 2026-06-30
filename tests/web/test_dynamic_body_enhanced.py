@@ -3,7 +3,7 @@
 
 测试新增的判空方法和安全访问功能。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import sys

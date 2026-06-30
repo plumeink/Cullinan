@@ -2,7 +2,7 @@ title: "Examples and Guidance"
 slug: "examples"
 module: []
 tags: ["examples"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en
@@ -36,12 +36,12 @@ legacy one-file demos.
 
 | Example | Teaches | Run command | Source |
 | --- | --- | --- | --- |
-| `examples/minimal_app/` | Minimal app structure with `@application + @configure(...) + main()` | `python -m examples.minimal_app` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app) |
-| `examples/controller_service_inject/` | Service/controller split and type-led `Inject()` wiring | `python -m examples.controller_service_inject` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/controller_service_inject) |
-| `examples/middleware_and_module/` | Module boundary ownership and middleware pipeline extension | `python -m examples.middleware_and_module` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
-| `examples/parameter_handling/` | `Path`, `Query`, and `Body` on controller methods | `python -m examples.parameter_handling` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
-| `examples/testing_flow/` | Public-API test flow with ASGI dispatch | `python -m pytest examples/testing_flow/test_app.py -q` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/testing_flow) |
-| `examples/static_files_and_spa/` | Declarative `StaticFiles` mounts + SPA fallback (engine-neutral) | `python -m examples.static_files_and_spa` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/static_files_and_spa) |
+| `examples/minimal_app/` | Minimal app structure with `@application + @configure(...) + main()` | `python -m examples.minimal_app` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/minimal_app) |
+| `examples/controller_service_inject/` | Service/controller split and type-led `Inject()` wiring | `python -m examples.controller_service_inject` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/controller_service_inject) |
+| `examples/middleware_and_module/` | Module boundary ownership and middleware pipeline extension | `python -m examples.middleware_and_module` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/middleware_and_module) |
+| `examples/parameter_handling/` | `Path`, `Query`, and `Body` on controller methods | `python -m examples.parameter_handling` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/parameter_handling) |
+| `examples/testing_flow/` | Public-API test flow with ASGI dispatch | `python -m pytest examples/testing_flow/test_app.py -q` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/testing_flow) |
+| `examples/static_files_and_spa/` | Declarative `StaticFiles` mounts + SPA fallback (engine-neutral) | `python -m examples.static_files_and_spa` | [View on GitHub](https://github.com/cullinan-py/cullinan/tree/main/examples/static_files_and_spa) |
 
 ## Why the examples were restructured
 
@@ -58,7 +58,7 @@ The current example set intentionally keeps Cullinan's own concept front and cen
 ## Notes
 
 - The root `examples/README.md` file mirrors this learning path for repository readers.
-- You can browse the tracked source set directly from [`examples/`](https://github.com/plumeink/Cullinan/tree/main/examples).
+- You can browse the tracked source set directly from [`examples/`](https://github.com/cullinan-py/cullinan/tree/main/examples).
 - `tests/integration/test_examples_public_guides.py` smoke-tests the maintained examples.
 - If you are learning Cullinan for the first time, start with `examples/minimal_app/` and then
   continue to `examples/controller_service_inject/`.

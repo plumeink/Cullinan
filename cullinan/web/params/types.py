@@ -3,7 +3,7 @@
 
 定义各种参数来源类型：Path, Query, Body, Header, File。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, List, Optional, Type

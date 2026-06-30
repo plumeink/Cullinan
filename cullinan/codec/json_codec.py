@@ -3,7 +3,7 @@
 
 JSON request body decoder and response encoder implementation.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import json

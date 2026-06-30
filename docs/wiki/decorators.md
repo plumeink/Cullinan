@@ -1,7 +1,7 @@
 # Decorators
 
 > **Version**: v0.90  
-> **Author**: Plumeink
+> **Author**: Cullinan
 
 This document describes the decorator-based component registration system in Cullinan 0.90.
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan IoC/DI 2.0 - Request Scope 测试
 
-作者：Plumeink
+作者：Cullinan
 
 测试 PR-R6 的最小验收集合：
 1. 无 RequestContext 解析 request scope：抛 ScopeNotActiveError

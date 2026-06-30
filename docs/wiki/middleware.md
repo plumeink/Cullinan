@@ -2,7 +2,7 @@ title: "Middleware"
 slug: "middleware"
 module: ["cullinan.web.middleware"]
 tags: ["middleware"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

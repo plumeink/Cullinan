@@ -3,7 +3,7 @@
 
 Provides tools for marking deprecated APIs and managing backward compatibility.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import warnings

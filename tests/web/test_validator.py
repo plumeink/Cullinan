@@ -3,7 +3,7 @@
 
 测试参数校验器。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import unittest

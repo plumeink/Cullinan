@@ -3,7 +3,7 @@
 
 内置的 dataclass 模型处理器。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import dataclasses

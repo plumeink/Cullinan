@@ -5,7 +5,7 @@
 
 Pydantic 是可选依赖，此模块仅在 Pydantic 可用时才能正常工作。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from typing import Any, Dict, Type

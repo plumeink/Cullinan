@@ -2,7 +2,7 @@ title: "Local Build & Run"
 slug: "build-run"
 module: []
 tags: ["build", "run"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en
@@ -27,7 +27,7 @@ This page describes how to set up a local environment, install Cullinan in edita
 On all platforms:
 
 ```bash
-git clone https://github.com/plumeink/Cullinan.git
+git clone https://github.com/cullinan-py/cullinan.git
 cd Cullinan
 ```
 

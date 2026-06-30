@@ -2,7 +2,7 @@ title: "Application Build"
 slug: "application-build"
 module: []
 tags: ["docs", "start", "knowledge-base"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

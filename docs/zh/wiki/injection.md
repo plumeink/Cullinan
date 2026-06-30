@@ -2,7 +2,7 @@ title: "IoC 与 DI"
 slug: "wiki-ioc-di"
 module: ["ioc", "di"]
 tags: ["wiki", "ioc", "di"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: zh

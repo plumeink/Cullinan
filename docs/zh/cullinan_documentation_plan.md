@@ -2,7 +2,7 @@ title: "Cullinan 文档编写计划书"
 slug: "documentation-plan"
 module: ["docs"]
 tags: ["plan", "documentation"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: draft
 locale: zh

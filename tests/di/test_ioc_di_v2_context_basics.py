@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan IoC/DI 2.0 - Context 基础功能测试
 
-作者：Plumeink
+作者：Cullinan
 
 测试 PR-R1 的最小验收集合：
 1. singleton：同名两次 get() 返回同一对象

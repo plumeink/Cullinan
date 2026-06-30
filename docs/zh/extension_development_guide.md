@@ -1,7 +1,7 @@
 # Cullinan 扩展开发指南
 
 > **版本**：0.93a13
-> **作者**：Plumeink  
+> **作者**：Cullinan  
 > **最后更新**：2026-02-19
 
 > **高级主题：** 这页面向 framework extension 开发，不属于默认应用学习路径。
@@ -680,5 +680,5 @@ class TestMyMiddleware(ServiceTestCase):
 ---
 
 **版本**：0.93a13
-**作者**：Plumeink  
+**作者**：Cullinan  
 **最后更新**：2026-06-01

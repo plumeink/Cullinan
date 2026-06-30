@@ -1,6 +1,6 @@
 # Controller Dependency Injection Bug Fix
 
-Author: Plumeink
+Author: Cullinan
 
 ## Problem Description
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan IoC/DI 2.0 - Factory 集成测试
 
-作者：Plumeink
+作者：Cullinan
 
 测试 PR-R4 的最小验收集合：
 1. 基于现有注入能力进行真实注入

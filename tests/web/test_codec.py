@@ -3,7 +3,7 @@
 
 测试 Codec 模块的编解码功能。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import unittest

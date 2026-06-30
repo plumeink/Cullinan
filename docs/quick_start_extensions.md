@@ -2,7 +2,7 @@
 
 > **Version**: v0.90  
 > **Feature**: Unified Extension Registration and Discovery Pattern  
-> **Author**: Plumeink
+> **Author**: Cullinan
 
 > **Advanced topic:** use this page when you are explicitly building extensions or
 > middleware registration flows.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Legacy compatibility demo for the 0.90 decorator system.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import warnings

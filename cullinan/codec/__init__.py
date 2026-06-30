@@ -8,7 +8,7 @@ Supported formats:
 - Form (application/x-www-form-urlencoded)
 - Extensible custom formats
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from .base import BodyCodec, ResponseCodec

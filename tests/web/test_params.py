@@ -3,7 +3,7 @@
 
 测试参数标记类。
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import unittest

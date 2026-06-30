@@ -5,7 +5,7 @@ Provides detailed statistics and monitoring capabilities for the module
 scanning process, helping developers understand scanning performance
 and identify optimization opportunities.
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import time

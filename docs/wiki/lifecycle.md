@@ -2,7 +2,7 @@ title: "Application Lifecycle"
 slug: "wiki-lifecycle"
 module: ["lifecycle"]
 tags: ["wiki", "lifecycle"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en

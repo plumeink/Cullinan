@@ -8,7 +8,7 @@ Supported adapters:
 - ``TornadoAdapter`` — Tornado (single-handler mode)
 - ``ASGIAdapter``    — ASGI 3.0 (uvicorn / hypercorn)
 
-Author: Plumeink
+Author: Cullinan
 """
 
 from .base import WebAdapter

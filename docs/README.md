@@ -2,7 +2,7 @@ title: "Cullinan Documentation"
 slug: "docs-home"
 module: []
 tags: ["docs", "home", "knowledge-base"]
-author: "Plumeink"
+author: "Cullinan"
 reviewers: []
 status: updated
 locale: en
@@ -86,4 +86,4 @@ Use this section when upgrading or reconciling old code with newer semantics.
 - [Migration Guide v2](migration_guide_v2.md)
 - [Import Migration 0.90](import_migration_090.md)
 
-For source code and release history, visit the [GitHub repository](https://github.com/plumeink/Cullinan).
+For source code and release history, visit the [GitHub repository](https://github.com/cullinan-py/cullinan).

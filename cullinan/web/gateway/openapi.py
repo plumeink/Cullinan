@@ -17,7 +17,7 @@ Usage::
     # Register built-in /openapi.json endpoint
     gen.register_spec_routes()
 
-Author: Plumeink
+Author: Cullinan
 """
 
 import inspect
