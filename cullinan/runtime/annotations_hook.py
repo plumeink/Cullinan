@@ -33,8 +33,15 @@ _CO_FUTURE_ANNOTATIONS = 0x1000000  # PEP 563 compile flag
 def _is_subpath(path: str, root: str) -> bool:
     """Return True if *path* is equal to or inside *root* (filesystem hierarchy)."""
     try:
-        path_norm = os.path.normcase(os.path.normpath(os.path.abspath(path)))
-        root_norm = os.path.normcase(os.path.normpath(os.path.abspath(root)))
+        # Normalize path separators for cross-platform compatibility:
+        # os.path functions (normpath, abspath) use os.sep, so on Linux
+        # a Windows-style path like C:\a\b is treated as a single segment.
+        # We normalise backslashes to forward slashes first so that the
+        # comparison works regardless of the host platform.
+        _path = path.replace("\\", "/")
+        _root = root.replace("\\", "/")
+        path_norm = os.path.normcase(os.path.normpath(os.path.abspath(_path)))
+        root_norm = os.path.normcase(os.path.normpath(os.path.abspath(_root)))
     except (TypeError, ValueError):
         return False
     if path_norm == root_norm:

@@ -53,11 +53,25 @@ from cullinan.web import (
 class _ApplicationFacade:
     """Top-level facade that stays callable while exposing application submodule members."""
 
+    _accessing: set = set()  # recursion guard for __getattr__
+
     def __call__(self, *args, **kwargs):
         return _application_decorator(*args, **kwargs)
 
     def __getattr__(self, name):
-        return getattr(_application_module, name)
+        # Guard against recursive __getattr__ calls that can happen when
+        # unittest.mock.patch resolves 'cullinan.application.…' — the
+        # top-level name 'application' is this facade, not the submodule.
+        if name in _ApplicationFacade._accessing:
+            raise AttributeError(
+                f"Recursive access to {name!r} via _ApplicationFacade; "
+                f"use sys.modules['cullinan.application'] for the real module."
+            )
+        _ApplicationFacade._accessing.add(name)
+        try:
+            return getattr(_application_module, name)
+        finally:
+            _ApplicationFacade._accessing.discard(name)
 
 
 application = _ApplicationFacade()

@@ -32,8 +32,8 @@ def test_path_utils():
     assert isinstance(get_path_info(), dict)
 
     controller_path = (
-        get_module_file_path('web\\controller\\__init__.py', relative_to_cullinan=True)
-        or get_module_file_path('web\\controller.py', relative_to_cullinan=True)
+        get_module_file_path('web/controller/__init__.py', relative_to_cullinan=True)
+        or get_module_file_path('web/controller.py', relative_to_cullinan=True)
     )
     assert controller_path is not None
     assert controller_path.exists()

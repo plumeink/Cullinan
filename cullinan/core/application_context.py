@@ -1103,23 +1103,32 @@ class ApplicationContext:
             return ApplicationContext._parse_string_annotation(annotation)
         if hasattr(annotation, "__forward_arg__"):
             return ApplicationContext._parse_string_annotation(annotation.__forward_arg__)
-        if inspect.isclass(annotation):
-            return ApplicationContext._make_single_annotation(
-                ApplicationContext._make_target_from_type(annotation),
-                annotation_repr,
-            )
 
+        # ── Generic‑alias aware detection ──────────────────────────
+        # Must run *before* inspect.isclass because some GenericAlias
+        # objects (e.g. list['Hook'] on Python 3.9) may accidentally
+        # pass the isclass check.
+        origin_raw = None
+        args_raw = ()
+        if hasattr(annotation, "__origin__") and hasattr(annotation, "__args__"):
+            origin_raw = getattr(annotation, "__origin__", None)
+            args_raw = getattr(annotation, "__args__", ())
         origin = typing.get_origin(annotation)
         args = typing.get_args(annotation)
-        if origin is typing.Annotated:
-            if not args:
+
+        # Use origin_raw / args_raw as fallback when stdlib returns None/empty
+        _origin = origin if origin is not None else origin_raw
+        _args = args if args else args_raw
+
+        if _origin is typing.Annotated:
+            if not _args:
                 raise ValueError(missing_inner_type("Annotated"))
-            return ApplicationContext._parse_runtime_annotation(args[0])
-        if origin is typing.Final:
-            if not args:
+            return ApplicationContext._parse_runtime_annotation(_args[0])
+        if _origin is typing.Final:
+            if not _args:
                 raise ValueError(missing_inner_type("Final"))
-            return ApplicationContext._parse_runtime_annotation(args[0])
-        if origin in (typing.Union, types.UnionType):
+            return ApplicationContext._parse_runtime_annotation(_args[0])
+        if origin in (typing.Union, getattr(types, "UnionType", ())):
             non_none_args = [arg for arg in args if arg is not type(None)]
             has_none = len(non_none_args) != len(args)
             if has_none and len(non_none_args) == 1:
@@ -1154,17 +1163,29 @@ class ApplicationContext:
                 annotation_repr=annotation_repr,
                 targets=normalized.targets,
             )
-        if origin in (list, set, tuple):
-            if origin is tuple:
-                if len(args) != 2 or args[1] is not Ellipsis:
+        # Collection handling: support both PEP 585 builtins (list, set, tuple)
+        # and their typing counterparts (typing.List, typing.Set, typing.Tuple).
+        # On Python 3.9, typing.get_origin may behave inconsistently for
+        # PEP 585 generics with forward-reference string arguments; we also
+        # inspect __origin__ directly as a fallback.
+        _collection_origins = (list, set, tuple, typing.List, typing.Set, typing.Tuple)
+        if origin in _collection_origins or (
+            origin is None
+            and hasattr(annotation, "__origin__")
+            and annotation.__origin__ in _collection_origins
+        ):
+            _origin = origin if origin is not None else annotation.__origin__
+            _args = args if args else getattr(annotation, "__args__", ())
+            if _origin is tuple or _origin is typing.Tuple:
+                if len(_args) != 2 or _args[1] is not Ellipsis:
                     raise ValueError(tuple_injection_form())
-                element_annotation = args[0]
+                element_annotation = _args[0]
                 collection_kind = "tuple"
             else:
-                if len(args) != 1:
+                if len(_args) != 1:
                     raise ValueError(collection_requires_one_element_type())
-                element_annotation = args[0]
-                collection_kind = origin.__name__
+                element_annotation = _args[0]
+                collection_kind = getattr(_origin, "__name__", str(_origin))
             normalized = ApplicationContext._parse_runtime_annotation(element_annotation)
             if normalized.kind != "single" or normalized.optional:
                 raise ValueError(collection_single_dependency_only())
@@ -1173,6 +1194,13 @@ class ApplicationContext:
                 annotation_repr=annotation_repr,
                 targets=normalized.targets,
                 collection_kind=collection_kind,
+            )
+
+        # ── Bare class (single-dependency reference) ─────────────
+        if inspect.isclass(annotation):
+            return ApplicationContext._make_single_annotation(
+                ApplicationContext._make_target_from_type(annotation),
+                annotation_repr,
             )
 
         raise ValueError(unsupported_annotation_type(annotation_repr))

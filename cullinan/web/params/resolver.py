@@ -186,7 +186,7 @@ class ParamResolver:
                 if param_spec.name is None:
                     param_spec.name = name
 
-            # 检查是否是 DynamicBody
+            # 检查是否是 DynamicBody (或其子类)
             elif annotation is DynamicBody:
                 config['source'] = 'body'
                 config['type'] = DynamicBody
