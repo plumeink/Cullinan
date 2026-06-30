@@ -92,10 +92,10 @@
     <div
       class="md-version-switcher"
       data-current-channel="pre"
-      data-current-version="0.93a13"
+      data-current-version="0.93a13.post1"
       data-stable-version="None"
       data-stable-url="/Cullinan/"
-      data-pre-version="0.93a13"
+      data-pre-version="0.93a13.post1"
       data-pre-url="/Cullinan/pre/"
       data-pre-available="True"
     >
@@ -2601,6 +2601,13 @@ parameter of <code>@configure(...)</code>:</p>
 gateway <code>Router</code>. The Tornado and ASGI adapters route everything through
 <code>Dispatcher.dispatch()</code>, so the same files, headers, and status codes
 appear under either backend.</p>
+<blockquote>
+<p><strong>The <code>/static</code> prefix is not special.</strong> Cullinan does not pass Tornado a
+<code>static_path</code> setting, so Tornado never auto-registers its built-in
+<code>StaticFileHandler</code> on <code>/static/</code>. A <code>StaticFiles(url="/static", ...)</code> mount
+is served entirely through the router on both engines — exactly like any
+other prefix.</p>
+</blockquote>
 <h3 id="routing-precedence">Routing precedence<a class="headerlink" href="#routing-precedence" title="Permanent link">&para;</a></h3>
 <p>Cullinan's router prefers static and parameterised segments over
 wildcards. That means <code>@controller(url="/api/users")</code> always wins over a
@@ -2755,7 +2762,7 @@ adapter against a temporary site fixture. Run them with:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a13", "pre_is_available": true, "pre_label": "0.93a13", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "pre", "current": "0.93a13.post1", "pre_is_available": true, "pre_label": "0.93a13.post1", "pre_url": "/Cullinan/pre/", "stable_label": null, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
