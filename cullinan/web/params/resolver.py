@@ -7,7 +7,7 @@ Author: Plumeink
 """
 
 import inspect
-from typing import Any, Callable, Dict, Optional, get_type_hints
+from typing import Any, Callable, Dict, Optional, Union, get_args, get_origin, get_type_hints
 
 from .base import Param, UNSET
 from .types import File, RawBody
@@ -145,6 +145,16 @@ class ParamResolver:
 
             # 检查类型注解
             annotation = type_hints.get(name, param.annotation)
+
+            # Unwrap Optional[X] → X when get_type_hints wraps ``T = None``
+            # as Optional[T] (behaviour varies across Python versions).
+            if annotation is not None and annotation is not inspect.Parameter.empty:
+                origin = get_origin(annotation)
+                if origin is Union:
+                    args = get_args(annotation)
+                    non_none = [a for a in args if a is not type(None)]
+                    if len(non_none) == 1:
+                        annotation = non_none[0]
 
             if annotation is inspect.Parameter.empty:
                 annotation = None

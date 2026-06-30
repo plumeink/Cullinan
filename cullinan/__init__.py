@@ -50,6 +50,8 @@ from cullinan.web import (
 )
 
 
+_REAL_APPLICATION_MODULE_NAME = "cullinan.application"
+
 class _ApplicationFacade:
     """Top-level facade that stays callable while exposing / delegating
     to the real ``cullinan.application`` submodule.
@@ -60,58 +62,51 @@ class _ApplicationFacade:
     is enough for reads; for writes (``mock.patch``, ``setattr``, …) we
     must forward to the real module so that consumers that imported
     names *from* the real module see the change.
-    """
 
-    # ------------------------------------------------------------------
-    # Recursion guard
-    # ------------------------------------------------------------------
-    # ``unittest.mock.patch('cullinan.application.…')`` resolves
-    # ``cullinan.application`` through :func:`getattr` on the top-level
-    # package, which returns *this* facade.  Asking the real module for
-    # an attribute is normally idempotent, but some attribute lookups
-    # (e.g. on partially‑initialised sub‑packages) can trigger imports
-    # that walk back through the facade.  The set below breaks that cycle.
-    # ------------------------------------------------------------------
-    _accessing: set = set()
+    We resolve the real module via ``sys.modules`` (not a closure
+    variable) because ``importlib.reload(cullinan)`` causes the closure
+    ``_application_module`` to resolve to the *old* facade instance
+    instead of ``sys.modules['cullinan.application']`` on Python < 3.12.
+    """
 
     def __call__(self, *args, **kwargs):
         return _application_decorator(*args, **kwargs)
 
+    # -- helpers -------------------------------------------------------
+
+    @staticmethod
+    def _get_real():
+        """Return the real cullinan.application module, or None if it
+        has been replaced by a non-module (e.g. a facade instance)."""
+        import sys as _sys
+        mod = _sys.modules.get(_REAL_APPLICATION_MODULE_NAME)
+        if mod is not None and isinstance(mod, type(_sys)):
+            return mod
+        return None
+
     # -- read delegation ------------------------------------------------
 
     def __getattr__(self, name):
-        if name in _ApplicationFacade._accessing:
-            # We're already inside a getattr chain for this name — don't
-            # re-enter.  Return a sentinel rather than raising
-            # AttributeError, because mock.patch interprets
-            # AttributeError as "attribute does not exist" and fails.
-            return _RECURSION_SENTINEL
-        _ApplicationFacade._accessing.add(name)
-        try:
-            return getattr(_application_module, name)
-        finally:
-            _ApplicationFacade._accessing.discard(name)
+        if name == "__wrapped__":
+            raise AttributeError(name)
+        real = self._get_real()
+        if real is None or real is self:
+            raise AttributeError(name)
+        return getattr(real, name)
 
     # -- write / delete delegation -------------------------------------
 
     def __setattr__(self, name, value):
-        # Internal bookkeeping stays on the facade instance.
-        if name == "_accessing":
-            object.__setattr__(self, name, value)
-        else:
-            setattr(_application_module, name, value)
+        real = self._get_real()
+        if real is None or real is self:
+            return
+        setattr(real, name, value)
 
     def __delattr__(self, name):
-        if name == "_accessing":
-            object.__delattr__(self, name)
-        else:
-            delattr(_application_module, name)
-
-
-# Sentinel returned by _ApplicationFacade.__getattr__ when recursion is
-# detected.  Using a sentinel instead of raising AttributeError prevents
-# mock.patch from concluding the attribute doesn't exist.
-_RECURSION_SENTINEL = object()
+        real = self._get_real()
+        if real is None or real is self:
+            return
+        delattr(real, name)
 
 
 application = _ApplicationFacade()
