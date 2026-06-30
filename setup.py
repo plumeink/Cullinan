@@ -20,8 +20,6 @@ setup(
     author_email='official@plumeink.com',
     url='https://github.com/plumeink/Cullinan',
     classifiers=[
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
@@ -38,5 +36,5 @@ setup(
         'openapi': ['pyyaml'],
         'full': ['tornado', 'uvicorn', 'pyyaml'],
     },
-    python_requires='>=3.7'
+    python_requires='>=3.9'
 )
