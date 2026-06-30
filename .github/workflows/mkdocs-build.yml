@@ -264,8 +264,15 @@ jobs:
             if [ -f .gh-pages/versions.json ]; then
               mv .gh-pages/versions.json .deploy-tmp/versions.json
             fi
+            # Save .git before dotglob wildcard removes it
+            if [ -d .gh-pages/.git ]; then
+              mv .gh-pages/.git .deploy-tmp/.git
+            fi
             rm -rf .gh-pages/*
             cp -R site/. .gh-pages/
+            if [ -d .deploy-tmp/.git ]; then
+              mv .deploy-tmp/.git .gh-pages/.git
+            fi
             if [ -d .deploy-tmp/pre ]; then
               mv .deploy-tmp/pre .gh-pages/pre
             fi
