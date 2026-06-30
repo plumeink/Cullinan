@@ -2,7 +2,9 @@
 
 Demonstrates:
 
-* serving classic static assets under ``/public`` with caching headers,
+* serving classic static assets under ``/static`` and ``/public`` with caching
+  headers (the ``/static`` prefix used to be shadowed by Tornado's native
+  static handler — Cullinan now serves it engine-neutrally through the router),
 * serving a Single-Page Application bundle under ``/`` with client-side
   routing fallback to ``index.html`` while still returning 404 for missing
   ``*.js``/``*.css`` requests,
@@ -33,6 +35,15 @@ class HealthController:
     user_packages=["examples.static_files_and_spa"],
     server_port=4082,
     static_files=[
+        # Classic /static/* mount. The /static prefix is special: a Tornado
+        # ``static_path`` setting would auto-register Tornado's native
+        # StaticFileHandler here and shadow this mount. Cullinan keeps it
+        # router-based so the prefix behaves identically on Tornado and ASGI.
+        StaticFiles(
+            url="/static",
+            directory=str(_HERE / "static"),
+            max_age=3600,
+        ),
         # Classic /public/* mount with a 1-hour cache window.
         StaticFiles(
             url="/public",

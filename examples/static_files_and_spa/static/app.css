@@ -1,0 +1,15 @@
+/* Served from the /static mount.
+
+   This file specifically guards against the Tornado-native StaticFileHandler
+   regression: under Tornado, a /static prefix used to be shadowed by Tornado's
+   built-in static handler. Cullinan now serves it through the engine-neutral
+   router instead, so /static/app.css resolves identically on Tornado and ASGI.
+*/
+:root {
+  --cullinan-accent: #6c5ce7;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  color: var(--cullinan-accent);
+}

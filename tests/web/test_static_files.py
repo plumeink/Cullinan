@@ -339,6 +339,45 @@ def test_tornado_adapter_serves_static_file(site: Path):
         case.tearDown()
 
 
+def test_tornado_adapter_static_not_shadowed_by_production_settings(site: Path):
+    """Regression: a ``/static`` mount must survive the production Tornado
+    settings produced by ``_build_tornado_settings()``.
+
+    Historically ``_build_tornado_settings()`` injected ``static_path``, which
+    made Tornado auto-register its native ``StaticFileHandler`` on the
+    ``/static/`` prefix. That handler shadowed Cullinan's catch-all gateway
+    handler, so every ``/static/*`` request returned a Tornado 404 instead of
+    reaching the dispatcher. This test wires the adapter with the *real*
+    production settings to prove the shadow is gone (ADR-001 engine neutrality).
+    """
+    tornado = pytest.importorskip("tornado")
+    tornado_testing = pytest.importorskip("tornado.testing")
+    from cullinan.application.legacy import _build_tornado_settings
+    from cullinan.transport.adapter import TornadoAdapter
+
+    settings = _build_tornado_settings()
+    assert "static_path" not in settings
+
+    dispatcher = _make_dispatcher(
+        [StaticFiles(url="/static", directory="static")], site
+    )
+    adapter = TornadoAdapter(dispatcher=dispatcher, settings=settings)
+    app = adapter.create_app()
+
+    class _Case(tornado_testing.AsyncHTTPTestCase):
+        def get_app(self_inner):
+            return app
+
+    case = _Case()
+    case.setUp()
+    try:
+        response = case.fetch("/static/hello.txt")
+        assert response.code == 200
+        assert response.body == b"hello world"
+    finally:
+        case.tearDown()
+
+
 # ----------------------------------------------------------------------
 # Engine parity — ASGI adapter
 # ----------------------------------------------------------------------

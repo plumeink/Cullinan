@@ -252,6 +252,15 @@ def test_static_files_example_serves_assets_and_spa_fallback():
     cache_control = headers.get("cache-control", "")
     assert "max-age=3600" in cache_control
 
+    # Real static asset under /static — the prefix Tornado's native handler
+    # used to shadow. Must resolve through the router on both engines.
+    status, headers, body_text = asyncio.run(
+        _invoke_asgi_app_raw(app, "/static/app.css")
+    )
+    assert status == 200
+    assert "--cullinan-accent" in body_text
+    assert "max-age=3600" in headers.get("cache-control", "")
+
     # Asset-looking miss under SPA must NOT fall back to index.html.
     status, _, _ = asyncio.run(_invoke_asgi_app_raw(app, "/assets/missing.js"))
     assert status == 404

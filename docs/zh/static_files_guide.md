@@ -89,6 +89,11 @@ StaticFiles.spa_app(directory="dist")  # url="/", spa=True, index="index.html"
 Tornado 与 ASGI 适配器都把请求送入 `Dispatcher.dispatch()`，因此两种后端
 看到的文件、响应头、状态码完全一致。
 
+> **`/static` 前缀没有特殊待遇。** Cullinan 不会向 Tornado 传入 `static_path`
+> 设置，因此 Tornado 不会在 `/static/` 上自动注册其内置的 `StaticFileHandler`。
+> `StaticFiles(url="/static", ...)` 挂载在两个引擎上都完全经由 router 提供服务，
+> 与其它任意前缀行为一致。
+
 ### 路由优先级
 
 Cullinan 的 router 偏好静态段与参数段，wildcard 优先级最低。这意味着

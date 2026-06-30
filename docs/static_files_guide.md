@@ -97,6 +97,12 @@ gateway `Router`. The Tornado and ASGI adapters route everything through
 `Dispatcher.dispatch()`, so the same files, headers, and status codes
 appear under either backend.
 
+> **The `/static` prefix is not special.** Cullinan does not pass Tornado a
+> `static_path` setting, so Tornado never auto-registers its built-in
+> `StaticFileHandler` on `/static/`. A `StaticFiles(url="/static", ...)` mount
+> is served entirely through the router on both engines — exactly like any
+> other prefix.
+
 ### Routing precedence
 
 Cullinan's router prefers static and parameterised segments over
