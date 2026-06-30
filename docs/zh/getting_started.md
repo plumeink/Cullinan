@@ -25,12 +25,12 @@ Cullinan 不是围绕手工组装 app 对象展开的框架。
 > [运行时与扩展](internals/index.md)，不要把那条路径当成默认启动方式。
 
 ## 前置条件
-- Python 3.8+
+- Python 3.9+
 - Git
 
 ## 安装
 
-在继续之前，请确保已经安装 Python 3.8+ 并可以在命令行中使用 `python` 和 `pip`。
+在继续之前，请确保已经安装 Python 3.9+ 并可以在命令行中使用 `python` 和 `pip`。
 
 在大多数环境中，可以使用以下命令升级 pip 并安装 Cullinan（适用于 Windows、Linux、macOS）：
 

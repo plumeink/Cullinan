@@ -1,4 +1,4 @@
-![Python version](https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue)
+![Python version](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue)
 ![PyPI version](https://img.shields.io/pypi/v/cullinan.svg?style=flat&logo=pypi&color=green)
 ![PyPI downloads](https://img.shields.io/pypi/dm/cullinan.svg?style=flat&logo=pypi&color=blue)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/plumeink/Cullinan)
@@ -103,7 +103,7 @@ provide a coherent framework model that remains readable from first contact thro
 
 ## Install
 
-Cullinan is published on PyPI and currently supports **Python 3.7+**.
+Cullinan is published on PyPI and currently supports **Python 3.9+**.
 
 ```bash
 pip install -U pip
@@ -218,7 +218,7 @@ Then move into the documentation knowledge base:
 
 ## Current series
 
-**v0.93a8** makes the public application path more explicit around:
+**v0.93** makes the public application path more explicit around:
 
 - `@application` + `@configure(...)` + `main()` as the startup flow
 - decorator-first discovery through Python imports

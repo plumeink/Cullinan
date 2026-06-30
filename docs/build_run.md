@@ -19,7 +19,7 @@ This page describes how to set up a local environment, install Cullinan in edita
 
 ## Prerequisites
 
-- Python 3.8 or newer
+- Python 3.9 or newer
 - Git
 
 ## Clone the repository

@@ -26,12 +26,12 @@ then let the runtime assemble them. Cullinan is not centered on a manually wired
 > as the default bootstrap.
 
 ## Prerequisites
-- Python 3.8+
+- Python 3.9+
 - Git
 
 ## Install
 
-Before you start, make sure Python 3.8+ is installed and that `python` and `pip` are available on your PATH.
+Before you start, make sure Python 3.9+ is installed and that `python` and `pip` are available on your PATH.
 
 On most systems, you can upgrade pip and install Cullinan with the following commands (valid on Windows, Linux, and macOS):
 

@@ -25,7 +25,7 @@ from typing import Any, Optional, Sequence
 
 
 # ---------------------------------------------------------------------------
-# CO_FUTURE_ANNOTATIONS compile flag (Python 3.7+, always available)
+# CO_FUTURE_ANNOTATIONS compile flag (Python 3.9+, always available)
 # ---------------------------------------------------------------------------
 _CO_FUTURE_ANNOTATIONS = 0x1000000  # PEP 563 compile flag
 
