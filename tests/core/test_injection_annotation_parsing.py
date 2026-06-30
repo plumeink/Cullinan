@@ -1,4 +1,4 @@
-from typing import Annotated, Final, Optional
+from typing import Annotated, Final, Optional, Union
 
 import pytest
 from cullinan import Provider
@@ -19,7 +19,7 @@ def test_parse_runtime_annotation_supports_wrappers():
     final_annotation = ApplicationContext._parse_runtime_annotation(Final[Foo])
     provider_annotation = ApplicationContext._parse_runtime_annotation(Provider[Foo])
     collection_annotation = ApplicationContext._parse_runtime_annotation(tuple[Foo, ...])
-    union_annotation = ApplicationContext._parse_runtime_annotation(Foo | Bar)
+    union_annotation = ApplicationContext._parse_runtime_annotation(Union[Foo, Bar])
 
     assert optional_annotation.kind == "single"
     assert optional_annotation.optional is True

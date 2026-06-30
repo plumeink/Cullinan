@@ -187,13 +187,19 @@ class ParamResolver:
                     param_spec.name = name
 
             # 检查是否是 DynamicBody (或其子类)
-            elif annotation is DynamicBody:
+            elif (annotation is DynamicBody
+                  or (isinstance(annotation, type)
+                      and getattr(annotation, '__name__', '') == 'DynamicBody'
+                      and getattr(annotation, '__module__', '') == DynamicBody.__module__)):
                 config['source'] = 'body'
                 config['type'] = DynamicBody
                 config['required'] = False
 
             # 检查是否是 RawBody（类本身，不需要括号）
-            elif annotation is RawBody:
+            elif (annotation is RawBody
+                  or (isinstance(annotation, type)
+                      and getattr(annotation, '__name__', '') == 'RawBody'
+                      and getattr(annotation, '__module__', '') == RawBody.__module__)):
                 config['source'] = 'raw_body'
                 config['type'] = bytes
                 config['required'] = False
@@ -207,7 +213,10 @@ class ParamResolver:
                 config['model_handler'] = handler
 
             # 检查是否是 AutoType
-            elif annotation is AutoType:
+            elif (annotation is AutoType
+                  or (isinstance(annotation, type)
+                      and getattr(annotation, '__name__', '') == 'AutoType'
+                      and getattr(annotation, '__module__', '') == AutoType.__module__)):
                 config['source'] = 'auto'
                 config['type'] = AutoType
 
