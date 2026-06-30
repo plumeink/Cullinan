@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Request context management for Cullinan framework.
 
-Provides thread-safe context management for request-scoped data,
-similar to Flask's request context or FastAPI's dependencies.
+Provides thread-safe context management for request-scoped data
+using ``contextvars`` for async safety.
 """
 
-import threading
 from typing import Any, Dict, Optional, Callable
 from contextvars import ContextVar
 import logging
@@ -47,7 +46,7 @@ class RequestContext:
         """Get feature flags from configuration (cached)."""
         if cls._features is None:
             try:
-                from cullinan.config import get_config
+                from cullinan.support.config import get_config
                 config = get_config()
                 cls._features = config.context_features.copy()
             except Exception:

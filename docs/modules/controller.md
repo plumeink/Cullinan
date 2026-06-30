@@ -1,53 +1,59 @@
-title: "cullinan.controller"
+title: "cullinan.web.controller"
 slug: "modules-controller"
-module: ["cullinan.controller"]
+module: ["cullinan.web.controller"]
 tags: ["api", "module", "controller"]
 author: "Plumeink"
 reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/modules/controller.md"
-related_tests: ["tests/test_controller_injection_fix.py","tests/test_controller_with_methods.py"]
-related_examples: ["examples/controller_di_middleware.py"]
-estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+related_tests: ["tests/web/test_handler_module.py", "tests/web/test_web_runtime.py"]
+related_examples: []
+estimate_pd: 1.0
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
-# cullinan.controller
+# cullinan.web.controller
 
-> **Note (v0.90)**: Controller DI is now managed by `ApplicationContext`.
-> For the new IoC/DI 2.0 architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
+`cullinan.web.controller` contains the controller decorator plus REST-style route decorators and compatibility registries.
 
-Summary: Controller registration, lifecycle, and injection into controller instances. Document usage patterns and common pitfalls.
+## Main exports
 
-## Public API (auto-generated)
+- `controller`
+- `get_api`
+- `post_api`
+- `patch_api`
+- `delete_api`
+- `put_api`
+- `response_build`
 
-<!-- generated: docs/work/generated_modules/cullinan_controller.md -->
+Compatibility and advanced exports:
 
-### cullinan.controller
+- `get_controller_registry()`
+- `reset_controller_registry()`
+- `get_header_registry()`
+- `Handler`
+- `HttpResponse`
+- `StatusResponse`
 
-| Name | Kind | Signature / Value |
-| --- | --- | --- |
-| `controller` | function | `controller(**kwargs) -> Callable` |
-| `get_controller_registry` | function | `get_controller_registry() -> cullinan.controller.registry.ControllerRegistry` |
-| `get_header_registry` | function | `get_header_registry() -> cullinan.controller.core.HeaderRegistry` |
-| `request_resolver` | function | `request_resolver(self, url_param_key_list: Optional[Sequence] = None, url_param_value_list: Optional[Sequence] = None, query_param_names: Optional[Sequence] = None, body_param_names: Optional[Sequence] = None, file_param_key_list: Optional[Sequence] = None) -> Tuple[Optional[dict], Optional[dict], Optional[dict], Optional[dict]]` |
-| `reset_controller_registry` | function | `reset_controller_registry() -> None` |
-| `response_build` | function | `response_build(**kwargs) -> cullinan.controller.core.StatusResponse` |
-
-## Example: register a simple controller
+## Example
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan.web.controller import controller, get_api
+from cullinan.web.params import Path
 
-@controller(url='/hello')
-class HelloController:
-    @get_api(url='')
-    def hello(self):
-        return {'status': 200, 'body': 'Hello World'}
+@controller(url="/users")
+class UserController:
+    service: UserService  # ← 构造注入
+
+    @get_api(url="/{user_id}")
+    async def get_user(self, user_id: int = Path()):
+        return {"id": user_id}
 ```
 
-Notes:
-- Use the `@controller` decorator to mark controller classes, `url` parameter specifies URL prefix.
-- Use `@get_api`, `@post_api` and other decorators to define HTTP endpoints.
-- The framework supports automatic discovery via module scanning.
+New applications should treat controllers as part of the unified `ApplicationContext`-driven runtime, not as a standalone registry system.
+
+## See also
+
+- [RESTful API wiki](../wiki/restful_api.md)
+- [Web Runtime Guide](../web_runtime_guide.md)

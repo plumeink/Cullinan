@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation / 文档
+    url: https://github.com/plumeink/Cullinan/wiki
+    about: Read the guides before filing an issue. 先看文档与指南。

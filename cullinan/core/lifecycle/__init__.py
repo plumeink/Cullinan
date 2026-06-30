@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Cullinan Lifecycle Module
+"""Cullinan lifecycle public facade.
 
-This module provides unified lifecycle management:
-- LifecycleAware: Base interface for lifecycle-aware components
-- SmartLifecycle: Extended interface with phase control
-- LifecycleManager: Component lifecycle orchestration
-- LifecyclePhase: Lifecycle phase enumeration
+This package is the single public lifecycle namespace:
+- unified lifecycle orchestration comes from ``cullinan.core.lifecycle_enhanced``
+- lifecycle event hooks live in ``cullinan.core.lifecycle.events``
 
-All lifecycle management is now centralized in ApplicationContext.
-
-Author: Plumeink
+The package exists to provide one stable import surface instead of parallel
+module-level wrappers.
 """
 
 # Re-export unified lifecycle from parent lifecycle_enhanced
@@ -48,4 +45,3 @@ __all__ = [
     'get_lifecycle_event_manager',
     'reset_lifecycle_event_manager',
 ]
-

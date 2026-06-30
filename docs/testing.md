@@ -7,127 +7,103 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/testing.md"
-related_tests: ["tests/test_real_app_startup.py"]
-related_examples: []
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_public_api_boundaries.py", "tests/core/test_developer_experience.py", "tests/core/test_decorators.py", "tests/integration/test_adapter_integration.py", "tests/integration/test_gateway_integration.py", "tests/integration/test_examples_public_guides.py", "tests/web/test_openapi_generator.py", "tests/web/test_web_runtime.py", "tests/di/test_core_constructor_injection.py"]
+related_examples: ["examples/testing_flow"]
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Testing & Verification
 
-This page describes how to run the existing test suite, add new tests, run example smoke tests, and integrate test execution into CI. Commands are shown for Windows (PowerShell), Linux, and macOS.
+This page describes the current repository test workflow after the latest
+application-model, public API boundary, adapter, and test-structure cleanup.
 
-## Prerequisites
+> **Formal repository entrypoint:** `.venv\Scripts\python -m pytest`  
+> **Related semantics:** runtime-facing tests should stay aligned with [Framework Semantics](framework_semantics.md) and [API Reference](api_reference.md).
 
-- Python 3.8 or newer
-- Git
-- A working Cullinan checkout (see `docs/build_run.md` for environment setup)
+## Official repository entrypoint
 
-## Running the test suite
-
-After installing Cullinan in editable mode (see `docs/build_run.md`), you can run the tests with `pytest`.
-
-On all platforms:
-
-```bash
-pytest -q
-```
-
-If your environment prefers invoking via the Python module interface, you can use:
-
-```bash
-python -m pytest -q
-```
-
-On Windows, it is also common to use the `py` launcher:
+Use the repository virtual environment and run:
 
 ```powershell
-py -3 -m pytest -q
+.venv\Scripts\python -m pytest
 ```
 
-## Running individual test modules
+That is the formal repository command for full-suite verification.
 
-To run a single test file (for example `tests/test_core_injection.py`):
+## Test discovery configuration
 
-On all platforms:
+`pytest.ini` defines the repository defaults:
 
-```bash
-pytest tests/test_core_injection.py -q
+```ini
+[pytest]
+testpaths = tests
+python_files = test_*.py
+addopts = -ra
 ```
 
-Or with the Python module interface:
+`tests/conftest.py` adds the repository root to `sys.path`, so new tests should not repeat local `sys.path.insert(...)` bootstrapping.
 
-```bash
-python -m pytest tests/test_core_injection.py -q
-```
+## Test layout
 
-## Adding new tests
+The test suite is organized by topic:
 
-When adding tests for new features or bug fixes:
+- `tests/core`
+- `tests/di`
+- `tests/web`
+- `tests/integration`
+- `tests/regression`
+- `tests/compat`
+- `tests/helpers`
 
-1. Place test files under the `tests/` directory.
-2. Use descriptive test names and group related tests in the same module.
-3. Prefer `pytest` style tests (functions and classes) to match the existing suite.
-4. Ensure tests are deterministic and do not depend on external services unless explicitly marked.
+Prefer placing new tests in the closest existing topic folder instead of creating ad-hoc top-level files.
 
-## Smoke tests using examples
+## Running targeted tests
 
-Cullinan includes runnable examples under the `examples/` directory that can be used as smoke tests.
-
-### Example: Hello HTTP
-
-On Windows (PowerShell):
+Examples:
 
 ```powershell
-python examples\hello_http.py
+.venv\Scripts\python -m pytest tests\web\test_web_runtime.py -q
+.venv\Scripts\python -m pytest tests\di\test_core_constructor_injection.py -q
 ```
 
-On Linux / macOS:
+Generic `python -m pytest` also works, but the repository documentation standard uses the `.venv\Scripts\python` form on Windows.
 
-```bash
-python examples/hello_http.py
-```
+If you want a small developer-facing test example before reading the whole suite,
+see `examples/testing_flow/test_app.py`.
 
-Then open `http://localhost:4080/hello` in a browser to verify that the server responds.
+## Current conventions
 
-### Example: Middleware demo
+1. Write standard pytest tests with plain `assert` statements.
+2. Pytest is the only formal test entrypoint; historical direct-execution tails such as `if __name__ == "__main__"` and `run_all_tests()` should not be reintroduced.
+3. Reuse shared setup from `tests/conftest.py` and `tests/helpers/` when appropriate.
+4. Keep tests deterministic and isolated; clear global registries or active application context when a test mutates them.
 
-On Windows (PowerShell):
+## Scope covered by the test suite
 
-```powershell
-python examples\middleware_demo.py
-```
+The current suite covers:
 
-On Linux / macOS:
+- application-first bootstrap, module ownership resolution, and runtime switching
+- top-level public API boundaries, compatibility warnings, and curated startup paths
+- container and lifecycle behavior
+- compatibility shims
+- gateway / Web Runtime behavior
+- controller routing and parameter handling
+- integration and regression scenarios
 
-```bash
-python examples/middleware_demo.py
-```
+Representative files:
 
-The log output illustrates how middleware and injected services participate in request handling. Exact timestamps and IDs may vary between runs.
+- `tests/core/test_application_model_refactor.py`
+- `tests/core/test_public_api_boundaries.py`
+- `tests/core/test_developer_experience.py`
+- `tests/core/test_decorators.py`
+- `tests/integration/test_adapter_integration.py`
+- `tests/integration/test_gateway_integration.py`
+- `tests/web/test_openapi_generator.py`
 
-## Integrating tests into CI
+## Related documents
 
-In a CI pipeline, the following steps are typically required:
-
-1. Set up a Python environment.
-2. Install dependencies in editable mode (optionally with development extras).
-3. Run the test suite with `pytest`.
-
-Example sequence (bash-style, to be adapted to your CI system):
-
-```bash
-python -m pip install -U pip
-pip install -e .[dev]
-pytest -q
-```
-
-On Windows-based CI using PowerShell, the commands are analogous:
-
-```powershell
-python -m pip install -U pip
-pip install -e .[dev]
-py -3 -m pytest -q
-```
-
-Adjust the exact commands and options according to your CI provider and environment.
+- [Runtime consolidation overview](runtime_updates_v093.md)
+- [Application Runtime Model](wiki/application_runtime.md)
+- [Architecture](architecture.md)
+- [Web Runtime Guide](web_runtime_guide.md)

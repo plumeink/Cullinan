@@ -4,6 +4,9 @@
 > **Feature**: Unified Extension Registration and Discovery Pattern  
 > **Author**: Plumeink
 
+> **Advanced topic:** use this page when you are explicitly building extensions or
+> middleware registration flows.
+
 ---
 
 ## Quick Start
@@ -13,7 +16,7 @@
 Use the `@middleware` decorator to automatically register middleware:
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -56,7 +59,7 @@ class LoggingMiddleware(Middleware):
 Query available extension points:
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # Query all extension points
 all_points = list_extension_points()
@@ -79,7 +82,7 @@ Middleware.process_response: Intercept and process responses before they are sen
 ### 4. Query Registered Middleware
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 registered = registry.get_registered_middleware()
@@ -102,12 +105,11 @@ Example output:
 ### Scenario: Building an Authenticated API
 
 ```python
-from cullinan import configure, run
-from cullinan.middleware import middleware, Middleware
-from cullinan.controller import controller, get_api
-from cullinan.service import service, Service
-from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan import application, configure
+from cullinan.web.middleware import middleware, Middleware
+from cullinan.web.controller import controller, get_api
+from cullinan.core.services import service, Service
+from cullinan.web.params import Path
 
 # 1. Define middleware (auto-sorted by priority)
 
@@ -151,8 +153,8 @@ class UserService(Service):
 
 @controller(url='/api/users')
 class UserController:
-    user_service: 'UserService' = Inject()
-    
+    user_service: UserService  # ← Construction injection
+
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
@@ -160,12 +162,9 @@ class UserController:
 
 # 4. Start application
 
-if __name__ == '__main__':
-    configure(
-        port=8080,
-        debug=True
-    )
-    run()
+@configure(user_packages=["__main__"], server_port=8080)
+@application
+def main(): ...
 ```
 
 **Execution Flow**:
@@ -196,7 +195,7 @@ Response sent
 Manual registration is still supported:
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -260,7 +259,7 @@ def process_request(self, handler):
 A: Use the registry query:
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 for mw in registry.get_registered_middleware():
@@ -299,4 +298,3 @@ A: Decorator registration overhead is minimal (~1μs), with no runtime overhead.
 For questions or suggestions:
 1. Check example code: `examples/extension_registration_demo.py`
 2. Submit an Issue or PR to the project repository
-

@@ -8,7 +8,7 @@ Note: Lifecycle management uses Duck Typing - no base class inheritance required
 
 import unittest
 
-from cullinan.service import reset_service_registry
+from cullinan.core.services import reset_service_registry
 from .registry import TestRegistry
 
 

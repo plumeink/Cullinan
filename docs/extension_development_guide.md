@@ -1,8 +1,11 @@
 # Cullinan Extension Development Guide
 
-> **Version**: v0.92+  
+> **Version**: 0.93a13
 > **Author**: Plumeink  
 > **Last Updated**: 2026-02-19
+
+> **Advanced topic:** this guide is for framework extension work, not the default
+> application learning path.
 
 ---
 
@@ -33,7 +36,7 @@ The Cullinan framework provides rich extension points, allowing developers to cu
 ### Query Available Extension Points
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # Query all extension points
 all_points = list_extension_points()
@@ -76,7 +79,7 @@ Middleware are interceptors in the request processing pipeline that can:
 #### Method 1: Decorator Registration (Recommended)
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -96,7 +99,7 @@ class LoggingMiddleware(Middleware):
 #### Method 2: Manual Registration
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -162,7 +165,7 @@ class AuthMiddleware(Middleware):
 
 ### Complete Example
 
-Reference: `examples/custom_auth_middleware.py`
+Reference: `examples/middleware_and_module/` — see the current middleware example that uses the modern `@middleware` decorator API.
 
 ---
 
@@ -263,33 +266,30 @@ class LazyProvider(Provider):
 ### Register Custom Provider
 
 ```python
-from cullinan.service import service, Service
-from cullinan.core.injection import get_injection_registry
+from cullinan.core import ApplicationContext, Definition, ScopeType
 
-@service
-class ProviderRegistryService(Service):
-    def on_startup(self):
-        """Register custom Providers during application startup"""
-        registry = get_injection_registry()
-        
-        # Register factory Provider
-        factory_provider = FactoryProvider(
-            factory=lambda: MyClass(),
-            name='MyClassFactory'
-        )
-        registry.register_provider('MyClass', factory_provider)
-        
-        # Register lazy Provider
-        lazy_provider = LazyProvider(
-            factory=lambda: HeavyClass(),
-            name='HeavyClassLazy'
-        )
-        registry.register_provider('HeavyClass', lazy_provider)
+ctx = ApplicationContext()
+
+ctx.register(Definition(
+    name="MyClass",
+    factory=lambda c: MyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:MyClass",
+))
+
+ctx.register(Definition(
+    name="HeavyClass",
+    factory=lambda c: HeavyClass(),
+    scope=ScopeType.SINGLETON,
+    source="extension:HeavyClass",
+))
 ```
+
+For new extensions, prefer registering `Definition` objects or explicit factories through `ApplicationContext` instead of mutating the legacy injection registry directly.
 
 ### Complete Example
 
-Reference: `examples/custom_provider_demo.py`
+Reference: `examples/extension_registration_demo.py` — demonstrates extension discovery and registration with the current public API.
 
 ---
 
@@ -298,7 +298,7 @@ Reference: `examples/custom_provider_demo.py`
 ### Service Lifecycle Hooks
 
 ```python
-from cullinan.service import service, Service
+from cullinan.core.services import service, Service
 
 @service
 class DatabaseService(Service):
@@ -351,33 +351,37 @@ class AsyncService(Service):
 
 ```python
 import tornado.web
-from cullinan import configure, run
+from cullinan import application, configure
+
 
 class CustomHandler(tornado.web.RequestHandler):
     """Custom request handler"""
-    
+
     def get(self):
         self.write({"message": "Custom handler"})
-    
+
     def post(self):
         data = self.get_json_argument()
         self.write({"received": data})
 
-# Register custom Handler
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 if __name__ == '__main__':
-    configure(
-        handlers=[
-            (r'/custom', CustomHandler),
-            (r'/custom/(?P<id>[0-9]+)', CustomHandler),
-        ]
-    )
-    run()
+    application.run(main, handlers=[
+        (r'/custom', CustomHandler),
+        (r'/custom/(?P<id>[0-9]+)', CustomHandler),
+    ])
 ```
 
 ### Mixed Use with Controller
 
 ```python
-from cullinan.controller import controller, get_api
+from cullinan import application, configure
+from cullinan.web.controller import controller, get_api
+
 
 @controller(url='/api/users')
 class UserController:
@@ -385,14 +389,19 @@ class UserController:
     def list_users(self):
         return {"users": []}
 
+
+@configure(user_packages=["__main__"])
+@application
+def main(): ...
+
 # CustomHandler and UserController can coexist
 if __name__ == '__main__':
-    configure(
+    application.run(
+        main,
         handlers=[
             (r'/health', HealthCheckHandler),  # Custom
         ]
-    )
-    run()  # UserController will be automatically registered
+    )  # UserController will be automatically registered
 ```
 
 ---
@@ -451,11 +460,11 @@ class LoggingMiddleware(Middleware):
 
 ### 3. Dependency Injection Principles
 
-✅ **Prefer type injection**
+✅ **Prefer constructor injection** (bare type annotation is now the primary style)
 ```python
 @service
 class UserService(Service):
-    email_service: EmailService = Inject()  # Recommended
+    email_service: EmailService  # Constructor injection (recommended)
 ```
 
 ✅ **Use name-based injection for special cases**
@@ -554,10 +563,9 @@ A: Middleware doesn't support automatic injection, but you can manually retrieve
 @middleware(priority=100)
 class ServiceAwareMiddleware(Middleware):
     def on_startup(self):
-        # Get service from ServiceRegistry
-        from cullinan.service import get_service_registry
-        registry = get_service_registry()
-        self.user_service = registry.get_instance('UserService')
+        # Resolve service from the active ApplicationContext
+        from cullinan.core import get_application_context
+        self.user_service = get_application_context().get('UserService')
     
     def process_request(self, handler):
         # Use service
@@ -657,9 +665,9 @@ class TestMyMiddleware(ServiceTestCase):
 - [Quick Start Extensions](quick_start_extensions.md) - Quick start guide for extensions
 
 > **Note**: Example files can be found in the `examples/` directory of the repository:
-> - `examples/custom_auth_middleware.py` - Middleware example
-> - `examples/custom_provider_demo.py` - Provider example
 > - `examples/extension_registration_demo.py` - Extension registration demo
+> - `examples/middleware_and_module/` - Middleware example
+> - `examples/controller_service_inject/` - DI example
 
 ---
 
@@ -671,7 +679,6 @@ class TestMyMiddleware(ServiceTestCase):
 
 ---
 
-**Version**: v0.92  
+**Version**: 0.93a13
 **Author**: Plumeink  
-**Last Updated**: 2026-02-19
-
+**Last Updated**: 2026-06-01

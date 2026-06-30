@@ -36,10 +36,12 @@ Usage:
 from .mocks import MockService
 from .registry import TestRegistry
 from .fixtures import ServiceTestCase, IsolatedServiceTestCase
+from .test_context import TestContext
 
 __all__ = [
     'MockService',
     'TestRegistry',
     'ServiceTestCase',
     'IsolatedServiceTestCase',
+    'TestContext',
 ]

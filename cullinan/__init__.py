@@ -1,349 +1,159 @@
 import logging
 
-# Prevent "No handlers could be found" warnings when library is imported
-# Applications should configure logging (console/file) at their entry point.
-logging.getLogger('cullinan').addHandler(logging.NullHandler())
+logging.getLogger("cullinan").addHandler(logging.NullHandler())
 
-# 导出配置接口
-from cullinan.config import configure, get_config, CullinanConfig
-
-# Export path utilities for packaging-aware path resolution
-from cullinan.path_utils import (
-    # Environment detection
-    is_frozen,
-    is_pyinstaller_frozen,
-    is_nuitka_compiled,
-    get_packaging_mode,
-    # Path resolution
-    get_base_path,
-    get_cullinan_package_path,
-    get_resource_path,
-    get_module_file_path,
-    get_executable_dir,
-    get_user_data_dir,
-    # Utilities
-    find_file_with_fallbacks,
-    import_module_from_path,
-    get_path_info,
-    log_path_info,
+from cullinan.application import (
+    CullinanConfig,
+    application as _application_decorator,
+    configure,
+    get_config,
+    module,
 )
-
-# Export core module (foundational components)
-from cullinan.core import (
-    # IoC/DI 2.0
-    ApplicationContext,
-    service,
-    controller,
-    component,
-    Inject,
-    InjectByName,
-    Lazy,
-    PendingRegistry,
-    # Core infrastructure
-    Registry,
-    SimpleRegistry,
-    LifecycleManager,
-    LifecycleState,
-    LifecycleAware,
-    RequestContext,
-    get_current_context,
-    set_current_context,
-    create_context,
-    destroy_context,
-    ContextManager,
-    get_context_value,
-    set_context_value,
-    # Compatibility
-    injectable,
-    get_injection_registry,
-    reset_injection_registry,
-)
-
-# Export enhanced service layer
-from cullinan.service import (
-    Service,
-    ServiceRegistry,
-    get_service_registry,
-    reset_service_registry,
-)
-
-# Export handler module
-from cullinan.handler import (
-    HandlerRegistry,
-    get_handler_registry,
-    reset_handler_registry,
-    BaseHandler,
-)
-
-# Export middleware module
-from cullinan.middleware import (
-    Middleware,
-    MiddlewareChain,
-    MiddlewareRegistry,
-    get_middleware_registry,
-    reset_middleware_registry,
-    middleware,
-)
-
-# Export extensions module
-from cullinan.extensions import (
-    ExtensionCategory,
-    ExtensionPoint,
-    ExtensionRegistry,
-    get_extension_registry,
-    reset_extension_registry,
-    list_extension_points,
-)
-
-# Export monitoring module
-from cullinan.monitoring import (
-    MonitoringHook,
-    MonitoringManager,
-    get_monitoring_manager,
-    reset_monitoring_manager,
-)
-
-# Export testing utilities
-from cullinan.testing import (
-    ServiceTestCase,
-    MockService,
-    TestRegistry,
-)
-
-# Export WebSocket support
-from cullinan.websocket_registry import (
-    WebSocketRegistry,
-    websocket_handler,
-    get_websocket_registry,
-    reset_websocket_registry,
-)
-
-# Export codec module
-from cullinan.codec import (
-    BodyCodec,
-    ResponseCodec,
-    CodecError,
-    DecodeError,
-    EncodeError,
-    JsonBodyCodec,
-    JsonResponseCodec,
-    FormBodyCodec,
-    CodecRegistry,
-    get_codec_registry,
-    reset_codec_registry,
-)
-
-# Export params module
-from cullinan.params import (
-    Param,
-    UNSET,
-    Path,
-    Query,
-    Body,
-    Header,
-    File,
-    TypeConverter,
-    ConversionError,
+from cullinan.core.decorators import Inject, InjectByName, Lazy, component, service
+from cullinan.core.injection_types import Provider
+from cullinan.web import (
     Auto,
     AutoType,
-    DynamicBody,
-    ParamValidator,
-    ValidationError,
-    ModelResolver,
-    ModelError,
-    ParamResolver,
-    ResolveError,
-)
-
-# Export body decoder middleware
-from cullinan.middleware import (
+    Body,
     BodyDecoderMiddleware,
-    get_decoded_body,
-    set_decoded_body,
-)
-
-# Export controller registry and decorators from controller package
-# Note: 'controller' is both a package and a decorator function
-# To avoid naming conflicts in Nuitka and other packagers:
-# - The package cullinan.controller contains all controller-related code
-# - Import the controller decorator as: from cullinan.controller import controller
-from cullinan.controller import (
-    ControllerRegistry,
-    get_controller_registry,
-    reset_controller_registry,
-    # Controller decorators (import from cullinan.controller, not directly from cullinan)
-    get_api,
-    post_api,
-    patch_api,
+    DynamicBody,
+    File,
+    Header,
+    Middleware,
+    Param,
+    ParamResolver,
+    ParamValidator,
+    Path,
+    Query,
+    ResolveError,
+    StaticFiles,
+    TypeConverter,
+    UNSET,
+    ValidationError,
+    WebRequest,
+    WebResponse,
+    controller,
     delete_api,
-    put_api,
-    Handler,
-    response,
-    # Missing header handler API
-    set_missing_header_handler,
+    get_api,
+    get_decoded_body,
     get_missing_header_handler,
+    middleware,
+    patch_api,
+    post_api,
+    put_api,
+    response,
+    set_decoded_body,
+    set_missing_header_handler,
+    websocket_handler,
 )
 
 
-__version__ = '0.90'
+_REAL_APPLICATION_MODULE_NAME = "cullinan.application"
+
+class _ApplicationFacade:
+    """Top-level facade that stays callable while exposing / delegating
+    to the real ``cullinan.application`` submodule.
+
+    This facade exists because ``cullinan/__init__.py`` needs to expose
+    ``application`` both as a callable (the decorator) AND as a namespace
+    that looks like the submodule.  Simple attribute-access delegation
+    is enough for reads; for writes (``mock.patch``, ``setattr``, …) we
+    must forward to the real module so that consumers that imported
+    names *from* the real module see the change.
+
+    We resolve the real module via ``sys.modules`` (not a closure
+    variable) because ``importlib.reload(cullinan)`` causes the closure
+    ``_application_module`` to resolve to the *old* facade instance
+    instead of ``sys.modules['cullinan.application']`` on Python < 3.12.
+    """
+
+    def __call__(self, *args, **kwargs):
+        return _application_decorator(*args, **kwargs)
+
+    # -- helpers -------------------------------------------------------
+
+    @staticmethod
+    def _get_real():
+        """Return the real cullinan.application module, or None if it
+        has been replaced by a non-module (e.g. a facade instance)."""
+        import sys as _sys
+        mod = _sys.modules.get(_REAL_APPLICATION_MODULE_NAME)
+        if mod is not None and isinstance(mod, type(_sys)):
+            return mod
+        return None
+
+    # -- read delegation ------------------------------------------------
+
+    def __getattr__(self, name):
+        if name == "__wrapped__":
+            raise AttributeError(name)
+        real = self._get_real()
+        if real is None or real is self:
+            raise AttributeError(name)
+        return getattr(real, name)
+
+    # -- write / delete delegation -------------------------------------
+
+    def __setattr__(self, name, value):
+        real = self._get_real()
+        if real is None or real is self:
+            return
+        setattr(real, name, value)
+
+    def __delattr__(self, name):
+        real = self._get_real()
+        if real is None or real is self:
+            return
+        delattr(real, name)
+
+
+application = _ApplicationFacade()
+
+__version__ = "0.93a13.post1"
 
 __all__ = [
-    # Configuration
-    'configure',
-    'get_config',
-    'CullinanConfig',
-    
-    # Core module
-    'Registry',
-    'SimpleRegistry',
-    'LifecycleManager',
-    'LifecycleState',
-    'LifecycleAware',
-    'RequestContext',
-    'get_current_context',
-    'set_current_context',
-    'create_context',
-    'destroy_context',
-    'ContextManager',
-    'get_context_value',
-    'set_context_value',
-    
-    # Service layer
-    'Service',
-    'ServiceRegistry',
-    'service',
-    'get_service_registry',
-    'reset_service_registry',
-    
-    # Handler layer
-    'HandlerRegistry',
-    'get_handler_registry',
-    'reset_handler_registry',
-    'BaseHandler',
-    
-    # Middleware
-    'Middleware',
-    'MiddlewareChain',
-    'MiddlewareRegistry',
-    'get_middleware_registry',
-    'reset_middleware_registry',
-    'middleware',
-
-    # Extensions
-    'ExtensionCategory',
-    'ExtensionPoint',
-    'ExtensionRegistry',
-    'get_extension_registry',
-    'reset_extension_registry',
-    'list_extension_points',
-
-    # Monitoring
-    'MonitoringHook',
-    'MonitoringManager',
-    'get_monitoring_manager',
-    'reset_monitoring_manager',
-    
-    # Testing
-    'ServiceTestCase',
-    'MockService',
-    'TestRegistry',
-    
-    # WebSocket
-    'WebSocketRegistry',
-    'websocket_handler',
-    'get_websocket_registry',
-    'reset_websocket_registry',
-
-    # Codec module
-    'BodyCodec',
-    'ResponseCodec',
-    'CodecError',
-    'DecodeError',
-    'EncodeError',
-    'JsonBodyCodec',
-    'JsonResponseCodec',
-    'FormBodyCodec',
-    'CodecRegistry',
-    'get_codec_registry',
-    'reset_codec_registry',
-
-    # Params module
-    'Param',
-    'UNSET',
-    'Path',
-    'Query',
-    'Body',
-    'Header',
-    'File',
-    'TypeConverter',
-    'ConversionError',
-    'Auto',
-    'AutoType',
-    'DynamicBody',
-    'ParamValidator',
-    'ValidationError',
-    'ModelResolver',
-    'ModelError',
-    'ParamResolver',
-    'ResolveError',
-
-    # Body decoder middleware
-    'BodyDecoderMiddleware',
-    'get_decoded_body',
-    'set_decoded_body',
-
-    # Controller module (import controller decorator from cullinan.controller)
-    'ControllerRegistry',
-    'get_controller_registry',
-    'reset_controller_registry',
-    'get_api',
-    'post_api',
-    'patch_api',
-    'delete_api',
-    'put_api',
-    'Handler',
-    'response',
-    'set_missing_header_handler',
-    'get_missing_header_handler',
-
-    # Path utilities (packaging support)
-    'is_frozen',
-    'is_pyinstaller_frozen',
-    'is_nuitka_compiled',
-    'get_packaging_mode',
-    'get_base_path',
-    'get_cullinan_package_path',
-    'get_resource_path',
-    'get_module_file_path',
-    'get_executable_dir',
-    'get_user_data_dir',
-    'find_file_with_fallbacks',
-    'import_module_from_path',
-    'get_path_info',
-    'log_path_info',
-
-    # Dependency Injection
-    'Inject',
-    'InjectByName',
-    'Lazy',
-    'injectable',
-    'get_injection_registry',
-    'reset_injection_registry',
-
-    # IoC/DI 2.0
-    'ApplicationContext',
-    'PendingRegistry',
-    'service',
-    'controller',
-    'component',
+    "Auto",
+    "AutoType",
+    "Body",
+    "BodyDecoderMiddleware",
+    "CullinanConfig",
+    "DynamicBody",
+    "File",
+    "Header",
+    "Inject",
+    "InjectByName",
+    "Lazy",
+    "Middleware",
+    "Param",
+    "ParamResolver",
+    "ParamValidator",
+    "Path",
+    "Provider",
+    "Query",
+    "ResolveError",
+    "StaticFiles",
+    "TypeConverter",
+    "UNSET",
+    "ValidationError",
+    "WebRequest",
+    "WebResponse",
+    "application",
+    "component",
+    "configure",
+    "controller",
+    "delete_api",
+    "get_api",
+    "get_config",
+    "get_decoded_body",
+    "get_missing_header_handler",
+    "middleware",
+    "module",
+    "patch_api",
+    "post_api",
+    "put_api",
+    "response",
+    "service",
+    "set_decoded_body",
+    "set_missing_header_handler",
+    "websocket_handler",
 ]
-
-# ============================================================================
-# IMPORTANT: Re-import decorators to override submodule names
-# Python's import system may return submodules (cullinan.service, cullinan.controller)
-# instead of the decorator functions we imported earlier.
-# These explicit assignments ensure the decorators are available at package level.
-# ============================================================================
-from cullinan.core.decorators import service, controller, component
-from cullinan.core.decorators import Inject, InjectByName, Lazy
-

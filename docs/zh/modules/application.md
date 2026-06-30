@@ -7,49 +7,93 @@ reviewers: []
 status: updated
 locale: zh
 translation_pair: "docs/modules/application.md"
-related_tests: ["tests/test_real_app_startup.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/core/test_decorators.py", "tests/di/test_global_container_manager.py"]
 related_examples: []
 estimate_pd: 1.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # cullinan.application
 
-> **说明（v0.90）**：新的 IoC/DI 2.0 架构请参阅 [依赖注入指南](../dependency_injection_guide.md)。
+`cullinan.application` 是应用定义与高级公开应用装配语义包。常规应用应优先使用更短的
+顶层 `cullinan` 启动 API；但维护者和高级集成场景在需要更完整的应用模型时，仍然会落到这里：
 
-摘要：`cullinan.application` 模块文档占位。包含公有类、典型用法，及相关测试/示例链接。
+> **高级但公开的语义层：** 这页记录的是真实语义层，不是默认首读路径。
+> 新应用请优先阅读 [快速开始](../getting_started.md) 并使用顶层 `cullinan` API。
 
-建议记录的公有符号：Application，start，stop
+- `@application`：声明默认入口方法
+- `@configure(...)`：把启动配置附着到这个方法上
+- 直接调用入口方法：通过整理后的顶层 API 启动应用
+- `@module`：当你需要模块归属、reload 与热插拔运行时能力时，用来声明高级结构边界
+- 顶层 `run()` / `get_asgi_app()` 才是最短公开启动路径
 
-示例用法：
+这里的启动契约同时依赖[框架语义规则](../framework_semantics.md)：组件发现基于导入执行、自动扫描只保证模块顶层装饰器组件、`refresh()` 之后结构性注册会被冻结。
 
-（占位：展示典型 Application 使用的最小代码片段）
+在实际开发里，开发者主要写的是业务装饰器、业务方法和入口方法。`@module`
+不是手工注册 app 的中心，而是把归属、reload、draining 与运行时切换明确化并稳定化的高级结构边界。
 
-## 示例
+## 推荐启动方式
 
-### Hello HTTP（烟雾测试示例）
+```python
+from cullinan import application, configure, controller, get_api, service
 
-仓库包含一个最小示例 `examples/hello_http.py`，用于文档中的烟雾测试。该示例**不使用 `application.run()`**，而是直接通过 Cullinan 的 handler registry 注册一个简单的 Tornado 处理器，启动一个短时 HTTP 服务器，发起一次验证请求，然后退出。
 
-> **注意**：此示例的输出与使用 `application.run()` 启动的常规应用不同。`application.run()` 会显示 Cullinan 框架 banner、扫描服务和控制器，并保持服务器运行直到手动停止（Ctrl+C）。
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "hello"
 
-PowerShell（Windows）运行命令：
 
-```powershell
-pip install -U pip
-pip install cullinan tornado
-python examples\hello_http.py
+@controller(url="/api")
+class GreetingController:
+    greeting_service: GreetingService  # ← 构造注入
+
+    @get_api(url="/whoami")
+    def whoami(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@configure(user_packages=["myapp"])
+@application
+def main(): ...
+
+if __name__ == "__main__":
+    main()
 ```
 
-观察到的输出（节选）：
+## 什么时候使用 `@module`
 
-```
-INFO:__main__:Starting IOLoop... (will stop after one verification request)
-INFO:__main__:Async Requesting http://127.0.0.1:4080/hello
-INFO:tornado.access:200 GET /hello (127.0.0.1) 0.50ms
-INFO:__main__:Response status: 200
-INFO:__main__:Response body: Hello Cullinan
-INFO:__main__:IOLoop stopped, exiting
+普通单包应用不要一开始就写 `@module`。默认路径应先用入口方法。
+
+当你需要以下能力时，再进入 `@module`：
+
+- 显式包归属边界
+- 多业务域之间更清晰的运行时分隔
+- 可插拔模块 / 插件式装配
+- 比默认启动路径更严格的 reload / draining / ownership 语义
+
+## 模块归属与边界
+
+`@module` 基于 Python 包归属发现组件。若某个组件同时匹配多个模块包，启动会立即失败；对有意共享的重叠区域，请用 `ownership_overrides` 显式指定归属。
+
+```python
+@module(
+    imports=[SharedModule, OrdersModule],
+    ownership_overrides={"myapp.shared": SharedModule},
+)
+class RootModule:
+    pass
 ```
 
-说明：该示例适合用作文档或 CI 的烟雾测试（启动、验证请求、退出），但**不代表 `application.run()` 的实际行为**。
+## Runtime 切换
+
+`Application.reload()` 会先构建新的候选 runtime，完成校验与预热，再原子切换当前活动应用。旧 runtime 会进入 draining 状态，而 `Application.current()` 在请求结束前仍会解析到该请求绑定的旧应用快照。
+
+## 维护者 / 高级说明
+
+`ApplicationContext` 仍然是底层容器 / 运行时原语，而 `Application` 也仍可通过 `cullinan.application` 用于高级、运行时感知的应用装配。新的应用代码应先从业务装饰器与顶层入口方法路径出发。
+
+## 相关文档
+
+- [应用运行时模型](../wiki/application_runtime.md)
+- [应用生命周期](../wiki/lifecycle.md)

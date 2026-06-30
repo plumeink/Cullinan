@@ -7,90 +7,68 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/wiki/components.md"
-related_tests: []
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/web/test_web_runtime.py", "tests/integration/test_service_lifecycle_integration.py"]
 related_examples: []
-estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+estimate_pd: 1.5
+last_updated: "2026-05-31T00:00:00Z"
 pr_links: []
 
 # Components
 
-> **Note (v0.90)**: The Core (IoC/DI) component has been redesigned in version 0.90.
-> For the new architecture, see [Dependency Injection Guide](../dependency_injection_guide.md).
-> The new `ApplicationContext` from `cullinan.core.container` is now the recommended entry point.
+This page gives a current high-level map of Cullinan's main runtime components.
 
-This page describes the primary components of Cullinan and their responsibilities, with pointers to the implementation in the `cullinan/` package. The goal is a concise reference that helps contributors and users understand where to look in the source for each subsystem.
+For the contract behind automatic discovery and registration, read [Framework Semantics](../framework_semantics.md). The short version is: Cullinan guarantees module-top-level decorated components whose decorators run during import, not arbitrary local class definitions created later.
 
-Components overview
+## Runtime overview
 
-- Router / URL resolver
-  - Responsibility: resolve URL patterns to controller handlers and dispatch requests.
-  - Key files: `cullinan/controller/core.py`, `cullinan/controller/registry.py`, `cullinan/controller/__init__.py`.
-  - Public symbols: `controller` (decorator), `get_controller_registry`, `url_resolver`.
+### 1. Application orchestration
 
-- Controller layer
-  - Responsibility: define controller classes and handler methods; provide request/response abstractions and response pooling utilities.
-  - Key files: `cullinan/controller/core.py`, `cullinan/controller/registry.py`, `cullinan/controller/stateless_validator.py`.
-  - Public symbols: `Handler`, `ControllerRegistry`, `response_build`, `request_resolver`.
+- Responsibility: module graph discovery, ownership resolution, runtime activation, draining, and active-app lookup
+- Main package: `cullinan.application`
+- Key APIs: `Application`, `module`, `Application.current()`, `Runtime`
 
-- Request handler & HTTP integration
-  - Responsibility: adapt Tornado HTTPServerRequest to controller handlers, manage request parsing and header resolution.
-  - Key files: `cullinan/handler/*`, `cullinan/controller/core.py`.
-  - Public symbols: `get_handler_registry`, `request_handler`.
+### 2. Core container
 
-- Middleware
-  - Responsibility: provide interception points for request/response processing, such as auth, logging, or transformation.
-  - Key files: `cullinan/middleware/*`.
-  - Notes: middleware is applied in a pipeline; see `middleware` folder for examples and ordering semantics.
+- Responsibility: dependency registration, resolution, scopes, lifecycle, request context
+- Main package: `cullinan.core`
+- Key APIs: `ApplicationContext`, `Definition`, `ScopeType`, `Inject`, `InjectByName`
 
-- Service (business/service layer)
-  - Responsibility: long-lived services that provide functionality to controllers (database access, caching, background jobs).
-  - Key files: `cullinan/service/*` (base, decorators, registry).
-  - Public symbols: `Service`, `ServiceRegistry`, `service` (decorator), `get_service_registry`.
+### 3. Service layer
 
-- Core (IoC / DI / lifecycle / providers / scopes)
-  - Responsibility: dependency injection, provider registry, scopes (singleton/transient/request), lifecycle management.
-  - Key files: `cullinan/core/*` (`injection.py`, `provider.py`, `registry.py`, `scope.py`, `lifecycle*.py`).
-  - Public symbols: `Inject`, `injectable`, `inject_constructor`, `InjectionRegistry`, `ProviderRegistry`, `SingletonScope`, `RequestScope`, `create_context`.
+- Responsibility: business logic and long-lived framework-managed services
+- Main package: `cullinan.core` (`@service`) with advanced `Service`/registry helpers under `cullinan.core.services`
+- Key APIs: `service`, `Service`
 
-- Application / Startup
-  - Responsibility: application lifecycle, service discovery and initialization, orderly startup/shutdown and signal handling.
-  - Key files: `cullinan/app.py`, `cullinan/application.py`.
-  - Public symbols: `create_app`, `CullinanApplication`, `run` (application entry points).
+### 4. Controller layer
 
-Examples — quick reference
+- Responsibility: route declaration and handler methods
+- Main package: `cullinan.web.controller`
+- Key APIs: `controller`, `get_api`, `post_api`, `response_build`
 
-Minimal controller registration example (conceptual):
+### 5. Web Runtime
 
-```python
-from cullinan.controller import controller, get_api
+- Responsibility: normalized request/response model, routing, dispatch, middleware, exceptions
+- Main package: `cullinan.web.gateway`
+- Key APIs: `WebRequest`, `WebResponse`, `Router`, `Dispatcher`, `MiddlewarePipeline`, `WebRuntime`
 
-@controller(url='/hello')
-class HelloController:
-    @get_api(url='')
-    def hello(self):
-        return {'status': 200, 'body': 'Hello Cullinan'}
+### 6. Adapters
 
-# controllers are discovered automatically; the app will route /hello to HelloController
-```
+- Responsibility: bind the Web Runtime to a specific server environment
+- Main package: `cullinan.transport.adapter`
+- Key APIs: `WebAdapter`, `TornadoAdapter`, `ASGIAdapter`
+- Positioning: backend integration layer behind Cullinan's semantic Web facade
 
-Minimal service example (conceptual):
+### 7. Parameters and model binding
 
-```python
-from cullinan.service import Service, service
+- Responsibility: map path/query/body/header/file inputs into handler arguments
+- Main package: `cullinan.web.params`
+- Key APIs: `Path`, `Query`, `Body`, `Header`, `File`
 
-@service
-class MySvc(Service):
-    # service logic here
-    pass
-```
+## Suggested reading order
 
-Where to look next
-
-- Walk the tests in `tests/` (for real usage examples and expected behavior). Recommended starting points: `tests/test_core_injection.py`, `tests/test_controller_injection_fix.py`, `tests/test_provider_system.py`.
-- Read `docs/wiki/injection.md` for detailed IoC/DI examples and runnable snippets.
-
-Next steps for documentation
-
-- Expand each component subsection with sequence diagrams and concrete code samples extracted from tests.
-- Add a small reference table mapping public symbols to file paths (for faster navigation).
+1. [Architecture](../architecture.md)
+2. [Application Runtime Model](application_runtime.md)
+3. [Framework Semantics](../framework_semantics.md)
+4. [Dependency Injection Guide](../dependency_injection_guide.md)
+5. [Web Runtime Guide](../web_runtime_guide.md)
+6. [Testing & Verification](../testing.md)

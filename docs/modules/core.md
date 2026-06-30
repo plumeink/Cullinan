@@ -7,107 +7,120 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/modules/core.md"
-related_tests: ["tests/test_core_injection.py","tests/test_core.py"]
+related_tests: ["tests/di/test_core_constructor_injection.py", "tests/integration/test_service_lifecycle_integration.py"]
 related_examples: []
-estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+estimate_pd: 1.5
+last_updated: "2026-05-30T00:00:00Z"
 pr_links: []
 
 # cullinan.core
 
-> **Note (v0.90)**: The core module has been reorganized in version 0.90.
-> For the new IoC/DI 2.0 API, see [Dependency Injection Guide](../dependency_injection_guide.md).
-> New projects should use `ApplicationContext` from `cullinan.core.container`.
->
-> **New module structure**:
-> - `cullinan.core.container` - ApplicationContext, Definition, ScopeType
-> - `cullinan.core.diagnostics` - Exceptions and error rendering
-> - `cullinan.core.lifecycle` - Lifecycle management
-> - `cullinan.core.request` - Request context
+`cullinan.core` is the public facade for Cullinan's unified container, lifecycle, and request-context APIs.
 
-Summary: Core IoC/DI primitives, provider, scope, registry, and lifecycle helpers. This page should reference concrete files in `cullinan/core/` and include usage examples.
+## Recommended entrypoints
 
-Public symbols to document: provider, registry, scope, injection APIs
+### Container and definitions
 
-## Public API (auto-generated)
+- `ApplicationContext`
+- `Definition`
+- `ScopeType`
+- `get_application_context()`
+- `set_application_context()`
 
-<!-- generated: docs/work/generated_modules/cullinan_core.md -->
+### Decorator surface
 
-### cullinan.core
+- `service`
+- `controller`
+- `component`
+- `Inject`
+- `InjectByName`
+- `Lazy`
 
-| Name | Kind | Signature / Value |
-| --- | --- | --- |
-| `Inject` | class | `Inject(name: Optional[str] = None, required: bool = True)` |
-| `InjectByName` | class | `InjectByName(service_name: Optional[str] = None, required: bool = True)` |
-| `InjectionRegistry` | class | `InjectionRegistry()` |
-| `ProviderRegistry` | class | `ProviderRegistry()` |
-| `RequestScope` | class | `RequestScope(storage_key: str = '_scoped_instances')` |
-| `SingletonScope` | class | `SingletonScope()` |
-| `TransientScope` | class | `TransientScope()` |
-| `create_context` | function | `create_context() -> cullinan.core.context.RequestContext` |
-| `destroy_context` | function | `destroy_context() -> None` |
-| `get_context_value` | function | `get_context_value(key: str, default: Any = None) -> Any` |
-| `get_current_context` | function | `get_current_context() -> Optional[cullinan.core.context.RequestContext]` |
-| `get_injection_registry` | function | `get_injection_registry() -> cullinan.core.injection.InjectionRegistry` |
-| `get_request_scope` | function | `get_request_scope() -> cullinan.core.scope.RequestScope` |
-| `get_singleton_scope` | function | `get_singleton_scope() -> cullinan.core.scope.SingletonScope` |
-| `get_transient_scope` | function | `get_transient_scope() -> cullinan.core.scope.TransientScope` |
-| `inject_constructor` | function | `inject_constructor(cls: Optional[Type] = None)` |
-| `injectable` | function | `injectable(cls: Optional[Type] = None)` |
-| `reset_injection_registry` | function | `reset_injection_registry() -> None` |
-| `set_context_value` | function | `set_context_value(key: str, value: Any) -> None` |
-| `set_current_context` | function | `set_current_context(context: Optional[cullinan.core.context.RequestContext]) -> None` |
+### Lifecycle and request context
 
-## Examples
+- `get_lifecycle_manager()`
+- `reset_lifecycle_manager()`
+- `create_context()`
+- `destroy_context()`
+- `get_current_context()`
+- `set_current_context()`
 
-Property injection example (request-scoped provider):
+## Example
 
 ```python
-from cullinan.core import (
-    ProviderRegistry, ScopedProvider, get_request_scope,
-    injectable, Inject, get_injection_registry, reset_injection_registry
-)
+from cullinan.core import ApplicationContext, Definition, ScopeType
 
-class Database:
-    def __init__(self):
-        self.id = object()
-
-reset_injection_registry()
-registry = ProviderRegistry()
-request_scope = get_request_scope()
-registry.register_provider('Database', ScopedProvider(lambda: Database(), request_scope, 'Database'))
-get_injection_registry().add_provider_registry(registry)
-
-@injectable
-class Service:
-    db: Database = Inject()
-
-s = Service()
-assert s.db is not None
+ctx = ApplicationContext()
+ctx.register(Definition(
+    name="Clock",
+    factory=lambda c: object(),
+    scope=ScopeType.SINGLETON,
+    source="docs:Clock",
+))
+ctx.refresh()
+clock = ctx.get("Clock")
+ctx.shutdown()
 ```
 
-Constructor injection example:
+## Compatibility exports
+
+The following names still exist for backward compatibility, but they are not the primary programming model:
+
+- `injectable`
+- `inject_constructor`
+- `InjectionRegistry`
+- `get_injection_registry()`
+- `reset_injection_registry()`
+
+In the current runtime, new code should favor `ApplicationContext` plus decorator-based registration.
+
+## Runtime Module Scanning
+
+The `cullinan.runtime` module provides tools for module discovery and cache management:
+
+### `invalidate_module_cache()`
+
+Clears the cached module scan results. Call this after dynamically installing new packages or importing modules at runtime, so the next `file_list_func()` call re-scans:
 
 ```python
-from cullinan.core import inject_constructor, reset_injection_registry, ProviderRegistry, ScopedProvider, get_request_scope, get_injection_registry
+from cullinan.runtime import invalidate_module_cache
 
-class Config:
-    pass
-
-reset_injection_registry()
-pr = ProviderRegistry()
-pr.register_provider('Config', ScopedProvider(lambda: Config(), get_request_scope(), 'Config'))
-get_injection_registry().add_provider_registry(pr)
-
-@inject_constructor
-class Controller:
-    def __init__(self, config: Config):
-        self.config = config
-
-c = Controller()
-assert c.config is not None
+# After dynamically importing a new plugin package:
+invalidate_module_cache()
 ```
 
-Notes:
-- Use `reset_injection_registry()` in tests/setup to ensure a clean injection state.
-- Prefer `@injectable` for property injection and `@inject_constructor` for constructor-based patterns. Ensure ProviderRegistry entries are available before resolving injections.
+### `get_caller_package(fallback_package=None)`
+
+Determines the package name of the calling module. Uses `sys._getframe()` for performance (with `inspect.stack()` fallback for portability). The `fallback_package` parameter provides a default when caller detection fails — particularly useful in Nuitka/PyInstaller environments:
+
+```python
+from cullinan.runtime import get_caller_package
+
+pkg = get_caller_package(fallback_package="myapp")
+```
+
+### `list_submodules(package_name)`
+
+Recursively lists all submodules within a package. Uses both `pkgutil.walk_packages` (primary) and filesystem scanning (fallback) to ensure deep subpackages are discovered across different Python versions and packaging modes:
+
+```python
+from cullinan.runtime import list_submodules
+
+# Discovers all submodules including deeply nested ones:
+modules = list_submodules("myapp")
+```
+
+### Configuring Nuitka module lists
+
+When deploying under Nuitka `--onefile` mode, provide an explicit module list via `configure()`:
+
+```python
+from cullinan import configure
+
+configure(explicit_modules=["myapp", "myapp.services", "myapp.web"])
+```
+
+## See also
+
+- [Dependency Injection Guide](../dependency_injection_guide.md)
+- [Architecture](../architecture.md)

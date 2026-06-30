@@ -4,10 +4,9 @@
 Provides interfaces for monitoring application events and collecting metrics.
 """
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any, Dict, List, Optional
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 

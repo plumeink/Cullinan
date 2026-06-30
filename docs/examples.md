@@ -1,4 +1,4 @@
-title: "Examples and Demos"
+title: "Examples and Guidance"
 slug: "examples"
 module: []
 tags: ["examples"]
@@ -7,66 +7,58 @@ reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/examples.md"
-related_tests: []
-related_examples: ["examples/hello_http.py"]
+related_tests: ["tests/integration/test_examples_public_guides.py"]
+related_examples: ["examples/minimal_app", "examples/controller_service_inject", "examples/middleware_and_module", "examples/parameter_handling", "examples/testing_flow"]
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
-# Examples and Demos
+# Examples and Guidance
 
-> **Note (v0.90+)**: The new type-safe parameter system is recommended.
-> See [Parameter System Guide](parameter_system_guide.md) for the new `Path`, `Query`, `Body`, `DynamicBody` parameter types.
-> Legacy examples below are still functional for backward compatibility.
+This page is the canonical guide to the runnable examples maintained in the repository.
+The source of truth is now the root `examples/` directory, not `docs/examples/` and not
+legacy one-file demos.
 
-This page lists canonical runnable examples shipped with Cullinan. Each entry includes the example path, a short description, and how to run it on common platforms.
+> **Recommended mental model:** start from decorator-based business code, declare an entry method with `@application`,
+> attach startup settings with `@configure(...)`, then call `main()` directly.<br>
+> **See also:** [Getting Started](getting_started.md), [Build & Run](build_run.md),
+> [Parameter System Guide](parameter_system_guide.md), [Testing & Verification](testing.md)
 
-## Hello HTTP
+## Recommended reading order
 
-- **Path**: `examples/hello_http.py`
-- **Description**: Minimal HTTP server returning a greeting.
+1. `examples/minimal_app/` — the shortest public entrypoint
+2. `examples/controller_service_inject/` — business layering with `@service`, `@controller`, and `Inject()`
+3. `examples/middleware_and_module/` — when an explicit `@module` boundary is worth adding on top of the entry method
+4. `examples/parameter_handling/` — controller-method parameter binding with `Path`, `Query`, and `Body`
+5. `examples/testing_flow/` — testing through `main.get_asgi_app()` without a real server process
 
-### How to run
+## Example map
 
-On Windows (PowerShell):
+| Example | Teaches | Run command | Source |
+| --- | --- | --- | --- |
+| `examples/minimal_app/` | Minimal app structure with `@application + @configure(...) + main()` | `python -m examples.minimal_app` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/minimal_app) |
+| `examples/controller_service_inject/` | Service/controller split and type-led `Inject()` wiring | `python -m examples.controller_service_inject` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/controller_service_inject) |
+| `examples/middleware_and_module/` | Module boundary ownership and middleware pipeline extension | `python -m examples.middleware_and_module` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/middleware_and_module) |
+| `examples/parameter_handling/` | `Path`, `Query`, and `Body` on controller methods | `python -m examples.parameter_handling` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/parameter_handling) |
+| `examples/testing_flow/` | Public-API test flow with ASGI dispatch | `python -m pytest examples/testing_flow/test_app.py -q` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/testing_flow) |
+| `examples/static_files_and_spa/` | Declarative `StaticFiles` mounts + SPA fallback (engine-neutral) | `python -m examples.static_files_and_spa` | [View on GitHub](https://github.com/plumeink/Cullinan/tree/main/examples/static_files_and_spa) |
 
-```powershell
-python examples\hello_http.py
-```
+## Why the examples were restructured
 
-On Linux / macOS:
+Older examples could accidentally push developers toward a manual app-registration mindset.
+The current example set intentionally keeps Cullinan's own concept front and center:
 
-```bash
-python examples/hello_http.py
-```
+- business-first decorators instead of explicit app wiring
+- an entry method as the default entrypoint
+- `@module` only when structure needs an explicit runtime boundary
+- `Inject()` as the default injection path when the type contract is clear
+- parameter binding on controller methods instead of raw request plumbing
+- testing via public APIs instead of internal bootstrap shortcuts
 
-Expected behavior:
+## Notes
 
-- Starts an HTTP server.
-- Serves a response on `http://localhost:4080/hello`.
-
-## Controller + DI + Middleware demo
-
-- **Path**: `examples/controller_di_middleware.py`
-- **Description**: Demonstrates integration between controllers, dependency injection, and middleware.
-
-### How to run
-
-On Windows (PowerShell):
-
-```powershell
-python examples\controller_di_middleware.py
-```
-
-On Linux / macOS:
-
-```bash
-python examples/controller_di_middleware.py
-```
-
-Expected behavior:
-
-- Logs request handling through middleware.
-- Shows how injected services participate in the request pipeline.
-
-<!-- ...you can extend this list with additional examples as they are added to the repository... -->
+- The root `examples/README.md` file mirrors this learning path for repository readers.
+- You can browse the tracked source set directly from [`examples/`](https://github.com/plumeink/Cullinan/tree/main/examples).
+- `tests/integration/test_examples_public_guides.py` smoke-tests the maintained examples.
+- If you are learning Cullinan for the first time, start with `examples/minimal_app/` and then
+  continue to `examples/controller_service_inject/`.

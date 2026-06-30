@@ -2,6 +2,9 @@
 
 This guide helps you migrate your imports from the old structure to the new 0.90 structure.
 
+> **Compatibility page:** use this when updating existing imports; for the current
+> public surface, see [API Reference](reference/index.md).
+
 ## Overview
 
 Cullinan 0.90 introduces a reorganized `core/` module with clear separation of concerns:
@@ -16,7 +19,7 @@ Cullinan 0.90 introduces a reorganized `core/` module with clear separation of c
 
 ## Quick Migration Table
 
-### Core Container (2.0 API - Recommended)
+### Core Container (0.93 API - Recommended)
 
 | Old Import | New Import |
 |------------|------------|
@@ -49,8 +52,8 @@ Cullinan 0.90 introduces a reorganized `core/` module with clear separation of c
 | Old Import | New Import |
 |------------|------------|
 | `from cullinan.core.lifecycle import LifecycleManager` | `from cullinan.core.lifecycle import LifecycleManager` |
-| `from cullinan.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
-| `from cullinan.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEvent` | `from cullinan.core.lifecycle import LifecycleEvent` |
+| `from cullinan.core.lifecycle_hooks import LifecycleEventManager` | `from cullinan.core.lifecycle import LifecycleEventManager` |
 
 ### Request Context
 
@@ -197,4 +200,3 @@ from cullinan import (
 
 - See [Dependency Injection Guide](dependency_injection_guide.md)
 - See [Migration Guide](migration_guide.md)
-

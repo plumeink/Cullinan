@@ -5,281 +5,237 @@
 ![GitHub stars](https://img.shields.io/github/stars/plumeink/cullinan.svg?style=flat&logo=github&color=white)
 ![License](https://img.shields.io/github/license/plumeink/cullinan.svg?style=flat&color=white)
 
-
-```                                              
-   _____      _ _ _                      
-  / ____|    | | (_)                     
- | |    _   _| | |_ _ __   __ _ _ __     
- | |   | | | | | | | '_ \ / _` | '_ \    
- | |___| |_| | | | | | | | (_| | | | |   
- \_____\__, _|_|_|_|_| |_|\__,_|_| |_|  
+```
+   _____      _ _ _
+  / ____|    | | (_)
+ | |    _   _| | |_ _ __   __ _ _ __
+ | |   | | | | | | | '_ \ / _` | '_ \
+ | |___| |_| | | | | | | | (_| | | | |
+  \_____\__,_|_|_|_|_| |_|\__,_|_| |_|
 ```
 
 # Cullinan
 
-**A lightweight, modular Python web framework with built-in IoC/DI**
+**A business-first Python web framework for building applications through decorators, module boundaries, and built-in IoC/DI.**
 
-Cullinan is built on Tornado (HTTP/WebSocket) and focuses on:
-- A unified registry model for controllers, services, handlers
-- Built-in IoC/DI with request scope and service lifecycle hooks
-- Production-friendly startup/shutdown flow on a default port **4080**
-
----
-
-## ✨ Features
-
-### Core Framework
-- Simple decorator-based routing (`@controller`, `@get_api`, `@post_api`, ...)
-- **Type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File` (v0.90+)
-- **Unified parameter syntax**: `param: Type = Type(...)` (v0.90a5+)
-- **Pure type annotation as Query**: `page: int` automatically becomes Query parameter (v0.90a5+)
-- **as_required() shortcut**: `File.as_required()`, `Body.as_required()` (v0.90a5+)
-- **DynamicBody** for flexible request body access with safe accessors (v0.90a4+)
-- **RawBody** for raw unparsed request body (bytes) (v0.90a5+)
-- **FileInfo/FileList** for file upload with validation (v0.90a5+)
-- **@field_validator** for dataclass field validation (v0.90a5+)
-- **ResponseSerializer** for automatic response serialization (v0.90a5+)
-- **Pluggable model handlers** for Pydantic and custom model integration (v0.90a5+)
-- **Auto type conversion** and validation (ge, le, min_length, regex, etc.)
-- Modular architecture with registry, DI, and lifecycle management
-- Built-in IoC/DI with `InjectByName` and `Inject` support
-- Unified lifecycle hooks (`on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`) on all components
-- Duck Typing lifecycle: no base class inheritance required (v0.92+)
-- Designed for tests: resettable registries and request-scoped dependencies
-
-### Services & WebSocket
-- Service registry with dependency resolution
-- WebSocket support via `@websocket_handler` and registry pattern
-- Request context / request scope for per-request objects
-
-### Deployment & Production
-- Packaging-friendly (Nuitka, PyInstaller)
-- Cross-platform: Windows, Linux, macOS
-- Based on production-tested Tornado
+Cullinan is a Python Web Framework for developers who want to organize applications around
+business services, controllers, and methods instead of manually wiring an app object.
+Its default path is decorator-first discovery plus `@application` + `@configure(...)`,
+with `@module` used as the application boundary when ownership, runtime structure, and stability
+matter. The framework-facing API stays engine-neutral:
+Cullinan internally bridges your business application into Tornado or ASGI runtimes instead of
+making a concrete server framework the primary developer mental model.
 
 ---
 
-## 📚 Documentation
+## What is Cullinan?
 
-### Language / 语言
+Cullinan is designed to make the framework work around your business architecture, not the
+other way around.
 
-- **[English Documentation](https://plumeink.github.io/Cullinan/)** – complete English docs
-  - [Quick start](https://plumeink.github.io/Cullinan/getting_started/)
-  - [Architecture](https://plumeink.github.io/Cullinan/architecture/) · [Lifecycle](https://plumeink.github.io/Cullinan/wiki/lifecycle/)
-  - [IoC/DI 2.0](https://plumeink.github.io/Cullinan/wiki/ioc_di_v2/) · [Migration Guide](https://plumeink.github.io/Cullinan/import_migration_090/)
-  - [RESTful routing](https://plumeink.github.io/Cullinan/wiki/restful_api/)
-- **[中文文档](https://plumeink.github.io/Cullinan/zh/)** – 完整中文文档
-  - [快速开始](https://plumeink.github.io/Cullinan/zh/getting_started/)
-  - [架构](https://plumeink.github.io/Cullinan/zh/architecture/) · [生命周期](https://plumeink.github.io/Cullinan/zh/wiki/lifecycle/)
-  - [IoC/DI 2.0](https://plumeink.github.io/Cullinan/zh/wiki/ioc_di_v2/) · [迁移指南](https://plumeink.github.io/Cullinan/zh/import_migration_090/)
-  - [RESTful 路由](https://plumeink.github.io/Cullinan/zh/wiki/restful_api/)
+- **Business-first application model** - write services, controllers, middleware, and methods first
+- **Decorator-first discovery** - let Python imports and decorator metadata assemble the runtime
+- **Structured module boundaries** - use `@module` to express ownership and runtime boundaries
+- **Built-in IoC/DI and lifecycle** - keep application wiring inside the framework model
+- **Engine-neutral Web facade** - build against Cullinan semantics while the framework adapts to Tornado or ASGI internally
+- **Public semantic path** - build, run, test, and extend applications through stable public APIs
 
-### Version Notes
-
-- Current series: **v0.92**
-  - **Unified lifecycle management** with `on_post_construct`, `on_startup`, `on_shutdown`, `on_pre_destroy`
-  - **Duck Typing lifecycle**: no base class inheritance required
-  - **Phase ordering control** via `get_phase()` method
-  - **Breaking change**: Removed legacy `on_init()` and `on_destroy()` methods
-  - **New type-safe parameter system** with `Path`, `Query`, `Body`, `Header`, `File`
-  - **DynamicBody** for flexible request body access with safe accessors
-  - **FileInfo/FileList** for file upload handling with validation
-  - **@field_validator** for dataclass field validation
-  - **ResponseSerializer** for automatic response serialization
-  - **Pluggable model handlers** for Pydantic and custom model integration
-  - **Auto type conversion** and parameter validation
-  - IoC/DI 2.0 architecture with `ApplicationContext`
-  - Single container entry point with freeze-after-startup
-  - Definition/Factory separation for dependency management
-  - Structured diagnostics with stable dependency chains
-  - Core module with registry, DI, lifecycle management
-  - Enhanced service layer with dependency injection
-  - WebSocket support with unified registry
-  - Request context management
-
-- Migration from v0.83:
-  - See [Import Migration Guide](docs/import_migration_090.md) for detailed migration steps
-  - Legacy APIs are deprecated but still functional in v0.90
-  - Will be removed in v1.0
+Cullinan is not centered on treating an app object as a manual registration hub. The
+recommended development flow is to declare business components, define a root module when
+structure matters, and let the framework assemble the application runtime.
 
 ---
 
-## 🚀 Quick Start
+## Why Cullinan?
 
-### Install
+### 1. Framework semantics before manual wiring
 
-Use pip from PyPI:
+Cullinan gives you a clear application model: declare components with decorators, let the
+framework discover them, and keep explicit runtime internals as an advanced path rather than
+the default onboarding path.
+
+### 2. Application boundaries that scale past toy examples
+
+`@module` is more than a naming convention. It is the structured boundary for owned packages,
+runtime composition, and higher-level lifecycle behavior when your application grows.
+
+### 3. Web, DI, lifecycle, and testing in one model
+
+Routing, parameter binding, dependency injection, lifecycle hooks, middleware, and test flow
+all sit inside one framework vocabulary instead of forcing developers to stitch together
+multiple unrelated patterns.
+
+### 4. A Pythonic path for business applications
+
+Cullinan is designed to keep developers focused on business architecture and business methods.
+You can stay on the public path for most application work and only move into internals when
+you intentionally need advanced extension behavior.
+
+### 5. A clearer semantic package surface
+
+Cullinan now exposes a clearer framework-shaped package surface:
+
+- `cullinan` - recommended public startup and declaration API for application code
+- `cullinan.web` - controllers, route decorators, request/response, parameters, middleware
+- `cullinan.core` - IoC/DI, lifecycle, context, and semantic rules
+- `cullinan.application` - advanced application semantics for maintainers and framework-aware integrations
+- `cullinan.testing` - test-facing helpers
+- `cullinan.runtime` / `cullinan.transport` - advanced discovery and adapter boundaries
+- `cullinan.support` - constrained support utilities, not a second public app path
+
+---
+
+## Framework capabilities
+
+| Capability layer | What Cullinan provides |
+| --- | --- |
+| **Application composition** | `@application` + `@configure(...)`, decorator-driven discovery, structured runtime assembly |
+| **Web API model** | `cullinan.web` facade for `@controller`, RESTful decorators, `WebResponse`, parameters, middleware |
+| **Parameter system** | Typed `Path`, `Query`, `Body`, validation, conversion, and controller-method binding |
+| **IoC/DI and lifecycle** | `Inject()`, `InjectByName()`, request scope, startup/shutdown hooks, component lifecycle |
+| **Runtime boundaries** | `@module` ownership, clearer package structure, better runtime organization |
+| **Testing and delivery** | `get_asgi_app()`, resettable registries, packaging-friendly runtime, cross-platform support |
+
+Cullinan's goal is not to expose every internal knob on the README homepage. The goal is to
+provide a coherent framework model that remains readable from first contact through production use.
+
+---
+
+## Install
+
+Cullinan is published on PyPI and currently supports **Python 3.7+**.
 
 ```bash
 pip install -U pip
 pip install cullinan
 ```
 
-Ensure you have a working Python 3.8+ environment (virtualenv/conda/system Python are all fine).
+After installation, start from the minimal example in [`examples/minimal_app/`](examples/minimal_app)
+or the repository guide in [`docs/examples.md`](docs/examples.md).
 
-### Minimal Application
+---
+
+## Quick Start
+
+The recommended starting point is: define business components, decorate them,
+and declare the application entry with `@configure(...)` + `@application` + `main()`.
 
 ```python
-# app.py
-from cullinan import application
-from cullinan.controller import controller, get_api, post_api
-from cullinan.params import Query, Body, DynamicBody
+from cullinan import application, configure
+from cullinan.core import service
+from cullinan.web import controller, get_api
 
-@controller(url='/api')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
-    # Type-safe query parameters (new unified syntax)
-    @get_api(url='/hello')
-    def hello(self, name: str = Query(default='World')):
-        return self.response_factory(
-            status=200,
-            body={"message": f"Hello, {name}!"}
-        )
-    
-    # Pure type annotation as Query (v0.90a5+)
-    @get_api(url='/users')
-    def list_users(self, page: int = 1, size: int = 10):
-        # page and size are automatically Query parameters
-        return {"page": page, "size": size}
-    
-    # DynamicBody for flexible request body access
-    @post_api(url='/users')
-    def create_user(self, body: DynamicBody):
-        return self.response_factory(
-            status=200,
-            body={"name": body.name, "age": body.get('age', 0)}
-        )
+    greeting_service: GreetingService  # ← 构造注入：一行就够了
 
-if __name__ == '__main__':
-    # Framework-level entrypoint, no manual app instantiation required
-    application.run()
+    @get_api(url="")
+    def hello(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@configure(user_packages=["minimal_app"], server_port=4080)
+@application
+def main(): ...
 ```
 
-Run:
+Run it:
 
 ```bash
-python app.py
-# GET:  http://localhost:4080/api/hello?name=Cullinan
-# POST: http://localhost:4080/api/users  {"name": "John", "age": 25}
+python -m minimal_app
 ```
 
-For a more detailed onboarding, follow `docs/getting_started.md` (or `docs/zh/getting_started.md`).
+Then open:
+
+```text
+http://localhost:4080/hello
+```
+
+This example shows the default Cullinan path:
+
+- business service first
+- controller methods as the public web surface
+- `@application` + `@configure(...)` + `main()` as the startup flow
+- `@module` available when explicit runtime boundaries are needed
+- runtime backend selection delegated to Cullinan instead of driving application structure
 
 ---
 
-## 💡 Dependency Injection Patterns
+## Learning path
 
-Cullinan ships with a core IoC/DI system. Recommended patterns:
+If you are new to Cullinan, use this order:
 
-### 1. InjectByName (recommended default)
+1. [`examples/minimal_app/`](examples/minimal_app) - shortest public entrypoint
+2. [`examples/controller_service_inject/`](examples/controller_service_inject) - service/controller layering with `Inject()`
+3. [`examples/middleware_and_module/`](examples/middleware_and_module) - `@module` boundaries and middleware semantics
+4. [`examples/parameter_handling/`](examples/parameter_handling) - method-level `Path`, `Query`, and `Body`
+5. [`examples/testing_flow/`](examples/testing_flow) - public-API testing with `get_asgi_app()`
 
-```python
-from cullinan import service, Service
-from cullinan.core import InjectByName
+Then move into the documentation knowledge base:
 
-@service
-class EmailService(Service):
-    def send_email(self, to, subject, body):
-        print(f"Sending email to {to}: {subject}")
-        return True
-
-@service
-class UserService(Service):
-    """Service for user management with email dependency."""
-
-    # Name-based injection, no direct import needed
-    email_service = InjectByName('EmailService')
-
-    def create_user(self, name, email):
-        user = {'name': name, 'email': email}
-        self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
-        return user
-```
-
-### 2. Inject + TYPE_CHECKING (IDE autocomplete)
-
-```python
-from typing import TYPE_CHECKING
-from cullinan import service, Service
-from cullinan.core import Inject
-
-if TYPE_CHECKING:
-    from services.email import EmailService
-
-@service
-class UserService(Service):
-    # Type-hinted injection for better IDE support
-    email_service: 'EmailService' = Inject()
-
-    def create_user(self, name, email):
-        self.email_service.send_email(email, "Welcome", f"Welcome {name}!")
-        return {"name": name, "email": email}
-```
-
-### Controllers and RESTful decorators
-
-```python
-from cullinan.controller import controller, get_api, post_api
-from cullinan.core import InjectByName
-from cullinan.params import Query, Body
-
-@controller(url='/api')
-class UserController:
-    # Inject the UserService by name
-    user_service = InjectByName('UserService')
-
-    # Type-safe query parameter (v0.90+)
-    @get_api(url='/users')
-    def get_user(self, id: Query(str)):
-        return self.response_factory(
-            status=200,
-            body={"message": "User fetched successfully", "user_id": id},
-        )
-
-    # Type-safe body parameters (v0.90+)
-    @post_api(url='/users')
-    def create_user(self, name: Body(str, required=True), email: Body(str, required=True)):
-        user = self.user_service.create_user(name, email)
-        return self.response_factory(
-            status=201,
-            body={"message": "User created successfully", "data": user},
-        )
-```
-
-> Note: RESTful decorators are defined as `def get_api(**kwargs)` etc. Only **keyword arguments** are supported. Use `@get_api(url='/users')`, not `@get_api('/users')`.
-
-For full parameter system documentation, see `docs/parameter_system_guide.md`.
-
-More DI patterns and controller examples are documented in `docs/wiki/injection.md` and `docs/wiki/restful_api.md` (and their Chinese counterparts).
+- [`docs/README.md`](docs/README.md) - English knowledge base home
+- [`docs/zh/README.md`](docs/zh/README.md) - 中文知识库首页
+- [`docs/getting_started.md`](docs/getting_started.md) - recommended application entry
+- [`docs/framework_semantics.md`](docs/framework_semantics.md) - framework concepts and semantics
+- [`docs/examples.md`](docs/examples.md) - example navigation page
 
 ---
 
-## 📖 More Examples
+## Documentation
 
-The `examples/` folder contains additional runnable demos (HTTP, middleware, DI). Refer to:
+### English
 
-- `examples/hello_http.py` – minimal HTTP example using the handler registry
-- `examples/controller_di_middleware.py` – controller + DI + middleware integration
+- [Documentation home](https://plumeink.github.io/Cullinan/)
+- [Getting Started](https://plumeink.github.io/Cullinan/getting_started/)
+- [Framework Semantics](https://plumeink.github.io/Cullinan/framework_semantics/)
+- [Examples](https://plumeink.github.io/Cullinan/examples/)
+- [Dependency Injection Guide](https://plumeink.github.io/Cullinan/dependency_injection_guide/)
+- [Web Runtime Guide](https://plumeink.github.io/Cullinan/web_runtime_guide/)
+- [Static Files and SPA Guide](https://plumeink.github.io/Cullinan/static_files_guide/)
+- [Parameter System Guide](https://plumeink.github.io/Cullinan/parameter_system_guide/)
+- [Testing & Verification](https://plumeink.github.io/Cullinan/testing/)
 
-Each example is referenced from the docs so you can cross-check behavior with tests (`tests/` directory).
+### 中文
+
+- [文档首页](https://plumeink.github.io/Cullinan/zh/)
+- [快速开始](https://plumeink.github.io/Cullinan/zh/getting_started/)
+- [框架语义](https://plumeink.github.io/Cullinan/zh/framework_semantics/)
+- [示例导航](https://plumeink.github.io/Cullinan/zh/examples/)
+- [依赖注入指南](https://plumeink.github.io/Cullinan/zh/dependency_injection_guide/)
+- [Web Runtime 指南](https://plumeink.github.io/Cullinan/zh/web_runtime_guide/)
+- [静态文件与 SPA 指南](https://plumeink.github.io/Cullinan/zh/static_files_guide/)
+- [参数系统指南](https://plumeink.github.io/Cullinan/zh/parameter_system_guide/)
+- [测试与验证](https://plumeink.github.io/Cullinan/zh/testing/)
 
 ---
 
-## 📖 Additional Documentation
+## Current series
 
-For advanced topics, see the docs:
+**v0.93a8** makes the public application path more explicit around:
 
-- **Configuration** – environment and config options
-- **Packaging** – building executables with Nuitka/PyInstaller
-- **Service Layer** – service patterns and DI
-- **Registry Pattern** – unified registry behavior
-- **Testing** – running tests and using test registries
-- **Troubleshooting** – common issues and diagnostics
+- `@application` + `@configure(...)` + `main()` as the startup flow
+- decorator-first discovery through Python imports
+- `@module` as the structured boundary for runtime ownership
+- built-in IoC/DI, lifecycle, and semantic diagnostics
+- a semantic package surface centered on the top-level `cullinan` API, with
+  advanced semantic namespaces under `cullinan.application`, `cullinan.web`,
+  and `cullinan.core`
+- engine-neutral runtime selection over Tornado / ASGI backends
+
+Version-specific details and migration notes live in the documentation knowledge base rather
+than in the homepage narrative.
 
 ---
 
-## 🔗 Links
+## Project links
 
-- **Documentation**: [docs/README.md](docs/README.md)
 - **GitHub**: https://github.com/plumeink/Cullinan
 - **PyPI**: https://pypi.org/project/cullinan/
 - **Issues**: https://github.com/plumeink/Cullinan/issues
@@ -287,14 +243,6 @@ For advanced topics, see the docs:
 
 ---
 
-## 📄 License
+## License
 
-MIT License – see [LICENSE](LICENSE) for details.
-
----
-
-## 💻 Maintainer
-
-Plumeink
-
-[<img src="https://avatars.githubusercontent.com/u/104434649?v=4" width = "40" height = "40"/>](https://github.com/plumeink)
+MIT License - see [LICENSE](LICENSE) for details.

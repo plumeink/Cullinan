@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan Codec Registry
 
-Codec 注册表，管理所有 BodyCodec 和 ResponseCodec。
+Codec registry that manages all BodyCodec and ResponseCodec instances.
 
 Author: Plumeink
 """
@@ -9,24 +9,23 @@ Author: Plumeink
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 from .base import BodyCodec, ResponseCodec
-from .errors import DecodeError, EncodeError
 
 
 class CodecRegistry:
-    """Codec 注册表
+    """Codec registry
 
-    管理所有 BodyCodec 和 ResponseCodec 的注册和选择。
+    Manages registration and selection of all BodyCodec and ResponseCodec instances.
 
     Example:
         registry = get_codec_registry()
 
-        # 解码请求体
+        # Decode request body
         data = registry.decode_body(body, 'application/json')
 
-        # 编码响应
+        # Encode response
         encoded, content_type = registry.encode_response(data, 'application/json')
 
-        # 注册自定义 Codec
+        # Register custom Codec
         registry.register_body_codec(XmlBodyCodec)
     """
 
@@ -35,44 +34,44 @@ class CodecRegistry:
         self._response_codecs: List[Type[ResponseCodec]] = []
 
     def register_body_codec(self, codec_class: Type[BodyCodec]) -> None:
-        """注册请求体 Codec
+        """Register a body codec
 
         Args:
-            codec_class: BodyCodec 子类
+            codec_class: BodyCodec subclass
         """
         if codec_class not in self._body_codecs:
             self._body_codecs.append(codec_class)
-            # 按优先级排序 (数字越小越优先)
+            # Sort by priority (smaller number = higher priority)
             self._body_codecs.sort(key=lambda c: c.priority)
 
     def register_response_codec(self, codec_class: Type[ResponseCodec]) -> None:
-        """注册响应 Codec
+        """Register a response codec
 
         Args:
-            codec_class: ResponseCodec 子类
+            codec_class: ResponseCodec subclass
         """
         if codec_class not in self._response_codecs:
             self._response_codecs.append(codec_class)
             self._response_codecs.sort(key=lambda c: c.priority)
 
     def unregister_body_codec(self, codec_class: Type[BodyCodec]) -> None:
-        """取消注册请求体 Codec"""
+        """Unregister a body codec"""
         if codec_class in self._body_codecs:
             self._body_codecs.remove(codec_class)
 
     def unregister_response_codec(self, codec_class: Type[ResponseCodec]) -> None:
-        """取消注册响应 Codec"""
+        """Unregister a response codec"""
         if codec_class in self._response_codecs:
             self._response_codecs.remove(codec_class)
 
     def get_body_codec(self, content_type: str) -> Optional[BodyCodec]:
-        """根据 Content-Type 获取请求体 Codec 实例
+        """Get a body codec instance by Content-Type
 
         Args:
-            content_type: HTTP Content-Type 头
+            content_type: HTTP Content-Type header
 
         Returns:
-            Codec 实例，无匹配返回 None
+            Codec instance, or None if no match
         """
         for codec_class in self._body_codecs:
             if codec_class.supports(content_type):
@@ -80,13 +79,13 @@ class CodecRegistry:
         return None
 
     def get_response_codec(self, accept: str = '*/*') -> Optional[ResponseCodec]:
-        """根据 Accept 获取响应 Codec 实例
+        """Get a response codec instance by Accept type
 
         Args:
-            accept: HTTP Accept 头
+            accept: HTTP Accept header
 
         Returns:
-            Codec 实例，无匹配返回 None
+            Codec instance, or None if no match
         """
         for codec_class in self._response_codecs:
             if codec_class.supports_accept(accept):
@@ -99,24 +98,24 @@ class CodecRegistry:
         content_type: str,
         charset: str = 'utf-8'
     ) -> Dict[str, Any]:
-        """解码请求体
+        """Decode the request body
 
         Args:
-            body: 原始请求体字节
-            content_type: Content-Type 头
-            charset: 字符编码
+            body: Raw request body bytes
+            content_type: Content-Type header
+            charset: Character encoding
 
         Returns:
-            解码后的字典
+            Decoded dictionary
 
         Raises:
-            DecodeError: 解码失败
+            DecodeError: Decoding failed
         """
         codec = self.get_body_codec(content_type)
         if codec:
             return codec.decode(body, charset)
 
-        # 默认尝试 JSON
+        # Fall back to JSON
         from .json_codec import JsonBodyCodec
         return JsonBodyCodec().decode(body, charset)
 
@@ -126,51 +125,51 @@ class CodecRegistry:
         accept: str = '*/*',
         charset: str = 'utf-8'
     ) -> Tuple[bytes, str]:
-        """编码响应
+        """Encode the response
 
         Args:
-            data: 响应数据
-            accept: Accept 头
-            charset: 字符编码
+            data: Response data
+            accept: Accept header
+            charset: Character encoding
 
         Returns:
-            (编码后的字节, Content-Type)
+            (encoded bytes, Content-Type)
 
         Raises:
-            EncodeError: 编码失败
+            EncodeError: Encoding failed
         """
         codec = self.get_response_codec(accept)
         if codec:
             return codec.encode(data, charset), codec.get_content_type(charset)
 
-        # 默认 JSON
+        # Fall back to JSON
         from .json_codec import JsonResponseCodec
         default_codec = JsonResponseCodec()
         return default_codec.encode(data, charset), default_codec.get_content_type(charset)
 
     def list_body_codecs(self) -> List[Type[BodyCodec]]:
-        """列出所有注册的请求体 Codec"""
+        """List all registered body codecs"""
         return list(self._body_codecs)
 
     def list_response_codecs(self) -> List[Type[ResponseCodec]]:
-        """列出所有注册的响应 Codec"""
+        """List all registered response codecs"""
         return list(self._response_codecs)
 
 
-# 全局注册表实例
+# Global registry instance
 _codec_registry: Optional[CodecRegistry] = None
 
 
 def get_codec_registry() -> CodecRegistry:
-    """获取全局 Codec 注册表
+    """Get the global Codec registry
 
     Returns:
-        CodecRegistry 单例
+        CodecRegistry singleton
     """
     global _codec_registry
     if _codec_registry is None:
         _codec_registry = CodecRegistry()
-        # 注册默认 Codec
+        # Register default codecs
         from .json_codec import JsonBodyCodec, JsonResponseCodec
         from .form_codec import FormBodyCodec
         _codec_registry.register_body_codec(JsonBodyCodec)
@@ -180,7 +179,7 @@ def get_codec_registry() -> CodecRegistry:
 
 
 def reset_codec_registry() -> None:
-    """重置全局注册表 (测试用)"""
+    """Reset the global registry (for testing)"""
     global _codec_registry
     _codec_registry = None
 

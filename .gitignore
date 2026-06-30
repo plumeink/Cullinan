@@ -35,6 +35,7 @@ Include/
 pyvenv.cfg
 docs/work
 docs/zh/work
+docs/superpowers/
 # IDE
 .idea/
 .vscode/
@@ -62,6 +63,7 @@ desktop.ini
 *.log
 *.swp
 *_LOCAL.md
+*-local.md
 NOTES.md
 TODO.md
 .scratch/
@@ -120,7 +122,13 @@ pdm.lock
 *_COMPLETE.md
 *_CHECKLIST.md
 *_REPORT.md
+# Issue template legitimately ends in _report.md — keep it tracked
+!.github/ISSUE_TEMPLATE/bug_report.md
 *_FIX_*.md
+*-design.md
+*-plan.md
+*-feedback.md
+RELEASE-*.md
 COMPLETION_STATUS.md
 GIT_COMMIT_MESSAGE.md
 IMPLEMENTATION_SUMMARY.md
@@ -150,3 +158,5 @@ Icon
 .directory
 .Trash-*
 
+.agents
+skills-lock.json

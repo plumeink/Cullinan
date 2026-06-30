@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Cullinan JSON Codec
 
-JSON 请求体解码器和响应编码器实现。
+JSON request body decoder and response encoder implementation.
 
 Author: Plumeink
 """
@@ -14,29 +14,29 @@ from .errors import DecodeError, EncodeError
 
 
 class JsonBodyCodec(BodyCodec):
-    """JSON 请求体解码器
+    """JSON request body decoder
 
-    支持的 Content-Type:
+    Supported Content-Types:
     - application/json
     - text/json
     - application/json; charset=utf-8
     """
 
     content_types = ['application/json', 'text/json']
-    priority = 10  # 高优先级
+    priority = 10  # High priority
 
     def decode(self, body: bytes, charset: str = 'utf-8') -> Dict[str, Any]:
-        """解码 JSON 请求体
+        """Decode a JSON request body
 
         Args:
-            body: 原始请求体字节
-            charset: 字符编码
+            body: Raw request body bytes
+            charset: Character encoding
 
         Returns:
-            解码后的字典 (空请求体返回空字典)
+            Decoded dictionary (empty body returns empty dict)
 
         Raises:
-            DecodeError: JSON 解析失败
+            DecodeError: JSON parsing failed
         """
         if not body:
             return {}
@@ -45,10 +45,10 @@ class JsonBodyCodec(BodyCodec):
             decoded = body.decode(charset)
             result = json.loads(decoded)
 
-            # 确保返回字典
+            # Ensure we return a dict
             if isinstance(result, dict):
                 return result
-            # 非字典值包装 (如 JSON 数组或标量)
+            # Wrap non-dict values (e.g., JSON arrays or scalars)
             return {'_value': result}
 
         except UnicodeDecodeError as e:
@@ -65,14 +65,14 @@ class JsonBodyCodec(BodyCodec):
             )
 
     def encode(self, data: Dict[str, Any], charset: str = 'utf-8') -> bytes:
-        """编码为 JSON
+        """Encode to JSON
 
         Args:
-            data: 要编码的字典
-            charset: 字符编码
+            data: Dictionary to encode
+            charset: Character encoding
 
         Returns:
-            JSON 字节串
+            JSON bytes
         """
         try:
             return json.dumps(data, ensure_ascii=False).encode(charset)
@@ -84,30 +84,30 @@ class JsonBodyCodec(BodyCodec):
 
 
 class JsonResponseCodec(ResponseCodec):
-    """JSON 响应编码器
+    """JSON response encoder
 
-    将响应数据编码为 JSON 格式。
+    Encodes response data to JSON format.
     """
 
     content_type = 'application/json'
     accept_types = ['application/json', 'text/json', '*/*']
-    priority = 10  # 高优先级
+    priority = 10  # High priority
 
     def encode(self, data: Any, charset: str = 'utf-8') -> bytes:
-        """编码响应数据为 JSON
+        """Encode response data as JSON
 
         Args:
-            data: 响应数据 (可以是任意 JSON 可序列化类型)
-            charset: 字符编码
+            data: Response data (can be any JSON-serializable type)
+            charset: Character encoding
 
         Returns:
-            JSON 字节串
+            JSON bytes
 
         Raises:
-            EncodeError: 序列化失败
+            EncodeError: Serialization failed
         """
         try:
-            # 使用 default=str 处理不可序列化的类型
+            # Use default=str to handle non-serializable types
             return json.dumps(
                 data,
                 ensure_ascii=False,

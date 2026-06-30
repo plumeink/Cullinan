@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+"""Runtime discovery and assembly facade for Cullinan."""
+
+from cullinan.runtime.annotations_hook import (
+    install_annotations_hook,
+    uninstall_annotations_hook,
+    is_annotations_hook_installed,
+    get_hook_root_path,
+)
+from cullinan.runtime.module_scanner import (
+    file_list_func,
+    get_caller_package,
+    get_nuitka_standalone_mode,
+    get_pyinstaller_mode,
+    invalidate_module_cache,
+    is_nuitka_compiled,
+    is_pyinstaller_frozen,
+    list_submodules,
+)
+from cullinan.runtime.scan_stats import (
+    ScanPhase,
+    ScanStatistics,
+    ScanStatsCollector,
+    export_scan_statistics,
+    get_scan_stats_collector,
+    log_scan_statistics,
+    reset_scan_stats_collector,
+)
+from cullinan.runtime.scanner import reflect_module, scan_controller, scan_service
+
+__all__ = [
+    "install_annotations_hook",
+    "uninstall_annotations_hook",
+    "is_annotations_hook_installed",
+    "get_hook_root_path",
+    "ModuleReflectionResult",
+    "ScanPhase",
+    "ScanStatistics",
+    "ScanStatsCollector",
+    "file_list_func",
+    "export_scan_statistics",
+    "get_caller_package",
+    "get_nuitka_standalone_mode",
+    "get_pyinstaller_mode",
+    "get_scan_stats_collector",
+    "invalidate_module_cache",
+    "is_nuitka_compiled",
+    "is_pyinstaller_frozen",
+    "list_submodules",
+    "log_scan_statistics",
+    "reflect_module",
+    "reset_scan_stats_collector",
+    "scan_controller",
+    "scan_service",
+]

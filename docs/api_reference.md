@@ -10,33 +10,52 @@ translation_pair: "docs/zh/api_reference.md"
 related_tests: []
 related_examples: []
 estimate_pd: 1.5
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # API Reference
 
 > **Note (v0.90)**: The core module has been reorganized. For the new API structure, see [Dependency Injection Guide](dependency_injection_guide.md) and [Import Migration Guide](import_migration_090.md).
 
-This page provides an overview of the public API surface of Cullinan and acts as an entry point for generated or manually maintained per-module API pages. The recommended structure includes: a module index, the public symbols and signatures for each module, and a brief description of how to regenerate API documentation.
+This page provides an overview of the public API surface of Cullinan and clarifies which APIs are recommended and which stay in advanced runtime-facing layers.
 
-## Module index (example)
+> **Need the recommended learning path first?** Start from [Application Build](start/index.md)
+> and [Framework Semantics](concepts/index.md).  
+> **Need advanced runtime internals?** Continue in [Internals & Extensions](internals/index.md).
 
-The following module list is for illustration only. The concrete index should be derived from the actual code structure and/or automated generation results:
+## API layering
 
-- `cullinan.app` — Application creation and run entrypoints
-- `cullinan.application` — Application lifecycle and startup flow
-- `cullinan.core` — IoC/DI core (providers, registries, scopes, injection APIs)
-- `cullinan.controller` — Controllers and RESTful API decorators
-- `cullinan.service` — Service base class and the `@service` decorator
-- `cullinan.middleware` — Middleware base classes and extension points
-- `cullinan.codec` — Request/response encoding/decoding (JSON, Form, etc.)
-- `cullinan.params` — Parameter handling (Path, Query, Body, Header, File, validators)
+### Recommended default API
+
+- `cullinan` — top-level application API for regular business projects:
+  - startup: `@application`, `configure(...)`, `run(...)`, `get_asgi_app(...)`
+  - declaration: `@service`, `@controller`, `@module` (advanced boundary), route decorators
+  - injection / params: `Inject`, `InjectByName`, `Path`, `Query`, `Body`, ...
+  - framework mental model: decorator-first business code, component discovery,
+    IoC/DI wiring, and module boundaries with hot-pluggable runtime semantics
+
+### Advanced integration API
+
+- `cullinan.application` — advanced public application semantics for maintainers
+  and framework-aware integrations (`Application`, `Runtime`, `module`)
+- `cullinan.transport.adapter` — server integration (`WebAdapter`, `TornadoAdapter`, `ASGIAdapter`)
+- `cullinan.web.gateway` — request / response / dispatcher contracts
+- `cullinan.core` — low-level container and lifecycle primitives
+
+These advanced modules are not the default application-facing mental model.
+Regular business code should stay on the top-level `cullinan` API and the
+framework's own decorator / DI / module semantics rather than dropping into
+low-level runtime orchestration or a concrete server adapter.
+
+For regular applications, prefer the top-level `cullinan` API. Advanced modules
+should be imported explicitly so the boundary stays visible in code review, IDE
+completion, and onboarding docs.
 
 ## New in v0.90+: Parameter System
 
 The parameter system provides type-safe request parameter handling. See [Parameter System Guide](parameter_system_guide.md) for details.
 
-### cullinan.params (v0.90a4+)
+### cullinan.web.params (v0.90a4+)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -61,7 +80,7 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `ParamResolver` | class | Parameter resolution orchestrator |
 | `ResolveError` | exception | Parameter resolution error |
 
-### cullinan.params (v0.90a5+)
+### cullinan.web.params (v0.90a5+)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -76,7 +95,7 @@ The parameter system provides type-safe request parameter handling. See [Paramet
 | `serialize_response` | function | Convenience serialization function |
 | `get_response_models` | function | Get response models from function |
 
-### cullinan.params.model_handlers (v0.90a5+)
+### cullinan.web.params.model_handlers (v0.90a5+)
 
 Pluggable model handler architecture for third-party library integration.
 
@@ -106,7 +125,7 @@ Pluggable model handler architecture for third-party library integration.
 | `EncodeError` | exception | Encoding error |
 | `CodecError` | exception | Base codec error |
 
-### cullinan.middleware (new additions)
+### cullinan.web.middleware (new additions)
 
 | Symbol | Type | Description |
 |--------|------|-------------|
@@ -118,7 +137,7 @@ Pluggable model handler architecture for third-party library integration.
 
 For each module, the API reference is recommended to follow this structure:
 
-- Module path, for example: `cullinan.controller`
+- Module path, for example: `cullinan.web.controller`
 - Short description: primary responsibility and typical usage scenarios
 - List of public classes and functions (example):
   - `@controller(...)` — Controller decorator, responsible for auto-registering controllers and their routes

@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 """Cullinan Codec Base Classes
 
-定义 BodyCodec 和 ResponseCodec 抽象基类。
+Defines the BodyCodec and ResponseCodec abstract base classes.
 
 Author: Plumeink
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class BodyCodec(ABC):
-    """请求体编解码器抽象基类
+    """Abstract base class for request body codecs
 
-    职责:
-    - decode: bytes → dict (请求解码)
-    - encode: dict → bytes (可选，用于某些场景)
+    Responsibilities:
+    - decode: bytes → dict (request decoding)
+    - encode: dict → bytes (optional, for certain scenarios)
 
-    特点:
-    - 纯粹的编解码，不涉及业务逻辑
-    - 可在 Middleware 中统一调用
+    Characteristics:
+    - Pure encoding/decoding, no business logic
+    - Can be invoked uniformly in Middleware
 
     Example:
         class JsonBodyCodec(BodyCodec):
@@ -29,52 +29,52 @@ class BodyCodec(ABC):
                 return json.loads(body.decode(charset))
     """
 
-    # 支持的 Content-Type 列表 (子类必须重写)
+    # Supported Content-Type list (subclasses must override)
     content_types: List[str] = []
 
-    # 优先级 (数字越小优先级越高)
+    # Priority (smaller number = higher priority)
     priority: int = 100
 
     @abstractmethod
     def decode(self, body: bytes, charset: str = 'utf-8') -> Dict[str, Any]:
-        """解码请求体
+        """Decode the request body
 
         Args:
-            body: 原始请求体字节
-            charset: 字符编码
+            body: Raw request body bytes
+            charset: Character encoding
 
         Returns:
-            解码后的字典
+            Decoded dictionary
 
         Raises:
-            DecodeError: 解码失败
+            DecodeError: Decoding failed
         """
         pass
 
     def encode(self, data: Dict[str, Any], charset: str = 'utf-8') -> bytes:
-        """编码数据 (可选实现)
+        """Encode data (optional implementation)
 
         Args:
-            data: 要编码的字典
-            charset: 字符编码
+            data: Dictionary to encode
+            charset: Character encoding
 
         Returns:
-            编码后的字节
+            Encoded bytes
 
         Raises:
-            EncodeError: 编码失败
+            EncodeError: Encoding failed
         """
         raise NotImplementedError("This codec does not support encoding")
 
     @classmethod
     def supports(cls, content_type: str) -> bool:
-        """检查是否支持该 Content-Type
+        """Check if this codec supports the given Content-Type
 
         Args:
-            content_type: HTTP Content-Type 头
+            content_type: HTTP Content-Type header
 
         Returns:
-            是否支持
+            True if supported, False otherwise
         """
         if not content_type:
             return False
@@ -86,15 +86,15 @@ class BodyCodec(ABC):
 
 
 class ResponseCodec(ABC):
-    """响应体编解码器抽象基类
+    """Abstract base class for response body codecs
 
-    职责:
-    - encode: Any → bytes (响应编码)
-    - 设置正确的 Content-Type
+    Responsibilities:
+    - encode: Any → bytes (response encoding)
+    - Set the correct Content-Type
 
-    使用场景:
-    - 统一响应格式 (JSON/XML/MessagePack)
-    - 内容协商 (Accept header)
+    Use cases:
+    - Unified response format (JSON/XML/MessagePack)
+    - Content negotiation (Accept header)
 
     Example:
         class JsonResponseCodec(ResponseCodec):
@@ -105,39 +105,39 @@ class ResponseCodec(ABC):
                 return json.dumps(data).encode(charset)
     """
 
-    # 输出的 Content-Type
+    # Output Content-Type
     content_type: str = 'application/octet-stream'
 
-    # 支持的 Accept 类型
+    # Supported Accept types
     accept_types: List[str] = []
 
-    # 优先级
+    # Priority
     priority: int = 100
 
     @abstractmethod
     def encode(self, data: Any, charset: str = 'utf-8') -> bytes:
-        """编码响应数据
+        """Encode response data
 
         Args:
-            data: 响应数据 (可以是任意类型)
-            charset: 字符编码
+            data: Response data (can be any type)
+            charset: Character encoding
 
         Returns:
-            编码后的字节
+            Encoded bytes
 
         Raises:
-            EncodeError: 编码失败
+            EncodeError: Encoding failed
         """
         pass
 
     def get_content_type(self, charset: str = 'utf-8') -> str:
-        """获取完整的 Content-Type 头
+        """Get the full Content-Type header
 
         Args:
-            charset: 字符编码
+            charset: Character encoding
 
         Returns:
-            完整的 Content-Type 字符串
+            Full Content-Type string
         """
         if 'charset' not in self.content_type.lower():
             return f"{self.content_type}; charset={charset}"
@@ -145,13 +145,13 @@ class ResponseCodec(ABC):
 
     @classmethod
     def supports_accept(cls, accept: str) -> bool:
-        """检查是否支持该 Accept 类型
+        """Check if this codec supports the given Accept type
 
         Args:
-            accept: HTTP Accept 头
+            accept: HTTP Accept header
 
         Returns:
-            是否支持
+            True if supported, False otherwise
         """
         if not accept or accept == '*/*':
             return True

@@ -1,0 +1,36 @@
+.md-version-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.7rem;
+}
+
+.md-version-switcher__label,
+.md-version-switcher__current {
+  color: var(--md-primary-bg-color);
+}
+
+.md-version-switcher__select {
+  min-width: 10rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.25rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--md-primary-bg-color);
+}
+
+.md-version-switcher__select option {
+  color: #000;
+}
+
+@media screen and (max-width: 45rem) {
+  .md-version-switcher {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .md-version-switcher__select {
+    min-width: 8rem;
+  }
+}

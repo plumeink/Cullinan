@@ -4,6 +4,8 @@
 > **功能**：统一扩展注册与发现模式  
 > **作者**：Plumeink
 
+> **高级主题：** 这页用于扩展或中间件注册场景，不是常规业务应用首读内容。
+
 ---
 
 ## 快速开始
@@ -13,7 +15,7 @@
 使用 `@middleware` 装饰器自动注册中间件：
 
 ```python
-from cullinan.middleware import middleware, Middleware
+from cullinan.web.middleware import middleware, Middleware
 
 @middleware(priority=100)
 class LoggingMiddleware(Middleware):
@@ -56,7 +58,7 @@ class LoggingMiddleware(Middleware):
 查询框架提供的扩展点：
 
 ```python
-from cullinan.extensions import list_extension_points
+from cullinan.support.extensions import list_extension_points
 
 # 查询所有扩展点
 all_points = list_extension_points()
@@ -79,7 +81,7 @@ Middleware.process_response: Intercept and process responses before they are sen
 ### 4. 查询已注册中间件
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 registered = registry.get_registered_middleware()
@@ -102,12 +104,11 @@ for mw in registered:
 ### 场景：构建一个带认证的 API
 
 ```python
-from cullinan import configure, run
-from cullinan.middleware import middleware, Middleware
-from cullinan.controller import controller, get_api
-from cullinan.service import service, Service
-from cullinan.core import Inject
-from cullinan.params import Path
+from cullinan import application, configure
+from cullinan.web.middleware import middleware, Middleware
+from cullinan.web.controller import controller, get_api
+from cullinan.core.services import service, Service
+from cullinan.web.params import Path
 
 # 1. 定义中间件（按优先级自动排序）
 
@@ -151,7 +152,7 @@ class UserService(Service):
 
 @controller(url='/api/users')
 class UserController:
-    user_service: 'UserService' = Inject()
+    user_service: UserService  # ← 构造注入
     
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
@@ -160,12 +161,9 @@ class UserController:
 
 # 4. 启动应用
 
-if __name__ == '__main__':
-    configure(
-        port=8080,
-        debug=True
-    )
-    run()
+@configure(user_packages=["__main__"], server_port=8080)
+@application
+def main(): ...
 ```
 
 **执行流程**：
@@ -196,7 +194,7 @@ CorsMiddleware (响应，逆序)
 手动注册方式仍然可用：
 
 ```python
-from cullinan.middleware import Middleware, get_middleware_registry
+from cullinan.web.middleware import Middleware, get_middleware_registry
 
 class MyMiddleware(Middleware):
     def process_request(self, handler):
@@ -260,7 +258,7 @@ def process_request(self, handler):
 A: 使用注册表查询：
 
 ```python
-from cullinan.middleware import get_middleware_registry
+from cullinan.web.middleware import get_middleware_registry
 
 registry = get_middleware_registry()
 for mw in registry.get_registered_middleware():
@@ -299,4 +297,3 @@ A: 装饰器注册的开销极小（~1μs），运行时无额外开销。中间
 如有问题或建议，请：
 1. 查看示例代码：`examples/extension_registration_demo.py`
 2. 提交 Issue 或 PR 到项目仓库
-

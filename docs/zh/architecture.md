@@ -1,753 +1,160 @@
-# Cullinan 框架架构文档（更新版）
+# Cullinan 框架架构
 
-> **版本**：v0.92  
-> **最后更新**：2026-02-19  
-> **作者**：Plumeink  
+> **版本**：0.93a13
+> **最后更新**：2026-06-01  
 > **状态**：已更新
 
----
+> **这页用于解释框架结构，不是默认启动教程。**  
+> 推荐启动路径请先看 [应用构建](start/index.md)；若你明确需要更深的运行时细节，再进入
+> [运行时与扩展](internals/index.md)。
 
-## 目录
+## 概览
 
-1. [架构概览](#overview)
-2. [核心组件](#core-components)
-3. [IoC/DI 2.0 系统](#iocdi-20)
-4. [扩展机制](#extensions)
-5. [启动流程](#startup-flow)
-6. [请求处理流程](#request-flow)
-7. [模块扫描机制](#module-scanning)
-8. [性能优化](#performance)
-9. [从 0.83 迁移](#migration)
+Cullinan 是一个引擎中立的应用框架，当前运行时围绕三条已经整合完成的主线组织：
 
----
+1. **统一容器门面** —— `cullinan.core` 是公开的 IoC/DI 入口。
+2. **传输无关的 Web Runtime** —— `cullinan.web.gateway` 承载 `WebRequest`、`WebResponse`、路由、分发、中间件与异常处理。
+3. **装饰器优先的运行时装配** —— 应用代码先从业务装饰器出发，运行时边界、热插拔与稳定性能力按需叠加。
 
-## 架构概览 {#overview}
+## 架构分层
 
-Cullinan 是一个基于 Tornado 的 Web 框架，采用 **IoC/DI**（控制反转/依赖注入）设计模式，提供装饰器驱动的开发体验。
+```text
+应用代码
+├── @service / @controller / @component
+├── 使用 get_api/post_api/... 的控制器方法
+└── 业务服务与中间件
 
-### 核心设计理念
+框架门面
+├── cullinan             -> @application、configure/run/get_asgi_app
+├── cullinan.application -> Application、@module
+├── cullinan.web         -> 控制器装饰器、WebRequest/WebResponse、参数系统、中间件
+├── cullinan.core        -> ApplicationContext、作用域、生命周期、请求上下文
+├── cullinan.testing     -> 测试辅助与验证入口
+├── cullinan.runtime     -> 发现、扫描、运行时装配
+└── cullinan.transport   -> WebAdapter、TornadoAdapter、ASGIAdapter
 
-- **非侵入式**：通过装饰器和注解实现功能，无需继承复杂基类
-- **依赖注入**：自动管理组件依赖关系
-- **扩展友好**：统一的扩展点注册和发现机制
-- **高性能**：优化的启动和运行时性能
-
-### 架构分层
-
-```
-┌─────────────────────────────────────────────────────┐
-│              应用层 (Application Layer)               │
-│  - 业务逻辑 (Controllers)                             │
-│  - 服务层 (Services)                                  │
-└─────────────────┬───────────────────────────────────┘
-                  │
-┌─────────────────┼───────────────────────────────────┐
-│              框架层 (Framework Layer)                 │
-│  ┌──────────────┴──────────────┐                     │
-│  │    扩展机制                  │                     │
-│  │  - Middleware               │                     │
-│  │  - Extension Points         │                     │
-│  └──────────────┬──────────────┘                     │
-│  ┌──────────────┴──────────────┐                     │
-│  │    IoC/DI 2.0 容器           │                     │
-│  │  - ApplicationContext       │                     │
-│  │  - Definition + Factory     │                     │
-│  │  - ScopeManager             │                     │
-│  │  - 结构化诊断               │                     │
-│  └──────────────┬──────────────┘                     │
-│  ┌──────────────┴──────────────┐                     │
-│  │    核心基础                  │                     │
-│  │  - Lifecycle Management     │                     │
-│  │  - Request Context          │                     │
-│  │  - Module Scanner           │                     │
-│  └─────────────────────────────┘                     │
-└─────────────────┬───────────────────────────────────┘
-                  │
-┌─────────────────┴───────────────────────────────────┐
-│            Web 服务器层 (Tornado)                     │
-│  - IOLoop                                            │
-│  - HTTP Server                                       │
-│  - Request Handler                                   │
-└─────────────────────────────────────────────────────┘
+运行时执行
+├── 装饰器声明 -> 导入执行发现 -> 运行时装配
+├── ApplicationContext.refresh()
+├── Gateway pipeline + dispatcher
+├── 适配器层请求/响应转换
+└── ApplicationContext.shutdown()
 ```
 
----
+## 语义化包结构
 
-## 核心组件 {#core-components}
+Cullinan 现在按更像正式 Web Framework 的语义层公开主结构：
 
-### 1. Core 模块 (`cullinan/core/`)
+- `cullinan` —— 默认启动入口（`configure`、`run`、`get_asgi_app`）
+- `cullinan.application` —— 应用定义与运行时边界等高级语义
+- `cullinan.web` —— 面向业务开发者的 Web 公开层
+- `cullinan.core` —— IoC/DI、生命周期、请求上下文、语义诊断
+- `cullinan.testing` —— 测试辅助
+- `cullinan.runtime` —— 自动发现、扫描、运行时装配内部机制
+- `cullinan.transport` —— 服务端适配边界
+- `cullinan.support` —— 受约束的支撑能力，不是默认第一入口
 
-提供框架的基础设施。
+这种分层让默认路径保持业务优先，同时也让维护者与高级使用者在需要时有清晰下探层。像 `cullinan.app`、`cullinan.public_api` 这类历史根层 wrapper 已不再属于维护中的正式结构。
 
-**主要组件**：
+## 核心容器模型
 
-#### 1.1 IoC/DI 2.0 容器
+`cullinan.core` 暴露公开容器 API。`ApplicationContext` 是注册、解析、refresh 与 shutdown 的唯一运行时入口。
 
-```
-ApplicationContext (单一入口)
-    ├── Definition Registry (不可变定义)
-    ├── Factory (实例创建)
-    └── ScopeManager (作用域管理)
-        ├── SingletonScope
-        ├── PrototypeScope
-        └── RequestScope
-```
+### 主要职责
 
-**核心组件 (v0.90)**：
-- **ApplicationContext**：所有容器操作的单一入口
-  - `register(Definition)` - 注册依赖定义
-  - `get(name)` / `try_get(name)` - 解析依赖
-  - `refresh()` - 冻结注册表，初始化 eager bean
-  - `shutdown()` - 清理资源
+- 注册依赖定义
+- 解析 singleton / prototype / request 作用域实例
+- 在 `refresh()` 与 `shutdown()` 期间驱动生命周期钩子
+- 保存框架集成使用的当前活动应用上下文
 
-- **Definition**：不可变的依赖定义
-  - `name` - 全局唯一标识
-  - `factory` - 实例创建函数
-  - `scope` - ScopeType（SINGLETON/PROTOTYPE/REQUEST）
-  - `source` - 来源描述（用于诊断）
-
-- **Factory**：统一实例创建
-  - 通过 Definition.factory 创建实例
-  - 委托 ScopeManager 进行缓存
-
-- **ScopeManager**：统一作用域管理
-  - `SINGLETON` - 应用级单例（线程安全）
-  - `PROTOTYPE` - 每次解析创建新实例
-  - `REQUEST` - 请求作用域实例
-
-**新目录结构 (v0.90)**：
-```
-cullinan/core/
-├── container/      # IoC/DI 2.0 API
-│   ├── context.py
-│   ├── definitions.py
-│   ├── factory.py
-│   └── scope.py
-├── diagnostics/    # 异常 + 渲染
-├── lifecycle/      # 生命周期管理
-├── request/        # 请求上下文
-└── legacy/         # 已弃用的 1.x 组件
-```
-  - 循环依赖检测
-
-- **ProviderRegistry**：Provider 管理
-  - 管理不同类型的 Provider（Instance、Class、Factory、Scoped）
-  - 支持单例和瞬时模式
-
-- **ServiceRegistry**：Service 生命周期管理
-  - 注册和初始化 `@service` 装饰的类
-  - 管理 Service 生命周期钩子
-  - 依赖顺序初始化
-
-#### 1.2 生命周期管理
+### 公开流程
 
 ```python
-class LifecycleManager:
-    - refresh()       # 初始化/启动阶段
-    - shutdown()      # 关闭阶段
-```
-
-**统一生命周期钩子（v0.92+）**：
-- `on_post_construct()` - 依赖注入完成后执行
-- `on_startup()` - 应用启动时执行
-- `on_shutdown()` - 应用关闭时执行
-- `on_pre_destroy()` - 销毁前执行
-
-所有钩子支持异步版本（添加 `_async` 后缀）。
-
-#### 1.3 请求上下文
-
-```python
-class RequestContext:
-    - request_id: str
-    - start_time: float
-    - _metadata: Dict (延迟初始化)
-    - _cleanup_callbacks: List (延迟初始化)
-```
-
-**优化**（v0.81+）：
-- 延迟初始化：节省 20-55% 内存
-- 性能：初始化从 500ns → 350ns
-
-#### 1.4 Scope 系统
-
-- **SingletonScope**：单例作用域
-- **TransientScope**：瞬时作用域（每次新建）
-- **RequestScope**：请求作用域
-- **自定义 Scope**：支持用户扩展（如 SessionScope）
-
----
-
-### 2. Service 层 (`cullinan/service/`)
-
-管理应用的业务服务。
-
-**使用方式**：
-```python
-from cullinan.service import service, Service
-from cullinan.core import Inject
-
-@service
-class UserService(Service):
-    email_service: 'EmailService' = Inject()
-    
-    def on_startup(self):
-        # 初始化资源
-        self.db = connect_database()
-    
-    def on_shutdown(self):
-        # 清理资源
-        self.db.close()
-```
-
-**特性**：
-- 单例模式（应用级）
-- 自动依赖注入
-- 生命周期管理
-- 启动错误策略（strict/warn/ignore）
-
----
-
-### 3. Controller 层 (`cullinan/controller/`)
-
-处理 HTTP 请求。
-
-**使用方式**：
-```python
-from cullinan.controller import controller, get_api
-from cullinan.core import Inject
-from cullinan.params import Path
-
-@controller(url='/api/users')
-class UserController:
-    user_service: 'UserService' = Inject()
-    
-    @get_api(url='/{user_id}')
-    async def get_user(self, user_id: int = Path()):
-        return self.user_service.get_user(user_id)
-```
-
-**特性**：
-- RESTful 路由映射
-- 自动依赖注入
-- 请求级实例（每个请求新建）
-- 参数自动解析和验证
-
----
-
-### 4. 参数系统 (`cullinan/params/`, `cullinan/codec/`) - v0.90 新增
-
-类型安全的参数处理，支持自动转换和校验。
-
-**模块结构**：
-```
-cullinan/
-├── codec/           # 编解码层
-│   ├── base.py     # BodyCodec / ResponseCodec 抽象
-│   ├── errors.py   # DecodeError / EncodeError
-│   ├── json_codec.py
-│   ├── form_codec.py
-│   └── registry.py # CodecRegistry
-├── params/          # 参数处理层
-│   ├── base.py     # Param 基类 + UNSET
-│   ├── types.py    # Path/Query/Body/Header/File
-│   ├── converter.py # TypeConverter
-│   ├── auto.py     # Auto 类型推断
-│   ├── dynamic.py  # DynamicBody
-│   ├── validator.py # ParamValidator
-│   ├── model.py    # ModelResolver (dataclass)
-│   └── resolver.py # ParamResolver
-└── middleware/
-    └── body_decoder.py # BodyDecoderMiddleware
-```
-
-**使用方式**：
-```python
-from cullinan.params import Path, Query, Body, DynamicBody
-
-@controller(url='/api/users')
-class UserController:
-    @get_api(url='/{id}')
-    async def get_user(
-        self,
-        id: int = Path(),
-        include_posts: bool = Query(default=False),
-    ):
-        return {"id": id}
-    
-    @post_api(url='/')
-    async def create_user(
-        self,
-        name: str = Body(required=True),
-        age: int = Body(default=0, ge=0, le=150),
-    ):
-        return {"name": name, "age": age}
-```
-
-**特性**：
-- 类型安全的参数声明
-- 自动类型转换
-- 内置校验器 (ge, le, regex 等)
-- dataclass 和 DynamicBody 支持
-- 自定义 Codec 注册
-
-详见 [参数系统指南](parameter_system_guide.md)。
-
----
-
-### 5. 扩展机制
-
-#### 5.1 中间件系统
-
-```python
-from cullinan.middleware import middleware, Middleware
-
-@middleware(priority=100)
-class LoggingMiddleware(Middleware):
-    def process_request(self, handler):
-        logger.info(f"Request: {handler.request.uri}")
-        return handler
-    
-    def process_response(self, handler, response):
-        logger.info(f"Response: {response}")
-        return response
-```
-
-**特性**：
-- 装饰器驱动注册
-- 优先级控制（数字越小越先执行）
-- 请求/响应双向拦截
-- 支持短路（返回 None 停止后续处理）
-
-#### 5.2 扩展点发现
-
-```python
-from cullinan.extensions import list_extension_points
-
-# 查询可用扩展点
-points = list_extension_points(category='middleware')
-for point in points:
-    print(f"{point['name']}: {point['description']}")
-```
-
-**6 大类扩展点**：
-1. **Middleware** - 请求/响应拦截
-2. **Lifecycle** - 生命周期钩子
-3. **Injection** - 依赖注入扩展
-4. **Routing** - 路由处理
-5. **Configuration** - 配置管理
-6. **Handler** - 请求处理器
-
----
-
-## IoC/DI 2.0 系统 {#iocdi-20}
-
-### 新架构 (v0.90)
-
-```
-┌─────────────────────────────────────┐
-│   ApplicationContext (单一入口)      │
-│  - register(Definition)             │
-│  - get(name) / try_get(name)        │
-│  - refresh() / shutdown()           │
-└───────────────┬─────────────────────┘
-                │
-      ┌─────────┼─────────┐
-      ▼         ▼         ▼
-┌──────────┐ ┌─────────┐ ┌────────────┐
-│Definition│ │ Factory │ │ScopeManager│
-│ Registry │ │         │ │            │
-└──────────┘ └─────────┘ └────────────┘
-```
-
-### 关键改进
-
-| 特性 | 0.83 (Legacy) | 0.90 (2.0) |
-|------|---------------|------------|
-| 入口点 | 多个 (IoCFacade, Registries) | 单一 (ApplicationContext) |
-| 定义 | 可变 | 不可变（冻结） |
-| 注册表 | 运行时可修改 | refresh() 后冻结 |
-| 作用域 | 隐式 | 显式 ScopeType 枚举 |
-| 诊断 | 字符串错误 | 结构化异常 |
-
-### 使用方式
-
-#### 方式 1：基于装饰器的自动注入（推荐）
-
-```python
-from cullinan.service import service, Service
-from cullinan.core import Inject
-
-@service
-class UserService(Service):
-    email_service: EmailService = Inject()  # 自动注入
-    
-    def on_post_construct(self):
-        # 依赖注入完成后执行
-        pass
-    
-    def on_startup(self):
-        # 应用启动时执行
-        pass
-```
-
-**特性**：
-- 装饰器内部使用新版 IoC/DI 2.0 注册逻辑
-- 自动管理依赖解析和生命周期
-- 支持 `Inject()` 属性注入
-
-#### 方式 2：基于 Definition 的注册（高级用法）
-
-```python
-from cullinan.core.container import ApplicationContext, Definition, ScopeType
+from cullinan.core import ApplicationContext, set_application_context
 
 ctx = ApplicationContext()
+set_application_context(ctx)
 
-# 使用显式定义注册（适用于复杂场景或第三方库集成）
-ctx.register(Definition(
-    name='UserService',
-    factory=lambda c: UserService(c.get('UserRepository')),
-    scope=ScopeType.SINGLETON,
-    source='service:UserService'
-))
-
-ctx.refresh()  # 冻结注册表
-user_service = ctx.get('UserService')
+# 新应用代码先从装饰器声明和运行时装配出发；
+# 显式 Definition 注册保留给底层集成场景
+ctx.refresh()
+...
+ctx.shutdown()
 ```
 
-**适用场景**：
-- 需要自定义实例创建逻辑
-- 集成第三方库组件
-- 需要动态注册依赖
-
----
-
-## 扩展机制 {#extensions}
-
-### 中间件执行流程
-
-```
-客户端请求
-  ↓
-CorsMiddleware (priority=10)      → process_request
-  ↓
-AuthMiddleware (priority=50)      → process_request
-  ↓
-LoggingMiddleware (priority=100)  → process_request
-  ↓
-Handler 处理
-  ↓
-LoggingMiddleware (priority=100)  → process_response
-  ↓
-AuthMiddleware (priority=50)      → process_response
-  ↓
-CorsMiddleware (priority=10)      → process_response
-  ↓
-客户端响应
-```
-
-**优先级规范**：
-- `0-50`：关键中间件（CORS、安全）
-- `51-100`：标准中间件（日志、指标）
-- `101-200`：应用特定中间件
-
----
-
-## 启动流程 {#startup-flow}
-
-### 启动序列图
-
-```
-1. configure(...)
-   └── 加载配置
-
-2. 模块扫描
-   ├── 自动扫描模式
-   │   ├── 检测打包环境（development/nuitka/pyinstaller）
-   │   ├── 扫描用户包（user_packages）
-   │   └── 收集统计信息（新增 v0.81+）
-   │
-   └── 显式注册模式（新增 v0.81+）
-       └── 跳过扫描，直接使用配置的类
-
-3. IoC 容器初始化
-   ├── 初始化 IoCFacade
-   ├── 注册 Provider
-   └── 配置 InjectionRegistry
-
-4. Service 初始化
-   ├── 按依赖顺序初始化
-   ├── 调用 on_post_construct() 钩子
-   ├── 调用 on_startup() 钩子
-   └── 错误处理（根据 startup_error_policy）
-
-5. Controller 注册
-   ├── 注册路由
-   └── 配置 Handler
-
-6. 中间件链构建
-   ├── 按优先级排序
-   ├── 初始化中间件（on_startup）
-   └── 构建处理链
-
-7. 启动 Web 服务器
-   ├── 创建 Tornado Application
-   ├── 注册信号处理器（SIGINT/SIGTERM）
-   └── 启动 IOLoop
-```
-
-### 启动性能（v0.81+ 优化后）
-
-| 场景 | 优化前 | 优化后 | 提升 |
-|-----|-------|-------|------|
-| 显式注册模式 | 69.56 ms | 0.08 ms | **902x** |
-| 小型项目（10模块） | 50-100 ms | 50-100 ms | - |
-| 中型项目（50模块） | 300-800 ms | 150-300 ms | **2x** |
-
----
-
-## 请求处理流程 {#request-flow}
-
-```
-1. 请求到达 Tornado
-   └── IOLoop 分发到 Handler
-
-2. 创建请求上下文
-   ├── RequestContext.create()
-   ├── 设置 request_id
-   └── 初始化请求级 Scope
-
-3. 中间件处理（请求阶段）
-   ├── 按优先级执行 process_request()
-   ├── 可能短路返回（如认证失败）
-   └── 传递到下一个中间件
-
-4. Controller 实例化
-   ├── 创建 Controller 实例
-   ├── 注入依赖（通过 InjectionRegistry）
-   └── 解析请求参数
+旧的 `cullinan.core.container.*` 模块现在仅保留为薄转发层，不再维护独立状态。
 
-5. 执行业务逻辑
-   ├── 调用 Controller 方法
-   ├── Service 层处理
-   └── 返回响应
+## 依赖注入与生命周期
 
-6. 中间件处理（响应阶段）
-   ├── 逆序执行 process_response()
-   ├── 可以修改响应
-   └── 添加响应头
+装饰器层（`@service`、`@controller`、`Inject`、`InjectByName`）最终都归并到统一容器模型。
 
-7. 清理请求上下文
-   ├── 执行 cleanup callbacks
-   ├── 清除请求级依赖
-   └── 销毁 RequestContext
+### 推荐用法
 
-8. 返回响应给客户端
-```
+- 普通业务代码优先使用 `@service` 和 `@controller`
+- 字段注入优先使用 `Inject()` 以获得类型安全
+- 需要按名称解析或规避循环导入时使用 `InjectByName()`
+- 自定义工厂或第三方集成场景直接使用 `ApplicationContext`
 
----
+### 生命周期钩子
 
-## 模块扫描机制 {#module-scanning}
+所有受管组件共享同一套生命周期约定：
 
-### 扫描策略（多环境支持）
+- `on_post_construct()`
+- `on_startup()`
+- `on_shutdown()`
+- `on_pre_destroy()`
 
-```
-┌─────────────────────────────────────┐
-│      检测打包环境                     │
-└──────────┬──────────────────────────┘
-           │
-     ┌─────┴─────┬─────────┬─────────┐
-     ▼           ▼         ▼         ▼
-Development  Nuitka   PyInstaller  其他
-     │           │         │         │
-     ▼           ▼         ▼         ▼
-  标准扫描   sys.modules  _MEIPASS  Fallback
-```
-
-### 扫描统计（新增 v0.81+）
-
-```python
-from cullinan.scan_stats import get_scan_stats_collector
-
-collector = get_scan_stats_collector()
-stats = collector.get_aggregate_stats()
+支持追加 `_async` 的异步版本；可通过 `get_phase()` 影响执行顺序。
 
-# 输出：
-# {
-#   'total_scans': 1,
-#   'avg_duration_ms': 66.06,
-#   'total_modules': 35,
-#   'fastest_scan_ms': 66.06,
-#   'slowest_scan_ms': 66.06
-# }
-```
-
-**收集的指标**：
-- 总耗时（分阶段）
-- 模块数量（发现/过滤/缓存）
-- 扫描模式（auto/explicit/cached）
-- 打包环境（development/nuitka/pyinstaller）
-- 错误记录
-
----
-
-## 性能优化 {#performance}
-
-### 已实施的优化（v0.81+）
-
-| 优化项 | 优化前 | 优化后 | 提升 |
-|-------|-------|-------|------|
-| **模块扫描（显式）** | 69.56 ms | 0.08 ms | **902x** |
-| **RequestContext 初始化** | 500 ns | 350 ns | **30%** |
-| **RequestContext 内存** | 536 B | 240 B | **55%** |
-| **依赖解析（缓存）** | - | 0.26 μs | **极快** |
-| **日志开销（生产）** | 150 ns | 100 ns | **33%** |
-
-### 优化策略
-
-#### 1. 显式注册模式
-
-```python
-from cullinan import configure
-
-configure(
-    explicit_services=[DatabaseService, CacheService],
-    explicit_controllers=[UserController, AdminController],
-    auto_scan=False  # 跳过扫描
-)
-```
-
-**收益**：启动速度提升 902 倍（测试场景）
-
-#### 2. 延迟初始化
-
-- RequestContext 字段按需创建
-- 降低内存占用 55%
-
-#### 3. 智能缓存
-
-- 模块扫描结果缓存
-- IoC 依赖解析缓存（0.26 μs）
-- Provider 实例缓存
-
-#### 4. 结构化日志
-
-- 生产环境日志优化
-- 惰性求值减少开销
-
----
-
-## 配置选项
-
-### 核心配置
-
-```python
-from cullinan import configure
-
-configure(
-    # 基础配置
-    port=8080,
-    debug=True,
-    
-    # 性能优化
-    explicit_services=[...],      # 显式服务注册
-    explicit_controllers=[...],   # 显式控制器注册
-    auto_scan=False,              # 禁用自动扫描
-    user_packages=['myapp'],      # 限制扫描范围
-    
-    # 启动行为
-    startup_error_policy='strict', # 'strict'/'warn'/'ignore'
-    
-    # 扩展配置
-    middlewares=[...],            # 自定义中间件
-    handlers=[...],               # 自定义 Handler
-)
-```
-
----
-
-## 最佳实践
-
-### 1. 依赖注入
-
-✅ **推荐**：使用类型注入
-```python
-@service
-class UserService(Service):
-    email_service: EmailService = Inject()
-```
-
-❌ **避免**：手动获取依赖
-```python
-# 不推荐
-registry = get_service_registry()
-email_service = registry.get_instance('EmailService')
-```
-
-### 2. 性能优化
-
-✅ **推荐**：使用显式注册（大型项目）
-```python
-configure(
-    explicit_services=[...],
-    explicit_controllers=[...],
-    auto_scan=False
-)
-```
-
-✅ **推荐**：限制扫描范围
-```python
-configure(
-    user_packages=['myapp', 'myapp.extensions'],
-    exclude_packages=['tests', '__pycache__']
-)
-```
-
-### 3. 中间件设计
-
-✅ **推荐**：单一职责
-```python
-@middleware(priority=50)
-class AuthMiddleware(Middleware):  # 只处理认证
-    pass
-
-@middleware(priority=60)
-class RoleMiddleware(Middleware):  # 只处理权限
-    pass
-```
-
-❌ **避免**：职责混杂
-```python
-@middleware(priority=50)
-class AuthAndLoggingMiddleware(Middleware):  # 混杂
-    pass
-```
-
----
-
-## 参考资料
-
-- [扩展开发指南](./extension_development_guide.md)
-- [API 参考文档](./api_reference.md)
-- [快速开始](./getting_started.md)
-- [迁移指南](./migration_guide.md)
-
----
-
-## 从 0.83 迁移 {#migration}
-
-关于从 0.83 版本迁移到 0.90 的详细信息，请参阅 [导入迁移指南](./import_migration_090.md)。
-
-主要变更：
-- `cullinan.core.application_context` → `cullinan.core.container`
-- `cullinan.core.definitions` → `cullinan.core.container`
-- `cullinan.core.exceptions` → `cullinan.core.diagnostics`
-- `cullinan.core.context` → `cullinan.core.request`
-- 遗留组件移至 `cullinan.core.legacy/`
-
----
-
-**版本**：v0.90  
-**作者**：Plumeink  
-**最后更新**：2025-12-25
+## Web Runtime
 
+当前 Web 栈以 `cullinan.web.gateway.web_core` 为核心，但推荐给业务开发者的公开入口现在收敛到 `cullinan.web`。
+
+### 公开运行时对象
+
+- `WebRequest` —— 标准化请求对象
+- `WebResponse` —— 可在写回前冻结的响应构建器
+- `Router` —— 路由注册与匹配
+- `Dispatcher` —— 请求分发与返回值处理
+- `MiddlewarePipeline` —— 洋葱模型中间件链
+- `ExceptionHandler` —— 异常到响应的转换器
+- `WebRuntime` —— 活动运行时状态与切换控制
+
+### 适配器边界
+
+服务器集成通过 `cullinan.transport` 暴露，并由底层 `cullinan.transport.adapter` 实现：
+
+- `WebAdapter` —— 公共适配器协议
+- `TornadoAdapter` —— Tornado 集成
+- `ASGIAdapter` —— ASGI 集成
+
+这种分层让请求处理逻辑不再绑定单一服务器实现。
+
+## 请求流程
+
+1. 业务代码用装饰器声明服务、控制器与处理方法。
+2. 运行时装配阶段导入受管 Python 模块，并依据装饰器元数据重建注册项。
+3. `ctx.refresh()` 解析 eager 组件并执行启动钩子。
+4. Gateway pipeline 接收已归一化的 `WebRequest`。
+5. `Dispatcher` 匹配路由、解析参数、调用处理器，并生成 `WebResponse`。
+6. 具体适配器把响应写回 Tornado 或 ASGI。
+
+现在默认应以“**先理解框架语义，再理解运行后端**”来阅读 Cullinan：应用代码对接的是 Cullinan 自身的请求/响应、控制器、参数、中间件与生命周期模型，而 Tornado 与 ASGI 则退到适配器边界之后，作为执行后端存在。
+7. 关闭阶段调用 `ctx.shutdown()` 并完成所有受管生命周期清理。
+
+## 测试策略
+
+仓库当前以 pytest 作为唯一正式测试运行器。
+
+- 仓库正式命令：`.venv\Scripts\python -m pytest`
+- 共享测试引导位于 `tests/conftest.py`
+- 测试目录按主题划分：`tests/core`、`tests/di`、`tests/web`、`tests/integration`、`tests/regression`、`tests/compat`
+
+详见 [测试与验证](testing.md)。
+
+## 相关文档
+
+- [运行时整合概览](runtime_updates_v093.md)
+- [依赖注入指南](dependency_injection_guide.md)
+- [Web Runtime 指南](web_runtime_guide.md)
+- [测试与验证](testing.md)

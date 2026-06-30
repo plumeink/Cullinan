@@ -1,0 +1,18 @@
+# Cullinan lint configuration — conservative baseline.
+# Only undefined-name / unused-import (F) and runtime syntax errors (E9) are
+# gated in CI. Style rules can be added incrementally later.
+target-version = "py39"
+line-length = 120
+
+[lint]
+select = ["E9", "F"]
+
+[lint.per-file-ignores]
+# Tests and examples use star-imports, fixtures, availability probes, and
+# string forward-ref annotations that legitimately trip these:
+#   F401/F403/F405 — re-exports / star-imports
+#   F811           — fixture / demo re-imports
+#   F841           — vars assigned for clarity or importorskip probes
+#   F821           — intentional undefined forward-ref names in injection demos
+"tests/**" = ["F401", "F403", "F405", "F811", "F841", "F821"]
+"examples/**" = ["F401", "F403", "F405", "F811", "F841", "F821"]

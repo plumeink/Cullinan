@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block announce %}
+  {% set version = config.extra.version %}
+  {% if version %}
+    <div
+      class="md-version-switcher"
+      data-current-channel="{{ version.channel | default('stable') }}"
+      data-current-version="{{ version.current | default('') }}"
+      data-stable-version="{{ version.stable_label | default('') }}"
+      data-stable-url="{{ version.stable_url | default('/') }}"
+      data-pre-version="{{ version.pre_label | default('') }}"
+      data-pre-url="{{ version.pre_url | default('/pre/') }}"
+      data-pre-available="{{ version.pre_is_available | default('false') }}"
+    >
+      <label class="md-version-switcher__label" for="version-switcher">Version</label>
+      <select
+        id="version-switcher"
+        class="md-version-switcher__select"
+        aria-label="Documentation version switcher"
+      ></select>
+      <span class="md-version-switcher__current"></span>
+    </div>
+  {% endif %}
+{% endblock %}

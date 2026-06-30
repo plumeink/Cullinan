@@ -1,7 +1,7 @@
 ---
 title: "Parameter System Guide"
 slug: "parameter-system-guide"
-module: ["cullinan.params", "cullinan.codec"]
+module: ["cullinan.web.params", "cullinan.codec"]
 tags: ["params", "api", "guide"]
 author: "Plumeink"
 reviewers: []
@@ -9,7 +9,7 @@ status: new
 locale: en
 translation_pair: "docs/zh/parameter_system_guide.md"
 related_tests: ["tests/test_params.py", "tests/test_codec.py", "tests/test_resolver.py"]
-related_examples: []
+related_examples: ["examples/parameter_handling"]
 estimate_pd: 2
 last_updated: "2026-01-08T00:00:00Z"
 pr_links: []
@@ -67,7 +67,7 @@ cullinan/
 
 ```python
 from cullinan import get_api, post_api
-from cullinan.params import Path, Query, Body
+from cullinan.web.params import Path, Query, Body
 
 @controller
 class UserController:
@@ -114,7 +114,7 @@ async def list_users(
 Use `.as_required()` for required parameters:
 
 ```python
-from cullinan.params import Body, File
+from cullinan.web.params import Body, File
 
 @post_api(url="/users")
 async def create_user(
@@ -130,7 +130,7 @@ async def create_user(
 For parameters with alias (like HTTP headers with `-`), specify directly in type annotation:
 
 ```python
-from cullinan.params import Header, Query, Body, DynamicBody
+from cullinan.web.params import Header, Query, Body, DynamicBody
 
 @post_api(url="/webhook")
 async def handle_webhook(
@@ -162,7 +162,7 @@ async def list_items(
 Get the raw unparsed request body (bytes) for signature verification or custom parsing:
 
 ```python
-from cullinan.params import Header, RawBody
+from cullinan.web.params import Header, RawBody
 import hmac
 import hashlib
 
@@ -197,7 +197,7 @@ async def handle_webhook(
 ### Using DynamicBody
 
 ```python
-from cullinan.params import DynamicBody
+from cullinan.web.params import DynamicBody
 
 @post_api(url="/users")
 async def create_user(self, body: DynamicBody):
@@ -291,7 +291,7 @@ async def create_user(self, user: CreateUserRequest):
 Use `@field_validator` for custom field validation:
 
 ```python
-from cullinan.params import validated_dataclass, field_validator, FieldValidationError
+from cullinan.web.params import validated_dataclass, field_validator, FieldValidationError
 
 @validated_dataclass
 class CreateUserRequest:
@@ -385,7 +385,7 @@ async def protected_resource(
 File upload parameters. Returns `FileInfo` (single) or `FileList` (multiple) in v0.90a5+.
 
 ```python
-from cullinan.params import File, FileInfo, FileList
+from cullinan.web.params import File, FileInfo, FileList
 
 @post_api(url="/upload")
 async def upload_file(
@@ -484,7 +484,7 @@ async def register(
 Use `AutoType` for automatic type detection:
 
 ```python
-from cullinan.params import AutoType
+from cullinan.web.params import AutoType
 
 @get_api(url="/search")
 async def search(self, value: Query(AutoType)):
@@ -522,7 +522,7 @@ registry.register_body_codec(XmlBodyCodec)
 The `BodyDecoderMiddleware` automatically decodes request bodies:
 
 ```python
-from cullinan.middleware import BodyDecoderMiddleware, get_decoded_body
+from cullinan.web.middleware import BodyDecoderMiddleware, get_decoded_body
 
 # Access decoded body in handlers
 class MyController:
@@ -540,7 +540,7 @@ Automatically serialize dataclass and other objects to JSON-compatible dicts:
 
 ```python
 from dataclasses import dataclass
-from cullinan.params import ResponseSerializer
+from cullinan.web.params import ResponseSerializer
 
 @dataclass
 class UserResponse:
@@ -564,7 +564,7 @@ json_str = ResponseSerializer.to_json(user)
 Define response models for API documentation:
 
 ```python
-from cullinan.params import Response, get_response_models
+from cullinan.web.params import Response, get_response_models
 
 @dataclass
 class SuccessResponse:
@@ -601,7 +601,7 @@ async def create_user(self, body_params):
 Parameter errors return structured responses:
 
 ```python
-from cullinan.params import ValidationError, ResolveError
+from cullinan.web.params import ValidationError, ResolveError
 
 # ValidationError for single parameter failures
 # ResolveError for multiple parameter failures
@@ -637,7 +637,7 @@ The framework uses a pluggable architecture for model parsing, allowing third-pa
 ### Registering Custom Handlers
 
 ```python
-from cullinan.params import ModelHandler, get_model_handler_registry
+from cullinan.web.params import ModelHandler, get_model_handler_registry
 
 class MyModelHandler(ModelHandler):
     priority = 100  # Higher = matched first
@@ -682,7 +682,7 @@ Install Pydantic: `pip install pydantic`
 
 ## API Reference
 
-### cullinan.params
+### cullinan.web.params
 
 | Class | Description |
 |-------|-------------|
@@ -726,10 +726,9 @@ Install Pydantic: `pip install pydantic`
 | `DecodeError` | Decoding error |
 | `EncodeError` | Encoding error |
 
-### cullinan.middleware
+### cullinan.web.middleware
 
 | Class | Description |
 |-------|-------------|
 | `BodyDecoderMiddleware` | Auto body decoding middleware |
 | `get_decoded_body()` | Get decoded request body |
-

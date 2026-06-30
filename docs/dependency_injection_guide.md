@@ -1,573 +1,306 @@
 # Cullinan Dependency Injection Guide
 
-> **Version**: v0.90  
-> **Author**: Plumeink  
-> **Last Updated**: 2025-12-25
-
----
+> **Version**: 0.93a13
+> **Last Updated**: 2026-06-01  
+> **Status**: Updated
 
 ## Overview
 
-Cullinan provides a powerful Dependency Injection (DI) system that supports multiple injection methods. Version 0.90 introduces a unified injection model. This guide helps you understand and use these features.
+Cullinan's current DI model is centered on `ApplicationContext` and exposed publicly through `cullinan`. Decorators remain the recommended authoring surface, while legacy registry-style APIs are kept only for compatibility.
 
-## Table of Contents
+Before choosing an injection primitive, read [Framework Semantics](framework_semantics.md). That page defines the hard rules behind `Inject()`, `InjectByName()`, `refresh()`, and compatibility APIs.
 
-1. [Basic Concepts](#basic-concepts)
-2. [Three Injection Methods](#three-injection-methods)
-3. [Unified Injection Model](#unified-injection-model)
-4. [Advanced Features](#advanced-features)
-5. [Best Practices](#best-practices)
-6. [Migration Guide](#migration-guide)
+> **Recommended default:** constructor injection — declare a bare type annotation on a class-level attribute and the framework resolves it automatically. Zero boilerplate: no `Inject()`, no `__init__`, no `self.x = x`.  
+> **Need symbol lookup instead of guidance?** See [API Reference](reference/index.md).
 
----
+## Recommended usage
 
-## Basic Concepts
+### 1. Register services with decorators
 
-### What is Dependency Injection?
+```python
+from cullinan import service
 
-Dependency Injection is a design pattern that implements Inversion of Control (IoC). Simply put, it allows the framework to automatically inject required dependencies into your classes, rather than manually creating them inside the class.
+@service
+class DatabaseService:
+    def query(self, sql: str):
+        return {"sql": sql}
 
-### Why Use Dependency Injection?
+@service
+class UserService:
+    database: DatabaseService  # constructor injection — bare annotation
 
-✅ **Loose Coupling**: Clearer dependency relationships between classes  
-✅ **Testable**: Easy to replace dependencies for unit testing  
-✅ **Maintainable**: Centralized dependency management  
-✅ **Extensible**: Easy to add new services and components
+    def get_user(self, user_id: int):
+        return self.database.query(f"select * from users where id = {user_id}")
+```
 
----
+### 2. Use the same injection model in controllers
 
-## Three Injection Methods
+```python
+from cullinan import controller, get_api, Path
 
-Cullinan supports three dependency injection methods, all unified under the new injection model.
+@controller(url="/users")
+class UserController:
+    user_service: UserService  # constructor injection
 
-### 1. Inject() - Type Annotation Injection
+    @get_api(url="/{user_id}")
+    async def get_user(self, user_id: int = Path()):
+        return self.user_service.get_user(user_id)
+```
 
-**Recommendation**: ⭐⭐⭐⭐⭐
+## Injection primitives
 
-Uses type annotations, providing the best IDE support and type safety.
+### Constructor injection — preferred (zero boilerplate, framework-enforced immutability)
+
+The cleanest injection style: a bare class-level type annotation is a DI declaration.
+No `Inject()` marker, no `__init__`, no `self.x = x` assignment.
+
+```python
+from cullinan.core import service
+
+@service
+class UserService:
+    database: DatabaseService       # required — error at refresh() if missing
+    cache: CacheService             # same
+    notifier: NotifierService = None  # optional — stays None if not registered
+```
+
+**Rules**:
+
+- No default `db: DatabaseService` → **required** DI, `DependencyNotFoundError` at `refresh()`
+- `None` default `notifier: NotifierService = None` → **optional** DI, injected if available
+- Actual value `timeout: int = 5` → ignored by the framework
+- `Inject()` / `Lazy()` marker → field injection path, unaffected by constructor injection
+
+**Contrast with field injection**:
+
+| Contrast | field injection (`Inject()`) | constructor injection |
+|----------|------------------------------|-----------------------|
+| Boilerplate | `x: T = Inject()` | `x: T` |
+| Startup check | `required=False` defers to runtime | required deps fail at `refresh()` |
+| Immutability after injection | enforced (all injection paths) | enforced (all injection paths) |
+| Test mock | `Inject()` blocks direct `cls()` | `svc = cls(); svc.db = mock` (no freeze) |
+
+**Advantages**:
+
+- Zero boilerplate
+- Missing required dependencies caught early at startup
+- Injected attributes are enforced as read-only after injection
+- Test-friendly: instantiate directly and inject mocks manually
+
+> **Backward-compatible**: existing `Inject()` / `Lazy()` / `InjectByName()` work unchanged.
+> Constructor and field injection can coexist on the same class.
+
+### `Inject()` — field injection (type-driven)
+
+Use `Inject()` for explicit field injection when the runtime type is available and you want
+refactoring-friendly, type-driven wiring.
 
 ```python
 from cullinan.core import Inject
-from cullinan.service import service
 
-@service
-class DatabaseService:
-    def query(self, sql: str):
-        return f"Result: {sql}"
-
-@service
-class UserService:
-    # Use type annotation + Inject()
-    database: DatabaseService = Inject()
-    
-    def get_user(self, user_id: int):
-        return self.database.query(f"SELECT * FROM users WHERE id={user_id}")
+class AuditService:
+    repo: Repository = Inject()
+    cache: CacheService = Inject(required=False)
 ```
 
-**Features**:
-- ✅ IDE auto-completion
-- ✅ Type checking
-- ✅ Automatic dependency name inference
-- ✅ Support for optional dependencies
+`Inject()` uses a strict, typed resolution pipeline:
 
-**Optional Dependencies**:
-```python
-class UserService:
-    database: DatabaseService = Inject()
-    cache: CacheService = Inject(required=False)  # Optional
-    
-    def get_user(self, user_id: int):
-        # cache may be None
-        if self.cache:
-            return self.cache.get(f"user_{user_id}")
-        return self.database.query(...)
-```
+- direct runtime types still work as before
+- `TYPE_CHECKING` + forward references are supported when Cullinan can map the annotation to a **single** registered target
+- common wrappers such as `Optional[T]`, `Annotated[T, ...]`, `Final[T]`, `Provider[T]`, `list[T]`, `set[T]`, `tuple[T, ...]`, and `Union[A, B]` are supported
+- Cullinan still refuses attribute-name guesses such as `session_provider -> SessionProvider`
+- if the annotation is ambiguous or cannot be normalized safely, startup fails with `DependencyTypeResolutionError`
 
-### 2. InjectByName() - String Name Injection
+Use it when you want typed wiring and the annotation can be normalized into a unique dependency contract.
 
-**Recommendation**: ⭐⭐⭐⭐
+### `InjectByName()` — name-based fallback
 
-Uses string names, no need to import dependency classes.
+Use `InjectByName()` when the dependency is more naturally resolved by name or when importing the type would create an undesirable dependency edge.
 
 ```python
-from cullinan.controller import controller
 from cullinan.core import InjectByName
 
-@controller(url='/api')
-class UserController:
-    # Explicitly specify name
-    user_service = InjectByName('UserService')
-    
-    # Auto-infer name (email_service → EmailService)
-    email_service = InjectByName()
-    
-    def get_user(self, user_id: int):
-        return self.user_service.get_user(user_id)
+class ReportController:
+    report_service = InjectByName("ReportService")
 ```
 
-**Features**:
-- ✅ No need to import dependency classes
-- ✅ Avoid circular imports
-- ✅ Automatic name inference (snake_case → PascalCase)
-- ✅ Support for optional dependencies
+Cullinan now treats `InjectByName("ExactComponentName")` as the recommended form. `InjectByName()` without an explicit name is kept only as a compatibility fallback and now emits a warning.
 
-**Auto Name Inference Rules**:
-```python
-user_service = InjectByName()  # → UserService
-email_service = InjectByName()  # → EmailService
-cache_manager = InjectByName()  # → CacheManager
-```
+This is the correct choice when you intentionally do **not** want to import the target type at runtime.
 
-### 3. @injectable - Decorator Batch Injection
+### `Lazy()` — deferred lookup
 
-**Recommendation**: ⭐⭐⭐⭐⭐
-
-Uses decorator approach, automatically injects all dependencies when the class is instantiated.
+Use `Lazy()` when the dependency should be resolved on first access rather than during eager instance wiring.
 
 ```python
-from cullinan.controller import controller
-from cullinan.core import injectable, Inject, InjectByName
+from cullinan.core import Lazy
 
-@injectable
-@controller(url='/api')
-class UserController:
-    database: DatabaseService = Inject()
-    cache = InjectByName('CacheService')
-    logger = InjectByName('LogService', required=False)
-    
-    def __init__(self):
-        # After __init__, all dependencies are automatically injected
-        pass
-    
-    def get_user(self, user_id: int):
-        # database and cache are now available
-        result = self.database.query(...)
-        if self.cache:
-            self.cache.set(f"user_{user_id}", result)
-        return result
+class AuditService:
+    report_service = Lazy("ReportService")
 ```
 
-**Features**:
-- ✅ Automatic batch injection
-- ✅ Mix Inject and InjectByName
-- ✅ Injection happens immediately after __init__
-- ✅ Compatible with @service and @controller decorators
+`Lazy()` follows the same naming rules as `Inject()` / `InjectByName()`:
 
----
+- prefer an explicit name when you want late lookup without importing the target type
+- if you rely on type-driven resolution, the type still needs to be resolvable at runtime
 
-## Unified Injection Model
+## How to choose
 
-### New Architecture Overview
+| Need | Recommended primitive |
+| --- | --- |
+| **New projects: cleanest, framework-enforced immutability** | constructor injection `db: DatabaseService` |
+| Runtime type is available and you want refactor-friendly injection | `Inject()` |
+| `TYPE_CHECKING` / forward-reference type is unique and still should be type-driven | `Inject()` |
+| Runtime type is intentionally unavailable or awkward to import | `InjectByName("Name")` |
+| Lookup should be deferred until first use | `Lazy("Name")` or `Lazy()` with a runtime-resolvable type |
+| Optional dependency | `notifier: NotifierService = None` or `Inject(required=False)` |
+| Deferred provider object | `Inject()` with `Provider[T]` |
+| Multiple implementations of one contract | `Inject()` with `list[T]`, `set[T]`, or `tuple[T, ...]` |
 
-Starting from v0.90, Cullinan introduces a unified injection model where all injection methods are based on the same underlying architecture:
+## `TYPE_CHECKING` and forward-reference rules
 
-```
-┌─────────────────────────────────────────┐
-│  Application Layer (Inject / InjectByName / @injectable) │
-└──────────────────┬──────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────┐
-│  InjectionPoint (Unified Metadata Model) │
-│  - attr_name: Attribute name             │
-│  - dependency_name: Dependency name      │
-│  - required: Is required                 │
-│  - attr_type: Type annotation            │
-│  - resolve_strategy: Resolution strategy │
-└──────────────────┬──────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────┐
-│  InjectionExecutor (Unified Executor)    │
-│  - resolve_injection_point()             │
-│  - inject_instance()                     │
-└──────────────────┬──────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────┐
-│  ServiceRegistry / ProviderRegistry      │
-│  (Service Providers)                     │
-└─────────────────────────────────────────┘
-```
+`Inject()` can now work with `TYPE_CHECKING` and forward references, but only when the final binding is still uniquely decidable.
 
-### Resolution Strategies
-
-The new model supports three resolution strategies:
-
-#### AUTO (Automatic Inference)
-```python
-# Default strategy when using Inject()
-user_service: UserService = Inject()
-# Strategy: Priority by type (UserService), fallback to name ('UserService')
-```
-
-#### BY_TYPE (By Type)
-```python
-# Force resolution by type
-user_service: UserService = Inject()
-# Only look for services of type UserService
-```
-
-#### BY_NAME (By Name)
-```python
-# Strategy when using InjectByName
-user_service = InjectByName('UserService')
-# Only look for services named 'UserService'
-```
-
-### Performance Features
-
-The new unified model provides excellent performance:
-
-- **Caching**: Injected dependencies are cached in instances, avoiding repeated resolution
-- **Lazy Injection**: Dependencies are only resolved on first access
-- **Batch Injection**: @injectable injects all dependencies at once, reducing overhead
-
----
-
-## Advanced Features
-
-### 1. Nested Dependencies
-
-Services can depend on other services, forming dependency chains:
+### Supported: single target forward reference
 
 ```python
-@service
-class DatabaseService:
-    pass
+from typing import TYPE_CHECKING
+
+from cullinan.core import Inject, service
+
+if TYPE_CHECKING:
+    from .providers import DatabaseSessionProvider
 
 @service
-class CacheService:
-    pass
+class ChannelBindingRepository:
+    session_provider: "DatabaseSessionProvider" = Inject()
+```
+
+As long as `DatabaseSessionProvider` is the only matching registered component, startup succeeds.
+
+### Supported wrappers
+
+```python
+from typing import TYPE_CHECKING, Optional
+
+from cullinan.core import Inject, Provider, service
+
+if TYPE_CHECKING:
+    from .contracts import Hook
+    from .providers import DatabaseSessionProvider, PrimarySessionProvider, SecondarySessionProvider
 
 @service
-@injectable
-class DataAccessLayer:
-    database: DatabaseService = Inject()
-    cache: CacheService = Inject()
-    
-    def fetch(self, key):
-        # Check cache first
-        if self.cache:
-            return self.cache.get(key)
-        # Then query database
-        return self.database.query(...)
-
-@injectable
-class BusinessLogic:
-    dal: DataAccessLayer = Inject()
-    
-    def process(self, key):
-        return self.dal.fetch(key)
+class ChannelBindingRepository:
+    session_provider: Provider["DatabaseSessionProvider"] = Inject()
+    hooks: list["Hook"] = Inject(required=False)
+    fallback_cache: Optional["CacheService"] = Inject()
+    preferred_provider: "PrimarySessionProvider | SecondarySessionProvider" = Inject()
 ```
 
-### 2. Circular Dependency Detection
+Rules:
 
-The framework automatically detects and prevents circular dependencies:
+- `Optional[T]` allows `None` when `T` is missing
+- `Provider[T]` injects a deferred provider object instead of `T` directly
+- collection wrappers inject all matching implementations
+- `Union[A, B]` works only when exactly one branch is bindable
+
+### Still rejected: ambiguous or unsupported combinations
+
+- multiple `Union` branches are available at the same time
+- nested combinations such as `list[Union[A, B]]`
+- anything that would require fuzzy guessing or attribute-name fallback
+
+Use `InjectByName("Name")` or `Lazy("Name")` when you intentionally want explicit, name-based control.
+
+## ApplicationContext as the single container entrypoint
+
+Decorator-based registration covers most application code. For advanced integration, use `ApplicationContext` directly.
 
 ```python
-@service
-@injectable
-class ServiceA:
-    b: ServiceB = Inject()
+from cullinan.core import ApplicationContext, Definition, ScopeType
 
-@service
-@injectable
-class ServiceB:
-    a: ServiceA = Inject()  # ❌ Raises CircularDependencyError
+ctx = ApplicationContext()
+ctx.register(Definition(
+    name="CustomService",
+    factory=lambda c: CustomService(),
+    scope=ScopeType.SINGLETON,
+    source="custom:CustomService",
+))
+ctx.refresh()
+service = ctx.get("CustomService")
 ```
 
-**Solutions**:
-1. Redesign dependency relationships
-2. Use lazy injection
-3. Introduce an intermediate layer to break the cycle
+`cullinan.core.container.*` paths are compatibility forwards to the same public container API.
 
-### 3. String Annotation Support
+## Lifecycle integration
 
-Supports string type annotations (to avoid circular imports):
+DI and lifecycle are part of the same runtime model. Managed components can implement:
 
+- `on_post_construct()`
+- `on_startup()`
+- `on_shutdown()`
+- `on_pre_destroy()`
+
+Async variants with `_async` are also supported. Use `get_phase()` if startup/shutdown ordering matters.
+
+### Lifecycle error propagation
+
+Critical lifecycle phases propagate failures to prevent components from running in an inconsistent state:
+
+- **`on_post_construct`** and **`on_pre_destroy`**: exceptions are re-raised as `LifecycleError`. A failed `on_post_construct` means the component is not ready and should not be served.
+- **`on_startup`** and **`on_shutdown`**: exceptions are logged as errors but do **not** halt the container. This avoids a single component's startup failure from cascading to unrelated components.
+
+Controller route registration failures are also re-raised as `LifecycleError` — a controller whose routes cannot be registered is a hard startup error.
+
+## Scope validation
+
+### Transitive scope enforcement
+
+Cullinan validates that a longer-lived component never depends on a shorter-lived component — even transitively through a chain of dependencies. This prevents runtime bugs where a singleton holds a stale reference to a request-scoped object.
+
+The validation recurses through:
+1. **Explicit dependencies** declared via `@service(dependencies=[...])`.
+2. **Field injection markers** (`Inject()`, `InjectByName()`, `Lazy()`) on the class.
+
+Example of a violation:
 ```python
-from __future__ import annotations
-
-@injectable
-class UserController:
-    # Use string annotation (Python 3.7+)
-    user_service: 'UserService' = Inject()
+@service(scope="singleton")
+class SingletonA:
+    dep: "SingletonB" = Inject()        # → SingletonB (singleton) ✓
+                                         #   → RequestC (request)   ✗ transitive violation
 ```
 
-### 4. Test Mocking
+The error message identifies the full chain: `SingletonA → SingletonB → RequestC`.
 
-All injection methods support manual setting (convenient for testing):
+### Injection marker filtering
 
-```python
-def test_user_controller():
-    controller = UserController()
-    
-    # Manually inject mock object
-    controller.user_service = MockUserService()
-    
-    # Test business logic
-    result = controller.get_user(123)
-    assert result == expected_value
-```
+Only Python dunder attributes (`__init__`, `__repr__`, etc.) are automatically excluded from injection scanning. Single-underscore-prefixed attributes like `_cache` or `_connection` are **now** visible to the injection system if they carry an `Inject()` marker. This change (v0.93a10+) ensures that "private by convention" fields are not silently ignored.
 
----
+## Compatibility notes
 
-## Best Practices
+Cullinan still exports some legacy names, but they should not be used as the primary programming model:
 
-### ✅ Recommended Approaches
+- `injectable` is currently a **no-op compatibility decorator**
+- `inject_constructor` is currently a **no-op compatibility decorator**
+- `get_injection_registry()` currently returns `None`
+- `reset_injection_registry()` is a safe compatibility no-op
 
-#### 1. Prefer Inject() + Type Annotations
-```python
-@injectable
-class UserService:
-    database: DatabaseService = Inject()  # ✅ Recommended
-    cache: CacheService = Inject()
-```
+Those names are kept so older code paths fail less abruptly, but new code should rely on `@service`, `@controller`, `Inject`, `InjectByName`, and `ApplicationContext`.
 
-#### 2. Clearly Mark Optional Dependencies
-```python
-class UserService:
-    database: DatabaseService = Inject()  # Required
-    cache: CacheService = Inject(required=False)  # Optional
-```
+## Troubleshooting
 
-#### 3. Use @injectable to Simplify Injection
-```python
-@injectable
-class UserController:
-    user_service: UserService = Inject()
-    # Automatically injected, no manual call needed
-```
+| Problem | What to check |
+| --- | --- |
+| Dependency cannot be resolved | Confirm the type or dependency name matches the registered component |
+| `DependencyTypeResolutionError` on startup | The annotation is ambiguous, unsupported, or cannot be normalized safely; narrow the type contract or switch to `InjectByName()` / `Lazy("Name")` |
+| Optional dependency is missing | Use `required=False` and handle `None` explicitly |
+| Lifecycle hooks do not run | Ensure the component is managed and `ApplicationContext.refresh()` has executed |
+| Advanced registration behaves differently than expected | Verify the `Definition` scope and factory source |
+| `_` prefixed injection fields are not resolved | As of v0.93a10, only `__dunder__` attributes are excluded. Ensure the field has a type annotation and the dependency is registered |
 
-#### 4. Service Classes Use @service Decorator
-```python
-@service  # Auto-register to ServiceRegistry
-@injectable  # Support dependency injection
-class UserService:
-    database: DatabaseService = Inject()
-```
+## Related documents
 
-### ❌ Things to Avoid
-
-#### 1. Avoid Accessing Dependencies in Constructor
-```python
-@injectable
-class UserService:
-    database: DatabaseService = Inject()
-    
-    def __init__(self):
-        # ❌ database not yet injected
-        # self.database.query(...)  
-        pass
-    
-    def get_user(self, user_id):
-        # ✅ Safe to access now
-        return self.database.query(...)
-```
-
-#### 2. Avoid Circular Dependencies
-```python
-# ❌ Wrong: Circular dependency
-@service
-class ServiceA:
-    b: ServiceB = Inject()
-
-@service
-class ServiceB:
-    a: ServiceA = Inject()
-```
-
-#### 3. Avoid Overusing InjectByName
-```python
-# ❌ Not recommended: Lose type safety
-user_service = InjectByName('UserService')
-
-# ✅ Recommended: Type-safe
-user_service: UserService = Inject()
-```
-
----
-
-## Migration Guide
-
-### Migrating from Old Code
-
-If your code uses the old injection approach, **no changes needed**! The new unified model is fully backward compatible.
-
-#### Old Code Still Works
-```python
-# Old code - still works
-@injectable
-class UserService:
-    database: DatabaseService = Inject()
-
-# New code - exactly the same syntax
-@injectable
-class UserService:
-    database: DatabaseService = Inject()
-```
-
-#### Backward Compatibility Mechanism
-
-The framework internally uses a backward compatibility mechanism:
-1. **Try new model first** (InjectionExecutor)
-2. **Auto-fallback on failure** to old logic (registry.inject())
-3. **Completely transparent**, users unaware
-
-These backward compatibility codes are marked in the source:
-```python
-# BACKWARD_COMPAT: v0.8 - Keep old injection logic
-# Planned removal version: v1.0
-```
-
-### Upgrade Recommendations
-
-Although old code continues to work, it's recommended to:
-
-1. **New projects**: Use the new recommended patterns directly
-2. **Existing projects**: Migrate gradually, no need to change everything at once
-3. **Monitor performance**: New model performs better in most scenarios
-
----
-
-## FAQ
-
-### Q: Which of the three injection methods should I use?
-
-**A**: Recommended priority:
-1. **Inject() + type annotations**: Most recommended, type-safe
-2. **@injectable + mixed use**: Simplifies code
-3. **InjectByName**: Use when avoiding circular imports
-
-### Q: When are dependencies injected?
-
-**A**: 
-- **Inject/InjectByName**: On first property access (lazy injection)
-- **@injectable**: After __init__ method executes (batch injection)
-
-### Q: How to handle optional dependencies?
-
-**A**: 
-```python
-cache: CacheService = Inject(required=False)
-
-if self.cache:  # Check if None
-    self.cache.set(key, value)
-```
-
-### Q: How to avoid circular dependencies?
-
-**A**:
-1. Redesign dependency relationships
-2. Use event system for decoupling
-3. Introduce intermediate layer/Facade
-
-### Q: What about performance?
-
-**A**: The new model performs excellently:
-- Cache hit: < 1 μs
-- First resolution: 10-50 μs
-- On par with or better than old model
-
----
-
-## Complete Examples
-
-### Example 1: Simple Three-Tier Architecture
-
-```python
-from cullinan.core import Inject, injectable
-from cullinan.service import service
-
-# Data Access Layer
-@service
-class DatabaseService:
-    def query(self, sql: str):
-        return f"Query result: {sql}"
-
-# Business Logic Layer
-@service
-@injectable
-class UserService:
-    database: DatabaseService = Inject()
-    
-    def get_user(self, user_id: int):
-        return self.database.query(
-            f"SELECT * FROM users WHERE id={user_id}"
-        )
-    
-    def create_user(self, username: str):
-        return self.database.query(
-            f"INSERT INTO users (username) VALUES ('{username}')"
-        )
-
-# Controller Layer
-@injectable
-class UserController:
-    user_service: UserService = Inject()
-    
-    def get(self, user_id: int):
-        return self.user_service.get_user(user_id)
-    
-    def post(self, username: str):
-        return self.user_service.create_user(username)
-```
-
-### Example 2: Complex Scenario with Caching
-
-```python
-from cullinan.core import Inject, InjectByName, injectable
-from cullinan.service import service
-
-@service
-class CacheService:
-    def get(self, key): pass
-    def set(self, key, value): pass
-
-@service
-class LogService:
-    def log(self, message): pass
-
-@service
-@injectable
-class UserService:
-    database: DatabaseService = Inject()
-    cache: CacheService = Inject(required=False)
-    logger = InjectByName('LogService', required=False)
-    
-    def get_user(self, user_id: int):
-        # Try to get from cache
-        if self.cache:
-            cached = self.cache.get(f"user_{user_id}")
-            if cached:
-                if self.logger:
-                    self.logger.log(f"Cache hit: user_{user_id}")
-                return cached
-        
-        # Query from database
-        result = self.database.query(
-            f"SELECT * FROM users WHERE id={user_id}"
-        )
-        
-        # Write to cache
-        if self.cache:
-            self.cache.set(f"user_{user_id}", result)
-        
-        return result
-```
-
----
-
-## References
-
-- [Architecture Documentation](./architecture.md)
-- [Extension Development Guide](./extension_development_guide.md)
-- [API Reference](./api_reference.md)
-
----
-
-**Changelog**:
-- 2025-12-24: Document created, covering v0.9 unified injection model
-- Future: Continuous updates to best practices and examples
-
+- [Architecture](architecture.md)
+- [Runtime consolidation overview](runtime_updates_v093.md)
+- [IoC & DI wiki](wiki/injection.md)
+- [Application Lifecycle](wiki/lifecycle.md)

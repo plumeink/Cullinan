@@ -1,21 +1,29 @@
 title: "Getting Started with Cullinan"
 slug: "getting-started"
-module: ["cullinan.application"]
+module: ["cullinan"]
 tags: ["getting-started", "tutorial"]
 author: "Plumeink"
 reviewers: []
 status: updated
 locale: en
 translation_pair: "docs/zh/getting_started.md"
-related_tests: ["tests/test_real_app_startup.py"]
-related_examples: ["examples/hello_http.py"]
+related_tests: ["tests/core/test_application_model_refactor.py", "tests/integration/test_adapter_integration.py"]
+related_examples: ["examples/minimal_app"]
 estimate_pd: 2.0
-last_updated: "2025-12-25T00:00:00Z"
+last_updated: "2026-06-01T00:00:00Z"
 pr_links: []
 
 # Getting Started with Cullinan
 
 This page provides a minimal quick-start to install and run a small Cullinan application.
+The key mental model is: write business methods and components with decorators first,
+then let the runtime assemble them. Cullinan is not centered on a manually wired app object.
+
+> **Read next:** [Framework Semantics](framework_semantics.md), [Engineering Practices](how-to/index.md)  
+> **Runnable repository guide:** `examples/minimal_app/` is the maintained minimal example.<br>
+> **Advanced boundary:** if you intentionally need explicit `Application` orchestration,
+> continue in [Internals & Extensions](internals/index.md) instead of treating that path
+> as the default bootstrap.
 
 ## Prerequisites
 - Python 3.8+
@@ -53,19 +61,34 @@ python -m pip install cullinan
 
 ```python
 # minimal_app.py
-from cullinan.application import run
-from cullinan.controller import controller, get_api
+from cullinan import application, configure
+from cullinan.core import service
+from cullinan.web import controller, get_api
 
-@controller(url='/hello')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
     """Simple HTTP controller."""
-    
-    @get_api(url='')
+
+    greeting_service: GreetingService  # ← 构造注入 (constructor injection)
+
+    @get_api(url="")
     def hello(self):
-        return {'message': 'Hello from Cullinan!'}
+        return {"message": self.greeting_service.greet()}
+
+
+@configure(user_packages=["my_cullinan_project"])
+@application
+def main(): ...
 
 if __name__ == '__main__':
-    run()
+    main()
 ```
 
 4. Run your app:
@@ -84,42 +107,14 @@ python minimal_app.py
 
 Then open `http://localhost:4080/hello` in your browser to verify the server is running.
 
-## Sample run output
+## What this example demonstrates
 
-The following log output illustrates a successful run of the example in a local environment (Windows PowerShell session). Timestamps and durations will vary between environments:
-
-```
-|||||||||||||||||||||||||||||||||||||||||||||||||
-|||                                           |||
-|||    _____      _ _ _                       |||
-|||   / ____|    | | (_)                      |||
-|||  | |    _   _| | |_ _ __   __ _ _ __      |||
-|||  | |   | | | | | | | '_ \ / _` | '_ \     |||
-|||  | |___| |_| | | | | | | | (_| | | | |    |||
-|||   \_____\__,_|_|_|_|_| |_|\__,_|_| |_|    |||
-|||                                           |||
-|||||||||||||||||||||||||||||||||||||||||||||||||
-	|||
-
-2025-11-19 04:18:50,209 INFO cullinan.application: loading env...
-2025-11-19 04:18:50,210 INFO cullinan.application: └---configuring dependency injection...
-2025-11-19 04:18:50,210 INFO cullinan.application: └---dependency injection configured
-2025-11-19 04:18:50,210 INFO cullinan.application: └---scanning services...
-2025-11-19 04:18:50,210 INFO cullinan.application: ...
-2025-11-19 04:18:50,223 INFO cullinan.application: └---found 31 modules to scan
-2025-11-19 04:18:50,228 INFO cullinan.application: └---scanning controllers...
-2025-11-19 04:18:50,260 INFO cullinan.application: └---found 31 modules to scan
-2025-11-19 04:18:50,261 INFO cullinan.application: └---initializing services...
-2025-11-19 04:18:50,261 INFO cullinan.application: └---no services registered
-2025-11-19 04:18:50,261 INFO cullinan.application: └---loading controller finish
-
-2025-11-19 04:18:50,261 INFO cullinan.application: loading env finish
-
-2025-11-19 04:18:50,262 INFO cullinan.application: server is starting
-2025-11-19 04:18:50,262 INFO cullinan.application: port is 4080
-```
-
-At this point, the server is running and listening on `http://localhost:4080`. Use Ctrl+C to gracefully stop the server.
+- You mainly write business components with `@service`, `@controller`, and handler decorators
+- `@application` marks the default entry method
+- `@configure(...)` attaches startup settings to that method
+- `@module` is optional and only needed when you want an explicit advanced runtime boundary
+- Bare type annotations enable constructor injection, resolving controller dependency from the active application context
+- calling the entry method assembles and serves the application through the framework's default startup API
 
 ## Minimal application example
 
@@ -127,19 +122,32 @@ Here's a minimal Cullinan application that demonstrates the core framework featu
 
 ```python
 # minimal_app.py
-from cullinan.application import run
-from cullinan.controller import controller, get_api
+from cullinan import application, configure
+from cullinan.core import service
+from cullinan.web import controller, get_api
 
-@controller(url='/hello')
+
+@service
+class GreetingService:
+    def greet(self) -> str:
+        return "Hello from Cullinan!"
+
+
+@controller(url="/hello")
 class HelloController:
-    """Simple HTTP controller."""
-    
-    @get_api(url='')
-    def hello(self):
-        return {'message': 'Hello from Cullinan!'}
+    greeting_service: GreetingService  # ← 构造注入 (constructor injection)
 
-if __name__ == '__main__':
-    run()
+    @get_api(url="")
+    def hello(self):
+        return {"message": self.greeting_service.greet()}
+
+
+@configure(user_packages=["my_cullinan_project"])
+@application
+def main(): ...
+
+if __name__ == "__main__":
+    main()
 ```
 
 To run this example:
@@ -154,59 +162,44 @@ Then visit `http://localhost:4080/hello` in your browser.
 ## Understanding the basics
 
 ### Application lifecycle
-1. **Creation**: `create_app()` initializes the application with default settings
-2. **Registration**: Controllers and services are discovered via module scanning or explicit registration
-3. **Startup**: `app.run()` starts the Tornado IOLoop and begins accepting requests
-4. **Shutdown**: Graceful shutdown on SIGINT/SIGTERM
+1. **Entry declaration**: `@application` marks the entry method, and `@configure(...)` attaches startup settings to it
+2. **Discovery and assembly**: calling `main()` imports owned packages, finalizes pending decorator registrations, and assembles business components under the framework-managed runtime boundary
+3. **Activation**: the validated runtime becomes active and is served through the framework-selected backend path
+4. **Reload / shutdown**: old runtimes drain in-flight requests before closing
 
 ### Dependency Injection
-Cullinan provides built-in IoC/DI support. 
+Cullinan provides built-in IoC/DI support through decorator-driven component discovery and runtime-managed wiring.
 
-#### Decorators Explained: `@injectable` vs `@controller()`
+#### Recommended runtime model
 
-**`@injectable`** - General-purpose dependency injection decorator
-- Applicable to any class that needs dependency injection (Service, Repository, utility classes, etc.)
-- Must be manually applied, does not auto-register to any registry
-- Automatically injects marked dependencies after class instantiation
-- Use cases: Service layer, Repository layer, utility classes, etc.
-
-**`@controller()`** - Controller-specific auto-registration decorator
-- Specifically for HTTP Controller classes
-- **Automatically applies `@injectable`**, no need to add manually
-- Auto-registers Controller and its routes to ControllerRegistry
-- Auto-scans methods decorated with `@get_api`, `@post_api`, etc.
-- Use cases: HTTP Controllers only
+- Use `@service` for business services
+- Use `@controller` for HTTP controllers
+- Use bare type annotations for constructor injection (recommended)
+- Use `Inject()` for explicit type-based injection when needed
+- Use `InjectByName()` when name-based lookup is more convenient
+- Start from business decorators and an entry method first
+- Add `@module` only when you need explicit runtime boundaries such as package ownership, hot-pluggable modules, or stricter reload/draining control
+- If you intentionally need low-level container or runtime internals, continue in [Internals & Extensions](internals/index.md) instead of treating that path as the quick-start model
 
 ```python
-from cullinan.controller import controller, get_api
-from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
-from cullinan.params import Path
+from cullinan.web import controller, get_api, Path
+from cullinan.core import service
 
-# Service uses @service (inherits from Service base class)
 @service
-class UserService(Service):
+class UserService:
     def get_user(self, user_id):
         return {'id': user_id, 'name': 'John'}
 
-# Repository uses @injectable
-@injectable
-class UserRepository:
-    def find_by_id(self, user_id):
-        return {'id': user_id}
-
-# Controller uses @controller() - automatically includes @injectable
 @controller(url='/api/users')
 class UserController:
-    # Dependency injection in Controller
-    user_service = InjectByName('UserService')
-    
+    user_service: UserService  # ← 构造注入 (constructor injection)
+
     @get_api(url='/{user_id}')
     async def get_user(self, user_id: int = Path()):
         return self.user_service.get_user(user_id)
 ```
-    
-**Important:** Do **not** use `@injectable` on Controllers, as `@controller()` already includes it automatically.
+
+**Compatibility note:** `injectable` and `inject_constructor` still exist as compatibility shims, but new code should not use them as the primary pattern.
 
 ---
 
@@ -230,7 +223,7 @@ Key points:
 **v0.90+ Recommended: Type-Safe Parameter System**
 
 ```python
-from cullinan.params import Path, Query, Body, DynamicBody
+from cullinan.web.params import Path, Query, Body, DynamicBody
 
 @controller(url='/api/users')
 class UserController:
@@ -305,72 +298,91 @@ class UserController:
 
 </details>
 
-For a deeper dive into URL patterns and all decorator options, see `docs/wiki/restful_api.md`.
+For a deeper dive into URL patterns and all decorator options, see `wiki/restful_api.md`.
 
 ---
 
 #### Recommended Dependency Injection Approaches
 
-**Approach 1: InjectByName (Recommended, Simplest)**
+**Approach 1: Constructor Injection (Recommended)**
+
+Prefer bare type annotations for constructor injection — the simplest and most idiomatic pattern:
+
+```python
+from cullinan.core import service
+
+@service
+class DatabaseService:
+    def query(self, sql):
+        return f"Results for: {sql}"
+
+@service
+class UserRepository:
+    db: DatabaseService  # ← 构造注入 (constructor injection)
+
+    def get_users(self):
+        return self.db.query("SELECT * FROM users")
+```
+
+**Approach 2: Inject**
+
+Use typed `Inject()` when you need explicit injection semantics or are working with legacy code:
+
+```python
+from cullinan.core import Inject, service
+
+@service
+class DatabaseService:
+    def query(self, sql):
+        return f"Results for: {sql}"
+
+@service
+class UserRepository:
+    db: DatabaseService = Inject()
+
+    def get_users(self):
+        return self.db.query("SELECT * FROM users")
+```
+
+**Approach 3: InjectByName**
 
 Inject by name without importing dependencies, avoiding circular import issues:
 
 ```python
-from cullinan.service import Service, service
-from cullinan.core import injectable, InjectByName
+from cullinan.core import InjectByName, service
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
+@service
 class UserRepository:
-    # Recommended: InjectByName doesn't need type annotation, just use string name
     db = InjectByName('DatabaseService')
     
     def get_users(self):
         return self.db.query("SELECT * FROM users")
 ```
 
-**Approach 2: Inject + TYPE_CHECKING (IDE autocomplete support)**
+**Approach 4: Inject + TYPE_CHECKING (IDE autocomplete support)**
 
 If you need IDE autocomplete and type checking, use `Inject` with TYPE_CHECKING:
 
 ```python
 from typing import TYPE_CHECKING
-from cullinan.core import injectable, Inject
-from cullinan.service import Service, service
+from cullinan.core import Inject, service
 
 # TYPE_CHECKING imports are not executed at runtime, avoiding circular imports
 if TYPE_CHECKING:
-    from cullinan.service import DatabaseService
+    from my_project.services import DatabaseService
 
 @service
-class DatabaseService(Service):
+class DatabaseService:
     def query(self, sql):
         return f"Results for: {sql}"
 
-@injectable
+@service
 class UserRepository:
-    # With TYPE_CHECKING import, you get IDE autocomplete support
-    db: 'DatabaseService' = Inject()
-    
-    def get_users(self):
-        # IDE can suggest db.query method
-        return self.db.query("SELECT * FROM users")
-```
-
-**Approach 3: Inject + Pure String Annotation (No IDE autocomplete)**
-
-If you don't need IDE autocomplete, use string annotations directly:
-
-```python
-from cullinan.core import injectable, Inject
-
-@injectable
-class UserRepository:
-    # Pure string annotation, no import needed, but no IDE autocomplete
     db: 'DatabaseService' = Inject()
     
     def get_users(self):
@@ -378,17 +390,18 @@ class UserRepository:
 ```
 
 **Summary:**
-- **InjectByName**: Recommended for most cases, simple and straightforward, no type annotation needed
-- **Inject + TYPE_CHECKING**: Best for development experience, provides IDE autocomplete
-- **Inject + String annotation**: Simplest but no IDE support
+- **Constructor Injection (bare type annotation)**: Recommended default — simplest, cleanest, idiomatic
+- **Inject**: Explicit syntax for legacy compatibility or when explicit injection semantics are preferred
+- **InjectByName**: Useful for decoupling or avoiding circular imports
+- **Inject + TYPE_CHECKING**: Best for strong editor support without runtime import coupling
 
-For detailed information on injection patterns, see `docs/wiki/injection.md`.
+For detailed information on injection patterns, see `wiki/injection.md`.
 
 ## Common patterns
 
 ### Adding middleware
 ```python
-from cullinan.middleware import MiddlewareBase
+from cullinan.web.middleware import MiddlewareBase
 
 class LoggingMiddleware(MiddlewareBase):
     def process_request(self, request):
@@ -400,7 +413,7 @@ app.add_middleware(LoggingMiddleware())
 
 ### Configuration
 ```python
-from cullinan.config import Config
+from cullinan.support.config import Config
 
 config = Config()
 config.set('database.url', 'postgresql://localhost/mydb')
@@ -411,20 +424,21 @@ config.set('server.port', 8080)
 - If you encounter errors installing packages, ensure your Python and pip are up to date and that you have network access to PyPI.
 
 ## Next steps
-- Read `docs/wiki/injection.md` for IoC/DI details.
+- Read `wiki/injection.md` for IoC/DI details.
 - Explore `examples/` for runnable samples.
 
 ## Additional resources
 
-- **Architecture**: See `docs/architecture.md` for system design overview
-- **Components**: Read `docs/wiki/components.md` for component responsibilities
-- **Lifecycle**: Learn about application lifecycle in `docs/wiki/lifecycle.md`
-- **Middleware**: Understand middleware in `docs/wiki/middleware.md`
-- **API Reference**: Browse `docs/api_reference.md` for complete API documentation
+- **Architecture**: See `architecture.md` for system design overview
+- **Application runtime**: Read `wiki/application_runtime.md` for module graph, ownership, and draining
+- **Components**: Read `wiki/components.md` for component responsibilities
+- **Lifecycle**: Learn about application lifecycle in `wiki/lifecycle.md`
+- **Middleware**: Understand middleware in `wiki/middleware.md`
+- **API Reference**: Browse `api_reference.md` for complete API documentation
 - **Examples**: Explore `examples/` directory for more samples
 
 ## Community and support
 
 - **Issues**: Report bugs at [GitHub Issues](https://github.com/your-org/cullinan/issues)
-- **Contributing**: See `docs/contributing.md` for contribution guidelines
-- **Testing**: Read `docs/testing.md` for testing best practices
+- **Contributing**: See `contributing.md` for contribution guidelines
+- **Testing**: Read `testing.md` for testing best practices

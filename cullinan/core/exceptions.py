@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Core exceptions for the Cullinan framework.
-
-This module defines the exception hierarchy for the core module,
-providing specific error types for registry, dependency injection,
-and lifecycle management operations.
-
-2.0 新增：结构化异常体系，支持诊断渲染。
-"""
+"""Core exceptions for the Cullinan framework."""
 
 
 from typing import Optional, List, Dict, Any
@@ -25,10 +18,10 @@ class RegistryError(CullinanCoreError):
 class RegistryFrozenError(RegistryError):
     """Exception raised when attempting to modify a frozen registry.
 
-    2.0 新增：refresh 后任何结构性写入必须抛出此异常。
+    Structural writes after ``refresh()`` must raise this error.
     """
 
-    def __init__(self, message: str = "Registry 已冻结，禁止修改"):
+    def __init__(self, message: str = "Registry is frozen and cannot be modified."):
         super().__init__(message)
         self.message = message
 
@@ -36,7 +29,7 @@ class RegistryFrozenError(RegistryError):
 class DependencyResolutionError(CullinanCoreError):
     """Exception raised when dependencies cannot be resolved.
 
-    2.0 增强：携带结构化诊断字段。
+    Carries structured diagnostic fields.
     """
 
     def __init__(
@@ -56,7 +49,7 @@ class DependencyResolutionError(CullinanCoreError):
         self.candidate_sources = candidate_sources or []
         self.cause = cause
 
-        # 保留原始异常链
+        # Preserve the original exception chain.
         if cause is not None:
             self.__cause__ = cause
 
@@ -64,15 +57,37 @@ class DependencyResolutionError(CullinanCoreError):
 class DependencyNotFoundError(DependencyResolutionError):
     """Exception raised when a required dependency is not found.
 
-    2.0 新增：明确的"依赖缺失"异常类型。
+    Explicit error type for missing dependencies.
     """
     pass
+
+
+class DependencyTypeResolutionError(DependencyResolutionError):
+    """Exception raised when a dependency type hint cannot be resolved safely."""
+
+    def __init__(
+        self,
+        message: str,
+        dependency_name: Optional[str] = None,
+        injection_point: Optional[str] = None,
+        expected_type_name: Optional[str] = None,
+        fallback_candidate: Optional[str] = None,
+        **kwargs
+    ):
+        super().__init__(
+            message,
+            dependency_name=dependency_name,
+            injection_point=injection_point,
+            **kwargs,
+        )
+        self.expected_type_name = expected_type_name
+        self.fallback_candidate = fallback_candidate
 
 
 class ConditionNotMetError(DependencyResolutionError):
     """Exception raised when dependency conditions are not met.
 
-    2.0 新增：条件不满足时的异常类型。
+    Explicit error type for unmet conditions.
     """
 
     def __init__(
@@ -89,7 +104,7 @@ class ConditionNotMetError(DependencyResolutionError):
 class CircularDependencyError(DependencyResolutionError):
     """Exception raised when circular dependencies are detected.
 
-    2.0 增强：链路必须稳定有序。
+    The dependency chain must remain stable and ordered.
     """
 
     def __init__(
@@ -98,7 +113,7 @@ class CircularDependencyError(DependencyResolutionError):
         dependency_chain: Optional[List[str]] = None,
         **kwargs
     ):
-        # 将 dependency_chain 作为 resolution_path
+        # Mirror dependency_chain into resolution_path.
         super().__init__(
             message,
             resolution_path=dependency_chain,
@@ -110,7 +125,7 @@ class CircularDependencyError(DependencyResolutionError):
 class ScopeNotActiveError(DependencyResolutionError):
     """Exception raised when required scope is not active.
 
-    2.0 新增：request scope 在无 RequestContext 时必须抛出此异常。
+    Raised when request scope is required but inactive.
     """
 
     def __init__(
@@ -121,7 +136,10 @@ class ScopeNotActiveError(DependencyResolutionError):
         **kwargs
     ):
         if message is None:
-            message = f"Scope '{scope_type}' 不活跃，无法解析依赖 '{dependency_name}'"
+            message = (
+                f"Scope '{scope_type}' is not active, so dependency "
+                f"'{dependency_name}' cannot be resolved."
+            )
         super().__init__(message, dependency_name=dependency_name, **kwargs)
         self.scope_type = scope_type
 
@@ -129,7 +147,7 @@ class ScopeNotActiveError(DependencyResolutionError):
 class CreationError(DependencyResolutionError):
     """Exception raised when instance creation fails.
 
-    2.0 新增：实例创建失败的异常类型，必须保留原始异常。
+    Raised when instance creation fails and must preserve the original error.
     """
 
     def __init__(
@@ -140,6 +158,39 @@ class CreationError(DependencyResolutionError):
         **kwargs
     ):
         super().__init__(message, dependency_name=dependency_name, cause=cause, **kwargs)
+
+
+class AmbiguousDependencyError(DependencyResolutionError):
+    """Exception raised when constructor injection matches multiple definitions.
+
+    Raised during refresh() when a constructor-injected type has more than
+    one matching Definition in the registry.
+    """
+
+    def __init__(
+        self,
+        attr_name: str,
+        target_cls: type,
+        candidates: List[str],
+        **kwargs,
+    ):
+        type_name = getattr(target_cls, "__name__", str(target_cls))
+        candidate_names = ", ".join(candidates)
+        message = (
+            f"Constructor dependency '{attr_name}' on '{type_name}' "
+            f"matches {len(candidates)} definitions by type: [{candidate_names}]. "
+            f"Use InjectByName() as a field injection to disambiguate."
+        )
+        super().__init__(
+            message,
+            dependency_name=attr_name,
+            injection_point=f"{type_name}.__annotations__['{attr_name}']",
+            candidate_sources=[{"name": c} for c in candidates],
+            **kwargs,
+        )
+        self.attr_name = attr_name
+        self.target_cls = target_cls
+        self.candidates = candidates
 
 
 class LifecycleError(CullinanCoreError):
