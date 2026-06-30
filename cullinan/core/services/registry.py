@@ -15,12 +15,12 @@ Performance optimizations:
 - Singleton instance caching
 """
 
-from typing import Type, Optional, List, Dict, Any
+from typing import Type, Optional, List, Dict
 import logging
 import threading
 
 from cullinan.core import Registry
-from cullinan.core.exceptions import RegistryError, DependencyResolutionError
+from cullinan.core.exceptions import DependencyResolutionError
 from cullinan.core.provider_source import ProviderSource
 from .base import Service
 

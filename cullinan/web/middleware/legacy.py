@@ -16,7 +16,7 @@ Author: Plumeink
 
 import logging
 from typing import Type, Optional
-from cullinan.support.deprecation import deprecated, warn_deprecated
+from cullinan.support.deprecation import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +53,8 @@ def register_middleware_manual(middleware_class: Type,
     registry.register(middleware_class, priority=priority)
 
     logger.warning(
-        f"register_middleware_manual() is deprecated. "
-        f"Use @middleware decorator instead."
+        "register_middleware_manual() is deprecated. "
+        "Use @middleware decorator instead."
     )
 
 

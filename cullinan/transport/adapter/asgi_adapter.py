@@ -193,7 +193,7 @@ async def _handle_http(
         # 4. Send response via ASGI
         await adapter.create_response_writer().write_response(response, send)
 
-    except Exception as exc:
+    except Exception:
         logger.exception('Uncaught error in ASGI HTTP handler')
         # Send a minimal 500 response so the connection is not left hanging
         try:

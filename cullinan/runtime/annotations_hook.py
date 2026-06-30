@@ -21,7 +21,7 @@ import linecache
 import os
 import sys
 import types
-from typing import Any, List, Optional, Sequence
+from typing import Any, Optional, Sequence
 
 
 # ---------------------------------------------------------------------------

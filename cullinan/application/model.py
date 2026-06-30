@@ -571,7 +571,7 @@ def _discover_python_modules(specs: Sequence[ModuleSpec]) -> List[str]:
     for spec in specs:
         for package_name in spec.packages:
             try:
-                package = importlib.import_module(package_name)
+                importlib.import_module(package_name)
             except Exception:
                 _logger.warning(
                     "Skipping package %s during discovery — import failed",

@@ -206,7 +206,7 @@ __all__ = [
 
 # 尝试导出 PydanticHandler（如果可用）
 try:
-    from .pydantic_handler import PydanticHandler
+    from .pydantic_handler import PydanticHandler  # noqa: F401  (re-exported via dynamic __all__.append below)
     __all__.append('PydanticHandler')
 except ImportError:
     pass

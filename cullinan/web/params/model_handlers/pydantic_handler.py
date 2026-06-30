@@ -16,7 +16,7 @@ from .base import ModelHandler, ModelHandlerError
 def _is_pydantic_available() -> bool:
     """检查 Pydantic 是否可用"""
     try:
-        import pydantic
+        import pydantic  # noqa: F401  (import is the availability probe)
         return True
     except ImportError:
         return False

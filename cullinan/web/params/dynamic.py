@@ -6,7 +6,7 @@
 Author: Plumeink
 """
 
-from typing import Any, Dict, Iterator, KeysView, ValuesView, ItemsView, Optional, List, Union
+from typing import Any, Dict, Iterator, KeysView, ValuesView, ItemsView, List
 
 
 class _Empty:

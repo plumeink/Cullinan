@@ -13,7 +13,7 @@ Performance optimizations:
 """
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, Dict, Optional, Any, List, Callable, Set, Iterable, Tuple
+from typing import TypeVar, Generic, Dict, Optional, Any, List, Callable, Iterable, Tuple
 import logging
 import threading
 

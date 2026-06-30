@@ -6,7 +6,7 @@
 Author: Plumeink
 """
 
-from typing import Any, Type, List, Dict, Callable, Optional, Union
+from typing import Any, Type, List, Dict, Callable
 from functools import wraps
 import dataclasses
 import json

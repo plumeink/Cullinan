@@ -5,7 +5,6 @@ import os
 import importlib.util
 import logging
 from dataclasses import dataclass
-import signal
 import sys
 import threading
 from typing import List, Optional
@@ -22,7 +21,6 @@ from cullinan.runtime.module_scanner import (
     is_nuitka_compiled,
     file_list_func
 )
-from cullinan.application.model import Application, Module, Runtime, module
 from cullinan.core.semantic_rules import (
     CompatibilitySemanticWarning,
     describe_semantic_rule,

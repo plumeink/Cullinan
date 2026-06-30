@@ -7,7 +7,7 @@ Author: Plumeink
 """
 
 import json
-from typing import Any, Type, Union
+from typing import Any, Type
 
 
 class ConversionError(Exception):

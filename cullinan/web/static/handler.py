@@ -17,7 +17,7 @@ import mimetypes
 import os
 from email.utils import formatdate, parsedate_to_datetime
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Optional, Tuple
+from typing import Awaitable, Callable, Optional, Tuple
 
 from cullinan.web.gateway.web_core import WebRequest, WebResponse
 from cullinan.web.static.spec import StaticFiles

@@ -4,7 +4,6 @@ import inspect
 import os
 import importlib.util
 import logging
-import signal
 import sys
 import threading
 
@@ -349,8 +348,7 @@ def run(handlers=None):
 
     # Initialize IoC/DI 2.0
     logger.info("└---initializing IoC/DI 2.0...")
-    from cullinan.core import ApplicationContext, PendingRegistry, set_application_context
-    from cullinan.core.services.registry import get_service_registry
+    from cullinan.core import ApplicationContext, set_application_context
 
     ctx = ApplicationContext()
     set_application_context(ctx)

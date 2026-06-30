@@ -80,21 +80,21 @@ class ApiController:
 
         # Import service module
         services_mod = importlib.import_module('test_app.services')
-        print(f"Imported: test_app.services")
+        print("Imported: test_app.services")
 
         # Import component module
         components_mod = importlib.import_module('test_app.components')
-        print(f"Imported: test_app.components")
+        print("Imported: test_app.components")
 
         # Import controller module
         controllers_mod = importlib.import_module('test_app.controllers')
-        print(f"Imported: test_app.controllers")
+        print("Imported: test_app.controllers")
 
         # Check PendingRegistry
         pending = PendingRegistry.get_instance()
         all_regs = pending.get_all()
 
-        print(f"\n=== PendingRegistry contents ===")
+        print("\n=== PendingRegistry contents ===")
         print(f"Total registrations: {len(all_regs)}")
         for reg in all_regs:
             print(f"  - {reg.name}: type={reg.component_type.value}, scope={reg.scope}")
@@ -105,7 +105,7 @@ class ApiController:
         controllers = pending.get_by_type(ComponentType.CONTROLLER)
         components = pending.get_by_type(ComponentType.COMPONENT)
 
-        print(f"\n=== By type ===")
+        print("\n=== By type ===")
         print(f"  Services: {len(services)} - {[s.name for s in services]}")
         print(f"  Controllers: {len(controllers)} - {[c.name for c in controllers]}")
         print(f"  Components: {len(components)} - {[c.name for c in components]}")
@@ -122,7 +122,7 @@ class ApiController:
         ctx.refresh()
 
         definitions = ctx.list_definitions()
-        print(f"\n=== ApplicationContext definitions ===")
+        print("\n=== ApplicationContext definitions ===")
         print(f"Definitions: {definitions}")
 
         assert 'UserService' in definitions

@@ -15,8 +15,7 @@ Author: Plumeink
 """
 
 import inspect
-from typing import Type, Optional, List, Callable, Any, Union, Dict
-from functools import wraps
+from typing import Type, Optional, List, Any, Dict
 
 from .pending import PendingRegistry, PendingRegistration, ComponentType
 

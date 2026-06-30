@@ -7,7 +7,6 @@ and detailed context information for better debugging and monitoring.
 """
 
 from typing import Optional, Dict, Any
-import traceback
 
 
 class CullinanError(Exception):

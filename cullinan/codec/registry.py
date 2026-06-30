@@ -9,7 +9,6 @@ Author: Plumeink
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 from .base import BodyCodec, ResponseCodec
-from .errors import DecodeError, EncodeError
 
 
 class CodecRegistry:

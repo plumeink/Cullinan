@@ -142,7 +142,7 @@ def demo_middleware_execution():
     
     # Show registered middleware
     registered = registry.get_registered_middleware()
-    print(f"\nRegistered middleware (in priority order):")
+    print("\nRegistered middleware (in priority order):")
     for mw in sorted(registered, key=lambda x: x['priority']):
         print(f"  {mw['priority']:3d}: {mw['name']}")
     
@@ -214,7 +214,7 @@ def query_middleware_extensions():
     print("Middleware Extension Points")
     print("=" * 70)
     
-    from cullinan.support.extensions import get_extension_registry, ExtensionCategory
+    from cullinan.support.extensions import get_extension_registry
     
     registry = get_extension_registry()
     middleware_points = registry.get_extension_points(

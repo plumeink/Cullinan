@@ -160,7 +160,6 @@ class Router:
         if node.entries is None:
             node.entries = {}
         if method in node.entries:
-            existing = node.entries[method]
             logger.warning('Route conflict: %s %s overwrites existing handler', method, path)
         node.entries[method] = entry
         self._all_routes.append(entry)

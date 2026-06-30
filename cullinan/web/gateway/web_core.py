@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from http.cookies import SimpleCookie
-from typing import Any, Dict, Iterable, Iterator, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Iterator, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
 from urllib.parse import parse_qs
 
 

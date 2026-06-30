@@ -58,7 +58,7 @@ def test_component_in_full_flow():
     pending = PendingRegistry.get_instance()
     all_regs = pending.get_all()
 
-    print(f"\n=== PendingRegistry before refresh ===")
+    print("\n=== PendingRegistry before refresh ===")
     print(f"Total registrations: {len(all_regs)}")
     for reg in all_regs:
         print(f"  - {reg.name}: type={reg.component_type.value}")
@@ -76,7 +76,7 @@ def test_component_in_full_flow():
 
     # Check definitions
     definitions = ctx.list_definitions()
-    print(f"\n=== ApplicationContext definitions ===")
+    print("\n=== ApplicationContext definitions ===")
     print(f"Definitions: {definitions}")
 
     assert 'CacheManager' in definitions, f"CacheManager not in definitions: {definitions}"
@@ -84,7 +84,7 @@ def test_component_in_full_flow():
     assert 'ApiController' in definitions, f"ApiController not in definitions: {definitions}"
 
     # Check lifecycle log
-    print(f"\n=== Lifecycle log ===")
+    print("\n=== Lifecycle log ===")
     for entry in lifecycle_log:
         print(f"  - {entry}")
 
@@ -93,7 +93,7 @@ def test_component_in_full_flow():
     user_post_idx = lifecycle_log.index('UserService.on_post_construct')
     api_post_idx = lifecycle_log.index('ApiController.on_post_construct')
 
-    print(f"\n=== Initialization order ===")
+    print("\n=== Initialization order ===")
     print(f"CacheManager.on_post_construct: index {cache_post_idx}")
     print(f"UserService.on_post_construct: index {user_post_idx}")
     print(f"ApiController.on_post_construct: index {api_post_idx}")

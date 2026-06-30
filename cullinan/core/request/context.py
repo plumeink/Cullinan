@@ -5,7 +5,6 @@ Provides thread-safe context management for request-scoped data
 using ``contextvars`` for async safety.
 """
 
-import threading
 from typing import Any, Dict, Optional, Callable
 from contextvars import ContextVar
 import logging

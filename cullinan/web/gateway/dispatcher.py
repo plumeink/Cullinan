@@ -190,7 +190,7 @@ class Dispatcher:
 
         # Attempt new param system first
         try:
-            from cullinan.web.params import ParamResolver, ResolveError, Param, DynamicBody
+            from cullinan.web.params import ParamResolver, DynamicBody
             analysis = ParamResolver.analyze_params(handler)
             use_new = any(
                 cfg.get('param_spec') is not None

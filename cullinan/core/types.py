@@ -5,7 +5,7 @@ This module provides type hints and protocols used throughout
 the core module for better type safety and IDE support.
 """
 
-from typing import Protocol, Any, Dict, List, Optional
+from typing import Protocol
 from enum import Enum
 
 

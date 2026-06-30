@@ -7,18 +7,17 @@ Author: Plumeink
 """
 
 import inspect
-import dataclasses
-from typing import Any, Callable, Dict, List, Optional, Tuple, Type, get_type_hints
+from typing import Any, Callable, Dict, Optional, get_type_hints
 
 from .base import Param, UNSET
-from .types import Path, Query, Body, Header, File, RawBody
+from .types import File, RawBody
 from .converter import TypeConverter, ConversionError
 from .auto import Auto, AutoType
 from .dynamic import DynamicBody
 from .validator import ParamValidator, ValidationError
-from .model import ModelResolver, ModelError
+from .model import ModelError
 from .file_info import FileInfo, FileList
-from .model_handlers import get_model_handler_registry, ModelHandlerError
+from .model_handlers import get_model_handler_registry
 
 
 class ResolveError(Exception):

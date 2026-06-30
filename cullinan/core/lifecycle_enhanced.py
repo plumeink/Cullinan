@@ -17,12 +17,12 @@ Lifecycle Flow:
 6. DESTROYED - PreDestroy phase (on_pre_destroy)
 """
 
-from typing import Dict, List, Optional, Any, Callable, Set
+from typing import Dict, List, Optional, Any
 from enum import Enum
 import logging
 import asyncio
 import inspect
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from .exceptions import LifecycleError
 

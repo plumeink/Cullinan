@@ -939,7 +939,7 @@ class ApplicationContext:
         * ``name: SomeType = Inject()`` or ``= Lazy()`` → handled by field injection.
         * ``name: SomeType = literal`` → framework ignores.
         """
-        from .decorators import Inject, InjectByName, Lazy, get_injection_markers
+        from .decorators import get_injection_markers
 
         annotations = dict(getattr(cls, "__annotations__", {}) or {})
         if not annotations:
@@ -1931,7 +1931,7 @@ class ApplicationContext:
         import concurrent.futures
         
         try:
-            loop = asyncio.get_running_loop()
+            asyncio.get_running_loop()
         except RuntimeError:
             # No running loop — safe to use asyncio.run()
             return asyncio.run(coro)

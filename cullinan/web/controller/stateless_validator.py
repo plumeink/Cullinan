@@ -8,7 +8,7 @@ Detects instance variable assignments in __init__ that could cause concurrency i
 import logging
 import inspect
 import warnings
-from typing import Type, Any, Set
+from typing import Type, Set
 from functools import wraps
 
 logger = logging.getLogger(__name__)

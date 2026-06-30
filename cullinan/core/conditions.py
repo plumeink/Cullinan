@@ -12,7 +12,7 @@ and will be collected when @Service/@Controller/@Component decorator runs.
 Author: Plumeink
 """
 
-from typing import Callable, Type, Optional, Any, List, TYPE_CHECKING
+from typing import Callable, Type, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .application_context import ApplicationContext

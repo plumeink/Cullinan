@@ -9,7 +9,7 @@ Author: Plumeink
 
 import logging
 import traceback
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, Type
 
 from .web_core import WebRequest, WebResponse
 
@@ -141,7 +141,6 @@ class ExceptionHandler:
         message = 'Internal Server Error'
 
         if isinstance(exc, CullinanError):
-            error_dict = exc.to_dict()
             # Try to infer status from error_code
             code = getattr(exc, 'error_code', '')
             if 'PARAMETER' in code or 'MISSING_HEADER' in code:

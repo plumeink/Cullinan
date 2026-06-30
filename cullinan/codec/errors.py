@@ -6,7 +6,7 @@ Defines exception classes for encoding/decoding operations.
 Author: Plumeink
 """
 
-from typing import Any, Optional
+from typing import Optional
 
 
 class CodecError(Exception):

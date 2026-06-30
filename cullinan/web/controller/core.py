@@ -3,26 +3,21 @@
 
 import json
 import inspect
-import types
 import functools
 import contextvars
 import logging
 import time
 import os
-import json
-import warnings
 from cullinan.core.services.registry import get_service_registry
 from cullinan.web.controller.registry import get_controller_registry
-from cullinan.web.controller.stateless_validator import validate_stateless_controller, check_controller_init_source
 from cullinan.support.exceptions import (
-    HandlerError, ParameterError, ResponseError, RequestError, MissingHeaderException
+    HandlerError, MissingHeaderException
 )
-from cullinan.support.logging_utils import should_log, log_if_enabled
 from cullinan.web.handler.base import BaseHandler
 from typing import Callable, Optional, Sequence, Tuple, TYPE_CHECKING, Any, Protocol, List
 
 # New parameter system imports
-from cullinan.web.params import Param, DynamicBody, ParamResolver, ResolveError
+from cullinan.web.params import DynamicBody, ParamResolver, ResolveError
 
 class ResponseProtocol(Protocol):
     def push(self, resp: Any) -> Any: ...
@@ -923,7 +918,6 @@ async def request_handler(self, func: Callable, params: Tuple, headers: Optional
             except Exception:
                 # fallback: if resp_obj is present, try to read status
                 status_code = getattr(resp_obj, 'get_status', lambda: None)()
-            client_ip = getattr(self.request, 'remote_ip', None) or getattr(self.request, 'remote_addr', None)
             # delegate to emit_access_log which supports different formats
             emit_access_log(self.request, resp_obj, status_code, duration)
         except Exception as e:

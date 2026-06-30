@@ -8,7 +8,7 @@ of internal implementation.
 Author: Plumeink
 """
 
-from typing import List, Dict, Optional, Callable, Any, Type
+from typing import List, Dict, Optional, Any, Type
 from dataclasses import dataclass
 from enum import Enum
 import logging

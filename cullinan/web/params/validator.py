@@ -7,7 +7,7 @@ Author: Plumeink
 """
 
 import re
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Tuple
 
 
 class ValidationError(Exception):

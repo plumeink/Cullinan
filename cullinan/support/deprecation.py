@@ -9,7 +9,7 @@ Author: Plumeink
 import warnings
 import functools
 import logging
-from typing import Callable, Optional
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 

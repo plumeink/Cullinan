@@ -37,7 +37,7 @@ Usage:
 
 import logging
 from typing import Type, Optional, Dict, Any, Callable
-from cullinan.core import Registry, LifecycleAware, LifecycleState
+from cullinan.core import Registry
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +69,6 @@ class WebSocketRegistry(Registry['Type[Any]']):
         Raises:
             RegistryError: If name or URL already registered
         """
-        from cullinan.core.exceptions import RegistryError
         
         self._validate_name(name)
         

@@ -61,7 +61,7 @@ def test_complete_flow():
     print("[OK] ApplicationContext initialized with unified lifecycle")
 
     # Check service registration via ApplicationContext
-    print(f"\n[Services via ApplicationContext]")
+    print("\n[Services via ApplicationContext]")
     definitions = ctx.list_definitions()
     db_service_registered = 'DatabaseService' in definitions
     user_service_registered = 'UserService' in definitions
@@ -70,7 +70,7 @@ def test_complete_flow():
 
     # Check controller registration
     controller_registry = get_controller_registry()
-    print(f"\n[Controllers]")
+    print("\n[Controllers]")
     controller_registered = 'UserController' in definitions
     print(f"  UserController registered in ApplicationContext: {controller_registered}")
     print(f"  UserController in controller_registry: {controller_registry.has('UserController')}")
@@ -79,26 +79,26 @@ def test_complete_flow():
 
     # Check handler registration
     handler_registry = get_handler_registry()
-    print(f"\n[Handlers]")
+    print("\n[Handlers]")
     print(f"  Handler count: {handler_registry.count()}")
     handlers = handler_registry.get_handlers()
     for url, servlet in handlers:
         print(f"    {url}")
 
     # Test dependency injection via ApplicationContext
-    print(f"\n[Dependency Injection Test via ApplicationContext]")
+    print("\n[Dependency Injection Test via ApplicationContext]")
     user_service = ctx.get('UserService')
     print(f"  UserService instance: {user_service}")
     print(f"  UserService.db: {user_service.db}")
     print(f"  UserService.db type: {type(user_service.db).__name__}")
 
     # Test functionality
-    print(f"\n[Functionality Test]")
+    print("\n[Functionality Test]")
     user = user_service.get_user(123)
     print(f"  user_service.get_user(123): {user}")
 
     # Test controller instantiation via ApplicationContext
-    print(f"\n[Controller Instantiation Test]")
+    print("\n[Controller Instantiation Test]")
     user_controller = ctx.get('UserController')
     print(f"  UserController instance: {user_controller}")
     print(f"  UserController.user_service: {user_controller.user_service}")

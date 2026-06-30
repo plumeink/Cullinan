@@ -7,7 +7,7 @@ Author: Plumeink
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from .base import Middleware
 
@@ -92,7 +92,7 @@ class BodyDecoderMiddleware(Middleware):
 
         # 解码
         try:
-            from cullinan.codec import get_codec_registry, DecodeError
+            from cullinan.codec import get_codec_registry
 
             registry = get_codec_registry()
             decoded = registry.decode_body(body or b'', content_type, charset)

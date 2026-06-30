@@ -6,7 +6,7 @@
 Author: Plumeink
 """
 
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union
 
 
 class _UNSET:
