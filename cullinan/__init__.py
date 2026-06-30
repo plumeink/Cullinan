@@ -109,7 +109,7 @@ class _ApplicationFacade:
 
 application = _ApplicationFacade()
 
-__version__ = "0.93a13.post1"
+__version__ = "0.93"
 
 __all__ = [
     "Auto",
