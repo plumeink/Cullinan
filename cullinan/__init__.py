@@ -2,8 +2,6 @@ import logging
 
 logging.getLogger("cullinan").addHandler(logging.NullHandler())
 
-import cullinan.application as _application_module
-
 from cullinan.application import (
     CullinanConfig,
     application as _application_decorator,
