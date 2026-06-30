@@ -122,6 +122,8 @@ pdm.lock
 *_COMPLETE.md
 *_CHECKLIST.md
 *_REPORT.md
+# Issue template legitimately ends in _report.md — keep it tracked
+!.github/ISSUE_TEMPLATE/bug_report.md
 *_FIX_*.md
 *-design.md
 *-plan.md
