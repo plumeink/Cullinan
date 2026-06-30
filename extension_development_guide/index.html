@@ -12,10 +12,10 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="/extension_development_guide/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/extension_development_guide/">
       
       
-        <link rel="prev" href="../parameter_system_guide/">
+        <link rel="prev" href="../wiki/restful_api/">
       
       
         <link rel="next" href="../quick_start_extensions/">
@@ -56,6 +56,8 @@
       
     
     
+      <link rel="stylesheet" href="../assets/stylesheets/version-switcher.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -81,7 +83,41 @@
     </div>
     <div data-md-component="announce">
       
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  
+  
+    <div
+      class="md-version-switcher"
+      data-current-channel="stable"
+      data-current-version="0.93"
+      data-stable-version="0.93"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a13.post1"
+      data-pre-url="/Cullinan/pre/"
+      data-pre-available="True"
+    >
+      <label class="md-version-switcher__label" for="version-switcher">Version</label>
+      <select
+        id="version-switcher"
+        class="md-version-switcher__select"
+        aria-label="Documentation version switcher"
+      ></select>
+      <span class="md-version-switcher__current"></span>
     </div>
+  
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
     
     
       
@@ -265,6 +301,88 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Build
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Build
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../getting_started/" class="md-nav__link">
         
@@ -292,9 +410,204 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build & Run
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Framework Semantics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../framework_semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
   
   
   
@@ -316,6 +629,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -345,7 +666,7 @@
   <span class="md-ellipsis">
     
   
-    Wiki
+    Engineering Practices
   
 
     
@@ -361,11 +682,750 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Wiki
+    Engineering Practices
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dependency_injection_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web_runtime_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Runtime Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static_files_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static Files and SPA Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../packaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    application
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    controller
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    service
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals & Extensions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals & Extensions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -595,506 +1655,6 @@
   
   
     <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Modules
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Modules
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/application/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    application
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/core/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    core
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/controller/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    controller
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/service/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    service
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Examples
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../migration_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../import_migration_090/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Import Migration 0.90
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dependency_injection_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Dependency Injection Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../quick_reference_di/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DI Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../parameter_system_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Parameter System Guide
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--new"></span>
   
 
   
@@ -1757,17 +2317,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Development
+    Migration & Version Notes
   
 
     
@@ -1778,12 +2338,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Development
+    Migration & Version Notes
   
 
           </label>
@@ -1796,14 +2356,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_run/" class="md-nav__link">
+      <a href="../migration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Build & Run
+    Overview
   
 
     
@@ -1831,14 +2391,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Testing
+    Final Structure Migration
   
 
     
@@ -1866,14 +2426,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Contributing
+    Runtime Consolidation
   
 
     
@@ -1886,6 +2446,90 @@
     <span class="md-status md-status--updated"></span>
   
 
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import Migration 0.90
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -2473,9 +3117,11 @@
 
 <h1 id="cullinan-extension-development-guide">Cullinan Extension Development Guide<a class="headerlink" href="#cullinan-extension-development-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Version</strong>: v0.92+<br />
+<p><strong>Version</strong>: 0.93a13
 <strong>Author</strong>: Plumeink<br />
 <strong>Last Updated</strong>: 2026-02-19</p>
+<p><strong>Advanced topic:</strong> this guide is for framework extension work, not the default
+application learning path.</p>
 </blockquote>
 <hr />
 <h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
@@ -2500,7 +3146,7 @@
 <li><strong>Backward Compatible</strong>: Maintain compatibility without breaking existing functionality</li>
 </ul>
 <h3 id="query-available-extension-points">Query Available Extension Points<a class="headerlink" href="#query-available-extension-points" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_extension_points</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.support.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_extension_points</span>
 
 <span class="c1"># Query all extension points</span>
 <span class="n">all_points</span> <span class="o">=</span> <span class="n">list_extension_points</span><span class="p">()</span>
@@ -2564,7 +3210,7 @@
 - Short-circuit requests (e.g., return 401 on authentication failure)</p>
 <h3 id="creating-middleware">Creating Middleware<a class="headerlink" href="#creating-middleware" title="Permanent link">&para;</a></h3>
 <h4 id="method-1-decorator-registration-recommended">Method 1: Decorator Registration (Recommended)<a class="headerlink" href="#method-1-decorator-registration-recommended" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">middleware</span><span class="p">,</span> <span class="n">Middleware</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">middleware</span><span class="p">,</span> <span class="n">Middleware</span>
 
 <span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LoggingMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
@@ -2581,7 +3227,7 @@
         <span class="k">return</span> <span class="n">response</span>
 </code></pre></div>
 <h4 id="method-2-manual-registration">Method 2: Manual Registration<a class="headerlink" href="#method-2-manual-registration" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">get_middleware_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">get_middleware_registry</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
@@ -2638,7 +3284,7 @@
         <span class="k">return</span> <span class="n">handler</span>
 </code></pre></div>
 <h3 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h3>
-<p>Reference: <code>examples/custom_auth_middleware.py</code></p>
+<p>Reference: <code>examples/middleware_and_module/</code> — see the current middleware example that uses the modern <code>@middleware</code> decorator API.</p>
 <hr />
 <h2 id="dependency-injection-extensions">Dependency Injection Extensions<a class="headerlink" href="#dependency-injection-extensions" title="Permanent link">&para;</a></h2>
 <h3 id="custom-scope">Custom Scope<a class="headerlink" href="#custom-scope" title="Permanent link">&para;</a></h3>
@@ -2722,35 +3368,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 </code></pre></div>
 <h3 id="register-custom-provider">Register Custom Provider<a class="headerlink" href="#register-custom-provider" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.injection</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_injection_registry</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationContext</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">ScopeType</span>
 
-<span class="nd">@service</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ProviderRegistryService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register custom Providers during application startup&quot;&quot;&quot;</span>
-        <span class="n">registry</span> <span class="o">=</span> <span class="n">get_injection_registry</span><span class="p">()</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">ApplicationContext</span><span class="p">()</span>
 
-        <span class="c1"># Register factory Provider</span>
-        <span class="n">factory_provider</span> <span class="o">=</span> <span class="n">FactoryProvider</span><span class="p">(</span>
-            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyClass</span><span class="p">(),</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MyClassFactory&#39;</span>
-        <span class="p">)</span>
-        <span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;MyClass&#39;</span><span class="p">,</span> <span class="n">factory_provider</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyClass&quot;</span><span class="p">,</span>
+    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">MyClass</span><span class="p">(),</span>
+    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;extension:MyClass&quot;</span><span class="p">,</span>
+<span class="p">))</span>
 
-        <span class="c1"># Register lazy Provider</span>
-        <span class="n">lazy_provider</span> <span class="o">=</span> <span class="n">LazyProvider</span><span class="p">(</span>
-            <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">HeavyClass</span><span class="p">(),</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HeavyClassLazy&#39;</span>
-        <span class="p">)</span>
-        <span class="n">registry</span><span class="o">.</span><span class="n">register_provider</span><span class="p">(</span><span class="s1">&#39;HeavyClass&#39;</span><span class="p">,</span> <span class="n">lazy_provider</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Definition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;HeavyClass&quot;</span><span class="p">,</span>
+    <span class="n">factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">HeavyClass</span><span class="p">(),</span>
+    <span class="n">scope</span><span class="o">=</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">SINGLETON</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;extension:HeavyClass&quot;</span><span class="p">,</span>
+<span class="p">))</span>
 </code></pre></div>
+<p>For new extensions, prefer registering <code>Definition</code> objects or explicit factories through <code>ApplicationContext</code> instead of mutating the legacy injection registry directly.</p>
 <h3 id="complete-example_1">Complete Example<a class="headerlink" href="#complete-example_1" title="Permanent link">&para;</a></h3>
-<p>Reference: <code>examples/custom_provider_demo.py</code></p>
+<p>Reference: <code>examples/extension_registration_demo.py</code> — demonstrates extension discovery and registration with the current public API.</p>
 <hr />
 <h2 id="lifecycle-extensions">Lifecycle Extensions<a class="headerlink" href="#lifecycle-extensions" title="Permanent link">&para;</a></h2>
 <h3 id="service-lifecycle-hooks">Service Lifecycle Hooks<a class="headerlink" href="#service-lifecycle-hooks" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
 
 <span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DatabaseService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
@@ -2795,7 +3437,8 @@
 <h2 id="routing-extensions">Routing Extensions<a class="headerlink" href="#routing-extensions" title="Permanent link">&para;</a></h2>
 <h3 id="custom-tornado-handler">Custom Tornado Handler<a class="headerlink" href="#custom-tornado-handler" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tornado.web</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom request handler&quot;&quot;&quot;</span>
@@ -2807,18 +3450,21 @@
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_json_argument</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">({</span><span class="s2">&quot;received&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
 
-<span class="c1"># Register custom Handler</span>
+
+<span class="nd">@configure</span><span class="p">(</span><span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;__main__&quot;</span><span class="p">])</span>
+<span class="nd">@application</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span> <span class="o">...</span>
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">configure</span><span class="p">(</span>
-        <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
-            <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom/(?P&lt;id&gt;[0-9]+)&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">run</span><span class="p">()</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/custom/(?P&lt;id&gt;[0-9]+)&#39;</span><span class="p">,</span> <span class="n">CustomHandler</span><span class="p">),</span>
+    <span class="p">])</span>
 </code></pre></div>
 <h3 id="mixed-use-with-controller">Mixed Use with Controller<a class="headerlink" href="#mixed-use-with-controller" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span>
+
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
@@ -2826,14 +3472,19 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[]}</span>
 
+
+<span class="nd">@configure</span><span class="p">(</span><span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;__main__&quot;</span><span class="p">])</span>
+<span class="nd">@application</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span> <span class="o">...</span>
+
 <span class="c1"># CustomHandler and UserController can coexist</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">configure</span><span class="p">(</span>
+    <span class="n">application</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">main</span><span class="p">,</span>
         <span class="n">handlers</span><span class="o">=</span><span class="p">[</span>
             <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/health&#39;</span><span class="p">,</span> <span class="n">HealthCheckHandler</span><span class="p">),</span>  <span class="c1"># Custom</span>
         <span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">run</span><span class="p">()</span>  <span class="c1"># UserController will be automatically registered</span>
+    <span class="p">)</span>  <span class="c1"># UserController will be automatically registered</span>
 </code></pre></div>
 <hr />
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
@@ -2881,10 +3532,10 @@
     <span class="k">pass</span>
 </code></pre></div>
 <h3 id="3-dependency-injection-principles">3. Dependency Injection Principles<a class="headerlink" href="#3-dependency-injection-principles" title="Permanent link">&para;</a></h3>
-<p>✅ <strong>Prefer type injection</strong>
+<p>✅ <strong>Prefer constructor injection</strong> (bare type annotation is now the primary style)
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span> <span class="o">=</span> <span class="n">Inject</span><span class="p">()</span>  <span class="c1"># Recommended</span>
+    <span class="n">email_service</span><span class="p">:</span> <span class="n">EmailService</span>  <span class="c1"># Constructor injection (recommended)</span>
 </code></pre></div></p>
 <p>✅ <strong>Use name-based injection for special cases</strong>
 <div class="highlight"><pre><span></span><code><span class="nd">@service</span>
@@ -2968,10 +3619,9 @@
 <div class="highlight"><pre><span></span><code><span class="nd">@middleware</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ServiceAwareMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Get service from ServiceRegistry</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service_registry</span>
-        <span class="n">registry</span> <span class="o">=</span> <span class="n">get_service_registry</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
+        <span class="c1"># Resolve service from the active ApplicationContext</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_application_context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span> <span class="o">=</span> <span class="n">get_application_context</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;UserService&#39;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
         <span class="c1"># Use service</span>
@@ -3055,9 +3705,9 @@ Client Response
 </ul>
 <blockquote>
 <p><strong>Note</strong>: Example files can be found in the <code>examples/</code> directory of the repository:
-- <code>examples/custom_auth_middleware.py</code> - Middleware example
-- <code>examples/custom_provider_demo.py</code> - Provider example
-- <code>examples/extension_registration_demo.py</code> - Extension registration demo</p>
+- <code>examples/extension_registration_demo.py</code> - Extension registration demo
+- <code>examples/middleware_and_module/</code> - Middleware example
+- <code>examples/controller_service_inject/</code> - DI example</p>
 </blockquote>
 <hr />
 <h2 id="get-help">Get Help<a class="headerlink" href="#get-help" title="Permanent link">&para;</a></h2>
@@ -3067,9 +3717,9 @@ Client Response
 <li><strong>API Documentation</strong>: <code>docs/api_reference.md</code></li>
 </ul>
 <hr />
-<p><strong>Version</strong>: v0.92<br />
+<p><strong>Version</strong>: 0.93a13
 <strong>Author</strong>: Plumeink<br />
-<strong>Last Updated</strong>: 2026-02-19</p>
+<strong>Last Updated</strong>: 2026-06-01</p>
 
 
 
@@ -3135,10 +3785,12 @@ Client Response
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "stable", "current": 0.93, "pre_is_available": true, "pre_label": "0.93a13.post1", "pre_url": "/Cullinan/pre/", "stable_label": 0.93, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

@@ -12,9 +12,13 @@
         <meta name="author" content="Plumeink">
       
       
-        <link rel="canonical" href="/migration_guide_v2/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/migration_guide_v2/">
       
       
+        <link rel="prev" href="../migration_guide/">
+      
+      
+        <link rel="next" href="../import_migration_090/">
       
       
         
@@ -29,7 +33,7 @@
     
     
       
-        <title>Migration Guide: v0.9x → v0.93 - Cullinan Documentation</title>
+        <title>Migration Guide v2 - Cullinan Documentation</title>
       
     
     
@@ -51,6 +55,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../assets/stylesheets/version-switcher.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -77,7 +83,41 @@
     </div>
     <div data-md-component="announce">
       
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  
+  
+    <div
+      class="md-version-switcher"
+      data-current-channel="stable"
+      data-current-version="0.93"
+      data-stable-version="0.93"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a13.post1"
+      data-pre-url="/Cullinan/pre/"
+      data-pre-available="True"
+    >
+      <label class="md-version-switcher__label" for="version-switcher">Version</label>
+      <select
+        id="version-switcher"
+        class="md-version-switcher__select"
+        aria-label="Documentation version switcher"
+      ></select>
+      <span class="md-version-switcher__current"></span>
     </div>
+  
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
     
     
       
@@ -106,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Migration Guide: v0.9x → v0.93
+              Migration Guide v2
             
           </span>
         </div>
@@ -261,6 +301,88 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Build
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Build
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../getting_started/" class="md-nav__link">
         
@@ -288,9 +410,204 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build & Run
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Framework Semantics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../framework_semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
   
   
   
@@ -312,6 +629,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -341,7 +666,7 @@
   <span class="md-ellipsis">
     
   
-    Wiki
+    Engineering Practices
   
 
     
@@ -357,11 +682,748 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Wiki
+    Engineering Practices
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dependency_injection_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web_runtime_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Runtime Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../static_files_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static Files and SPA Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../packaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    application
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    controller
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    service
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals & Extensions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals & Extensions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -601,504 +1663,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Modules
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Modules
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/application/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    application
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/core/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    core
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/controller/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    controller
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../modules/service/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    service
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Examples
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api_reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../migration_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../import_migration_090/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Import Migration 0.90
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../dependency_injection_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Dependency Injection Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../quick_reference_di/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DI Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../parameter_system_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Parameter System Guide
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--new"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
               
                 
   
@@ -1166,28 +1730,30 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Development
+    Migration & Version Notes
   
 
     
@@ -1198,12 +1764,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Development
+    Migration & Version Notes
   
 
           </label>
@@ -1216,14 +1782,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../build_run/" class="md-nav__link">
+      <a href="../migration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Build & Run
+    Overview
   
 
     
@@ -1251,14 +1817,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../migration_to_final_semantic_layout/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Testing
+    Final Structure Migration
   
 
     
@@ -1286,14 +1852,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../runtime_updates_v093/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Contributing
+    Runtime Consolidation
   
 
     
@@ -1306,6 +1872,448 @@
     <span class="md-status md-status--updated"></span>
   
 
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview of Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Migration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Migration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-import-path-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Import Path Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-controller-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Controller Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Controller Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-controller-methods-used-tornado-selfwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x: Controller methods used Tornado self.write()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-controller-methods-return-webresponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93: Controller methods return WebResponse
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-response-object-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Response Object Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-running-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Running the Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Running the Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-tornado-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x: Tornado only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-let-cullinan-resolve-the-backend-or-choose-explicitly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93: Let Cullinan resolve the backend, or choose explicitly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-configuration-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Configuration Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-middleware-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Middleware Migration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Middleware Migration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-middleware-registered-but-not-in-request-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x: Middleware registered but not in request pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-middleware-in-the-onion-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93: Middleware in the onion pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-openapi-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. OpenAPI Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-websocket-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. WebSocket Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. WebSocket Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-tornado-websocket-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x: Tornado WebSocket only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-same-api-works-with-both-tornado-and-asgi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93: Same API, works with both Tornado and ASGI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-parameter-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Parameter System
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v09x-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.9x Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v093-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.93 Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecation Timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import Migration 0.90
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1416,10 +2424,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093-controller-methods-return-cullinanresponse" class="md-nav__link">
+  <a href="#v093-controller-methods-return-webresponse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.93: Controller methods return CullinanResponse
+        v0.93: Controller methods return WebResponse
       
     </span>
   </a>
@@ -1466,10 +2474,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#v093-choose-your-engine" class="md-nav__link">
+  <a href="#v093-let-cullinan-resolve-the-backend-or-choose-explicitly" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.93: Choose your engine
+        v0.93: Let Cullinan resolve the backend, or choose explicitly
       
     </span>
   </a>
@@ -1678,6 +2686,7 @@
 <h1 id="migration-guide-v09x-v093">Migration Guide: v0.9x → v0.93<a class="headerlink" href="#migration-guide-v09x-v093" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Cullinan Framework</strong> — Comprehensive migration guide for upgrading from v0.9x to v0.93.</p>
+<p><strong>Upgrade-only page:</strong> keep this page for version transition work, not for first-time onboarding.</p>
 </blockquote>
 <h2 id="overview-of-changes">Overview of Changes<a class="headerlink" href="#overview-of-changes" title="Permanent link">&para;</a></h2>
 <p>Cullinan v0.93 is a major architectural rewrite introducing:</p>
@@ -1703,12 +2712,12 @@
 <tr>
 <td><strong>Request Object</strong></td>
 <td><code>tornado.httputil.HTTPServerRequest</code></td>
-<td><code>CullinanRequest</code> (transport-agnostic)</td>
+<td><code>WebRequest</code> (transport-agnostic)</td>
 </tr>
 <tr>
 <td><strong>Response Object</strong></td>
 <td><code>HttpResponse</code> + <code>self.write()</code></td>
-<td><code>CullinanResponse</code> (factory methods)</td>
+<td><code>WebResponse</code> (factory methods)</td>
 </tr>
 <tr>
 <td><strong>Routing</strong></td>
@@ -1743,7 +2752,7 @@
 </tbody>
 </table>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Tornado mode (default, backward-compatible)</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Tornado mode</span>
 pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o">[</span>tornado<span class="o">]</span>
 
 <span class="c1"># ASGI mode (uvicorn)</span>
@@ -1754,21 +2763,23 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 </code></pre></div>
 <h2 id="step-by-step-migration">Step-by-Step Migration<a class="headerlink" href="#step-by-step-migration" title="Permanent link">&para;</a></h2>
 <h3 id="1-import-path-changes">1. Import Path Changes<a class="headerlink" href="#1-import-path-changes" title="Permanent link">&para;</a></h3>
-<p>All existing imports remain valid. New imports are added:</p>
+<p>Keep existing controller/service imports as-is, but use the new Web entry names:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># v0.9x — still works in v0.93</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">service</span><span class="p">,</span> <span class="n">Service</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Inject</span>
 
-<span class="c1"># v0.93 — new imports available</span>
+<span class="c1"># v0.93 — new semantic imports available</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CullinanRequest</span><span class="p">,</span> <span class="n">CullinanResponse</span><span class="p">,</span>     <span class="c1"># Unified request/response</span>
-    <span class="n">Router</span><span class="p">,</span> <span class="n">Dispatcher</span><span class="p">,</span>                     <span class="c1"># Gateway layer</span>
-    <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">CORSMiddleware</span><span class="p">,</span>      <span class="c1"># Middleware pipeline</span>
-    <span class="n">OpenAPIGenerator</span><span class="p">,</span>                       <span class="c1"># OpenAPI spec</span>
-    <span class="n">TornadoAdapter</span><span class="p">,</span> <span class="n">ASGIAdapter</span><span class="p">,</span>            <span class="c1"># Server adapters</span>
-    <span class="n">get_asgi_app</span><span class="p">,</span>                           <span class="c1"># ASGI convenience</span>
+    <span class="n">WebRequest</span><span class="p">,</span> <span class="n">WebResponse</span><span class="p">,</span>          <span class="c1"># Unified request/response</span>
+    <span class="n">Router</span><span class="p">,</span> <span class="n">Dispatcher</span><span class="p">,</span>               <span class="c1"># Gateway layer</span>
+    <span class="n">GatewayMiddleware</span><span class="p">,</span> <span class="n">CORSMiddleware</span><span class="p">,</span><span class="c1"># Middleware pipeline</span>
+    <span class="n">OpenAPIGenerator</span><span class="p">,</span>                 <span class="c1"># OpenAPI spec</span>
+    <span class="n">get_asgi_app</span><span class="p">,</span>                     <span class="c1"># ASGI convenience</span>
 <span class="p">)</span>
+
+<span class="c1"># Advanced transport integration stays explicit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.transport.adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIAdapter</span><span class="p">,</span> <span class="n">TornadoAdapter</span><span class="p">,</span> <span class="n">WebAdapter</span>
 </code></pre></div>
 <h3 id="2-controller-changes">2. Controller Changes<a class="headerlink" href="#2-controller-changes" title="Permanent link">&para;</a></h3>
 <h4 id="v09x-controller-methods-used-tornado-selfwrite">v0.9x: Controller methods used Tornado <code>self.write()</code><a class="headerlink" href="#v09x-controller-methods-used-tornado-selfwrite" title="Permanent link">&para;</a></h4>
@@ -1781,9 +2792,9 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
         <span class="c1"># ... business logic ...</span>
         <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">user_data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 </code></pre></div>
-<h4 id="v093-controller-methods-return-cullinanresponse">v0.93: Controller methods return <code>CullinanResponse</code><a class="headerlink" href="#v093-controller-methods-return-cullinanresponse" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="c1"># v0.93 — transport-agnostic, returns CullinanResponse</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">CullinanResponse</span>
+<h4 id="v093-controller-methods-return-webresponse">v0.93: Controller methods return <code>WebResponse</code><a class="headerlink" href="#v093-controller-methods-return-webresponse" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># v0.93 — transport-agnostic, returns WebResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebResponse</span>
 
 <span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
@@ -1793,8 +2804,8 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_service</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;User not found&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">WebResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;User not found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">WebResponse</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Backward compatibility</strong>: The old <code>HttpResponse</code> return type still works — the <code>Dispatcher</code> auto-converts it.</p>
 <h3 id="3-response-object-migration">3. Response Object Migration<a class="headerlink" href="#3-response-object-migration" title="Permanent link">&para;</a></h3>
@@ -1808,15 +2819,15 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <tbody>
 <tr>
 <td><code>HttpResponse(body=data, status=200)</code></td>
-<td><code>CullinanResponse.json(data)</code></td>
+<td><code>WebResponse.json(data)</code></td>
 </tr>
 <tr>
 <td><code>HttpResponse(body="text", status=200)</code></td>
-<td><code>CullinanResponse.text("text")</code></td>
+<td><code>WebResponse.text("text")</code></td>
 </tr>
 <tr>
 <td><code>HttpResponse(body=data, status=404)</code></td>
-<td><code>CullinanResponse.error(404, "msg")</code></td>
+<td><code>WebResponse.error(404, "msg")</code></td>
 </tr>
 <tr>
 <td><code>return {"key": "value"}</code> (dict)</td>
@@ -1830,34 +2841,33 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 </table>
 <h3 id="4-running-the-application">4. Running the Application<a class="headerlink" href="#4-running-the-application" title="Permanent link">&para;</a></h3>
 <h4 id="v09x-tornado-only">v0.9x: Tornado only<a class="headerlink" href="#v09x-tornado-only" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 <span class="n">run</span><span class="p">()</span>  <span class="c1"># starts Tornado on port 4080</span>
 </code></pre></div>
-<h4 id="v093-choose-your-engine">v0.93: Choose your engine<a class="headerlink" href="#v093-choose-your-engine" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.application</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
+<h4 id="v093-let-cullinan-resolve-the-backend-or-choose-explicitly">v0.93: Let Cullinan resolve the backend, or choose explicitly<a class="headerlink" href="#v093-let-cullinan-resolve-the-backend-or-choose-explicitly" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">run</span>
 
-<span class="c1"># Option A: Tornado (default, backward-compatible)</span>
-<span class="n">run</span><span class="p">()</span>
+<span class="c1"># Recommended default path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">configure</span>
 
-<span class="c1"># Option B: Tornado (explicit)</span>
-<span class="n">run</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;tornado&#39;</span><span class="p">)</span>
+<span class="nd">@configure</span><span class="p">(</span><span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;myapp&quot;</span><span class="p">])</span>
+<span class="nd">@application</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span> <span class="o">...</span>
 
-<span class="c1"># Option C: ASGI</span>
-<span class="n">run</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;asgi&#39;</span><span class="p">)</span>
+<span class="n">main</span><span class="p">()</span>
 
-<span class="c1"># Option D: ASGI app for external server</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_asgi_app</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">get_asgi_app</span><span class="p">()</span>
+<span class="c1"># For an external ASGI server, prefer the entry-method helper</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">get_asgi_app</span><span class="p">()</span>
 <span class="c1"># Then: uvicorn myapp:app</span>
 </code></pre></div>
-<p>Environment variable: <code>CULLINAN_ENGINE=asgi</code> or config: <code>server_engine='asgi'</code>.</p>
+<p>Environment variable: <code>CULLINAN_ENGINE=asgi</code>, or config: <code>server_engine='auto'</code> / <code>'asgi'</code> / <code>'tornado'</code>.</p>
 <h3 id="5-configuration-changes">5. Configuration Changes<a class="headerlink" href="#5-configuration-changes" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure</span>
 
 <span class="n">configure</span><span class="p">(</span>
     <span class="n">user_packages</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;myapp&#39;</span><span class="p">],</span>
     <span class="c1"># New v0.93 options:</span>
-    <span class="c1"># server_engine=&#39;tornado&#39;,        # &#39;tornado&#39; or &#39;asgi&#39;</span>
+    <span class="c1"># server_engine=&#39;auto&#39;,           # &#39;auto&#39;, &#39;tornado&#39;, or &#39;asgi&#39;</span>
     <span class="c1"># asgi_server=&#39;uvicorn&#39;,          # &#39;uvicorn&#39; or &#39;hypercorn&#39;</span>
     <span class="c1"># route_trailing_slash=False,</span>
     <span class="c1"># route_case_sensitive=True,</span>
@@ -1866,7 +2876,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 </code></pre></div>
 <h3 id="6-middleware-migration">6. Middleware Migration<a class="headerlink" href="#6-middleware-migration" title="Permanent link">&para;</a></h3>
 <h4 id="v09x-middleware-registered-but-not-in-request-pipeline">v0.9x: Middleware registered but not in request pipeline<a class="headerlink" href="#v09x-middleware-registered-but-not-in-request-pipeline" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">middleware</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">middleware</span>
 
 <span class="nd">@middleware</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AuthMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
@@ -1881,7 +2891,7 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">call_next</span><span class="p">):</span>
         <span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="s1">&#39;Authorization&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">CullinanResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Unauthorized&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">WebResponse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;Unauthorized&quot;</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_next</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span>
 
@@ -1920,21 +2930,21 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
 <h4 id="v093-same-api-works-with-both-tornado-and-asgi">v0.93: Same API, works with both Tornado and ASGI<a class="headerlink" href="#v093-same-api-works-with-both-tornado-and-asgi" title="Permanent link">&para;</a></h4>
 <p>The <code>@websocket_handler</code> API is unchanged. When running in ASGI mode, WebSocket connections are handled natively via the ASGI WebSocket protocol.</p>
 <h3 id="9-parameter-system">9. Parameter System<a class="headerlink" href="#9-parameter-system" title="Permanent link">&para;</a></h3>
-<p>The <code>cullinan.params</code> system (<code>Path</code>, <code>Query</code>, <code>Body</code>, <code>Header</code>) is unchanged and works identically in v0.93. Parameters are now resolved by the <code>Dispatcher</code> instead of Tornado handlers.</p>
+<p>The <code>cullinan.web.params</code> system (<code>Path</code>, <code>Query</code>, <code>Body</code>, <code>Header</code>) is unchanged and works identically in v0.93. Parameters are now resolved by the <code>Dispatcher</code> instead of Tornado handlers.</p>
 <h2 id="architecture-comparison">Architecture Comparison<a class="headerlink" href="#architecture-comparison" title="Permanent link">&para;</a></h2>
 <h3 id="v09x-architecture">v0.9x Architecture<a class="headerlink" href="#v09x-architecture" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>Request → Tornado → Dynamic Handler(per-URL) → Controller method → self.write()
 </code></pre></div>
 <h3 id="v093-architecture">v0.93 Architecture<a class="headerlink" href="#v093-architecture" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>Request → Adapter(Tornado/ASGI) → CullinanRequest → Middleware Pipeline
-  → Dispatcher → Router → Controller method → CullinanResponse
+<div class="highlight"><pre><span></span><code>Request → Adapter(Tornado/ASGI) → WebRequest → Middleware Pipeline
+  → Dispatcher → Router → Controller method → WebResponse
   → Adapter → Native Response
 </code></pre></div>
 <h2 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong><code>tornado</code> is no longer a required dependency</strong> — install with <code>pip install cullinan[tornado]</code> if you need it.</li>
 <li><strong><code>Handler</code> base class</strong> is deprecated — controllers no longer inherit from <code>tornado.web.RequestHandler</code>.</li>
-<li><strong>Direct Tornado API usage</strong> (<code>self.set_status()</code>, <code>self.write()</code>, <code>self.finish()</code>) in controllers is deprecated — use <code>CullinanResponse</code> instead.</li>
+<li><strong>Direct Tornado API usage</strong> (<code>self.set_status()</code>, <code>self.write()</code>, <code>self.finish()</code>) in controllers is deprecated — use <code>WebResponse</code> instead.</li>
 </ol>
 <h2 id="deprecation-timeline">Deprecation Timeline<a class="headerlink" href="#deprecation-timeline" title="Permanent link">&para;</a></h2>
 <table>
@@ -2038,10 +3048,12 @@ pip<span class="w"> </span>install<span class="w"> </span>cullinan<span class="o
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "stable", "current": 0.93, "pre_is_available": true, "pre_label": "0.93a13.post1", "pre_url": "/Cullinan/pre/", "stable_label": 0.93, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

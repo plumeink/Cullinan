@@ -12,13 +12,13 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/wiki/restful_api/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/wiki/restful_api/">
       
       
         <link rel="prev" href="../extensions/">
       
       
-        <link rel="next" href="../../modules/app/">
+        <link rel="next" href="../../extension_development_guide/">
       
       
         
@@ -33,7 +33,7 @@
     
     
       
-        <title>"RESTful API decorators" - Cullinan Documentation</title>
+        <title>"RESTful API" - Cullinan Documentation</title>
       
     
     
@@ -56,6 +56,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/stylesheets/version-switcher.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -74,14 +76,48 @@
     <div data-md-component="skip">
       
         
-        <a href="#restful-api-decorators-detailed" class="md-skip">
+        <a href="#restful-api" class="md-skip">
           Skip to content
         </a>
       
     </div>
     <div data-md-component="announce">
       
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  
+  
+    <div
+      class="md-version-switcher"
+      data-current-channel="stable"
+      data-current-version="0.93"
+      data-stable-version="0.93"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a13.post1"
+      data-pre-url="/Cullinan/pre/"
+      data-pre-available="True"
+    >
+      <label class="md-version-switcher__label" for="version-switcher">Version</label>
+      <select
+        id="version-switcher"
+        class="md-version-switcher__select"
+        aria-label="Documentation version switcher"
+      ></select>
+      <span class="md-version-switcher__current"></span>
     </div>
+  
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
     
     
       
@@ -110,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "RESTful API decorators"
+              "RESTful API"
             
           </span>
         </div>
@@ -265,6 +301,88 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Build
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Build
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../getting_started/" class="md-nav__link">
         
@@ -292,9 +410,204 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build & Run
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Framework Semantics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../framework_semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Framework Semantics
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
   
   
   
@@ -319,6 +632,681 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engineering Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Engineering Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dependency_injection_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Injection Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../web_runtime_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Runtime Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../static_files_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Static Files and SPA Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter System Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    application
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    controller
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    service
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -337,17 +1325,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Wiki
+    Internals & Extensions
   
 
     
@@ -358,16 +1346,86 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Wiki
+    Internals & Extensions
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Runtime
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -653,93 +1711,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v090-recommended-type-safe-parameters" class="md-nav__link">
+  <a href="#recommended-controller-style" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.90+ Recommended: Type-Safe Parameters
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="v0.90+ Recommended: Type-Safe Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#available-parameter-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available Parameter Types
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#file-uploads-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        File Uploads (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dataclass-field-validation-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dataclass Field Validation (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydantic-integration-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pydantic Integration (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#legacy-style-decorator-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Legacy Style (Decorator Options)
+        Recommended controller style
       
     </span>
   </a>
@@ -747,10 +1722,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#errors-and-common-pitfalls" class="md-nav__link">
+  <a href="#current-runtime-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Errors and common pitfalls
+        Current runtime model
       
     </span>
   </a>
@@ -758,10 +1733,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-use-which-decorator" class="md-nav__link">
+  <a href="#response-control" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to use which decorator
+        Response control
       
     </span>
   </a>
@@ -769,10 +1744,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#linking-to-source" class="md-nav__link">
+  <a href="#migration-note" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Linking to source
+        Migration note
       
     </span>
   </a>
@@ -794,504 +1769,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Modules
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Modules
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    app
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/application/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    application
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/core/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    core
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/controller/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    controller
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/service/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    service
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Examples
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api_reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../import_migration_090/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Import Migration 0.90
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../dependency_injection_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Dependency Injection Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../quick_reference_di/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DI Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../parameter_system_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Parameter System Guide
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--new"></span>
-  
-
-  
-
-      </a>
     </li>
   
 
@@ -1375,17 +1852,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Development
+    Migration & Version Notes
   
 
     
@@ -1396,12 +1873,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Development
+    Migration & Version Notes
   
 
           </label>
@@ -1414,14 +1891,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../build_run/" class="md-nav__link">
+      <a href="../../migration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Build & Run
+    Overview
   
 
     
@@ -1449,14 +1926,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/" class="md-nav__link">
+      <a href="../../migration_to_final_semantic_layout/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Testing
+    Final Structure Migration
   
 
     
@@ -1484,14 +1961,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contributing/" class="md-nav__link">
+      <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Contributing
+    Runtime Consolidation
   
 
     
@@ -1504,6 +1981,90 @@
     <span class="md-status md-status--updated"></span>
   
 
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration Guide v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import Migration 0.90
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1546,93 +2107,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v090-recommended-type-safe-parameters" class="md-nav__link">
+  <a href="#recommended-controller-style" class="md-nav__link">
     <span class="md-ellipsis">
       
-        v0.90+ Recommended: Type-Safe Parameters
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="v0.90+ Recommended: Type-Safe Parameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#available-parameter-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available Parameter Types
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#file-uploads-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        File Uploads (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dataclass-field-validation-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dataclass Field Validation (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydantic-integration-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pydantic Integration (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#legacy-style-decorator-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Legacy Style (Decorator Options)
+        Recommended controller style
       
     </span>
   </a>
@@ -1640,10 +2118,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#errors-and-common-pitfalls" class="md-nav__link">
+  <a href="#current-runtime-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Errors and common pitfalls
+        Current runtime model
       
     </span>
   </a>
@@ -1651,10 +2129,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-use-which-decorator" class="md-nav__link">
+  <a href="#response-control" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to use which decorator
+        Response control
       
     </span>
   </a>
@@ -1662,10 +2140,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#linking-to-source" class="md-nav__link">
+  <a href="#migration-note" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Linking to source
+        Migration note
       
     </span>
   </a>
@@ -1700,247 +2178,49 @@
 
 
 
-<h1 id="restful-api-decorators-detailed">RESTful API decorators (detailed)<a class="headerlink" href="#restful-api-decorators-detailed" title="Permanent link">&para;</a></h1>
-<p>This page documents the HTTP method decorators used in Cullinan controllers: <code>get_api</code>, <code>post_api</code>, <code>patch_api</code>, <code>delete_api</code> and <code>put_api</code>.</p>
-<p>Summary
-- All decorators are defined as <code>def get_api(**kwargs)</code> (and similarly for others) and therefore accept only keyword arguments. Using a positional argument like <code>@get_api('/user')</code> is invalid and will raise a TypeError on import. Always use <code>@get_api(url='/users/{user_id}')</code>.
-- URL templates use <code>{name}</code> placeholders parsed by <code>url_resolver</code>. Those placeholders are mapped to controller method arguments (order-based).</p>
-<hr />
-<h2 id="v090-recommended-type-safe-parameters">v0.90+ Recommended: Type-Safe Parameters<a class="headerlink" href="#v090-recommended-type-safe-parameters" title="Permanent link">&para;</a></h2>
-<p>Cullinan 0.90 introduces a new type-safe parameter system. See <a href="../../parameter_system_guide/">Parameter System Guide</a> for full details.</p>
-<h3 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+<h1 id="restful-api">RESTful API<a class="headerlink" href="#restful-api" title="Permanent link">&para;</a></h1>
+<p>Cullinan's current REST stack combines controller decorators with the unified Web Runtime.</p>
+<h2 id="recommended-controller-style">Recommended controller style<a class="headerlink" href="#recommended-controller-style" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span><span class="p">,</span> <span class="n">Path</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="c1"># Type-safe parameters with automatic conversion and validation (new unified syntax)</span>
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(),</span>
-        <span class="n">include_posts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;include_posts&quot;</span><span class="p">:</span> <span class="n">include_posts</span><span class="p">}</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
 
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">),</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
-
-    <span class="c1"># DynamicBody for flexible body access</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/dynamic&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Body</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="n">payload</span><span class="p">}</span>
 </code></pre></div>
-<h3 id="available-parameter-types">Available Parameter Types<a class="headerlink" href="#available-parameter-types" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Source</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Path(type)</code></td>
-<td>URL path</td>
-<td><code>id: int = Path()</code></td>
-</tr>
-<tr>
-<td><code>Query(type)</code></td>
-<td>Query string</td>
-<td><code>page: int = Query(default=1)</code></td>
-</tr>
-<tr>
-<td><code>Body(type)</code></td>
-<td>Request body</td>
-<td><code>name: str = Body(required=True)</code></td>
-</tr>
-<tr>
-<td><code>Header(type)</code></td>
-<td>HTTP headers</td>
-<td><code>auth: str = Header(alias='Authorization')</code></td>
-</tr>
-<tr>
-<td><code>File()</code></td>
-<td>File upload</td>
-<td><code>avatar: File = File(max_size=5*1024*1024)</code></td>
-</tr>
-<tr>
-<td><code>RawBody</code></td>
-<td>Raw unparsed body (bytes)</td>
-<td><code>raw: bytes = RawBody()</code></td>
-</tr>
-<tr>
-<td><code>DynamicBody</code></td>
-<td>Full request body (parsed)</td>
-<td><code>body: DynamicBody = DynamicBody()</code></td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>Note</strong>: Pure type annotations like <code>page: int</code> are automatically treated as Query parameters.
-Use <code>= RawBody()</code> or <code>= DynamicBody()</code> to avoid "non-default parameter follows default parameter" error.</p>
-</blockquote>
-<h3 id="file-uploads-v090a5">File Uploads (v0.90a5+)<a class="headerlink" href="#file-uploads-v090a5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">FileInfo</span><span class="p">,</span> <span class="n">FileList</span>
-
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UploadController</span><span class="p">:</span>
-    <span class="c1"># Single file with validation (new syntax)</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;image/*&#39;</span><span class="p">])):</span>
-        <span class="c1"># avatar is a FileInfo instance</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
-        <span class="n">avatar</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/uploads/&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
-
-    <span class="c1"># Required file using as_required()</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload-required&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
-
-    <span class="c1"># Multiple files</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload-multiple&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_count</span><span class="o">=</span><span class="mi">10</span><span class="p">)):</span>
-        <span class="c1"># files is a FileList instance</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">files</span><span class="o">.</span><span class="n">filenames</span><span class="p">}</span>
-</code></pre></div>
-<h3 id="dataclass-field-validation-v090a5">Dataclass Field Validation (v0.90a5+)<a class="headerlink" href="#dataclass-field-validation-v090a5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">validated_dataclass</span><span class="p">,</span> <span class="n">field_validator</span>
-
-<span class="nd">@validated_dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">:</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid email&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
-</code></pre></div>
-<h3 id="pydantic-integration-v090a5">Pydantic Integration (v0.90a5+)<a class="headerlink" href="#pydantic-integration-v090a5" title="Permanent link">&para;</a></h3>
-<p>Pydantic models are automatically supported when Pydantic is installed:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pydantic
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span><span class="p">,</span> <span class="n">Field</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-
-<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">CreateUserRequest</span><span class="p">):</span>
-    <span class="c1"># Pydantic validation is automatic</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">}</span>
-</code></pre></div>
-<p>The framework uses a pluggable model handler architecture. See <a href="../../parameter_system_guide/#pluggable-model-handlers-v090a5">Parameter System Guide</a> for details.</p>
-<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<p>Built-in validators: <code>required</code>, <code>ge</code>, <code>le</code>, <code>gt</code>, <code>lt</code>, <code>min_length</code>, <code>max_length</code>, <code>regex</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/register&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">email</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[\w.-]+@[\w.-]+\.\w+$&#39;</span><span class="p">),</span>
-    <span class="n">password</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
-    <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">120</span><span class="p">),</span>
-<span class="p">):</span>
-    <span class="k">pass</span>
-</code></pre></div>
-<hr />
-<h2 id="legacy-style-decorator-options">Legacy Style (Decorator Options)<a class="headerlink" href="#legacy-style-decorator-options" title="Permanent link">&para;</a></h2>
-<details>
-<summary><strong>Click to expand legacy style documentation</strong></summary>
-
-Supported keyword arguments (common)
-- url: string route template, e.g. `'/users/{user_id}'`.
-- query_params: iterable of query param names (mapped to `request_resolver`'s query section).
-- file_params: iterable of file field names for uploads.
-- headers: iterable of required HTTP header names; missing headers trigger the project's missing-header handler.
-
-POST/PATCH specific
-- body_params: iterable of body field names to parse from JSON or form body.
-- get_request_body: boolean; if True, the raw request body will be passed to the handler via `request_handler`.
-
-How URL templates work
-- Use `{param}` placeholders. Example: `'/users/{user_id}/posts/{post_id}'`.
-- `url_resolver` translates the template into a regex-like path and returns a list of parameter names in order (e.g. `['user_id','post_id']`).
-- The decorated method receives path parameter values as positional args in the same order as the list returned by `url_resolver` (or combined with controller-level url param keys).
-- Allowed characters for path captures are limited by the resolver (e.g. `[a-zA-Z0-9-]+`) and a trailing `/*` to allow an optional slash.
-
-Decorator behavior and request handling
-- Each decorator wraps the original function and registers a Tornado handler method via `EncapsulationHandler.add_func(url=local_url, type='get')` (or type='post', etc.).
-- At request time the framework calls `request_resolver` and `header_resolver` to build (url_dict, query_dict, body_dict, file_dict) and passes them, together with header data, into `request_handler` which invokes your controller method.
-- `get_api`/`delete_api`/`put_api` typically do not use `body_params`; `post_api` and `patch_api` support `body_params` and `get_request_body`.
-
-### Legacy Examples
-
-1) Simple GET with path param
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
-class UserController:
-    @get_api(url=&#39;/{user_id}&#39;)
-    def get_user(self, url_param):
-        # extract the path parameter from the url_param dict
-        user_id = url_param.get(&#39;user_id&#39;) if url_param else None
-        return {&#39;id&#39;: user_id}
-</code></pre></div>
-
-2) GET with query params
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
-class UserController:
-    @get_api(url=&#39;/&#39;, query_params=(&#39;page&#39;,&#39;size&#39;))
-    def list_users(self, query_param):
-        # page and size come from query string and are accessed via query_param
-        page = query_param.get(&#39;page&#39;) if query_param else None
-        size = query_param.get(&#39;size&#39;) if query_param else None
-        return {&#39;page&#39;: page, &#39;size&#39;: size}
-</code></pre></div>
-
-3) POST with body params and files
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/upload&#39;)
-class UploadController:
-    @post_api(url=&#39;/&#39;, body_params=(&#39;title&#39;,), file_params=(&#39;file&#39;,))
-    def upload(self, body_param, files):
-        title = body_param.get(&#39;title&#39;) if body_param else None
-        file_obj = files.get(&#39;file&#39;) if files else None
-        return {&#39;uploaded&#39;: bool(file_obj)}
-</code></pre></div>
-
-</details>
-
-<hr />
-<h2 id="errors-and-common-pitfalls">Errors and common pitfalls<a class="headerlink" href="#errors-and-common-pitfalls" title="Permanent link">&para;</a></h2>
+<p>Plain dictionaries, models, or explicit <code>WebResponse</code> objects are all valid handler results.</p>
+<h2 id="current-runtime-model">Current runtime model<a class="headerlink" href="#current-runtime-model" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Using positional decorator args: <code>@get_api('/user')</code> is invalid. Use <code>@get_api(url='/user')</code>.</li>
-<li>Mismatched path names: if your URL template includes <code>{user_id}</code> but your method signature lacks the corresponding parameter, the framework will pass None or may behave unexpectedly — ensure names match and argument order aligns.</li>
-<li>Missing required headers: if <code>headers</code> is provided and request omits them, the configured missing-header handler will be invoked (it may raise or set an error response).</li>
-<li>Body parsing: <code>body_params</code> attempts to parse JSON when Content-Type starts with <code>application/json</code>; if parsing fails, fields will be None.</li>
+<li>incoming requests are normalized to <code>WebRequest</code></li>
+<li>route matching is handled by <code>Router</code></li>
+<li>handler invocation is handled by <code>Dispatcher</code></li>
+<li>outgoing responses are normalized to <code>WebResponse</code></li>
+<li>server integration is delegated to a <code>WebAdapter</code></li>
 </ul>
-<h2 id="when-to-use-which-decorator">When to use which decorator<a class="headerlink" href="#when-to-use-which-decorator" title="Permanent link">&para;</a></h2>
+<h2 id="response-control">Response control<a class="headerlink" href="#response-control" title="Permanent link">&para;</a></h2>
+<p>Return <code>WebResponse</code> directly when you need explicit headers, cookies, or status handling.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebResponse</span>
+
+<span class="k">return</span> <span class="n">WebResponse</span><span class="o">.</span><span class="n">json</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="migration-note">Migration note<a class="headerlink" href="#migration-note" title="Permanent link">&para;</a></h2>
+<p>New code and documentation should use:</p>
 <ul>
-<li>Use <code>get_api</code> for idempotent read operations.</li>
-<li>Use <code>post_api</code> for create operations where you need to parse body fields or accept file uploads.</li>
-<li>Use <code>patch_api</code> for partial updates and <code>put_api</code> for full replacements; behavior mirrors POST w.r.t. body_params when provided.</li>
+<li><code>WebRequest</code></li>
+<li><code>WebResponse</code></li>
+<li><code>WebAdapter</code></li>
 </ul>
-<h2 id="linking-to-source">Linking to source<a class="headerlink" href="#linking-to-source" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Implementation lives in <code>cullinan/controller/core.py</code> (<code>get_api</code>, <code>post_api</code>, <code>url_resolver</code>, <code>request_resolver</code>, and <code>request_handler</code>). Prefer reading the tests in <code>tests/</code> (search for <code>@get_api(url=</code>) for practical examples.</li>
-</ul>
+<p>The old request / response / adapter naming is no longer the main public API surface.</p>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>docs/getting_started.md</code> (quick overview)</li>
-<li><code>docs/wiki/injection.md</code> (dependency injection patterns)</li>
-<li><code>docs/parameter_system_guide.md</code> (new type-safe parameter system)</li>
+<li><a href="../../web_runtime_guide/">Web Runtime Guide</a></li>
+<li><a href="../lifecycle/">Application Lifecycle</a></li>
 </ul>
 
 
@@ -2010,10 +2290,12 @@ class UploadController:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"channel": "stable", "current": 0.93, "pre_is_available": true, "pre_label": "0.93a13.post1", "pre_url": "/Cullinan/pre/", "stable_label": 0.93, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

@@ -12,13 +12,13 @@
         <meta name="author" content=""Plumeink"">
       
       
-        <link rel="canonical" href="/zh/zh/wiki/restful_api/">
+        <link rel="canonical" href="https://plumeink.github.io/Cullinan/zh/wiki/restful_api/">
       
       
         <link rel="prev" href="../extensions/">
       
       
-        <link rel="next" href="../../modules/app/">
+        <link rel="next" href="../../extension_development_guide/">
       
       
         
@@ -33,7 +33,7 @@
     
     
       
-        <title>"RESTful API 装饰器" - Cullinan Documentation</title>
+        <title>"RESTful API" - Cullinan Documentation</title>
       
     
     
@@ -55,6 +55,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/version-switcher.css">
     
     <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -81,7 +83,41 @@
     </div>
     <div data-md-component="announce">
       
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  
+  
+    <div
+      class="md-version-switcher"
+      data-current-channel="stable"
+      data-current-version="0.93"
+      data-stable-version="0.93"
+      data-stable-url="/Cullinan/"
+      data-pre-version="0.93a13.post1"
+      data-pre-url="/Cullinan/pre/"
+      data-pre-available="True"
+    >
+      <label class="md-version-switcher__label" for="version-switcher">Version</label>
+      <select
+        id="version-switcher"
+        class="md-version-switcher__select"
+        aria-label="Documentation version switcher"
+      ></select>
+      <span class="md-version-switcher__current"></span>
     </div>
+  
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
     
     
       
@@ -110,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              "RESTful API 装饰器"
+              "RESTful API"
             
           </span>
         </div>
@@ -265,6 +301,88 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用构建
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    应用构建
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../getting_started/" class="md-nav__link">
         
@@ -292,9 +410,204 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    示例
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../build_run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构建与运行
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    框架语义
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    框架语义
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../framework_semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    框架语义
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
   
   
   
@@ -319,6 +632,681 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工程实践
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工程实践
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dependency_injection_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    依赖注入指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../web_runtime_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Runtime 指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../static_files_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    静态文件与 SPA 指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick_reference_di/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DI 快速参考
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parameter_system_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参数系统指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../packaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    打包指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    贡献指南
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 参考
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API 参考
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 参考总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块参考
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    模块参考
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用程序
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    控制器
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    服务
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -337,17 +1325,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    维基
+    运行时与扩展
   
 
     
@@ -358,16 +1346,86 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    维基
+    运行时与扩展
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../application_runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用运行时
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--updated"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -653,85 +1711,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v090" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        v0.90+ 推荐：类型安全参数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="v0.90+ 推荐：类型安全参数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        快速示例
+        推荐控制器写法
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        可用的参数类型
+        当前运行时模型
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
       
-        文件上传 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dataclass-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dataclass 字段校验 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydantic-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pydantic 集成 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
+        <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        校验
+        响应控制
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -739,7 +1747,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        传统方式（装饰器选项）
+        迁移说明
       
     </span>
   </a>
@@ -748,39 +1756,6 @@
       
         <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        常见错误与陷阱
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        使用建议
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        源码参考
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         另见
@@ -794,504 +1769,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    模块
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    模块
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/app/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    应用
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/application/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    应用程序
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/core/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    核心
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/controller/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    控制器
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../modules/service/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    服务
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    示例
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api_reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API 参考
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--updated"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    指南
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    指南
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../migration_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    迁移指南
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../import_migration_090/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    0.90 导入迁移
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../dependency_injection_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    依赖注入指南
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../quick_reference_di/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    DI 快速参考
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../parameter_system_guide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    参数系统指南
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--new"></span>
-  
-
-  
-
-      </a>
     </li>
   
 
@@ -1375,17 +1852,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    开发
+    版本迁移
   
 
     
@@ -1396,12 +1873,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
-    开发
+    版本迁移
   
 
           </label>
@@ -1414,14 +1891,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../build_run/" class="md-nav__link">
+      <a href="../../migration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    构建与运行
+    总览
   
 
     
@@ -1449,14 +1926,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/" class="md-nav__link">
+      <a href="../../migration_to_final_semantic_layout/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    测试
+    最终结构迁移
   
 
     
@@ -1484,14 +1961,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contributing/" class="md-nav__link">
+      <a href="../../runtime_updates_v093/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    贡献指南
+    运行时整合
   
 
     
@@ -1504,6 +1981,90 @@
     <span class="md-status md-status--updated"></span>
   
 
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    迁移指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration_guide_v2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    迁移指南 v2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../import_migration_090/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    0.90 导入迁移
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1546,85 +2107,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v090" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        v0.90+ 推荐：类型安全参数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="v0.90+ 推荐：类型安全参数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        快速示例
+        推荐控制器写法
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        可用的参数类型
+        当前运行时模型
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
       
-        文件上传 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dataclass-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dataclass 字段校验 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydantic-v090a5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pydantic 集成 (v0.90a5+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
+        <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        校验
+        响应控制
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1632,7 +2143,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        传统方式（装饰器选项）
+        迁移说明
       
     </span>
   </a>
@@ -1641,39 +2152,6 @@
       
         <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        常见错误与陷阱
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        使用建议
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        源码参考
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         另见
@@ -1700,249 +2178,49 @@
 
 
 
-<h1 id="restful-api">RESTful API 装饰器（详细）<a class="headerlink" href="#restful-api" title="Permanent link">&para;</a></h1>
-<p>本页面记录 Cullinan 控制器中用于路由绑定的 HTTP 动词装饰器：<code>get_api</code>、<code>post_api</code>、<code>patch_api</code>、<code>delete_api</code>、<code>put_api</code>。</p>
-<p>摘要
-- 所有装饰器在源码中定义为 <code>def get_api(**kwargs)</code>（其它动词同理），因此<strong>仅接受关键字参数</strong>。使用位置参数写法如 <code>@get_api('/user')</code> 是不合法的，会在导入时抛出 TypeError。请始终使用 <code>@get_api(url='/users/{user_id}')</code>。
-- URL 模板使用 <code>{name}</code> 占位符，由 <code>url_resolver</code> 解析，按顺序映射到控制器方法参数。</p>
-<hr />
-<h2 id="v090">v0.90+ 推荐：类型安全参数<a class="headerlink" href="#v090" title="Permanent link">&para;</a></h2>
-<p>Cullinan 0.90 引入了新的类型安全参数系统。详见 <a href="../../parameter_system_guide/">参数系统指南</a>。</p>
-<h3 id="_1">快速示例<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Query</span><span class="p">,</span> <span class="n">Body</span><span class="p">,</span> <span class="n">DynamicBody</span>
+<h1 id="restful-api">RESTful API<a class="headerlink" href="#restful-api" title="Permanent link">&para;</a></h1>
+<p>Cullinan 当前的 REST 栈由控制器装饰器与统一后的 Web Runtime 共同组成。</p>
+<h2 id="_1">推荐控制器写法<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">controller</span><span class="p">,</span> <span class="n">get_api</span><span class="p">,</span> <span class="n">post_api</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span><span class="p">,</span> <span class="n">Path</span>
 
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">:</span>
-    <span class="c1"># 类型安全参数，支持自动转换和校验（新的统一语法）</span>
-    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/</span><span class="si">{id}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(),</span>
-        <span class="n">include_posts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;include_posts&quot;</span><span class="p">:</span> <span class="n">include_posts</span><span class="p">}</span>
+    <span class="nd">@get_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
 
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-        <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">),</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">age</span><span class="p">}</span>
-
-    <span class="c1"># DynamicBody 提供灵活的请求体访问</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/dynamic&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">DynamicBody</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Body</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="n">payload</span><span class="p">}</span>
 </code></pre></div>
-<h3 id="_2">可用的参数类型<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>类型</th>
-<th>来源</th>
-<th>示例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Path(type)</code></td>
-<td>URL 路径</td>
-<td><code>id: int = Path()</code></td>
-</tr>
-<tr>
-<td><code>Query(type)</code></td>
-<td>查询字符串</td>
-<td><code>page: int = Query(default=1)</code></td>
-</tr>
-<tr>
-<td><code>Body(type)</code></td>
-<td>请求体</td>
-<td><code>name: str = Body(required=True)</code></td>
-</tr>
-<tr>
-<td><code>Header(type)</code></td>
-<td>HTTP 请求头</td>
-<td><code>auth: str = Header(alias='Authorization')</code></td>
-</tr>
-<tr>
-<td><code>File()</code></td>
-<td>文件上传</td>
-<td><code>avatar: File = File(max_size=5*1024*1024)</code></td>
-</tr>
-<tr>
-<td><code>RawBody</code></td>
-<td>原始请求体 (未解析的 bytes)</td>
-<td><code>raw: bytes = RawBody()</code></td>
-</tr>
-<tr>
-<td><code>DynamicBody</code></td>
-<td>完整请求体 (已解析)</td>
-<td><code>body: DynamicBody = DynamicBody()</code></td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>注意</strong>: 纯类型注解如 <code>page: int</code> 会自动作为 Query 参数处理。
-使用 <code>= RawBody()</code> 或 <code>= DynamicBody()</code> 可以避免 "non-default parameter follows default parameter" 错误。</p>
-</blockquote>
-<h3 id="v090a5">文件上传 (v0.90a5+)<a class="headerlink" href="#v090a5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span><span class="p">,</span> <span class="n">FileInfo</span><span class="p">,</span> <span class="n">FileList</span>
-
-<span class="nd">@controller</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/api&#39;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">UploadController</span><span class="p">:</span>
-    <span class="c1"># 带校验的单文件上传（新语法）</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">allowed_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;image/*&#39;</span><span class="p">])):</span>
-        <span class="c1"># avatar 是 FileInfo 实例</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">avatar</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
-        <span class="n">avatar</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;/uploads/&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
-
-    <span class="c1"># 使用 as_required() 声明必填文件</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload-required&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatar</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="n">as_required</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
-
-    <span class="c1"># 多文件上传</span>
-    <span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/upload-multiple&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">File</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_count</span><span class="o">=</span><span class="mi">10</span><span class="p">)):</span>
-        <span class="c1"># files 是 FileList 实例</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">files</span><span class="o">.</span><span class="n">filenames</span><span class="p">}</span>
-</code></pre></div>
-<h3 id="dataclass-v090a5">Dataclass 字段校验 (v0.90a5+)<a class="headerlink" href="#dataclass-v090a5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">validated_dataclass</span><span class="p">,</span> <span class="n">field_validator</span>
-
-<span class="nd">@validated_dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">:</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;无效的邮箱&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
-</code></pre></div>
-<h3 id="pydantic-v090a5">Pydantic 集成 (v0.90a5+)<a class="headerlink" href="#pydantic-v090a5" title="Permanent link">&para;</a></h3>
-<p>安装 Pydantic 后，Pydantic 模型会自动被支持：</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pydantic
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span><span class="p">,</span> <span class="n">Field</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
-
-<span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">CreateUserRequest</span><span class="p">):</span>
-    <span class="c1"># Pydantic 校验自动执行</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">}</span>
-</code></pre></div>
-<p>框架使用可插拔的模型处理器架构。详见 <a href="../../parameter_system_guide/#可插拔模型处理器-v090a5">参数系统指南</a>。</p>
-<h3 id="_3">校验<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<p>内置校验器：<code>required</code>、<code>ge</code>、<code>le</code>、<code>gt</code>、<code>lt</code>、<code>min_length</code>、<code>max_length</code>、<code>regex</code>。</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@post_api</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/register&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">email</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[\w.-]+@[\w.-]+\.\w+$&#39;</span><span class="p">),</span>
-    <span class="n">password</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
-    <span class="n">age</span><span class="p">:</span> <span class="n">Body</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">120</span><span class="p">),</span>
-<span class="p">):</span>
-    <span class="k">pass</span>
-</code></pre></div>
-<hr />
-<h2 id="_4">传统方式（装饰器选项）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
-<details>
-<summary><strong>点击展开传统方式文档</strong></summary>
-
-支持关键字参数（通用）
-- url：路由模板字符串，例如 `'/users/{user_id}'`。
-- query_params：查询参数名的可迭代对象（由 `request_resolver` 的 query 部分解析）。
-- file_params：用于文件上传的字段名集合。
-- headers：要求存在的 HTTP 请求头，缺失时会触发缺失头处理器。
-
-POST/PATCH 特有
-- body_params：需要从 JSON/form body 中解析的字段名集合。
-- get_request_body：布尔值；为 True 时，原始请求体会传入处理器。
-
-URL 模板如何工作
-- 使用 `{param}` 占位符，例如 `'/users/{user_id}/posts/{post_id}'`。
-- `url_resolver` 将模板解析为匹配路径并返回参数名顺序列表（例如 `['user_id','post_id']`）。
-- 被装饰的方法将按该顺序接收到路径参数值（或结合控制器级别的 url 参数键列表）。
-- 占位符允许的字符由解析器限制（例如 `[a-zA-Z0-9-]+`），并允许可选的尾随 `/`。
-
-装饰器行为与请求处理流程
-- 装饰器会包装原始函数并通过 `EncapsulationHandler.add_func(url=local_url, type='get')` 注册为 Tornado 处理器（或其它动词）。
-- 请求时，框架调用 `request_resolver` 与 `header_resolver` 构建 `(url_dict, query_dict, body_dict, file_dict)`，并将解析的数据传入 `request_handler`，最终由其调用你的控制器方法。
-- `get_api`/`delete_api`/`put_api` 通常不处理 body（除非显式配置），而 `post_api`/`patch_api` 支持 `body_params` 与 `get_request_body`。
-
-### 传统示例
-
-1) 简单 GET（带路径参数）
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
-class UserController:
-    @get_api(url=&#39;/{user_id}&#39;)
-    def get_user(self, url_param):
-        # 从 url_param 字典中获取路径参数
-        user_id = url_param.get(&#39;user_id&#39;) if url_param else None
-        return {&#39;id&#39;: user_id}
-</code></pre></div>
-
-2) GET 带查询参数
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/users&#39;)
-class UserController:
-    @get_api(url=&#39;/&#39;, query_params=(&#39;page&#39;,&#39;size&#39;))
-    def list_users(self, query_param):
-        # page 和 size 从查询字符串解析，通过 query_param 访问
-        page = query_param.get(&#39;page&#39;) if query_param else None
-        size = query_param.get(&#39;size&#39;) if query_param else None
-        return {&#39;page&#39;: page, &#39;size&#39;: size}
-</code></pre></div>
-
-3) POST（body + 文件）
-
-<div class="highlight"><pre><span></span><code>@controller(url=&#39;/api/upload&#39;)
-class UploadController:
-    @post_api(url=&#39;/&#39;, body_params=(&#39;title&#39;,), file_params=(&#39;file&#39;,))
-    def upload(self, body_param, files):
-        title = body_param.get(&#39;title&#39;) if body_param else None
-        file_obj = files.get(&#39;file&#39;) if files else None
-        return {&#39;uploaded&#39;: bool(file_obj)}
-</code></pre></div>
-
-</details>
-
-<hr />
-<h2 id="_5">常见错误与陷阱<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>普通字典、模型对象或显式 <code>WebResponse</code> 都可以作为处理器返回值。</p>
+<h2 id="_2">当前运行时模型<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <ul>
-<li>使用位置参数：<code>@get_api('/user')</code> 是错误的。请使用 <code>@get_api(url='/user')</code>。</li>
-<li>模板与方法参数不匹配：若 URL 模板含 <code>{user_id}</code> 而方法签名缺少对应参数，框架会传入 None 或导致异常；请保持命名与顺序一致。</li>
-<li>缺少必须头部：若指定 <code>headers</code>，请求未包含时会触发缺失头处理器，可能导致错误响应。</li>
-<li>body 解析失败：当 Content-Type 为 <code>application/json</code> 时框架会尝试解析 JSON；解析失败会导致 body 字段为 None。</li>
+<li>进入框架的请求会被归一化为 <code>WebRequest</code></li>
+<li>路由匹配由 <code>Router</code> 负责</li>
+<li>处理器调用由 <code>Dispatcher</code> 负责</li>
+<li>输出响应统一归一化为 <code>WebResponse</code></li>
+<li>服务器集成由 <code>WebAdapter</code> 承担</li>
 </ul>
-<h2 id="_6">使用建议<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h2 id="_3">响应控制<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>当需要显式控制 header、cookie 或状态码时，直接返回 <code>WebResponse</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">cullinan.web.gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebResponse</span>
+
+<span class="k">return</span> <span class="n">WebResponse</span><span class="o">.</span><span class="n">json</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_4">迁移说明<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>新代码与新文档应使用：</p>
 <ul>
-<li><code>get_api</code>：用于幂等的读取操作。</li>
-<li><code>post_api</code>：用于创建/上传，支持 body 与文件处理。</li>
-<li><code>patch_api</code>：用于部分更新。</li>
-<li><code>put_api</code>：用于完整替换（与 POST 在 body 参数处理上类似）。</li>
+<li><code>WebRequest</code></li>
+<li><code>WebResponse</code></li>
+<li><code>WebAdapter</code></li>
 </ul>
-<h2 id="_7">源码参考<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>旧的 request / response / adapter 命名已不再是主要公开 API 面。</p>
+<h2 id="_5">另见<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <ul>
-<li>关键实现位于 <code>cullinan/controller/core.py</code>（<code>get_api</code>, <code>post_api</code>, <code>url_resolver</code>, <code>request_resolver</code>, <code>request_handler</code>）。</li>
-<li>可以在 <code>tests/</code> 中通过搜索 <code>@get_api(url=</code> 找到实战测试样例。</li>
-</ul>
-<h2 id="_8">另见<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>docs/getting_started.md</code>（快速说明）</li>
-<li><code>docs/wiki/injection.md</code>（注入模式说明）</li>
-<li><code>docs/parameter_system_guide.md</code>（新的类型安全参数系统）</li>
+<li><a href="../../web_runtime_guide/">Web Runtime 指南</a></li>
+<li><a href="../lifecycle/">应用生命周期</a></li>
 </ul>
 
 
@@ -2012,10 +2290,12 @@ class UploadController:
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"channel": "stable", "current": 0.93, "pre_is_available": true, "pre_label": "0.93a13.post1", "pre_url": "/Cullinan/pre/", "stable_label": 0.93, "stable_url": "/Cullinan/"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../assets/javascripts/version-switcher.js"></script>
       
     
   </body>

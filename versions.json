@@ -1,11 +1,11 @@
 {
   "stable": {
-    "version": "",
+    "version": "0.93",
     "path": "/"
   },
   "pre": {
     "version": "0.93a13.post1",
     "path": "/pre/"
   },
-  "updated_at": "2026-06-30T21:29:10.609282+00:00"
+  "updated_at": "2026-06-30T21:39:14.733538+00:00"
 }
