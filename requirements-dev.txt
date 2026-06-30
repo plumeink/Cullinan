@@ -1,0 +1,11 @@
+# Cullinan development & CI dependencies
+# Runtime extras (cover both engines + openapi so the full test suite runs)
+tornado
+uvicorn
+pyyaml
+# Test / quality / packaging tooling
+pytest>=8
+ruff>=0.6
+build
+twine
+python-dotenv
